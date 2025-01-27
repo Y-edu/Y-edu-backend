@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus.ACTIVE;
+import static com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus.PENDING;
 
 @Entity
 @Getter
@@ -20,25 +20,31 @@ public class Teacher extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long teacherId;
-    @Column(nullable = false)
-    private boolean marketingAgree;
+
     @Embedded
     private TeacherInfo teacherInfo;
+
     @Embedded
     private TeacherSchoolInfo teacherSchoolInfo;
+
     @Embedded
     private TeacherClassInfo teacherClassInfo;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private TeacherStatus status = ACTIVE; //활동 상태
+    private TeacherStatus status = PENDING; //활동 상태 (관리자 수락 대기)
     @Enumerated(EnumType.STRING)
-    private TeacherGrade grade; //등급
+    @Builder.Default
+    private TeacherGrade grade = TeacherGrade.STANDARD; //등급
+
     @Column(columnDefinition = "TEXT")
     private String issue;
     @Column(columnDefinition = "TEXT")
     private String terminateIssue;
     @Column(nullable = false)
     private String source; //유입경로
+    @Column(nullable = false)
+    private boolean marketingAgree;
 
     private int classCount; //수업 횟수
     private int alertMessageCount; //알림톡 발송 횟수

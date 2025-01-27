@@ -21,6 +21,8 @@ public class TeacherMath {
     private String appealPoint;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String teachingExperience;
+    @Column(nullable = false)
+    private int teachingHistory;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String teachingStyle;
     @Column(columnDefinition = "TEXT", nullable = false)
