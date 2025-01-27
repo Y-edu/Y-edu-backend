@@ -1,0 +1,47 @@
+package com.yedu.backend.domain.teacher.application.dto.req;
+
+import java.util.List;
+
+public record TeacherInfoFormRequest(
+        String name,
+        String nickName,
+        String email,
+        String phoneNumber,
+        String birth,
+        String gender,
+        String univercity,
+        String major,
+        String highSchool,
+        String highSchoolType,
+        String history,
+        String introduce,
+        String teachingStyle1,
+        String teachingStyleInfo1,
+        String teachingStyle2,
+        String teachingStyleInfo2,
+        boolean englishPossible,
+        boolean mathPossible,
+        String recommenedStudent,
+        String comment,
+        List<List<String>> available,
+        List<String> region,
+        String source,
+        boolean marketingAgree,
+        English english,
+        Math math
+) {
+    public record English(
+            String appealPoint,
+            String teachingExperience,
+            String foreignExperience,
+            String teachingStyle,
+            String managementStyle
+    ) {}
+
+    public record Math(
+            String appealPoint,
+            String teachingExperience,
+            String teachingStyle,
+            String managementStyle
+    ) {}
+}
