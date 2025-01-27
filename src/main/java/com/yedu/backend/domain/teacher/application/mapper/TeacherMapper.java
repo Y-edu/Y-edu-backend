@@ -34,7 +34,6 @@ public class TeacherMapper {
     public static TeacherClassInfo mapToTeacherClassInfo(TeacherInfoFormRequest request) {
         // style enum으로 사용 예정
         TeacherClassInfo.TeacherClassInfoBuilder builder = TeacherClassInfo.builder()
-                .history(Integer.parseInt(request.history()))
                 .introduce(request.introduce())
                 .teachingStyle1(TeachingStyle.fromString(request.teachingStyle1()))
                 .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
@@ -81,6 +80,7 @@ public class TeacherMapper {
                 .teacher(teacher)
                 .appealPoint(request.english().appealPoint())
                 .teachingExperience(request.english().teachingExperience())
+                .teachingHistory(Integer.parseInt(request.english().teachingHistory()))
                 .teachingStyle(request.english().teachingStyle())
                 .managementStyle(request.english().managementStyle())
                 .foreignExperience(request.english().foreignExperience())
@@ -92,7 +92,7 @@ public class TeacherMapper {
                 .teacher(teacher)
                 .appealPoint(request.math().appealPoint())
                 .teachingExperience(request.math().teachingExperience())
-                .teachingStyle(request.math().teachingExperience())
+                .teachingHistory(Integer.parseInt(request.math().teachingHistory()))
                 .teachingStyle(request.math().teachingStyle())
                 .managementStyle(request.math().managementStyle())
                 .build();

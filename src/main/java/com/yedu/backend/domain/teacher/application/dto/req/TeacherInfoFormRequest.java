@@ -13,7 +13,6 @@ public record TeacherInfoFormRequest(
         String major,
         String highSchool,
         String highSchoolType,
-        String history,
         String introduce,
         String teachingStyle1,
         String teachingStyleInfo1,
@@ -34,6 +33,7 @@ public record TeacherInfoFormRequest(
             String appealPoint,
             String teachingExperience,
             String foreignExperience,
+            String teachingHistory,
             String teachingStyle,
             String managementStyle
     ) {}
@@ -41,6 +41,7 @@ public record TeacherInfoFormRequest(
     public record Math(
             String appealPoint,
             String teachingExperience,
+            String teachingHistory,
             String teachingStyle,
             String managementStyle
     ) {}

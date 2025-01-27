@@ -16,9 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Embeddable
 public class TeacherClassInfo {
-    //과외 및 경력 정보
-    @Column(nullable = false)
-    private int history; //과외 경력
     @Column(columnDefinition = "TEXT", nullable = false)
     private String introduce; //소개
     @Column(nullable = false)
