@@ -4,7 +4,6 @@ create table if not exists yedu.teacher
     class_count          int                                                                                 not null,
     english_possible     bit                                                                                 not null,
     gender               bit                                                                                 not null,
-    history              int                                                                                 not null,
     marketing_agree      bit                                                                                 not null,
     math_possible        bit                                                                                 not null,
     response_rate        double                                                                              not null,
@@ -33,7 +32,7 @@ create table if not exists yedu.teacher
     university           varchar(30)                                                                        not null,
     video                varchar(255)                                                                        null,
     grade                enum ('PRO', 'STANDARD')                                                            null,
-    status               enum ('ACTIVE', 'PAUSED', 'TERMINATED')                                             null,
+    status               enum ('ACTIVE', 'PAUSED', 'TERMINATED', 'PENDING')                                             null,
     teaching_style1      enum ('CARING', 'CONFIDENCE_BOOSTER', 'FOCUSED', 'FUN', 'METICULOUS', 'PASSIONATE', 'ERROR') not null,
     teaching_style2      enum ('CARING', 'CONFIDENCE_BOOSTER', 'FOCUSED', 'FUN', 'METICULOUS', 'PASSIONATE', 'ERROR') not null
     );
@@ -68,6 +67,7 @@ create table if not exists yedu.teacher_english
     foreign_experience  text   null,
     management_style    text   not null,
     teaching_experience text   not null,
+    teaching_history    int   not null,
     teaching_style      text   not null,
     constraint FKt7o0686li2wkthuf8qibtr11r
     foreign key (teacher_teacher_id) references yedu.teacher (teacher_id)
@@ -81,6 +81,7 @@ create table if not exists yedu.teacher_math
     appeal_point        text   not null,
     management_style    text   not null,
     teaching_experience text   not null,
+    teaching_history    int   not null,
     teaching_style      text   not null,
     constraint FK84pjet9p2vlfubiqi89dg6uah
     foreign key (teacher_teacher_id) references yedu.teacher (teacher_id)
