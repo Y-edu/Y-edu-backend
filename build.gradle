@@ -49,6 +49,9 @@ dependencies {
 	// flyway 추가
 	implementation 'org.flywaydb:flyway-mysql'
 	implementation 'org.flywaydb:flyway-core'
+
+	// aws s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
