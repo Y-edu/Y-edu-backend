@@ -1,11 +1,16 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
 import com.yedu.backend.domain.teacher.domain.entity.*;
+import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
+import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
+import com.yedu.backend.global.config.s3.S3UploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,9 @@ import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*
 @Transactional
 public class TeacherManageUseCase {
     private final TeacherSaveService teacherSaveService;
+    private final TeacherGetService teacherGetService;
+    private final TeacherUpdateService teacherUpdateService;
+    private final S3UploadService s3UploadService;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -64,5 +72,11 @@ public class TeacherManageUseCase {
                 .stream()
                 .map(region -> mapToTeacherDistrict(teacher, region))
                 .toList(); // 선생님 교육 가능 구역
+    }
+
+    public void saveTeacherProfile(MultipartFile profile, TeacherProfileFormRequest request) {
+        String profileUrl = s3UploadService.saveProfileFile(profile);
+        Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
+        teacherUpdateService.updateProfile(teacher, profileUrl);
     }
 }

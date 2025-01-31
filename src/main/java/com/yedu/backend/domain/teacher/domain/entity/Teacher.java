@@ -50,4 +50,8 @@ public class Teacher extends BaseEntity {
     private int alertMessageCount; //알림톡 발송 횟수
     private double responseRate; //답변율
     private double responseTime; //답변 평균 시간
+
+    public void updateProfile(String profile) {
+        teacherClassInfo.updateProfile(profile);
+    }
 }
