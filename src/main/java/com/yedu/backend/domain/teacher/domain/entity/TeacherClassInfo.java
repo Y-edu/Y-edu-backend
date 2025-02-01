@@ -36,12 +36,4 @@ public class TeacherClassInfo {
     private boolean englishPossible;
     @Column(nullable = false)
     private boolean mathPossible;
-
-    private String profile; //프로필 사진
-    private String video; // 과외 영상
-
-    public void updateProfile(String profile) {
-        this.profile = profile;
-        //todo : 나중에 과외 영상 추가 필요
-    }
 }
