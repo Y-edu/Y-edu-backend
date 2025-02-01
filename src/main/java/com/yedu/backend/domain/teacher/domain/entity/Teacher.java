@@ -52,6 +52,6 @@ public class Teacher extends BaseEntity {
     private double responseTime; //답변 평균 시간
 
     public void updateProfile(String profile) {
-        teacherClassInfo.updateProfile(profile);
+        teacherInfo.updateProfile(profile);
     }
 }
