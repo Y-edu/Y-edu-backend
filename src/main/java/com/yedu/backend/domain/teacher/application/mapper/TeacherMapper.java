@@ -8,6 +8,7 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -112,12 +113,28 @@ public class TeacherMapper {
     public static TeacherMathResponse mapToTeacherMathResponse(Teacher teacher, TeacherMath math) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
+        String appealPoint = math.getAppealPoint().replace("#", "");
+        List<String> appealPoints = Arrays.stream(appealPoint.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+        String teachingExperience = math.getTeachingExperience().replace("#", "");
+        List<String> experiences = Arrays.stream(teachingExperience.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+        String recommendStudents = classInfo.getRecommendStudent().replace("#", "");
+        List<String> recommends = Arrays.stream(recommendStudents.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+
         return new TeacherMathResponse(
-                math.getAppealPoint(),
+                appealPoints,
                 classInfo.getComment(),
                 classInfo.getIntroduce(),
                 math.getTeachingHistory(),
-                math.getTeachingExperience(),
+                experiences,
                 schoolInfo.getUniversity(),
                 schoolInfo.getMajor(),
                 schoolInfo.getHighSchool(),
@@ -125,20 +142,40 @@ public class TeacherMapper {
                 classInfo.getTeachingStyleInfo1(),
                 classInfo.getTeachingStyle2().getDescription(),
                 classInfo.getTeachingStyleInfo2(),
-                classInfo.getRecommendStudent()
+                recommends
         );
     }
 
     public static TeacherEnglishResponse mapToTeacherEnglish(Teacher teacher, TeacherEnglish english) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
+        String appealPoint = english.getAppealPoint().replace("#", "");
+        List<String> appealPoints = Arrays.stream(appealPoint.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+        String foreignExperience = english.getForeignExperience().replace("#", "");
+        List<String> foreignExperiences = Arrays.stream(foreignExperience.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+        String teachingExperience = english.getTeachingExperience().replace("#", "");
+        List<String> experiences = Arrays.stream(teachingExperience.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+        String recommendStudents = classInfo.getRecommendStudent().replace("#", "");
+        List<String> recommends = Arrays.stream(recommendStudents.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
         return new TeacherEnglishResponse(
-                english.getAppealPoint(),
+                appealPoints,
                 classInfo.getComment(),
                 classInfo.getIntroduce(),
                 english.getTeachingHistory(),
-                english.getTeachingExperience(),
-                english.getForeignExperience(),
+                experiences,
+                foreignExperiences,
                 schoolInfo.getUniversity(),
                 schoolInfo.getMajor(),
                 schoolInfo.getHighSchool(),
@@ -146,7 +183,7 @@ public class TeacherMapper {
                 classInfo.getTeachingStyleInfo1(),
                 classInfo.getTeachingStyle2().getDescription(),
                 classInfo.getTeachingStyleInfo2(),
-                classInfo.getRecommendStudent()
+                recommends
         );
     }
 
