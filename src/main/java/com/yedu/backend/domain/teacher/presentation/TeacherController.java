@@ -29,37 +29,37 @@ public class TeacherController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{teacherId}/details/info")
+    @GetMapping("/details/info/{teacherId}")
     public ResponseEntity<TeacherCommonsInfoResponse> commonsInfo(@PathVariable long teacherId) {
         TeacherCommonsInfoResponse teacherCommonsInfoResponse = infoUseCase.teacherCommonsInfo(teacherId);
         return ResponseEntity.ok(teacherCommonsInfoResponse);
     }
 
-    @GetMapping("/{teacherId}/details/math/teacher")
+    @GetMapping("/details/math/teacher/{teacherId}")
     public ResponseEntity<TeacherMathResponse> mathTeacherInfo(@PathVariable long teacherId) {
         TeacherMathResponse teacherMathResponse = infoUseCase.teacherMathDetails(teacherId);
         return ResponseEntity.ok(teacherMathResponse);
     }
 
-    @GetMapping("/{teacherId}/details/english/teacher")
+    @GetMapping("/details/english/teacher/{teacherId}")
     public ResponseEntity<TeacherEnglishResponse> englishTeacherInfo(@PathVariable long teacherId) {
         TeacherEnglishResponse teacherEnglishResponse = infoUseCase.teacherEnglishDetails(teacherId);
         return ResponseEntity.ok(teacherEnglishResponse);
     }
 
-    @GetMapping("/{teacherId}/details/math/class")
+    @GetMapping("/details/math/class/{teacherId}")
     public ResponseEntity<CurriculumResponse> mathCurriculumInfo(@PathVariable long teacherId) {
         CurriculumResponse curriculumResponse = infoUseCase.curriculumMath(teacherId);
         return ResponseEntity.ok(curriculumResponse);
     }
 
-    @GetMapping("/{teacherId}/details/english/class")
+    @GetMapping("/details/english/class/{teacherId}")
     public ResponseEntity<CurriculumResponse> englishCurriculumInfo(@PathVariable long teacherId) {
         CurriculumResponse curriculumResponse = infoUseCase.curriculumEnglish(teacherId);
         return ResponseEntity.ok(curriculumResponse);
     }
 
-    @GetMapping("/{teacherId}/details/available")
+    @GetMapping("/details/available/{teacherId}")
     public ResponseEntity<DistrictAndTimeResponse> availableInfo(@PathVariable long teacherId) {
         DistrictAndTimeResponse districtAndTimeResponse = infoUseCase.districtAndTime(teacherId);
         return ResponseEntity.ok(districtAndTimeResponse);
