@@ -24,6 +24,12 @@ public class AdminController {
         return ResponseEntity.ok(allApplication);
     }
 
+    @PutMapping("/matching/{applicationFormId}")
+    public ResponseEntity updateProceedStatus(@PathVariable String applicationFormId) {
+        adminManageUseCase.updateProceedStatus(applicationFormId);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/details/matching/parents/{parentsId}")
     public ResponseEntity updateProceed(@PathVariable long parentsId, @RequestBody ParentsKakaoNameRequest request) {
         adminManageUseCase.updateParentsKakaoName(parentsId, request);
