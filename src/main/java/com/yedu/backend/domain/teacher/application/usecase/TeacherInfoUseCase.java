@@ -16,7 +16,7 @@ import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*
 
 @RequiredArgsConstructor
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class TeacherInfoUseCase {
     private final TeacherGetService teacherGetService;
 

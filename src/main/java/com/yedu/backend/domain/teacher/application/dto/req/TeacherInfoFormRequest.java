@@ -1,5 +1,7 @@
 package com.yedu.backend.domain.teacher.application.dto.req;
 
+import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
+
 import java.util.List;
 
 public record TeacherInfoFormRequest(
@@ -8,7 +10,7 @@ public record TeacherInfoFormRequest(
         String email,
         String phoneNumber,
         String birth,
-        String gender,
+        TeacherGender gender,
         String univercity,
         String major,
         String highSchool,

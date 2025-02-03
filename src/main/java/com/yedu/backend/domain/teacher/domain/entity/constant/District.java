@@ -44,9 +44,9 @@ public enum District {
 
     private final String description;
 
-    public static District fromString(String teachingDistrict){
+    public static District fromString(String requestDistrict){
         for (District district : values()) {
-            if (teachingDistrict.equals(district.description))
+            if (requestDistrict.equals(district.description))
                 return district;
         }
         log.error("District 처리 예외 발생");
