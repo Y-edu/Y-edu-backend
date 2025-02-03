@@ -32,4 +32,8 @@ public class Parents extends BaseEntity {
     private int totalPayment;
     @Builder.Default
     private boolean marketingAgree = true;
+
+    public void updateKakaoName(String kakaoName) {
+        this.kakaoName = kakaoName;
+    }
 }

@@ -34,6 +34,7 @@ public class AdminMapper {
         String parentsCode = parents.getDistrict().toString() + parents.getParentsId();
         String kakaoName = Optional.ofNullable(parents.getKakaoName()).orElse(null);
         return new CommonParentsResponse(
+                parents.getParentsId(),
                 parentsCode,
                 kakaoName,
                 parents.getPhoneNumber()
