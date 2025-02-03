@@ -18,8 +18,7 @@ public class Parents extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long parentsId;
     @Column(nullable = false)
-    @Builder.Default
-    private int count = 1;
+    private int count;
     private String kakaoName;
     @Column(nullable = false)
     private String phoneNumber;
@@ -32,4 +31,17 @@ public class Parents extends BaseEntity {
     private int totalPayment;
     @Builder.Default
     private boolean marketingAgree = true;
+
+    public void updateKakaoName(String kakaoName) {
+        this.kakaoName = kakaoName;
+    }
+
+    public void updateCount() {
+        this.count++;
+    }
+
+    public void updateDistrict(District district, String dong) {
+        this.district = district;
+        this.dong = dong;
+    }
 }
