@@ -18,8 +18,7 @@ public class Parents extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long parentsId;
     @Column(nullable = false)
-    @Builder.Default
-    private int count = 1;
+    private int count;
     private String kakaoName;
     @Column(nullable = false)
     private String phoneNumber;
@@ -35,5 +34,9 @@ public class Parents extends BaseEntity {
 
     public void updateKakaoName(String kakaoName) {
         this.kakaoName = kakaoName;
+    }
+
+    public void updateCount() {
+        this.count++;
     }
 }
