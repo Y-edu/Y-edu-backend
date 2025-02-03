@@ -16,7 +16,7 @@ public class Goal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long goalId;
     @ManyToOne(fetch = FetchType.LAZY)
-    private Diagnosis diagnosis;
+    private ApplicationForm applicationForm;
     @Column(nullable = false, length = 45)
     private String classGoal;
 }
