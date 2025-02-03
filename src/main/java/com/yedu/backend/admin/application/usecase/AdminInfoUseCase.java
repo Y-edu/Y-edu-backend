@@ -41,13 +41,13 @@ public class AdminInfoUseCase {
     }
 
     public CommonParentsResponse getParentsInfo(String applicationFormId) {
-        ApplicationForm applicationForm = adminGetService.byId(applicationFormId);
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         Parents parents = applicationForm.getParents();
         return mapToCommonParentsResponse(parents);
     }
 
     public AllAlarmTalkResponse getAlarmTalkInfo(String applicationFormId) {
-        ApplicationForm applicationForm = adminGetService.byId(applicationFormId);
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm);
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
                 .map(AdminMapper::mapToAlarmTalkResponse)
@@ -61,7 +61,7 @@ public class AdminInfoUseCase {
     }
 
     public ClassDetailsResponse getClassDetails(String applicationFormId) {
-        ApplicationForm applicationForm = adminGetService.byId(applicationFormId);
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         return mapToClassDetailsResponse(applicationForm);
     }
 }
