@@ -6,9 +6,11 @@ import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AdminMapper {
@@ -57,7 +59,7 @@ public class AdminMapper {
         );
     }
 
-    public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm) {
+    public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm, List<String> goals) {
         // 가격 계산식 = 4주 기준 분 * 600
         String count = applicationForm.getClassCount();
         int classCount = 0;
@@ -90,7 +92,9 @@ public class AdminMapper {
                 applicationForm.getOnline(),
                 applicationForm.getFavoriteGender(),
                 applicationForm.getParents().getDistrict(),
-                applicationForm.getParents().getDong()
+                applicationForm.getParents().getDong(),
+                goals,
+                applicationForm.getFavoriteStyle()
         );
     }
 }

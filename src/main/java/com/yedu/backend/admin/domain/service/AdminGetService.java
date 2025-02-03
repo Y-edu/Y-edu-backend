@@ -2,6 +2,7 @@ package com.yedu.backend.admin.domain.service;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.backend.domain.parents.domain.repository.ClassMatchingRepository;
@@ -37,5 +38,9 @@ public class AdminGetService {
     public ApplicationForm applicationFormById(String applicationFormId) {
         return applicationFormRepository.findById(applicationFormId)
                 .orElseThrow();
+    }
+
+    public List<Goal> allGoalByApplicationForm(ApplicationForm applicationForm) {
+        return goalRepository.findAllByApplicationForm(applicationForm);
     }
 }

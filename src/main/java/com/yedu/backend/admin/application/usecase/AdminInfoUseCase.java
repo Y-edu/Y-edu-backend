@@ -10,6 +10,7 @@ import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.parents.domain.entity.Goal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,10 @@ public class AdminInfoUseCase {
 
     public ClassDetailsResponse getClassDetails(String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        return mapToClassDetailsResponse(applicationForm);
+        List<Goal> goals = adminGetService.allGoalByApplicationForm(applicationForm);
+        List<String> classGoals = goals.stream()
+                .map(Goal::getClassGoal)
+                .toList();
+        return mapToClassDetailsResponse(applicationForm, classGoals);
     }
 }

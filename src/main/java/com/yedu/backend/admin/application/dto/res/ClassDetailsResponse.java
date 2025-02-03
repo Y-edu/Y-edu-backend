@@ -5,6 +5,8 @@ import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 
+import java.util.List;
+
 public record ClassDetailsResponse(
         int classCount,
         int classTime,
@@ -14,6 +16,8 @@ public record ClassDetailsResponse(
         Online online,
         Gender favoriteGender,
         District district,
-        String dong
+        String dong,
+        List<String> goals,
+        String teacherStyle
 ) {
 }
