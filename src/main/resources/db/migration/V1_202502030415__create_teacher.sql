@@ -1,6 +1,6 @@
 create table if not exists yedu.parents
 (
-    parents_id      bigint                                                                                                                                                                                                                                       not null
+    parents_id      bigint auto_increment                                                                                                                                                                                                                                 not null
     primary key,
     created_at      datetime(6)                                                                                                                                                                                                                                  null,
     updated_at      datetime(6)                                                                                                                                                                                                                                  null,
