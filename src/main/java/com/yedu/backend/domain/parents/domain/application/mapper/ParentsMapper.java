@@ -2,6 +2,7 @@ package com.yedu.backend.domain.parents.domain.application.mapper;
 
 import com.yedu.backend.domain.parents.domain.application.dto.req.ApplicationFormRequest;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 
@@ -28,6 +29,13 @@ public class ParentsMapper {
                 .classCount(request.classCount())
                 .classTime(request.classTime())
                 .source(request.source())
+                .build();
+    }
+
+    public static Goal mapToGoal(ApplicationForm applicationForm, String classGoal) {
+        return Goal.builder()
+                .applicationForm(applicationForm)
+                .classGoal(classGoal)
                 .build();
     }
 }
