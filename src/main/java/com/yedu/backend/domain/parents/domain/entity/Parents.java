@@ -39,4 +39,9 @@ public class Parents extends BaseEntity {
     public void updateCount() {
         this.count++;
     }
+
+    public void updateDistrict(District district, String dong) {
+        this.district = district;
+        this.dong = dong;
+    }
 }
