@@ -10,7 +10,6 @@ import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.Parents;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +41,7 @@ public class AdminInfoUseCase {
 
     public CommonParentsResponse getParentsInfo(String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        Parents parents = applicationForm.getParents();
-        return mapToCommonParentsResponse(parents);
+        return mapToCommonParentsResponse(applicationForm);
     }
 
     public AllAlarmTalkResponse getAlarmTalkInfo(String applicationFormId) {

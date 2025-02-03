@@ -30,12 +30,13 @@ public class AdminMapper {
         );
     }
 
-    public static CommonParentsResponse mapToCommonParentsResponse(Parents parents) {
-        String parentsCode = parents.getDistrict().toString() + parents.getParentsId();
+    public static CommonParentsResponse mapToCommonParentsResponse(ApplicationForm applicationForm) {
+        Parents parents = applicationForm.getParents();
         String kakaoName = Optional.ofNullable(parents.getKakaoName()).orElse(null);
         return new CommonParentsResponse(
                 parents.getParentsId(),
-                parentsCode,
+                applicationForm.getApplicationFormId(),
+                applicationForm.getWantedSubject().name(),
                 kakaoName,
                 parents.getPhoneNumber()
         );
