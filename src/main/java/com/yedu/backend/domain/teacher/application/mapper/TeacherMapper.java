@@ -14,16 +14,14 @@ import java.util.Map;
 
 public class TeacherMapper {
     public static TeacherInfo mapToTeacherInfo(TeacherInfoFormRequest request) {
-        TeacherInfo.TeacherInfoBuilder builder = TeacherInfo.builder()
+        return TeacherInfo.builder()
                 .name(request.name())
                 .nickName(request.nickName())
                 .email(request.email())
                 .phoneNumber(request.phoneNumber())
                 .birth(request.birth())
-                .gender(false);
-        if (request.gender().equals("남"))
-            builder.gender(true);
-        return builder.build();
+                .gender(request.gender())
+                .build();
     }
 
     public static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoFormRequest request) {

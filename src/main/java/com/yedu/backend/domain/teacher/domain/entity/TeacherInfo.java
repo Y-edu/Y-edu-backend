@@ -1,7 +1,10 @@
 package com.yedu.backend.domain.teacher.domain.entity;
 
+import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +28,8 @@ public class TeacherInfo {
     @Column(nullable = false)
     private String birth;
     @Column(nullable = false)
-    private boolean gender; //T : 남 / F : 여
+    @Enumerated(EnumType.STRING)
+    private TeacherGender gender; //T : 남 / F : 여
 
     private String profile; //프로필 사진
     private String video; // 과외 영상
