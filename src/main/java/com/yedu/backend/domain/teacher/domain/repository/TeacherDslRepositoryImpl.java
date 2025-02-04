@@ -1,7 +1,9 @@
 package com.yedu.backend.domain.teacher.domain.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
@@ -10,6 +12,7 @@ import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
+import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -74,6 +77,10 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .fetchJoin()
                 .on(teacher.eq(teacherDistrict.teacher))
                 .where(builder) // 동적 조건 적용
+                .orderBy(
+                        statusOrderSpecifier(),
+                        universityOrderSpecifier()
+                )
                 .fetch();
     }
 
@@ -166,5 +173,29 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 })
                 .reduce(BooleanExpression::or)
                 .orElse(null);
+    }
+
+    // status를 "활동중", "등록중", "일시정지", "종료" 순으로 정렬하는 OrderSpecifier 생성
+    private OrderSpecifier<Integer> statusOrderSpecifier() {
+        return new CaseBuilder()
+                .when(teacher.status.eq(TeacherStatus.활동중)).then(1)
+                .when(teacher.status.eq(TeacherStatus.등록중)).then(2)
+                .when(teacher.status.eq(TeacherStatus.일시정지)).then(3)
+                .when(teacher.status.eq(TeacherStatus.종료)).then(4)
+                .otherwise(5)
+                .asc();
+    }
+
+    // university를 "서울대학교", "연세대학교 신촌/국제캠퍼스", "고려대학교 서울캠퍼스", "서강대학교", "성균관대학교", "한양대학교 서울캠퍼스" 순으로 정렬하는 OrderSpecifier 생성
+    private OrderSpecifier<Integer> universityOrderSpecifier() {
+        return new CaseBuilder()
+                .when(teacher.teacherSchoolInfo.university.eq("서울대학교")).then(1)
+                .when(teacher.teacherSchoolInfo.university.eq("연세대학교 신촌/국제캠퍼스")).then(2)
+                .when(teacher.teacherSchoolInfo.university.eq("고려대학교 서울캠퍼스")).then(3)
+                .when(teacher.teacherSchoolInfo.university.eq("서강대학교")).then(4)
+                .when(teacher.teacherSchoolInfo.university.eq("성균관대학교")).then(5)
+                .when(teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스")).then(6)
+                .otherwise(7) // 그 외의 경우는 가장 뒤로 정렬
+                .asc(); // 오름차순 정렬
     }
 }
