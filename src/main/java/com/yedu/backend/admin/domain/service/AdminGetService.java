@@ -5,7 +5,7 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
-import com.yedu.backend.domain.parents.domain.repository.ClassMatchingRepository;
+import com.yedu.backend.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
 import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
 import lombok.RequiredArgsConstructor;

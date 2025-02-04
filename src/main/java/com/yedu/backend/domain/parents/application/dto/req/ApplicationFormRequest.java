@@ -1,4 +1,4 @@
-package com.yedu.backend.domain.parents.domain.application.dto.req;
+package com.yedu.backend.domain.parents.application.dto.req;
 
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
