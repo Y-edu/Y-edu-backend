@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
+import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
 import com.yedu.backend.domain.teacher.domain.entity.*;
@@ -78,5 +79,11 @@ public class TeacherManageUseCase {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateProfile(teacher, profileUrl);
+    }
+
+    public List<Teacher> sendAlarmTalk(ApplicationForm applicationForm) {
+        List<Teacher> teachers = teacherGetService.applicationFormTeachers(applicationForm);
+        teachers.forEach(teacherUpdateService::updateAlertCount); //todo : 알림톡 전송 추가
+        return teachers;
     }
 }

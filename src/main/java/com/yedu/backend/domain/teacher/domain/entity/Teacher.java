@@ -54,4 +54,8 @@ public class Teacher extends BaseEntity {
     public void updateProfile(String profile) {
         teacherInfo.updateProfile(profile);
     }
+
+    public void updateMessageCount() {
+        this.alertMessageCount++;
+    }
 }
