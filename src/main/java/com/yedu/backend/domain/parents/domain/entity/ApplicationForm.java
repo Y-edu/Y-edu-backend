@@ -24,16 +24,21 @@ public class ApplicationForm extends BaseEntity {
     @Column(nullable = false)
     private String age; // 아이나이
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Online online; // 대면 비대면
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClassType wantedSubject; // 수학 혹은 영어
+    @Enumerated(EnumType.STRING)
     private Level level;
     @Column(columnDefinition = "TEXT")
     private String favoriteCondition; // 원하는 선생님 요건
+    @Enumerated(EnumType.STRING)
     private Level educationImportance; // 학벌 중요도
     @Column(nullable = false, columnDefinition = "TEXT")
     private String favoriteStyle; //선생님 스타일
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender favoriteGender;
     @Column(columnDefinition = "TEXT")
     private String favoriteDirection; //수업 방향성

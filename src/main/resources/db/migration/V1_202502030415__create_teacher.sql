@@ -1,6 +1,6 @@
 create table if not exists yedu.parents
 (
-    parents_id      bigint auto_increment                                                                                                                                                                                                                                 not null
+    parents_id      bigint auto_increment
     primary key,
     created_at      datetime(6)                                                                                                                                                                                                                                  null,
     updated_at      datetime(6)                                                                                                                                                                                                                                  null,
@@ -15,25 +15,25 @@ create table if not exists yedu.parents
 
 create table if not exists yedu.application_form
 (
-    application_form_id  varchar(255) not null
+    application_form_id  varchar(255)            not null
     primary key,
-    created_at           datetime(6)  null,
-    updated_at           datetime(6)  null,
-    age                  varchar(255) not null,
-    class_count          varchar(255) not null,
-    class_time           varchar(255) not null,
-    education_importance tinyint      null,
-    favorite_condition   text         null,
-    favorite_direction   text         null,
-    favorite_gender      tinyint      not null,
-    favorite_style       text         not null,
-    level                tinyint      null,
-    online               tinyint      not null,
-    proceed_status       bit          not null,
-    source               varchar(255) null,
-    want_time            varchar(90)  not null,
-    wanted_subject       tinyint      not null,
-    parents_parents_id   bigint       null,
+    created_at           datetime(6)             null,
+    updated_at           datetime(6)             null,
+    age                  varchar(255)            not null,
+    class_count          varchar(255)            not null,
+    class_time           varchar(255)            not null,
+    education_importance enum ('상', '중', '하')    null,
+    favorite_condition   text                    null,
+    favorite_direction   text                    null,
+    favorite_gender      enum ('남', '녀', '상관없음') not null,
+    favorite_style       text                    not null,
+    level                enum ('상', '중', '하')    null,
+    online               enum ('대면', '비대면')      not null,
+    proceed_status       bit                     not null,
+    source               varchar(255)            null,
+    want_time            varchar(90)             not null,
+    wanted_subject       enum ('수학', '영어')       not null,
+    parents_parents_id   bigint                  null,
     constraint FKaxjocxw0tipdk2dds4oyj10vx
     foreign key (parents_parents_id) references yedu.parents (parents_id)
     );
@@ -169,3 +169,4 @@ create table if not exists yedu.teacher_math
     constraint FK84pjet9p2vlfubiqi89dg6uah
     foreign key (teacher_teacher_id) references yedu.teacher (teacher_id)
     );
+
