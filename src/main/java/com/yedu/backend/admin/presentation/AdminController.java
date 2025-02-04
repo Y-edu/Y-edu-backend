@@ -1,6 +1,7 @@
 package com.yedu.backend.admin.presentation;
 
 import com.yedu.backend.admin.application.dto.req.ParentsKakaoNameRequest;
+import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
 import com.yedu.backend.admin.application.dto.res.*;
 import com.yedu.backend.admin.application.usecase.AdminInfoUseCase;
@@ -35,6 +36,12 @@ public class AdminController {
     @PutMapping("/details/matching/parents/{parentsId}")
     public ResponseEntity updateProceed(@PathVariable long parentsId, @RequestBody ParentsKakaoNameRequest request) {
         adminManageUseCase.updateParentsKakaoName(parentsId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/teacher/issue/{teacherId}")
+    public ResponseEntity updateTeacherIssue(@PathVariable long teacherId, @RequestBody TeacherIssueRequest request) {
+        adminManageUseCase.updateTeacherIssue(teacherId, request);
         return ResponseEntity.ok().build();
     }
 

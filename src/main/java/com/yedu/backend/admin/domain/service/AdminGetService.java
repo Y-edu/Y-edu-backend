@@ -55,6 +55,11 @@ public class AdminGetService {
         return teacherRepository.findAllSearchTeacher(teacherSearchRequest);
     }
 
+    public Teacher teacherById(long teacherId) {
+        return teacherRepository.findById(teacherId)
+                .orElseThrow();
+    }
+
     public List<TeacherDistrict> allDistrictByTeacher(Teacher teacher) {
         return teacherDistrictRepository.findAllByTeacher(teacher);
     }

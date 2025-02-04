@@ -56,4 +56,7 @@ public class Teacher extends BaseEntity {
     public void updateMessageCount() {
         this.alertMessageCount++;
     }
+    public void updateIssue(String issue) {
+        this.issue = issue;
+    }
 }
