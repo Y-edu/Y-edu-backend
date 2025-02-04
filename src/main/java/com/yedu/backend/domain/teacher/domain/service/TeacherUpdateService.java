@@ -8,4 +8,7 @@ public class TeacherUpdateService {
     public void updateProfile(Teacher teacher, String profile) {
         teacher.updateProfile(profile);
     }
+    public void updateAlertCount(Teacher teacher) {
+        teacher.updateMessageCount();;
+    }
 }

@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.domain.service;
 
+import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +43,9 @@ public class TeacherGetService {
 
     public List<TeacherDistrict> districtsByTeacher(Teacher teacher) {
         return districtRepository.findAllByTeacher(teacher);
+    }
+
+    public List<Teacher> applicationFormTeachers(ApplicationForm applicationForm) {
+        return teacherRepository.findAllMatchingApplicationForm(applicationForm);
     }
 }

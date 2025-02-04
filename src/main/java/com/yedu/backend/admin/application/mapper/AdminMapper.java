@@ -2,14 +2,19 @@ package com.yedu.backend.admin.application.mapper;
 
 import com.yedu.backend.admin.application.dto.res.AllAlarmTalkResponse.AlarmTalkResponse;
 import com.yedu.backend.admin.application.dto.res.AllApplicationResponse.ApplicationResponse;
+import com.yedu.backend.admin.application.dto.res.AllFilteringTeacher.FilteringTeacher;
 import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
+import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.entity.TeacherClassInfo;
+import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;
+import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +53,7 @@ public class AdminMapper {
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = Optional.ofNullable(classMatching.getRefuseReason()).orElse(null);
         return new AlarmTalkResponse(
-                classMatching.getClassMatching(),
+                classMatching.getClassMatchingId(),
                 classMatching.getMatchStatus(),
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
@@ -91,10 +96,33 @@ public class AdminMapper {
                 applicationForm.getWantedSubject(),
                 applicationForm.getOnline(),
                 applicationForm.getFavoriteGender(),
-                applicationForm.getParents().getDistrict(),
-                applicationForm.getParents().getDong(),
+                applicationForm.getDistrict(),
+                applicationForm.getDong(),
                 goals,
                 applicationForm.getFavoriteStyle()
+        );
+    }
+
+    public static FilteringTeacher mapToAllFilteringTeacherResponse(Teacher teacher, List<District> districts) {
+        TeacherInfo teacherInfo = teacher.getTeacherInfo();
+        TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
+        List<ClassType> classTypes = new ArrayList<>();
+        if (classInfo.isEnglishPossible())
+            classTypes.add(ClassType.영어);
+        if (classInfo.isMathPossible())
+            classTypes.add(ClassType.수학);
+
+        return new FilteringTeacher(
+                teacher.getTeacherId(),
+                teacherInfo.getNickName(),
+                classTypes,
+                teacherInfo.getName(),
+                teacher.getStatus(),
+                0,
+                0,
+                teacher.getTeacherSchoolInfo().getUniversity(),
+                districts,
+                teacher.getIssue()
         );
     }
 }

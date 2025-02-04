@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class ClassMatching extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long classMatching;
+    private long classMatchingId;
     @ManyToOne(fetch = FetchType.LAZY)
     private Teacher teacher;
     @ManyToOne(fetch = FetchType.LAZY)

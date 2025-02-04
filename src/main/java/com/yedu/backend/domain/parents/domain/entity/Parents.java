@@ -1,6 +1,5 @@
 package com.yedu.backend.domain.parents.domain.entity;
 
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,11 +21,6 @@ public class Parents extends BaseEntity {
     private String kakaoName;
     @Column(nullable = false)
     private String phoneNumber;
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private District district;
-    @Column(nullable = false)
-    private String dong;
     @Column(nullable = false)
     private int totalPayment;
     @Builder.Default
@@ -35,13 +29,7 @@ public class Parents extends BaseEntity {
     public void updateKakaoName(String kakaoName) {
         this.kakaoName = kakaoName;
     }
-
     public void updateCount() {
         this.count++;
-    }
-
-    public void updateDistrict(District district, String dong) {
-        this.district = district;
-        this.dong = dong;
     }
 }

@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus.PENDING;
-
 @Entity
 @Getter
 @Builder
@@ -32,7 +30,7 @@ public class Teacher extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private TeacherStatus status = PENDING; //활동 상태 (관리자 수락 대기)
+    private TeacherStatus status = TeacherStatus.등록중; //활동 상태 (관리자 수락 대기)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private TeacherGrade grade = TeacherGrade.STANDARD; //등급
@@ -53,5 +51,12 @@ public class Teacher extends BaseEntity {
 
     public void updateProfile(String profile) {
         teacherInfo.updateProfile(profile);
+    }
+
+    public void updateMessageCount() {
+        this.alertMessageCount++;
+    }
+    public void updateIssue(String issue) {
+        this.issue = issue;
     }
 }

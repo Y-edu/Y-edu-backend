@@ -4,6 +4,7 @@ import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Level;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
+import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplicationForm extends BaseEntity {
     @Id
-    private String applicationFormId; // 학부모 식별코드 + 학부모 횟수(a~z)
+    private String applicationFormId; // 지역구 + 학부모PK + 학부모 횟수(a~z)
     @ManyToOne(fetch = FetchType.LAZY)
     private Parents parents;
     @Column(nullable = false)
@@ -26,6 +27,11 @@ public class ApplicationForm extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Online online; // 대면 비대면
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private District district;
+    @Column(nullable = false)
+    private String dong;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ClassType wantedSubject; // 수학 혹은 영어
