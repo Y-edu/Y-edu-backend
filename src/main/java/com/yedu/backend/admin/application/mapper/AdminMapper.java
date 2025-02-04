@@ -6,7 +6,6 @@ import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 
@@ -91,8 +90,8 @@ public class AdminMapper {
                 applicationForm.getWantedSubject(),
                 applicationForm.getOnline(),
                 applicationForm.getFavoriteGender(),
-                applicationForm.getParents().getDistrict(),
-                applicationForm.getParents().getDong(),
+                applicationForm.getDistrict(),
+                applicationForm.getDong(),
                 goals,
                 applicationForm.getFavoriteStyle()
         );
