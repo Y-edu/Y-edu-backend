@@ -5,8 +5,6 @@ create table if not exists yedu.parents
     created_at      datetime(6)                                                                                                                                                                                                                                  null,
     updated_at      datetime(6)                                                                                                                                                                                                                                  null,
     count           int                                                                                                                                                                                                                                          not null,
-    district        enum ('ERROR', '강남구', '강동구', '강북구', '강서구', '경기지역', '고양', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '분당', '서대문구', '서초구', '성동구', '성북구', '송파구', '안양', '양천구', '영등포구', '온라인', '용산구', '용인', '은평구', '인천', '종로구', '중구', '중랑구') not null,
-    dong            varchar(255)                                                                                                                                                                                                                                 not null,
     kakao_name      varchar(255)                                                                                                                                                                                                                                 null,
     marketing_agree bit                                                                                                                                                                                                                                          not null,
     phone_number    varchar(255)                                                                                                                                                                                                                                 not null,
@@ -25,10 +23,12 @@ create table if not exists yedu.application_form
     education_importance enum ('상', '중', '하')    null,
     favorite_condition   text                    null,
     favorite_direction   text                    null,
-    favorite_gender      enum ('남', '녀', '상관없음') not null,
+    favorite_gender      enum ('남', '여', '상관없음') not null,
     favorite_style       text                    not null,
     level                enum ('상', '중', '하')    null,
     online               enum ('대면', '비대면')      not null,
+    district        enum ('ERROR', '강남구', '강동구', '강북구', '강서구', '경기지역', '고양', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '분당', '서대문구', '서초구', '성동구', '성북구', '송파구', '안양', '양천구', '영등포구', '온라인', '용산구', '용인', '은평구', '인천', '종로구', '중구', '중랑구') not null,
+    dong            varchar(255)                                                                                                                                                                                                                                 not null,
     proceed_status       bit                     not null,
     source               varchar(255)            null,
     want_time            varchar(90)             not null,
@@ -75,7 +75,7 @@ create table if not exists yedu.teacher
     response_rate        double                                                                                       not null,
     response_time        double                                                                                       not null,
     source               varchar(255)                                                                                 not null,
-    status               enum ('ACTIVE', 'PAUSED', 'PENDING', 'TERMINATED')                                           null,
+    status               enum ('등록중', '활동중', '일시정지', '종료')                                           null,
     comment              text                                                                                         not null,
     english_possible     bit                                                                                          not null,
     introduce            text                                                                                         not null,
@@ -104,7 +104,7 @@ create table if not exists yedu.teacher
 
 create table if not exists yedu.class_matching
 (
-    class_matching                       bigint auto_increment
+    class_matching_id                      bigint auto_increment
     primary key,
     created_at                           datetime(6)                   null,
     updated_at                           datetime(6)                   null,
