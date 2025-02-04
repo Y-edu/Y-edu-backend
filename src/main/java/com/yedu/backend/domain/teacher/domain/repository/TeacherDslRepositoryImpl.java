@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 
+import static com.querydsl.core.types.dsl.Expressions.TRUE;
 import static com.yedu.backend.domain.teacher.domain.entity.QTeacher.teacher;
 import static com.yedu.backend.domain.teacher.domain.entity.QTeacherDistrict.teacherDistrict;
 
@@ -48,7 +49,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
 
     private BooleanExpression genderSpecifier(Gender favoriteGender) {
         if (favoriteGender == Gender.상관없음)
-            return null;
+            return TRUE;
         return favoriteGender == Gender.남
                 ? teacher.teacherInfo.gender.eq(TeacherGender.남)
                 : teacher.teacherInfo.gender.eq(TeacherGender.여);
@@ -101,29 +102,29 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
 
     private BooleanExpression genderSpecifier(List<TeacherGender> genders) {
         if (genders == null || genders.isEmpty()) {
-            return null; // where() 절에서 무시됨
+            return TRUE; // where() 절에서 무시됨
         }
 
         return genders.stream()
                 .map(teacher.teacherInfo.gender::eq)
                 .reduce(BooleanExpression::or)
-                .orElse(null);
+                .orElse(TRUE);
     }
 
     private BooleanExpression districtSpecifier(List<String> districts) {
         if (districts == null || districts.isEmpty()) {
-            return null; // where() 절에서 무시됨
+            return TRUE; // where() 절에서 무시됨
         }
 
         return districts.stream()
                 .map(district -> teacherDistrict.district.eq(District.fromString(district)))
                 .reduce(BooleanExpression::or)
-                .orElse(null);
+                .orElse(TRUE);
     }
 
     private BooleanExpression subjectSpecifier(List<ClassType> subjects) {
         if (subjects == null || subjects.isEmpty()) {
-            return null;
+            return TRUE;
         }
 
         return subjects.stream()
@@ -136,18 +137,18 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 })
                 .filter(Objects::nonNull)
                 .reduce(BooleanExpression::or)
-                .orElse(null);
+                .orElse(TRUE);
     }
 
     private BooleanExpression subjectSpecifier(String search) {
         if (search == null) {
-            return null;
+            return TRUE;
         }
         if (search.equals(ClassType.수학.name()))
             return teacher.teacherClassInfo.mathPossible.isTrue();
         if (search.equals(ClassType.영어.name()))
             return teacher.teacherClassInfo.englishPossible.isTrue();
-        return null;
+        return TRUE;
     }
 
     private BooleanExpression universitySpecifier(List<String> universities) {
@@ -169,10 +170,10 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                         return teacher.teacherSchoolInfo.university.eq("성균관대학교");
                     if (university.equals("한양"))
                         return teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스");
-                    return null;
+                    return TRUE;
                 })
                 .reduce(BooleanExpression::or)
-                .orElse(null);
+                .orElse(TRUE);
     }
 
     // status를 "활동중", "등록중", "일시정지", "종료" 순으로 정렬하는 OrderSpecifier 생성
@@ -182,7 +183,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .when(teacher.status.eq(TeacherStatus.등록중)).then(2)
                 .when(teacher.status.eq(TeacherStatus.일시정지)).then(3)
                 .when(teacher.status.eq(TeacherStatus.종료)).then(4)
-                .otherwise(5)
+                .otherwise(Integer.MAX_VALUE)
                 .asc();
     }
 
@@ -195,7 +196,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .when(teacher.teacherSchoolInfo.university.eq("서강대학교")).then(4)
                 .when(teacher.teacherSchoolInfo.university.eq("성균관대학교")).then(5)
                 .when(teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스")).then(6)
-                .otherwise(7) // 그 외의 경우는 가장 뒤로 정렬
+                .otherwise(Integer.MAX_VALUE) // 그 외의 경우는 가장 뒤로 정렬
                 .asc(); // 오름차순 정렬
     }
 }
