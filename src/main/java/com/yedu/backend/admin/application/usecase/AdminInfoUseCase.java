@@ -1,16 +1,17 @@
 package com.yedu.backend.admin.application.usecase;
 
-import com.yedu.backend.admin.application.dto.res.AllAlarmTalkResponse;
+import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
+import com.yedu.backend.admin.application.dto.res.*;
 import com.yedu.backend.admin.application.dto.res.AllAlarmTalkResponse.AlarmTalkResponse;
-import com.yedu.backend.admin.application.dto.res.AllApplicationResponse;
-import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
-import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.admin.application.mapper.AdminMapper;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
+import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
+import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,5 +67,18 @@ public class AdminInfoUseCase {
                 .map(Goal::getClassGoal)
                 .toList();
         return mapToClassDetailsResponse(applicationForm, classGoals);
+    }
+
+    public AllFilteringTeacher searchAllTeacher(TeacherSearchRequest request) {
+        List<Teacher> teachers = adminGetService.allTeacherBySearch(request);
+        return  new AllFilteringTeacher(teachers.stream()
+                .map(teacher -> {
+                    List<TeacherDistrict> teacherDistricts = adminGetService.allDistrictByTeacher(teacher);
+                    List<District> districts = teacherDistricts.stream()
+                            .map(TeacherDistrict::getDistrict)
+                            .toList();
+                    return mapToAllFilteringTeacherResponse(teacher, districts);
+                })
+                .toList());
     }
 }
