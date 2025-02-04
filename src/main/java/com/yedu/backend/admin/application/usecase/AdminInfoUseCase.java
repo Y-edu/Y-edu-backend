@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.yedu.backend.admin.application.mapper.AdminMapper.*;
@@ -54,7 +54,7 @@ public class AdminInfoUseCase {
         int accept = (int)classMatchings.stream()
                 .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
                 .count();
-        int time = (int)Duration.between(applicationForm.getCreatedAt().toLocalTime(), LocalTime.now())
+        int time = (int)Duration.between(applicationForm.getCreatedAt(), LocalDateTime.now())
                 .toMinutes();
         return new AllAlarmTalkResponse(accept, classMatchings.size(), time, alarmTalkResponses);
     }
