@@ -47,7 +47,7 @@ public class AdminMapper {
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = Optional.ofNullable(classMatching.getRefuseReason()).orElse(null);
         return new AlarmTalkResponse(
-                classMatching.getClassMatching(),
+                classMatching.getClassMatchingId(),
                 classMatching.getMatchStatus(),
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
