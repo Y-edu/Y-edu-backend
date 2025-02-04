@@ -1,4 +1,4 @@
-package com.yedu.backend.domain.parents.domain.repository;
+package com.yedu.backend.domain.matching.domain.repository;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;

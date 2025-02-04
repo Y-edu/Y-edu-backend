@@ -1,7 +1,7 @@
 package com.yedu.backend.domain.parents.presentation;
 
-import com.yedu.backend.domain.parents.domain.application.dto.req.ApplicationFormRequest;
-import com.yedu.backend.domain.parents.domain.application.usecase.ParentsManageUseCase;
+import com.yedu.backend.domain.parents.application.dto.req.ApplicationFormRequest;
+import com.yedu.backend.domain.parents.application.usecase.ParentsManageUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

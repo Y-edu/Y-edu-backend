@@ -1,6 +1,6 @@
-package com.yedu.backend.domain.parents.domain.application.mapper;
+package com.yedu.backend.domain.parents.application.mapper;
 
-import com.yedu.backend.domain.parents.domain.application.dto.req.ApplicationFormRequest;
+import com.yedu.backend.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
