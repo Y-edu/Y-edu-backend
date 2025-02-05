@@ -32,10 +32,10 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 if (request.getRequestURI().contains("/regenerate")) {
                     log.info("재발급 진행");
-                    jwtProvider.validateToken(response, token, REFRESH);
+                    jwtProvider.validateToken(token, REFRESH);
                 } else {
                     log.info("일반 접근");
-                    jwtProvider.validateToken(response, token, ACCESS);
+                    jwtProvider.validateToken(token, ACCESS);
                 }
                 Authentication authentication = jwtProvider.getAuthentication(response, token);
                 log.info("authentication : {}", authentication.getName());
