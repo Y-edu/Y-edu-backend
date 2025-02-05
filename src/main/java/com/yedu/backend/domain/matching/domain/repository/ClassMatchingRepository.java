@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface ClassMatchingRepository extends JpaRepository<ClassMatching, Long> {
     List<ClassMatching> findAllByApplicationForm(ApplicationForm applicationForm);
-    Optional<ClassMatching> findByApplicationForm_ApplicationFormIdAndTeacher_TeacherId(String applicationFormId, long teacherId);
+    Optional<ClassMatching> findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(String applicationFormId, long teacherId, String phoneNumber);
 }

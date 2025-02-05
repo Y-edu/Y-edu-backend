@@ -1,6 +1,6 @@
 package com.yedu.backend.domain.matching.application.mapper;
 
-import com.yedu.backend.domain.matching.application.dto.res.ApplicationFormToTeacherResponse;
+import com.yedu.backend.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
@@ -15,8 +15,8 @@ public class ClassMatchingMapper {
                 .build();
     }
 
-    public static ApplicationFormToTeacherResponse mapToApplicationFormToTeacherResponse(ApplicationForm applicationForm, List<String> goals) {
-        return new ApplicationFormToTeacherResponse(
+    public static ClassMatchingForTeacherResponse mapToApplicationFormToTeacherResponse(ApplicationForm applicationForm, List<String> goals) {
+        return new ClassMatchingForTeacherResponse(
                 applicationForm.getApplicationFormId(),
                 applicationForm.getWantedSubject(),
                 applicationForm.getAge(),

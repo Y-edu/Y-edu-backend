@@ -5,7 +5,7 @@ import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 
 import java.util.List;
 
-public record ApplicationFormToTeacherResponse(
+public record ClassMatchingForTeacherResponse(
         String applicationFormId,
         ClassType classType,
         String age,

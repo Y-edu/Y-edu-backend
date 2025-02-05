@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class ClassMatchingGetService {
     private final ClassMatchingRepository classMatchingRepository;
 
-    public ClassMatching classMatchingByApplicationFormIdAndTeacherId(String applicationFormId, long teacherId) {
-        return classMatchingRepository.findByApplicationForm_ApplicationFormIdAndTeacher_TeacherId(applicationFormId, teacherId)
+    public ClassMatching classMatchingByApplicationFormIdAndTeacherId(String applicationFormId, long teacherId, String phoneNumber) {
+        return classMatchingRepository.findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(applicationFormId, teacherId, phoneNumber)
                 .orElseThrow();
     }
 }
