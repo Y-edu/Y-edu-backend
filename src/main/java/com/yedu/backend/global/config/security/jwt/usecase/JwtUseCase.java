@@ -62,8 +62,6 @@ public class JwtUseCase {
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge(refreshExpiration);
         response.addCookie(refreshCookie);
-
-        log.info("refreshTOkne : {}", refreshToken);
     }
 
     private void deleteCookie(HttpServletResponse response) {

@@ -85,23 +85,18 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
         adminManageUseCase.loginAdmin(request, httpServletResponse);
-        log.info("여긴 잘되나");
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(@AuthenticationPrincipal Admin admin, HttpServletResponse response) {
-        log.info("??");
         adminManageUseCase.logout(admin, response);
-        log.info("!!");
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/regenerate")
     public ResponseEntity regenerate(@AuthenticationPrincipal Admin admin, HttpServletResponse response, HttpServletRequest request) {
-        log.info("??");
         adminManageUseCase.regenerate(admin, request, response);
-        log.info("!!");
         return ResponseEntity.ok().build();
     }
 }

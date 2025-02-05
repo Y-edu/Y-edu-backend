@@ -57,7 +57,6 @@ public class AdminManageUseCase {
     }
 
     public void regenerate(Admin admin, HttpServletRequest request, HttpServletResponse response) {
-        log.info("AdminManageUsecase");
         jwtUseCase.regenerateToken(admin, request, response);
     }
 }
