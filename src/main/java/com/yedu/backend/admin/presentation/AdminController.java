@@ -99,4 +99,11 @@ public class AdminController {
         adminManageUseCase.regenerate(admin, request, response);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/test")
+    public ResponseEntity test(@AuthenticationPrincipal Admin admin) {
+        if (admin == null)
+            throw new IllegalArgumentException();
+        return ResponseEntity.ok("인증에 성공하였습니다.");
+    }
 }

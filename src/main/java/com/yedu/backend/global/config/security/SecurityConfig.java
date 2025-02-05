@@ -1,5 +1,6 @@
 package com.yedu.backend.global.config.security;
 
+import com.yedu.backend.global.config.security.jwt.constant.Role;
 import com.yedu.backend.global.config.security.jwt.filter.CustomAccessDeniedHandler;
 import com.yedu.backend.global.config.security.jwt.filter.CustomAuthenticationEntryPoint;
 import com.yedu.backend.global.config.security.jwt.filter.JwtFilter;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable());
         http
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/admin/test").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
