@@ -29,4 +29,19 @@ public class ClassMatching extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MatchingStatus matchStatus = MatchingStatus.대기;
     private String refuseReason;
+
+    public boolean isWaiting() {
+        return matchStatus == MatchingStatus.대기;
+    }
+
+    public void updateRefuse(String refuseReason) {
+        this.matchStatus = MatchingStatus.거절;
+        this.refuseReason = refuseReason;
+        this.response = true;
+    }
+
+    public void updateAccept() {
+        this.matchStatus = MatchingStatus.수락;
+        this.response = true;
+    }
 }
