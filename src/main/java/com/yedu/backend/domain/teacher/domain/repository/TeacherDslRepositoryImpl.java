@@ -111,13 +111,13 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .orElse(TRUE);
     }
 
-    private BooleanExpression districtSpecifier(List<District> districts) {
+    private BooleanExpression districtSpecifier(List<String> districts) {
         if (districts == null || districts.isEmpty()) {
             return TRUE; // where() 절에서 무시됨
         }
 
         return districts.stream()
-                .map(teacherDistrict.district::eq)
+                .map(district -> teacherDistrict.district.eq(District.fromString(district)))
                 .reduce(BooleanExpression::or)
                 .orElse(TRUE);
     }
