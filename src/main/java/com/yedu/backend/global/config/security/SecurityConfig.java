@@ -74,7 +74,7 @@ public class SecurityConfig {
         configuration.addExposedHeader("Authorization");
 
         // 허용할 프론트엔드 도메인 설정 (여기에 실제 프론트엔드 URL을 입력)
-        configuration.setAllowedOrigins(List.of("https://y-edu-class.com", "https://develop.d22frnw7yy0hnv.amplifyapp.com", "https://dev.yedu-develop.com", "http://localhost:8080", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("https://y-edu-class.com", "https://develop.d22frnw7yy0hnv.amplifyapp.com", "https://dev.yedu-develop.com:8181", "http://localhost:8080", "http://localhost:3000"));
 
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
