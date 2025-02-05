@@ -102,29 +102,29 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
 
     private BooleanExpression genderSpecifier(List<TeacherGender> genders) {
         if (genders == null || genders.isEmpty()) {
-            return TRUE; // where() 절에서 무시됨
+            return null; // where() 절에서 무시됨
         }
 
         return genders.stream()
                 .map(teacher.teacherInfo.gender::eq)
                 .reduce(BooleanExpression::or)
-                .orElse(TRUE);
+                .orElse(null);
     }
 
     private BooleanExpression districtSpecifier(List<String> districts) {
         if (districts == null || districts.isEmpty()) {
-            return TRUE; // where() 절에서 무시됨
+            return null; // where() 절에서 무시됨
         }
 
         return districts.stream()
                 .map(district -> teacherDistrict.district.eq(District.fromString(district)))
                 .reduce(BooleanExpression::or)
-                .orElse(TRUE);
+                .orElse(null);
     }
 
     private BooleanExpression subjectSpecifier(List<ClassType> subjects) {
         if (subjects == null || subjects.isEmpty()) {
-            return TRUE;
+            return null;
         }
 
         return subjects.stream()
@@ -137,18 +137,18 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 })
                 .filter(Objects::nonNull)
                 .reduce(BooleanExpression::or)
-                .orElse(TRUE);
+                .orElse(null);
     }
 
     private BooleanExpression subjectSpecifier(String search) {
         if (search == null) {
-            return TRUE;
+            return null;
         }
         if (search.equals(ClassType.수학.name()))
             return teacher.teacherClassInfo.mathPossible.isTrue();
         if (search.equals(ClassType.영어.name()))
             return teacher.teacherClassInfo.englishPossible.isTrue();
-        return TRUE;
+        return null;
     }
 
     private BooleanExpression universitySpecifier(List<String> universities) {
@@ -170,10 +170,10 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                         return teacher.teacherSchoolInfo.university.eq("성균관대학교");
                     if (university.equals("한양"))
                         return teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스");
-                    return TRUE;
+                    return null;
                 })
                 .reduce(BooleanExpression::or)
-                .orElse(TRUE);
+                .orElse(null);
     }
 
     // status를 "활동중", "등록중", "일시정지", "종료" 순으로 정렬하는 OrderSpecifier 생성
