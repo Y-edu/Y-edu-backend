@@ -1,6 +1,8 @@
 package com.yedu.backend.admin.domain.service;
 
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
+import com.yedu.backend.admin.domain.entity.Admin;
+import com.yedu.backend.admin.domain.repository.AdminRepository;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
@@ -28,6 +30,7 @@ public class AdminGetService {
     private final ParentsRepository parentsRepository;
     private final TeacherRepository teacherRepository;
     private final TeacherDistrictRepository teacherDistrictRepository;
+    private final AdminRepository adminRepository;
 
     public Parents parentsById(Long parentsId) {
         return parentsRepository.findById(parentsId)
@@ -62,5 +65,10 @@ public class AdminGetService {
 
     public List<TeacherDistrict> allDistrictByTeacher(Teacher teacher) {
         return teacherDistrictRepository.findAllByTeacher(teacher);
+    }
+
+    public Admin adminByLoginId(String id) {
+        return adminRepository.findByLoginId(id)
+                .orElseThrow();
     }
 }
