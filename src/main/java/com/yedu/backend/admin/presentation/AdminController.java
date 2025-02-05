@@ -7,6 +7,7 @@ import com.yedu.backend.admin.application.dto.res.*;
 import com.yedu.backend.admin.application.usecase.AdminInfoUseCase;
 import com.yedu.backend.admin.application.usecase.AdminManageUseCase;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class AdminController {
 
     @GetMapping("/details/matching/search")
     public ResponseEntity<AllFilteringTeacher> searchTeachers(
-            @RequestParam(required = false) List<String> districts,
+            @RequestParam(required = false) List<District> districts,
             @RequestParam(required = false) List<ClassType> subjects,
             @RequestParam(required = false) List<String> universities,
             @RequestParam(required = false) List<TeacherGender> genders,
