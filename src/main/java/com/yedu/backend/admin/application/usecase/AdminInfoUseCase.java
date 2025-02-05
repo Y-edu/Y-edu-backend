@@ -11,7 +11,6 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,8 +73,8 @@ public class AdminInfoUseCase {
         return  new AllFilteringTeacher(teachers.stream()
                 .map(teacher -> {
                     List<TeacherDistrict> teacherDistricts = adminGetService.allDistrictByTeacher(teacher);
-                    List<District> districts = teacherDistricts.stream()
-                            .map(TeacherDistrict::getDistrict)
+                    List<String> districts = teacherDistricts.stream()
+                            .map(teacherDistrict -> teacherDistrict.getDistrict().getDescription())
                             .toList();
                     return mapToAllFilteringTeacherResponse(teacher, districts);
                 })

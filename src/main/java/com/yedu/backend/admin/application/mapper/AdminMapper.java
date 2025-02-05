@@ -12,7 +12,6 @@ import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherClassInfo;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +102,7 @@ public class AdminMapper {
         );
     }
 
-    public static FilteringTeacher mapToAllFilteringTeacherResponse(Teacher teacher, List<District> districts) {
+    public static FilteringTeacher mapToAllFilteringTeacherResponse(Teacher teacher, List<String> districts) {
         TeacherInfo teacherInfo = teacher.getTeacherInfo();
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         List<ClassType> classTypes = new ArrayList<>();

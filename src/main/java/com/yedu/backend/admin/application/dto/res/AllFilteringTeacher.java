@@ -1,7 +1,6 @@
 package com.yedu.backend.admin.application.dto.res;
 
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public record AllFilteringTeacher(
         int accept,
         int total,
         String university,
-        List<District> districts,
+        List<String> districts,
         String issue
         ){}
 }
