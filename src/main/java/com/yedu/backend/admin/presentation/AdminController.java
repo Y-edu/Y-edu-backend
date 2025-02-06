@@ -1,10 +1,8 @@
 package com.yedu.backend.admin.presentation;
 
-import com.yedu.backend.admin.application.dto.req.LoginRequest;
-import com.yedu.backend.admin.application.dto.req.ParentsKakaoNameRequest;
-import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
-import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
+import com.yedu.backend.admin.application.dto.req.*;
 import com.yedu.backend.admin.application.dto.res.*;
+import com.yedu.backend.admin.application.usecase.AdminAuthUseCase;
 import com.yedu.backend.admin.application.usecase.AdminInfoUseCase;
 import com.yedu.backend.admin.application.usecase.AdminManageUseCase;
 import com.yedu.backend.admin.domain.entity.Admin;
@@ -28,6 +26,7 @@ import java.util.List;
 public class AdminController {
     private final AdminInfoUseCase adminInfoUseCase;
     private final AdminManageUseCase adminManageUseCase;
+    private final AdminAuthUseCase adminAuthUseCase;
 
     @GetMapping("/all/matching")
     public ResponseEntity<AllApplicationResponse> allApplication() {
@@ -83,21 +82,27 @@ public class AdminController {
         return ResponseEntity.ok(allFilteringTeacher);
     }
 
+    @PostMapping("/details/matching/recommend/{applicationFormId}")
+    public ResponseEntity recommendTeacher(@PathVariable String applicationFormId, @RequestBody RecommendTeacherRequest request) {
+        adminManageUseCase.recommendTeacher(applicationFormId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
-        JwtResponse jwtResponse = adminManageUseCase.loginAdmin(request, httpServletResponse);
+        JwtResponse jwtResponse = adminAuthUseCase.loginAdmin(request, httpServletResponse);
         return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/logout")
     public ResponseEntity logout(@AuthenticationPrincipal Admin admin) {
-        adminManageUseCase.logout(admin);
+        adminAuthUseCase.logout(admin);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/regenerate")
     public ResponseEntity<JwtResponse> regenerate(@AuthenticationPrincipal Admin admin, HttpServletResponse response, HttpServletRequest request) {
-        JwtResponse jwtResponse = adminManageUseCase.regenerate(admin, request, response);
+        JwtResponse jwtResponse = adminAuthUseCase.regenerate(admin, request, response);
         return ResponseEntity.ok(jwtResponse);
     }
 
