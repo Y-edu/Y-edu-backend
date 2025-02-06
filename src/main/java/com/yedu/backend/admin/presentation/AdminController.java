@@ -88,6 +88,12 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/details/matching/proposal/{applicationFormId}")
+    public ResponseEntity proposalTeacher(@PathVariable String applicationFormId, @RequestBody ProposalTeacherRequest request) {
+        adminManageUseCase.proposalTeacher(applicationFormId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
         JwtResponse jwtResponse = adminAuthUseCase.loginAdmin(request, httpServletResponse);

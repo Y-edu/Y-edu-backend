@@ -1,10 +1,14 @@
 package com.yedu.backend.admin.application.usecase;
 
 import com.yedu.backend.admin.application.dto.req.ParentsKakaoNameRequest;
+import com.yedu.backend.admin.application.dto.req.ProposalTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
 import com.yedu.backend.admin.domain.service.AdminGetService;
+import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
+import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
@@ -23,6 +27,7 @@ import java.util.List;
 public class AdminManageUseCase {
     private final AdminGetService adminGetService;
     private final AdminUpdateService adminUpdateService;
+    private final AdminSaveService adminSaveService;
     private final BizppurioParentsMessage bizppurioParentsMessage;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
@@ -47,5 +52,13 @@ public class AdminManageUseCase {
                 .map(adminGetService::teacherById)
                 .toList();
         bizppurioParentsMessage.recommendTeacher(applicationForm, teachers);
+    }
+
+    public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
+        Teacher teacher = adminGetService.teacherById(request.teacherId());
+        ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+        adminSaveService.saveClassMatching(classMatching);
+        // todo : 알림톡 전송
     }
 }
