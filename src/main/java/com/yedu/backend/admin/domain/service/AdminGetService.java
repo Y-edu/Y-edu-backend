@@ -71,4 +71,9 @@ public class AdminGetService {
         return adminRepository.findByLoginId(id)
                 .orElseThrow();
     }
+
+    public ClassMatching classMatchingById(long classMatching) {
+        return classMatchingRepository.findById(classMatching)
+                .orElseThrow();
+    }
 }

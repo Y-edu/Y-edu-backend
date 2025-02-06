@@ -47,9 +47,12 @@ public class AdminManageUseCase {
 
     public void recommendTeacher(String applicationFormId, RecommendTeacherRequest request) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        List<Teacher> teachers = request.teacherIds()
+        List<Teacher> teachers = request.classMatchingIds()
                 .stream()
-                .map(adminGetService::teacherById)
+                .map(classMatchingId -> {
+                    ClassMatching classMatching = adminGetService.classMatchingById(classMatchingId);
+                    return classMatching.getTeacher();
+                })
                 .toList();
         bizppurioParentsMessage.recommendTeacher(applicationForm, teachers);
     }
