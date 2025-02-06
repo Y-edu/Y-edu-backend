@@ -4,6 +4,6 @@ public record ButtonMessage(
         String message,
         String senderkey,
         String templatecode,
-        WebLinkButton[] button
+        CommonButton[] button
 ) implements Message {
 }
