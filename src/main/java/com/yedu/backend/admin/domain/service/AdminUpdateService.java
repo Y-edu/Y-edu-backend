@@ -1,5 +1,6 @@
 package com.yedu.backend.admin.domain.service;
 
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
@@ -17,5 +18,9 @@ public class AdminUpdateService {
 
     public void updateTeacherIssue(Teacher teacher, String issue) {
         teacher.updateIssue(issue);
+    }
+
+    public void updateClassMatchingSend(ClassMatching classMatching) {
+        classMatching.updateSend();
     }
 }

@@ -7,6 +7,7 @@ import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import com.yedu.backend.global.config.s3.S3UploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class TeacherManageUseCase {
     private final TeacherGetService teacherGetService;
     private final TeacherUpdateService teacherUpdateService;
     private final S3UploadService s3UploadService;
+    private final BizppurioTeacherMessage bizppurioTeacherMessage;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -34,6 +36,9 @@ public class TeacherManageUseCase {
         TeacherEnglish english = getTeacherEnglish(request, teacher);
         TeacherMath math = getTeacherMath(request, teacher);
         teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
+
+        // todo : 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
+        bizppurioTeacherMessage.counselStartAndPhotoSubmit(teacher);
     }
 
     private TeacherMath getTeacherMath(TeacherInfoFormRequest request, Teacher teacher) {
@@ -79,6 +84,7 @@ public class TeacherManageUseCase {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateProfile(teacher, profileUrl);
+        bizppurioTeacherMessage.applyAgree(teacher);
     }
 
     public List<Teacher> sendAlarmTalk(ApplicationForm applicationForm) {

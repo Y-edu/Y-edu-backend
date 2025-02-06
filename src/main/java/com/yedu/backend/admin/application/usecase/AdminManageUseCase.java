@@ -1,23 +1,24 @@
 package com.yedu.backend.admin.application.usecase;
 
-import com.yedu.backend.admin.application.dto.req.LoginRequest;
 import com.yedu.backend.admin.application.dto.req.ParentsKakaoNameRequest;
+import com.yedu.backend.admin.application.dto.req.ProposalTeacherRequest;
+import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
-import com.yedu.backend.admin.domain.entity.Admin;
 import com.yedu.backend.admin.domain.service.AdminGetService;
+import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
+import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
-import com.yedu.backend.global.config.security.jwt.dto.JwtResponse;
-import com.yedu.backend.global.config.security.jwt.usecase.JwtUseCase;
-import com.yedu.backend.global.config.security.util.EncryptorUtils;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Transactional
 @Service
@@ -26,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminManageUseCase {
     private final AdminGetService adminGetService;
     private final AdminUpdateService adminUpdateService;
-    private final JwtUseCase jwtUseCase;
-    private final EncryptorUtils encryptorUtils;
+    private final AdminSaveService adminSaveService;
+    private final BizppurioParentsMessage bizppurioParentsMessage;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -44,20 +45,21 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherIssue(teacher, request.issue());
     }
 
-    public JwtResponse loginAdmin(LoginRequest request, HttpServletResponse response) {
-        Admin admin = adminGetService.adminByLoginId(request.id());
-        if (!encryptorUtils.checkBCryptData(request.password(), admin.getPassword()))
-            throw new IllegalArgumentException();
-        return jwtUseCase.signIn(admin, response);
+    public void recommendTeacher(RecommendTeacherRequest request) {
+        List<ClassMatching> classMatchings = request.classMatchingIds()
+                .stream()
+                .map(adminGetService::classMatchingById)
+                .toList();
+        bizppurioParentsMessage.recommendTeacher(classMatchings);
     }
 
-    public void logout(Admin admin) {
-        if (admin == null)
-            throw new IllegalArgumentException();
-        jwtUseCase.logout(admin);
-    }
-
-    public JwtResponse regenerate(Admin admin, HttpServletRequest request, HttpServletResponse response) {
-        return jwtUseCase.regenerateToken(admin, request, response);
+    public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
+        request.teacherIds().forEach(id -> {
+                    Teacher teacher = adminGetService.teacherById(id);
+                    ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+                    adminSaveService.saveClassMatching(classMatching);
+                    // todo : 알림톡 전송
+                });
     }
 }
