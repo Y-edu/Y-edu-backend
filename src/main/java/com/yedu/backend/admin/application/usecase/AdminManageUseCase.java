@@ -56,9 +56,11 @@ public class AdminManageUseCase {
 
     public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        Teacher teacher = adminGetService.teacherById(request.teacherId());
-        ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
-        adminSaveService.saveClassMatching(classMatching);
-        // todo : 알림톡 전송
+        request.teacherIds().forEach(id -> {
+                    Teacher teacher = adminGetService.teacherById(id);
+                    ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+                    adminSaveService.saveClassMatching(classMatching);
+                    // todo : 알림톡 전송
+                });
     }
 }
