@@ -9,6 +9,7 @@ import com.yedu.backend.admin.domain.service.AdminUpdateService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.global.config.security.jwt.dto.JwtResponse;
 import com.yedu.backend.global.config.security.jwt.usecase.JwtUseCase;
 import com.yedu.backend.global.config.security.util.EncryptorUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,20 +44,20 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherIssue(teacher, request.issue());
     }
 
-    public void loginAdmin(LoginRequest request, HttpServletResponse response) {
+    public JwtResponse loginAdmin(LoginRequest request, HttpServletResponse response) {
         Admin admin = adminGetService.adminByLoginId(request.id());
         if (!encryptorUtils.checkBCryptData(request.password(), admin.getPassword()))
             throw new IllegalArgumentException();
-        jwtUseCase.signIn(admin, response);
+        return jwtUseCase.signIn(admin, response);
     }
 
-    public void logout(Admin admin, HttpServletResponse response) {
+    public void logout(Admin admin) {
         if (admin == null)
             throw new IllegalArgumentException();
-        jwtUseCase.logout(admin, response);
+        jwtUseCase.logout(admin);
     }
 
-    public void regenerate(Admin admin, HttpServletRequest request, HttpServletResponse response) {
-        jwtUseCase.regenerateToken(admin, request, response);
+    public JwtResponse regenerate(Admin admin, HttpServletRequest request, HttpServletResponse response) {
+        return jwtUseCase.regenerateToken(admin, request, response);
     }
 }

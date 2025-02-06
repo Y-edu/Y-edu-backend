@@ -2,8 +2,8 @@ package com.yedu.backend.global.config.security.jwt.usecase;
 
 import com.yedu.backend.admin.domain.entity.Admin;
 import com.yedu.backend.global.config.security.jwt.constant.Role;
+import com.yedu.backend.global.config.security.jwt.dto.JwtResponse;
 import com.yedu.backend.global.config.security.jwt.util.JwtUtils;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,62 +18,41 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class JwtUseCase {
     private final JwtUtils jwtUtils;
-    private static final String ACCESS_COOKIE = "accessToken";
-    private static final String REFRESH_COOKIE = "refreshToken";
     @Value("${jwt.refreshExpiration}")
     private int refreshExpiration;
     @Value("${jwt.accessExpiration}")
     private int accessExpiration;
 
-    public void signIn(Admin admin, HttpServletResponse response) {
-        generateAdminToken(admin, response);
+    public JwtResponse signIn(Admin admin, HttpServletResponse response) {
+        return generateAdminToken(admin, response);
     }
 
-    public void logout(Admin admin, HttpServletResponse response) {
-        deleteCookie(response);
+    public void logout(Admin admin) {
         jwtUtils.makeExpired(admin.getAdminId());
     }
 
-    public void regenerateToken(Admin admin, HttpServletRequest request, HttpServletResponse response) {
-        log.info("regenerate 진입");
+    public JwtResponse regenerateToken(Admin admin, HttpServletRequest request, HttpServletResponse response) {
         jwtUtils.checkRedis(admin.getAdminId(), request);
         generateAdminToken(admin, response);
+        return new JwtResponse(accessExpiration, refreshExpiration);
     }
 
 
-    private void generateAdminToken(Admin admin, HttpServletResponse response) {
+    private JwtResponse generateAdminToken(Admin admin, HttpServletResponse response) {
         String accessToken = jwtUtils.generateAccessToken(admin.getAdminId(), Role.ADMIN);
         String refreshToken = jwtUtils.generateRefreshToken(admin.getAdminId(), Role.ADMIN);
-        accessTokenCookie(response, accessToken);
-        refreshTokenCookie(response, refreshToken);
+        accessTokenHeader(response, accessToken);
+        refreshTokenHeader(response, refreshToken);
+        return new JwtResponse(accessExpiration, refreshExpiration);
     }
 
-    private void accessTokenCookie(HttpServletResponse response, String accessToken) {
-        Cookie accessCookie = new Cookie(ACCESS_COOKIE, accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(accessExpiration);
-        response.addCookie(accessCookie);
+    // 헤더에 AccessToken 추가
+    private void accessTokenHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization", "Bearer " + accessToken);
     }
 
-    private void refreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        Cookie refreshCookie = new Cookie(REFRESH_COOKIE, refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(refreshExpiration);
-        response.addCookie(refreshCookie);
-    }
-
-    private void deleteCookie(HttpServletResponse response) {
-        Cookie refreshCookie = new Cookie(REFRESH_COOKIE, null);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(0);
-        response.addCookie(refreshCookie);
-        Cookie accessCookie = new Cookie(ACCESS_COOKIE, null);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(0);
-        response.addCookie(accessCookie);
+    // 헤더에 RefreshToken 추가
+    private void refreshTokenHeader(HttpServletResponse response, String refreshToken) {
+        response.setHeader("RefreshToken", refreshToken);
     }
 }

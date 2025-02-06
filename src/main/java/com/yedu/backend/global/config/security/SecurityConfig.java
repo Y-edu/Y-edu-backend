@@ -21,8 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -72,10 +70,7 @@ public class SecurityConfig {
     public CorsConfigurationSource source() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addExposedHeader("Authorization");
-
-        // 허용할 프론트엔드 도메인 설정 (여기에 실제 프론트엔드 URL을 입력)
-        configuration.setAllowedOrigins(List.of("https://y-edu-class.com", "https://develop.d22frnw7yy0hnv.amplifyapp.com", "https://dev.yedu-develop.com:8181", "http://localhost:8080", "http://localhost:3000"));
-
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
