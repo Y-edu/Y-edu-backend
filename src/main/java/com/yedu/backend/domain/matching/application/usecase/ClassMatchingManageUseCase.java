@@ -7,9 +7,7 @@ import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.matching.domain.service.ClassMatchingSaveService;
 import com.yedu.backend.domain.matching.domain.service.ClassMatchingUpdateService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
-import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,7 +45,7 @@ public class ClassMatchingManageUseCase {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
             throw new IllegalArgumentException();
-        classMatching.updateAccept();
+        classMatchingUpdateService.updateAccept(classMatching);
 
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Teacher teacher = classMatching.getTeacher();

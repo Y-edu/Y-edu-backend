@@ -35,21 +35,27 @@ public class BizppurioAuth {
     private String bizzpurioPw;
 
     public String getAuth() {
-        String auth = bizzpurioId + ":" + bizzpurioPw;
-        String encode = Base64Util.encode(auth);
-        Optional<String> accessToken = redisRepository.getValues(encode);
-        if (accessToken.isPresent()) {
-            log.info("기존 알림톡 토큰 이용");
-            return accessToken.get();
-        }
+        try {
+            String auth = bizzpurioId + ":" + bizzpurioPw;
+            String encode = Base64Util.encode(auth);
+            Optional<String> accessToken = redisRepository.getValues(encode);
+            if (accessToken.isPresent()) {
+                log.info("기존 알림톡 토큰 이용");
+                return accessToken.get();
+            }
 
-        BizppurioTokenResponse tokenResponse = getToken(encode);
-        DateTimeFormatter formatter = ofPattern("yyyyMMddHHmmss");
-        LocalDateTime expiredAt = parse(tokenResponse.expired(), formatter).minusMinutes(10);
-        Duration exipiredDuration = between(now(), expiredAt);
-        redisRepository.setValues(encode, tokenResponse.accesstoken(), exipiredDuration);
-        log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
-        return tokenResponse.accesstoken();
+            BizppurioTokenResponse tokenResponse = getToken(encode);
+            DateTimeFormatter formatter = ofPattern("yyyyMMddHHmmss");
+            LocalDateTime expiredAt = parse(tokenResponse.expired(), formatter).minusMinutes(10);
+            Duration exipiredDuration = between(now(), expiredAt);
+            redisRepository.setValues(encode, tokenResponse.accesstoken(), exipiredDuration);
+            log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
+            return tokenResponse.accesstoken();
+        } catch (Exception ex) {
+            //todo : 디코 웹훅
+            log.error("비즈뿌리오 토큰 발급중 예외 발생");
+            return "ERROR";
+        }
     }
 
     private BizppurioTokenResponse getToken(String encode) {

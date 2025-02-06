@@ -45,16 +45,12 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherIssue(teacher, request.issue());
     }
 
-    public void recommendTeacher(String applicationFormId, RecommendTeacherRequest request) {
-        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        List<Teacher> teachers = request.classMatchingIds()
+    public void recommendTeacher(RecommendTeacherRequest request) {
+        List<ClassMatching> classMatchings = request.classMatchingIds()
                 .stream()
-                .map(classMatchingId -> {
-                    ClassMatching classMatching = adminGetService.classMatchingById(classMatchingId);
-                    return classMatching.getTeacher();
-                })
+                .map(adminGetService::classMatchingById)
                 .toList();
-        bizppurioParentsMessage.recommendTeacher(applicationForm, teachers);
+        bizppurioParentsMessage.recommendTeacher(classMatchings);
     }
 
     public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {

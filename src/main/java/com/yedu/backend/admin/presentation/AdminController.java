@@ -82,9 +82,9 @@ public class AdminController {
         return ResponseEntity.ok(allFilteringTeacher);
     }
 
-    @PostMapping("/details/matching/recommend/{applicationFormId}")
-    public ResponseEntity recommendTeacher(@PathVariable String applicationFormId, @RequestBody RecommendTeacherRequest request) {
-        adminManageUseCase.recommendTeacher(applicationFormId, request);
+    @PostMapping("/details/matching/recommend")
+    public ResponseEntity recommendTeacher(@RequestBody RecommendTeacherRequest request) {
+        adminManageUseCase.recommendTeacher(request);
         return ResponseEntity.ok().build();
     }
 

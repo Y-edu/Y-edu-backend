@@ -44,4 +44,8 @@ public class ClassMatching extends BaseEntity {
         this.matchStatus = MatchingStatus.수락;
         this.response = true;
     }
+
+    public void updateSend() {
+        this.matchStatus = MatchingStatus.전송;
+    }
 }

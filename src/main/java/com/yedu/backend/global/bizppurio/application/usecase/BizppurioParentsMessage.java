@@ -1,12 +1,11 @@
 package com.yedu.backend.global.bizppurio.application.usecase;
 
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
-import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.global.bizppurio.application.mapper.BizppurioMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -29,11 +28,16 @@ public class BizppurioParentsMessage {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToBeforeCheck(parents));
     }
 
-    public void recommendTeacher(ApplicationForm applicationForm, List<Teacher> teachers) {
-        Flux.fromIterable(teachers)
-                .flatMap(teacher -> bizppurioSend.sendMessageWithExceptionHandling(
-                        () -> bizppurioMapper.mapToRecommendTeacher(applicationForm, teacher)
-                ))
+    public void recommendTeacher(List<ClassMatching> classMatchings) {
+        ApplicationForm applicationForm = classMatchings.get(0).getApplicationForm();
+        // 모든 알림톡 전송을 병렬로 실행
+        Mono.when(
+                        classMatchings.stream()
+                                .map(classMatching -> bizppurioSend.sendMessageWithExceptionHandling(
+                                        () -> bizppurioMapper.mapToRecommendTeacher(classMatching.getApplicationForm(), classMatching.getTeacher())
+                                ))
+                                .toList()
+                )
                 .then(recommendGuide(applicationForm.getParents()))
                 .subscribe();
     }
