@@ -10,6 +10,7 @@ import com.yedu.backend.admin.application.usecase.AdminManageUseCase;
 import com.yedu.backend.admin.domain.entity.Admin;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
+import com.yedu.backend.global.config.security.jwt.dto.JwtResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -83,21 +84,21 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
-        adminManageUseCase.loginAdmin(request, httpServletResponse);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request, HttpServletResponse httpServletResponse) {
+        JwtResponse jwtResponse = adminManageUseCase.loginAdmin(request, httpServletResponse);
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(@AuthenticationPrincipal Admin admin, HttpServletResponse response) {
-        adminManageUseCase.logout(admin, response);
+    public ResponseEntity logout(@AuthenticationPrincipal Admin admin) {
+        adminManageUseCase.logout(admin);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/regenerate")
-    public ResponseEntity regenerate(@AuthenticationPrincipal Admin admin, HttpServletResponse response, HttpServletRequest request) {
-        adminManageUseCase.regenerate(admin, request, response);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<JwtResponse> regenerate(@AuthenticationPrincipal Admin admin, HttpServletResponse response, HttpServletRequest request) {
+        JwtResponse jwtResponse = adminManageUseCase.regenerate(admin, request, response);
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @GetMapping("/test")
