@@ -18,6 +18,8 @@ public class BizppurioMapper {
     private String id;
     @Value("${bizppurio.number}")
     private String number;
+    @Value("${bizppurio.phone_number}")
+    private String phoneNumber;
     @Value("${bizppurio.yedu_tutor}")
     private String yeduTutorKey;
     @Value("${bizppurio.yedu_apply}")
@@ -217,7 +219,7 @@ public class BizppurioMapper {
                 "\n" +
                 "오늘, 매칭 매니저가 " + parents.getPhoneNumber() + "로 전화드릴 예정이에요. \n" +
                 "\n" +
-                "\uD83D\uDCDE매칭매니저 : " + "01033636374" + "\n" +
+                "\uD83D\uDCDE매칭매니저 : " + phoneNumber + "\n" +
                 "\n" +
                 "아이에게 맞는 선생님을 찾을 땐, 아이의 성향과 의사도 중요해요. \n" +
                 "\n" +
