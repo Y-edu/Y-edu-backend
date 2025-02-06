@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;
 
@@ -24,22 +25,24 @@ public class BizppurioSend {
     @Value("${bizppurio.message}")
     private String messageUrl;
 
-    protected void sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
+    protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
         try {
             CommonRequest commonRequest = messageSupplier.get();
             String accessToken = bizppurioAuth.getAuth();
             String request = objectMapper.writeValueAsString(commonRequest);
-            webClient.post()
+            return webClient.post()
                     .uri(messageUrl)
                     .headers(h -> h.setContentType(APPLICATION_JSON))
                     .headers(h -> h.setBearerAuth(accessToken))
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(MessageResponse.class)
-                    .subscribe(this::check);
+                    .doOnNext(this::check)
+                    .then();
         } catch (Exception ex) {
             log.error("알림톡 전송 예외 발생: {}", ex.getMessage());
-            //todo : 추가 처리
+            //todo : 추가 처리 디코 웹훅
+            return Mono.empty();
         }
     }
 
