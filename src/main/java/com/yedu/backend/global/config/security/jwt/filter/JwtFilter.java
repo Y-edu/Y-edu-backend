@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -41,8 +42,16 @@ public class JwtFilter extends OncePerRequestFilter {
                 log.info("authentication : {}", authentication.getName());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("context 인증 정보 저장 : {}", authentication.getName());
+            } catch (IllegalArgumentException ex) {
+                // 401 Unauthorized로 응답
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.getWriter().write("Invalid or expired token");
+                return; // 필터 체인 종료, 더 이상 진행되지 않도록
             } catch (Exception ex) {
-                return;
+                // 500 Internal Server Error로 응답
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.getWriter().write("An error occurred during token validation");
+                return; // 필터 체인 종료, 더 이상 진행되지 않도록
             }
         }
 
