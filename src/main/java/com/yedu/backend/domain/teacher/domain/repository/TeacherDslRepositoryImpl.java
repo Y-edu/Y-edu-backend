@@ -112,9 +112,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     }
 
     private BooleanExpression districtSpecifier(List<String> districts) {
-        if (districts == null || districts.isEmpty()) {
-            return null; // where() 절에서 무시됨
-        }
+        if (emptyCheck(districts)) return null; // where() 절에서 무시됨
 
         return districts.stream()
                 .map(district -> teacherDistrict.district.eq(District.fromString(district)))
@@ -152,9 +150,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     }
 
     private BooleanExpression universitySpecifier(List<String> universities) {
-        if (universities == null || universities.isEmpty()) {
-            return null;
-        }
+        if (emptyCheck(universities)) return null;
 
         return universities.stream()
                 .map(university -> {
@@ -170,10 +166,19 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                         return teacher.teacherSchoolInfo.university.eq("성균관대학교");
                     if (university.equals("한양"))
                         return teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스");
+                    if (university.equals("기타"))
+                        return teacher.teacherSchoolInfo.etc.isTrue();
                     return null;
                 })
                 .reduce(BooleanExpression::or)
                 .orElse(null);
+    }
+
+    private static boolean emptyCheck(List<String> universities) {
+        if (universities == null || universities.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     // status를 "활동중", "등록중", "일시정지", "종료" 순으로 정렬하는 OrderSpecifier 생성
