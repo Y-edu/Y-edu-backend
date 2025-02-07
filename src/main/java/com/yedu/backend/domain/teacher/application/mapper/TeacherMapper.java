@@ -6,6 +6,7 @@ import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
+import com.yedu.backend.domain.teacher.domain.entity.constant.University;
 
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -25,8 +26,10 @@ public class TeacherMapper {
     }
 
     public static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoFormRequest request) {
+        boolean etc = University.checkEtc(request.univercity());
         return TeacherSchoolInfo.builder()
                 .university(request.univercity())
+                .etc(etc)
                 .major(request.major())
                 .highSchool(request.highSchool())
                 .highSchoolType(request.highSchoolType())
