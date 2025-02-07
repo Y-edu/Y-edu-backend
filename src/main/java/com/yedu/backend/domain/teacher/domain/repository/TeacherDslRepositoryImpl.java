@@ -174,8 +174,8 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .orElse(null);
     }
 
-    private static boolean emptyCheck(List<String> universities) {
-        if (universities == null || universities.isEmpty()) {
+    private static boolean emptyCheck(List<String> requests) {
+        if (requests == null || requests.isEmpty()) {
             return true;
         }
         return false;
