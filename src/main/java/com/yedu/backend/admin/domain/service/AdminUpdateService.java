@@ -20,6 +20,10 @@ public class AdminUpdateService {
         teacher.updateIssue(issue);
     }
 
+    public void updateTeacherVideo(Teacher teacher, String video) {
+        teacher.updateVideo(video);
+    }
+
     public void updateClassMatchingSend(ClassMatching classMatching) {
         classMatching.updateSend();
     }

@@ -38,4 +38,8 @@ public class TeacherInfo {
         this.profile = profile;
         //todo : 나중에 과외 영상 추가 필요
     }
+
+    public void updateVideo(String video) {
+        this.video = video;
+    }
 }
