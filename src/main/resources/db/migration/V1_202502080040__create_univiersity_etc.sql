@@ -1,0 +1,1 @@
+ALTER TABLE teacher ADD etc bit NOT NULL DEFAULT FALSE;
