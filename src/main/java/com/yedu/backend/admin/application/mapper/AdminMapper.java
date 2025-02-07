@@ -121,6 +121,7 @@ public class AdminMapper {
                 0,
                 teacher.getTeacherSchoolInfo().getUniversity(),
                 districts,
+                teacherInfo.getVideo(),
                 teacher.getIssue()
         );
     }
