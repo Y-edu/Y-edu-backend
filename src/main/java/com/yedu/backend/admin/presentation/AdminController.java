@@ -52,6 +52,12 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/teacher/video/{teacherId}")
+    public ResponseEntity updateTeacherIssue(@PathVariable long teacherId, @RequestBody TeacherVideoRequest request) {
+        adminManageUseCase.updateTeacherVideo(teacherId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/details/matching/parents/{applicationFormId}")
     public ResponseEntity<CommonParentsResponse> commonParents(@PathVariable String applicationFormId) {
         CommonParentsResponse parentsInfo = adminInfoUseCase.getParentsInfo(applicationFormId);

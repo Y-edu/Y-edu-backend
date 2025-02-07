@@ -1,9 +1,6 @@
 package com.yedu.backend.admin.application.usecase;
 
-import com.yedu.backend.admin.application.dto.req.ParentsKakaoNameRequest;
-import com.yedu.backend.admin.application.dto.req.ProposalTeacherRequest;
-import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
-import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
+import com.yedu.backend.admin.application.dto.req.*;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
@@ -45,11 +42,17 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherIssue(teacher, request.issue());
     }
 
+    public void updateTeacherVideo(long teacherId, TeacherVideoRequest request) {
+        Teacher teacher = adminGetService.teacherById(teacherId);
+        adminUpdateService.updateTeacherVideo(teacher, request.video());
+    }
+
     public void recommendTeacher(RecommendTeacherRequest request) {
         List<ClassMatching> classMatchings = request.classMatchingIds()
                 .stream()
                 .map(adminGetService::classMatchingById)
                 .toList();
+        classMatchings.forEach(adminUpdateService::updateClassMatchingSend);
         bizppurioParentsMessage.recommendTeacher(classMatchings);
     }
 
