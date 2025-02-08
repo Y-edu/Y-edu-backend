@@ -38,7 +38,7 @@ public class TeacherManageUseCase {
         TeacherMath math = getTeacherMath(request, teacher);
         teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
 
-        // todo : 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
+        // 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
         bizppurioTeacherMessage.counselStartAndPhotoSubmit(teacher);
     }
 
