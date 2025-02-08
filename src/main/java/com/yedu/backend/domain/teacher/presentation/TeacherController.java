@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.presentation;
 
+import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
@@ -26,6 +27,12 @@ public class TeacherController {
     @PostMapping("/form/profile")
     public ResponseEntity saveProfileByForm(@RequestPart TeacherProfileFormRequest request, @RequestPart MultipartFile profile) {
         manageUseCase.saveTeacherProfile(profile, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/form/contract")
+    public ResponseEntity submitContract(@RequestBody TeacherContractRequest request) {
+        manageUseCase.submitContract(request);
         return ResponseEntity.ok().build();
     }
 
