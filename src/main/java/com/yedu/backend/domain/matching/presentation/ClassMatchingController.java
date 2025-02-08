@@ -27,7 +27,7 @@ public class ClassMatchingController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/application/accept//{applicationFormId}/{teacherId}/{phoneNumber}")
+    @PutMapping("/application/accept/{applicationFormId}/{teacherId}/{phoneNumber}")
     public ResponseEntity acceptApplication(@PathVariable String applicationFormId, @PathVariable long teacherId, @PathVariable String phoneNumber) {
         matchingManageUseCase.acceptClassMatching(applicationFormId, teacherId, phoneNumber);
         return ResponseEntity.ok().build();
