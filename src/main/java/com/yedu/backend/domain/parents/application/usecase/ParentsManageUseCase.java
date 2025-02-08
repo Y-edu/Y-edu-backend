@@ -10,6 +10,7 @@ import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class ParentsManageUseCase {
     private final ParentsUpdateService parentsUpdateService;
     private final TeacherManageUseCase teacherManageUseCase;
     private final ClassMatchingManageUseCase classMatchingManageUseCase;
+    private final BizppurioParentsMessage bizppurioParentsMessage;
 
     public void saveParentsAndApplication(ApplicationFormRequest request) {
         Parents parents = parentsGetService.optionalParentsByPhoneNumber(request.phoneNumber())
@@ -39,7 +41,8 @@ public class ParentsManageUseCase {
                 .toList();
         parentsSaveService.saveApplication(applicationForm, goals);
 
-        List<Teacher> teachers = teacherManageUseCase.sendAlarmTalk(applicationForm); // 알림톡 전송
+        List<Teacher> teachers = teacherManageUseCase.sendAlarmTalk(applicationForm); // 선생님한테 알림톡 전송
         classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm); // 매칭 저장
+        bizppurioParentsMessage.notifyCalling(parents);
     }
 }
