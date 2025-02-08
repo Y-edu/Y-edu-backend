@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable());
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/test").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
