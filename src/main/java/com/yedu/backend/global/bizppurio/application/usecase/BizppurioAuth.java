@@ -44,7 +44,7 @@ public class BizppurioAuth {
                 return accessToken.get();
             }
 
-            BizppurioTokenResponse tokenResponse = getToken(encode);
+            BizppurioTokenResponse tokenResponse = getToken();
             DateTimeFormatter formatter = ofPattern("yyyyMMddHHmmss");
             LocalDateTime expiredAt = parse(tokenResponse.expired(), formatter).minusMinutes(10);
             Duration exipiredDuration = between(now(), expiredAt);
@@ -58,12 +58,12 @@ public class BizppurioAuth {
         }
     }
 
-    private BizppurioTokenResponse getToken(String encode) {
+    private BizppurioTokenResponse getToken() {
         log.info("비즈뿌리오 토큰 재발급 진행");
         return webClient.post()
                 .uri(bizzppurioToken)
                 .headers(h -> h.setContentType(APPLICATION_JSON))
-                .headers(h -> h.setBasicAuth(encode))
+                .headers(h -> h.setBasicAuth(bizzpurioId, bizzpurioPw))
                 .retrieve()
                 .bodyToMono(BizppurioTokenResponse.class)
                 .block();
