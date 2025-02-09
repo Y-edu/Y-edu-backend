@@ -27,4 +27,8 @@ public class AdminUpdateService {
     public void updateClassMatchingSend(ClassMatching classMatching) {
         classMatching.updateSend();
     }
+
+    public void updateAlertCount(Teacher teacher) {
+        teacher.updateMessageCount();
+    }
 }
