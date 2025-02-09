@@ -16,6 +16,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity handleInternalServerException(Exception ex) {
         log.error(LOG_FORMAT, "500", ex.getStackTrace());
         log.error("errorMessage : {}", ex.getMessage());
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 }

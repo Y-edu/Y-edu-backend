@@ -51,6 +51,6 @@ public class BizppurioSend {
             log.error("전송실패 errorCode : {} errorMessage : {}", response.code(), response.description());
             throw new IllegalArgumentException(response.code() + ", " + response.description());
         }
-        log.info("알림톡 전송에 성공하였습니다.");
+        log.info("알림톡 전송에 성공하였습니다. : {} {}", response.code(), response.description());
     }
 }
