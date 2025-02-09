@@ -49,7 +49,7 @@ public enum District {
             if (requestDistrict.equals(district.description))
                 return district;
         }
-        log.error("District 처리 예외 발생");
+        log.error("District 처리 예외 발생 : {}", requestDistrict);
         return ERROR;
     }
 }

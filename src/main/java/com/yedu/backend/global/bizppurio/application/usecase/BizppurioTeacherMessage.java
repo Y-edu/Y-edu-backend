@@ -39,6 +39,10 @@ public class BizppurioTeacherMessage {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyChannel(teacher));
     }
 
+    public void notifyClass(ApplicationForm applicationForm, Teacher teacher) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyClass(applicationForm, teacher));
+    }
+
     public void acceptCase(ApplicationForm applicationForm, Teacher teacher) {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToMatchingAcceptCase(applicationForm, teacher));
     }

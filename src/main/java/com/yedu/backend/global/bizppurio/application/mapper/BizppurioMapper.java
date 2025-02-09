@@ -38,6 +38,8 @@ public class BizppurioMapper {
     private String applyPhotoSubmit;
     @Value("${bizppurio.yedu_apply_template.counsel_start}")
     private String counselStart;
+    @Value("${bizppurio.yedu_matching_template.notify_class}")
+    private String notifyClass;
     @Value("${bizppurio.yedu_matching_template.accept_case}")
     private String matchingAcceptCase;
     @Value("${bizppurio.yedu_matching_template.refuse_case}")
@@ -54,8 +56,18 @@ public class BizppurioMapper {
     private String recommendTeacher;
     @Value("${bizppurio.yedu_offical_template.notify_calling}")
     private String notifyCalling;
+    @Value("${bizppurio.url.apply_agree}")
+    private String applyAgreeUrl;
+    @Value("${bizppurio.url.photo_submit}")
+    private String photoSubmitUrl;
+    @Value("${bizppurio.url.photo_hurry}")
+    private String photoHurryUrl;
+    @Value("${bizppurio.url.write_application_form}")
+    private String writeApplicationFormUrl;
+
     private static final String WEB_LINK = "WL";
     private static final String BOT = "BK";
+    private static final String MESSAGE = "MD";
 
     public CommonRequest mapToApplyChannel(Teacher teacher) {
         TeacherInfo teacherInfo = teacher.getTeacherInfo();
@@ -73,11 +85,9 @@ public class BizppurioMapper {
                 "\n" +
                 "아래 버튼을 눌러, 선생님 등록을 최종적으로 완료해주세요! 회신 카톡 메세지가 없어도 등록이 완료된 것이니 안심해주세요.\n" +
                 "\n" +
-                "위 버튼을 눌러 채널등록도 부탁드려요. \uD83D\uDE4F\n" +
-                "\n" +
                 "매칭 이후 별도로 다시 안내드릴게요. 감사합니다!");
-        CommonButton botButton = new BotButton("선생님 등록 최종 완료하기", BOT);
-        Message messageBody = new ButtonMessage(message, yeduTutorKey, applyChannel, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("선생님 등록 최종 완료하기", BOT);
+        Message messageBody = new ButtonMessage(message, yeduTutorKey, applyChannel, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, teacherInfo.getPhoneNumber());
     }
 
@@ -93,7 +103,7 @@ public class BizppurioMapper {
                 "재학, 졸업 증명서 발행이 불가한 경우엔 상담 요청을해주세요. \n" +
                 "\n" +
                 "아래 약관 동의 후엔, 선생님 등록이 완료되어 ‘매칭 채널’에서 과외건을 받아보실 수 있습니다. \uD83D\uDE04");
-        CommonButton webLinkButton = new WebButton("약관 동의하고 등록완료하기", WEB_LINK, "https://forms.gle/QASXrzktUCiSxUkc6");
+        CommonButton webLinkButton = new WebButton("약관 동의하고 등록완료하기", WEB_LINK, applyAgreeUrl, applyAgreeUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyAgree, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
@@ -116,7 +126,7 @@ public class BizppurioMapper {
                 "영상은 첫 수업 아이에게 앞으로의 수업을 설명해주는 내용이면 됩니다. (구글폼에 가이드 참고)\n" +
                 "\n" +
                 "사진과 영상은 꼭 3일 이내 제출해주세요!");
-        CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, "https://forms.gle/5AkKyQoj3MYqu5mA8");
+        CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, photoSubmitUrl, photoSubmitUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyPhotoSubmit, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
@@ -129,7 +139,7 @@ public class BizppurioMapper {
                 "지금 당장 좋은 사진이 없다면 가장 깔끔한 사진으로 제출하고, 이후 수정해주셔도 괜찮습니다. \n" +
                 "\n" +
                 "선생님과 좋은 인연으로 만날 수 있길 기대할게요.\uD83D\uDE42");
-        CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, "https://forms.gle/ihfhPSy3Fn8fdjmK7");
+        CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, photoHurryUrl, photoHurryUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyPhotoHurry, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
@@ -141,8 +151,26 @@ public class BizppurioMapper {
                 "Y-Edu의 튜터로 지원해주셔서 감사합니다. \n" +
                 "\n" +
                 "아래 버튼을 눌러 지원을 이어가주세요");
-        CommonButton botButton = new BotButton("다음 절차는 무엇인가요?", BOT);
-        Message messageBody = new ButtonMessage(message, yeduApplyKey, counselStart, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("다음 절차는 무엇인가요?", BOT);
+        Message messageBody = new ButtonMessage(message, yeduApplyKey, counselStart, new CommonButton[]{simpleButton});
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
+    }
+
+    public CommonRequest mapToNotifyClass(ApplicationForm applicationForm, Teacher teacher) {
+        String message = ("["+applicationForm.getDistrict().getDescription()+" "+applicationForm.getDong()+" 과외건 공지]\n" +
+                "\n" +
+                "안녕하세요 #{선생님 영어이름}선생님!\n" +
+                "현재 "+applicationForm.getWantedSubject()+" "+applicationForm.getDistrict().getDescription()+" "+applicationForm.getDong()+"+에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
+                "\n" +
+                "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +
+                "\n" +
+                "* 무응답이 반복되면, 과외공지에 전송이 줄어들 수 있습니다.\n" +
+                "* '넘기기'를 연속으로 한다고 하여 받는 불이익은 없습니다.\n" +
+                "\n" +
+                "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
+        String classUrl = "https://www.yedu-tutor.com/teacher/"+teacher.getTeacherId()+"/"+applicationForm.getApplicationFormId()+"/"+teacher.getTeacherInfo().getPhoneNumber();
+        CommonButton webButton = new WebButton("과외 정보 확인하기", WEB_LINK, classUrl, classUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, notifyClass, new CommonButton[]{webButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 
@@ -170,8 +198,8 @@ public class BizppurioMapper {
                 "가능하신 일정과 지역에 변동 사항을 현재 가능한 요건으로 수정하시면 더 필요한 과외건 공지를 받아보실 수 있습니다. \n" +
                 "\n" +
                 "요건 수정이나, 과외 공지 중단 요청은 상담 직원에게 말씀해주세요.");
-        CommonButton botButton = new BotButton("상담 매니저에게 요청하기", BOT);
-        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("상담 매니저에게 요청하기", BOT);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 
@@ -194,8 +222,8 @@ public class BizppurioMapper {
                 "아래 버튼을 눌러, 과외 공지를 받기 시작해주세요. 회신 메세지가 없어도 설정이 완료된 것이니 안심해주세요.  \n" +
                 "\n" +
                 "앞으로 잘부탁드립니다 선생님! \uD83D\uDE42");
-        CommonButton botButton = new BotButton("과외 받기 시작하기", BOT);
-        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingChannel, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("과외 받기 시작하기", BOT);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingChannel, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, teacherInfo.getPhoneNumber());
     }
 
@@ -209,8 +237,8 @@ public class BizppurioMapper {
                 "Y-English는 시범과외는 지원하지 않지만 첫 수업 후, 환불이 가능하기에 부담 없이 수업을 진행해 보실 수 있습니다. \uD83D\uDE00\n" +
                 "\n" +
                 "내일까지 둘러보신 후, 희망 선생님을 알려주세요");
-        CommonButton botButton = new BotButton("매칭 담당자에게 문의하기", BOT);
-        Message messageBody = new ButtonMessage(message, yeduOfficialKey, recommendGuid, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("매칭 담당자에게 문의하기", BOT);
+        Message messageBody = new ButtonMessage(message, yeduOfficialKey, recommendGuid, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, parents.getPhoneNumber());
     }
 
@@ -227,8 +255,8 @@ public class BizppurioMapper {
                 "\n" +
                 "24시간 내로 전화드릴 예정이에요. 확인하셨다면 꼭 아래 '확인했어요' 버튼을 눌러주세요!");
 
-        CommonButton botButton = new BotButton("확인했어요", BOT);
-        Message messageBody = new ButtonMessage(message, yeduOfficialKey, beforeCheck, new CommonButton[]{botButton});
+        CommonButton simpleButton = new SimpleButton("확인했어요", BOT);
+        Message messageBody = new ButtonMessage(message, yeduOfficialKey, beforeCheck, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, parents.getPhoneNumber());
     }
 
@@ -242,7 +270,7 @@ public class BizppurioMapper {
                 "✅ 상담 시 미리 추천 선생님 제공\n" +
                 "✅ 더욱 정확한 심층 매칭\n" +
                 "✅ 1순위 상담 진행");
-        CommonButton webLinkButton = new WebButton("1분만에 작성하기", WEB_LINK, "https://tally.so/r/3qJjYY");
+        CommonButton webLinkButton = new WebButton("1분만에 작성하기", WEB_LINK, writeApplicationFormUrl, writeApplicationFormUrl);
         Message messageBody = new ButtonMessage(message, yeduOfficialKey, writeApplicationForm, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, parents.getPhoneNumber());
     }
@@ -256,10 +284,12 @@ public class BizppurioMapper {
                 "아래 상세프로필에서 선생님에 대해 자세하게 확인할 수 있어요. \n" +
                 "\n" +
                 "천천히 살펴보시고 매칭 희망하시는 선생님을 카카오 채팅으로 말씀해주세요 \uD83D\uDE42");
-        CommonButton botButton = new BotButton("이 선생님과 수업할래요", BOT);
-        Message messageBody = new ButtonMessage(message, yeduOfficialKey, recommendTeacher, new CommonButton[]{botButton});
+        String teacherUrl = "https://www.yedu-tutor.com/teacher/" + teacher.getTeacherId() + "?subject=" + applicationForm.getWantedSubject().getDescription();
+        CommonButton simpleButton = new SimpleButton("이 선생님과 수업할래요", MESSAGE);
+        CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, teacherUrl, teacherUrl);
+        Message messageBody = new ButtonMessage(message, yeduOfficialKey, recommendTeacher, new CommonButton[]{webButton, simpleButton});
         return createCommonRequest(messageBody, parents.getPhoneNumber());
-    } //todo : 수정 예정
+    }
 
     public CommonRequest mapToNotifyCalling(Parents parents) {
         String message = ("신청서 접수 완료! ✅\n" +
