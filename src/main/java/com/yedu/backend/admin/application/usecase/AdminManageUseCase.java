@@ -10,6 +10,7 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class AdminManageUseCase {
     private final AdminUpdateService adminUpdateService;
     private final AdminSaveService adminSaveService;
     private final BizppurioParentsMessage bizppurioParentsMessage;
+    private final BizppurioTeacherMessage bizppurioTeacherMessage;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -62,7 +64,8 @@ public class AdminManageUseCase {
                     Teacher teacher = adminGetService.teacherById(id);
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     adminSaveService.saveClassMatching(classMatching);
-                    // todo : 알림톡 전송
+                    adminUpdateService.updateAlertCount(teacher);
+                    bizppurioTeacherMessage.notifyClass(applicationForm, teacher);
                 });
     }
 }
