@@ -1,6 +1,6 @@
 package com.yedu.backend.domain.teacher.application.dto.res;
 
-public record CurriculumResponse(
+public record MathCurriculumResponse(
         String teachingStyle,
         String managementStyle
 ) {

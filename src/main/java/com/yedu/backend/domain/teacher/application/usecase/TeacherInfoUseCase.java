@@ -37,16 +37,16 @@ public class TeacherInfoUseCase {
         return mapToTeacherEnglish(teacher, english);
     }
 
-    public CurriculumResponse curriculumMath(long teacherId) {
+    public MathCurriculumResponse curriculumMath(long teacherId) {
         Teacher teacher = teacherGetService.byId(teacherId);
         TeacherMath math = teacherGetService.mathByTeacher(teacher);
-        return mapToCurriculumResponse(math);
+        return mapToMathCurriculumResponse(math);
     }
 
-    public CurriculumResponse curriculumEnglish(long teacherId) {
+    public EnglishCurriculumResponse curriculumEnglish(long teacherId) {
         Teacher teacher = teacherGetService.byId(teacherId);
         TeacherEnglish english = teacherGetService.englishByTeacher(teacher);
-        return mapToCurriculumResponse(english);
+        return mapToEnglishCurriculumResponse(teacher.getTeacherInfo(), english);
     }
 
     public DistrictAndTimeResponse districtAndTime(long teacherId) {

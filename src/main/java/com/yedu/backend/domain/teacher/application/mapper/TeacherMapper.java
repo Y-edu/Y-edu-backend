@@ -188,12 +188,12 @@ public class TeacherMapper {
         );
     }
 
-    public static CurriculumResponse mapToCurriculumResponse(TeacherMath math) {
-        return new CurriculumResponse(math.getTeachingStyle(), math.getManagementStyle());
+    public static MathCurriculumResponse mapToMathCurriculumResponse(TeacherMath math) {
+        return new MathCurriculumResponse(math.getTeachingStyle(), math.getManagementStyle());
     }
 
-    public static CurriculumResponse mapToCurriculumResponse(TeacherEnglish english) {
-        return new CurriculumResponse(english.getTeachingStyle(), english.getManagementStyle());
+    public static EnglishCurriculumResponse mapToEnglishCurriculumResponse(TeacherInfo teacherInfo, TeacherEnglish english) {
+        return new EnglishCurriculumResponse(english.getTeachingStyle(), english.getManagementStyle(), teacherInfo.getVideo());
     }
 
     public static DistrictAndTimeResponse mapToDistrictAndTimeResponse(List<String> districts, Map<Day, List<LocalTime>> availableTimes) {
