@@ -55,15 +55,15 @@ public class TeacherController {
     }
 
     @GetMapping("/details/math/class/{teacherId}")
-    public ResponseEntity<CurriculumResponse> mathCurriculumInfo(@PathVariable long teacherId) {
-        CurriculumResponse curriculumResponse = infoUseCase.curriculumMath(teacherId);
-        return ResponseEntity.ok(curriculumResponse);
+    public ResponseEntity<MathCurriculumResponse> mathCurriculumInfo(@PathVariable long teacherId) {
+        MathCurriculumResponse mathCurriculumResponse = infoUseCase.curriculumMath(teacherId);
+        return ResponseEntity.ok(mathCurriculumResponse);
     }
 
     @GetMapping("/details/english/class/{teacherId}")
-    public ResponseEntity<CurriculumResponse> englishCurriculumInfo(@PathVariable long teacherId) {
-        CurriculumResponse curriculumResponse = infoUseCase.curriculumEnglish(teacherId);
-        return ResponseEntity.ok(curriculumResponse);
+    public ResponseEntity<EnglishCurriculumResponse> englishCurriculumInfo(@PathVariable long teacherId) {
+        EnglishCurriculumResponse englishCurriculumResponse = infoUseCase.curriculumEnglish(teacherId);
+        return ResponseEntity.ok(englishCurriculumResponse);
     }
 
     @GetMapping("/details/available/{teacherId}")
