@@ -41,7 +41,7 @@ public class ParentsManageUseCase {
                 .toList();
         parentsSaveService.saveApplication(applicationForm, goals);
 
-        List<Teacher> teachers = teacherManageUseCase.sendAlarmTalk(applicationForm); // 선생님한테 알림톡 전송
+        List<Teacher> teachers = teacherManageUseCase.notifyClass(applicationForm); // 선생님한테 알림톡 전송
         classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm); // 매칭 저장
         bizppurioParentsMessage.notifyCalling(parents);
     }

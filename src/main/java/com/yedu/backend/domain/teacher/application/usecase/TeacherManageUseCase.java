@@ -94,9 +94,12 @@ public class TeacherManageUseCase {
         bizppurioTeacherMessage.applyChannel(teacher);
     }
 
-    public List<Teacher> sendAlarmTalk(ApplicationForm applicationForm) {
+    public List<Teacher> notifyClass(ApplicationForm applicationForm) {
         List<Teacher> teachers = teacherGetService.applicationFormTeachers(applicationForm);
-        teachers.forEach(teacherUpdateService::updateAlertCount); //todo : 알림톡 전송 추가
+        teachers.forEach(teacher -> {
+            teacherUpdateService.updateAlertCount(teacher);
+            bizppurioTeacherMessage.notifyClass(applicationForm, teacher);
+        });
         return teachers;
     }
 }
