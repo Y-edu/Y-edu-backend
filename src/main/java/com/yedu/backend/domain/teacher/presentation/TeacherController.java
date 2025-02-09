@@ -6,6 +6,8 @@ import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormReq
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioAuth;
+import com.yedu.backend.global.bizppurio.application.usecase.BizppurioSend;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class TeacherController {
     private final TeacherManageUseCase manageUseCase;
     private final TeacherInfoUseCase infoUseCase;
+    private final BizppurioAuth bizppurioAuth;
+
+    @GetMapping("/test")
+    public void test() {
+        bizppurioAuth.getAuth();
+    }
+
+    @GetMapping("/test2")
+    public void test2() {
+        bizppurioAuth.getAuthV2();
+    }
 
     @PostMapping("/form")
     public ResponseEntity saveByForm(@RequestBody TeacherInfoFormRequest request) {

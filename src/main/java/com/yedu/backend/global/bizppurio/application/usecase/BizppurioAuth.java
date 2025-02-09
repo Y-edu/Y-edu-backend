@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -44,7 +46,7 @@ public class BizppurioAuth {
                 return accessToken.get();
             }
 
-            BizppurioTokenResponse tokenResponse = getToken();
+            BizppurioTokenResponse tokenResponse = getToken(encode);
             DateTimeFormatter formatter = ofPattern("yyyyMMddHHmmss");
             LocalDateTime expiredAt = parse(tokenResponse.expired(), formatter).minusMinutes(10);
             Duration exipiredDuration = between(now(), expiredAt);
@@ -58,13 +60,60 @@ public class BizppurioAuth {
         }
     }
 
-    private BizppurioTokenResponse getToken() {
+    public String getAuthV2() {
+        try {
+            String auth = bizzpurioId + ":" + bizzpurioPw;
+            String encode = Base64Util.encode(auth);
+            Optional<String> accessToken = redisRepository.getValues(encode);
+            if (accessToken.isPresent()) {
+                log.info("기존 알림톡 토큰 이용");
+                return accessToken.get();
+            }
+
+            BizppurioTokenResponse tokenResponse = getTokenV2();
+            DateTimeFormatter formatter = ofPattern("yyyyMMddHHmmss");
+            LocalDateTime expiredAt = parse(tokenResponse.expired(), formatter).minusMinutes(10);
+            Duration exipiredDuration = between(now(), expiredAt);
+            redisRepository.setValues(encode, tokenResponse.accesstoken(), exipiredDuration);
+            log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
+            return tokenResponse.accesstoken();
+        } catch (Exception ex) {
+            //todo : 디코 웹훅
+            log.error("비즈뿌리오 토큰 발급중 예외 발생");
+            return "ERROR";
+        }
+    }
+
+    private BizppurioTokenResponse getToken(String encode) {
+        log.info("비즈뿌리오 토큰 재발급 진행");
+        return webClient.post()
+                .uri(bizzppurioToken)
+                .headers(h -> h.setContentType(APPLICATION_JSON))
+                .headers(h -> h.add("Authorization", "Basic " + encode))
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> {
+                    log.error("비즈뿌리오 API 요청 실패 : {}", response.statusCode());
+                    return response.bodyToMono(String.class)
+                            .doOnNext(errorBody -> log.error("응답 본문 : {}", errorBody))
+                            .flatMap(error -> Mono.error(new IllegalArgumentException("API 요청 실패")));
+                })
+                .bodyToMono(BizppurioTokenResponse.class)
+                .block();
+    }
+
+    private BizppurioTokenResponse getTokenV2() {
         log.info("비즈뿌리오 토큰 재발급 진행");
         return webClient.post()
                 .uri(bizzppurioToken)
                 .headers(h -> h.setContentType(APPLICATION_JSON))
                 .headers(h -> h.setBasicAuth(bizzpurioId, bizzpurioPw))
                 .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> {
+                    log.error("비즈뿌리오 API 요청 실패 : {}", response.statusCode());
+                    return response.bodyToMono(String.class)
+                            .doOnNext(errorBody -> log.error("응답 본문 : {}", errorBody))
+                            .flatMap(error -> Mono.error(new IllegalArgumentException("API 요청 실패")));
+                })
                 .bodyToMono(BizppurioTokenResponse.class)
                 .block();
     }
