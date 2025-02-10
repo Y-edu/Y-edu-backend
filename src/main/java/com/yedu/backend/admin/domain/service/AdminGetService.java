@@ -42,7 +42,7 @@ public class AdminGetService {
     }
 
     public List<ClassMatching> allMatching(ApplicationForm applicationForm) {
-        return classMatchingRepository.findAllByApplicationForm(applicationForm);
+        return classMatchingRepository.allByApplicationForm(applicationForm);
     }
 
     public ApplicationForm applicationFormById(String applicationFormId) {
