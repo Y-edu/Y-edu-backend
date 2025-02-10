@@ -1,21 +1,21 @@
 package com.yedu.backend.domain.teacher.domain.entity.constant;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+
+@RequiredArgsConstructor
+@Getter
 public enum Day {
-    월,화,수,목,금,토,일;
+    월(0),화(1),수(2),목(3),금(4),토(5),일(6);
+
+    private final int dayNum;
 
     public static Day byInt(int day) {
-        if (day == 0)
-            return 월;
-        if (day == 1)
-            return 화;
-        if (day == 2)
-            return 수;
-        if (day == 3)
-            return 목;
-        if (day == 4)
-            return 금;
-        if (day == 5)
-            return 토;
-        return 일;
+        return Arrays.stream(values())
+                .filter(d -> d.dayNum == day)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid day number: " + day));
     }
 }

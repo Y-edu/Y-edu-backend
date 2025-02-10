@@ -1,10 +1,13 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,10 +16,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
+import static com.yedu.backend.domain.teacher.domain.entity.QTeacherAvailable.teacherAvailable;
 
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class TeacherInfoUseCase {
     private final TeacherGetService teacherGetService;
 
@@ -58,11 +63,8 @@ public class TeacherInfoUseCase {
                 .map(teacherDistrict -> teacherDistrict.getDistrict().getDescription())
                 .toList();
 
-        Map<Day, List<LocalTime>> availableTimes = Arrays.stream(Day.values())
-                .collect(Collectors.toMap(
-                        day -> day,
-                        day -> new ArrayList<>()
-                ));
+        SortedMap<Day, List<LocalTime>> availableTimes = new TreeMap<>(Comparator.comparingInt(Day::getDayNum));
+        Arrays.stream(Day.values()).forEach(day -> availableTimes.put(day, new ArrayList<>()));
 
         teacherAvailables.forEach(teacherAvailable -> {
             Day day = teacherAvailable.getDay();
