@@ -15,7 +15,7 @@ public class ClassMatchingMapper {
                 .build();
     }
 
-    public static ClassMatchingForTeacherResponse mapToApplicationFormToTeacherResponse(ApplicationForm applicationForm, List<String> goals) {
+    public static ClassMatchingForTeacherResponse mapToApplicationFormToTeacherResponse(ClassMatching classMatching, ApplicationForm applicationForm, List<String> goals) {
         return new ClassMatchingForTeacherResponse(
                 applicationForm.getApplicationFormId(),
                 applicationForm.getWantedSubject(),
@@ -27,7 +27,8 @@ public class ClassMatchingMapper {
                 applicationForm.getDong(),
                 goals,
                 applicationForm.getFavoriteStyle(),
-                applicationForm.getWantTime()
+                applicationForm.getWantTime(),
+                classMatching.getMatchStatus()
         );
     }
 }
