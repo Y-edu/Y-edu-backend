@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.matching.application.dto.res;
 
+import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 
@@ -16,6 +17,7 @@ public record ClassMatchingForTeacherResponse(
         String dong,
         List<String> goals,
         String favoriteStyle,
-        String favoriteTime
+        String favoriteTime,
+        MatchingStatus matchStatus
 ) {
 }

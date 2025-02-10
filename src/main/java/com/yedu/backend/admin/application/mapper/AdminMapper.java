@@ -120,6 +120,7 @@ public class AdminMapper {
                 0,
                 0,
                 teacher.getTeacherSchoolInfo().getUniversity(),
+                teacher.getTeacherSchoolInfo().getMajor(),
                 districts,
                 teacherInfo.getVideo(),
                 teacher.getIssue()

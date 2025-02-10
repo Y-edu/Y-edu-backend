@@ -31,8 +31,7 @@ public class ClassMatchingInfoUseCase {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
             throw new IllegalArgumentException();
-        // todo : 알림톡을 통해 선생님들에게 보내는데, 거절할 때 선생님 특정을 어떻게 하지? 프론트 URL에 선생님 PK값을 포함하여 만들고, 신청하기 혹은 거절하기 누를 때 그걸 포함해서 요청해달라고 하기
 
-        return mapToApplicationFormToTeacherResponse(applicationForm, goals);
+        return mapToApplicationFormToTeacherResponse(classMatching, applicationForm, goals);
     }
 }

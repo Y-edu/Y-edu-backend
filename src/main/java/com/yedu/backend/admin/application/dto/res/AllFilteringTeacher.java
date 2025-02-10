@@ -17,6 +17,7 @@ public record AllFilteringTeacher(
         int accept,
         int total,
         String university,
+        String major,
         List<String> districts,
         String video,
         String issue
