@@ -38,7 +38,7 @@ public class TeacherGetService {
     }
 
     public List<TeacherAvailable> availablesByTeacher(Teacher teacher) {
-        return availableRepository.findAllByTeacher(teacher);
+        return availableRepository.allAvailableByTeacher(teacher);
     }
 
     public List<TeacherDistrict> districtsByTeacher(Teacher teacher) {
