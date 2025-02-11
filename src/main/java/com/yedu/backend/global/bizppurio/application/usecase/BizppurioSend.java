@@ -27,6 +27,7 @@ public class BizppurioSend {
 
     protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
         try {
+            log.info("알림톡 발송 : {}", messageSupplier.get().to());
             CommonRequest commonRequest = messageSupplier.get();
             String accessToken = bizppurioAuth.getAuth();
             String request = objectMapper.writeValueAsString(commonRequest);
