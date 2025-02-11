@@ -5,7 +5,6 @@ import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.global.bizppurio.application.mapper.BizppurioMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @Component
@@ -14,39 +13,40 @@ public class BizppurioTeacherMessage {
     private final BizppurioSend bizppurioSend;
 
     public void counselStartAndPhotoSubmit(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToCounselStart(teacher));
-        photoSubmit(teacher);
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToCounselStart(teacher))
+                .doFinally(ignore -> photoSubmit(teacher))
+                .subscribe();
     }
 
-    private Mono<Void> photoSubmit(Teacher teacher) {
-        return bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyPhotoSubmit(teacher));
+    private void photoSubmit(Teacher teacher) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyPhotoSubmit(teacher)).subscribe();
     }
 
     public void photoHurry(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToPhotoHurry(teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToPhotoHurry(teacher)).subscribe();
     }
 
     public void applyAgree(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyAgree(teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyAgree(teacher)).subscribe();
     }
 
     public void matchingChannel(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToMatchingChannel(teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToMatchingChannel(teacher)).subscribe();
     }
 
     public void applyChannel(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyChannel(teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyChannel(teacher)).subscribe();
     }
 
     public void notifyClass(ApplicationForm applicationForm, Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyClass(applicationForm, teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyClass(applicationForm, teacher)).subscribe();
     }
 
     public void acceptCase(ApplicationForm applicationForm, Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToMatchingAcceptCase(applicationForm, teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToMatchingAcceptCase(applicationForm, teacher)).subscribe();
     }
 
     public void refuseCase(Teacher teacher) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRefuseCase(teacher));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRefuseCase(teacher)).subscribe();
     }
 }

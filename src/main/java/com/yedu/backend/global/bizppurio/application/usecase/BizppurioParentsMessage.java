@@ -17,15 +17,15 @@ public class BizppurioParentsMessage {
     private final BizppurioSend bizppurioSend;
 
     public void writeApplicationForm(Parents parents) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToWriteApplicationForm(parents));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToWriteApplicationForm(parents)).subscribe();
     }
 
     public void notifyCalling(Parents parents) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyCalling(parents));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyCalling(parents)).subscribe();
     }
 
     public void beforeCheck(Parents parents) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToBeforeCheck(parents));
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToBeforeCheck(parents)).subscribe();
     }
 
     public void recommendTeacher(List<ClassMatching> classMatchings) {
@@ -38,7 +38,7 @@ public class BizppurioParentsMessage {
                                 ))
                                 .toList()
                 )
-                .then(recommendGuide(applicationForm.getParents()))
+                .flatMap(ignore -> recommendGuide(applicationForm.getParents()))
                 .subscribe();
     }
 
