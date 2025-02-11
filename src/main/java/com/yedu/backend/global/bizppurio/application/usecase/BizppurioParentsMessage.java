@@ -38,12 +38,12 @@ public class BizppurioParentsMessage {
                                 ))
                                 .toList()
                 )
-                .flatMap(ignore -> recommendGuide(applicationForm.getParents()))
+                .doFinally(ignore -> recommendGuide(applicationForm.getParents()))
                 .subscribe();
     }
 
 
-    private Mono<Void> recommendGuide(Parents parents) {
-        return bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRecommendGuid(parents));
+    private void recommendGuide(Parents parents) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRecommendGuid(parents)).subscribe();
     }
 }
