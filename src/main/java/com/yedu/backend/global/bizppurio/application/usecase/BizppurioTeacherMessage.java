@@ -15,7 +15,7 @@ public class BizppurioTeacherMessage {
 
     public void counselStartAndPhotoSubmit(Teacher teacher) {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToCounselStart(teacher))
-                .then(Mono.defer(() -> photoSubmit(teacher)))
+                .flatMap(fin -> photoSubmit(teacher))
                 .subscribe();
     }
 
