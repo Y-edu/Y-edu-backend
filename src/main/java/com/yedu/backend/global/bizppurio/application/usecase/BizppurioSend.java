@@ -28,10 +28,10 @@ public class BizppurioSend {
 
     protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
         try {
-            log.info("알림톡 발송 : {} \n{}", messageSupplier.get().to(), messageSupplier.get().content().at());
             CommonRequest commonRequest = messageSupplier.get();
             String accessToken = bizppurioAuth.getAuth();
             String request = objectMapper.writeValueAsString(commonRequest);
+            log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
             return webClient.post()
                     .uri(messageUrl)
                     .headers(h -> h.setContentType(APPLICATION_JSON))
@@ -45,6 +45,10 @@ public class BizppurioSend {
                                 .flatMap(error -> Mono.error(new IllegalArgumentException("비즈뿌리오 알림톡 전송 API 요청 실패")));
                     })
                     .bodyToMono(MessageResponse.class)
+                    .doOnSubscribe(subscription -> log.info("알림톡 요청 시작"))
+                    .doOnNext(response -> log.info("알림톡 전송 결과 : {} {}", response.code(), response.description()))
+                    .doOnError(error -> log.error("알림톡 요청 중 오류 발생: {}", error.getMessage()))
+                    .doOnSuccess(response -> log.info("알림톡 요청 성공"))
                     .doOnNext(this::check)
                     .then();
         } catch (Exception ex) {
@@ -55,7 +59,6 @@ public class BizppurioSend {
     }
 
     private void check(MessageResponse response) {
-        log.info("알림톡 전송에 결과. : {} {}", response.code(), response.description());
         if (response.code() != 1000) {
             log.error("전송실패 errorCode : {} errorMessage : {}", response.code(), response.description());
             throw new IllegalArgumentException(response.code() + ", " + response.description());
