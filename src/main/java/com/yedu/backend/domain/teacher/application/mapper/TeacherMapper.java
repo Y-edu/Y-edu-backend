@@ -9,6 +9,7 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
 import com.yedu.backend.domain.teacher.domain.entity.constant.University;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -114,21 +115,9 @@ public class TeacherMapper {
     public static TeacherMathResponse mapToTeacherMathResponse(Teacher teacher, TeacherMath math) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
-        String appealPoint = math.getAppealPoint().replace("#", "");
-        List<String> appealPoints = Arrays.stream(appealPoint.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
-        String teachingExperience = math.getTeachingExperience().replace("#", "");
-        List<String> experiences = Arrays.stream(teachingExperience.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
-        String recommendStudents = classInfo.getRecommendStudent().replace("#", "");
-        List<String> recommends = Arrays.stream(recommendStudents.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
+        List<String> appealPoints = getOrganizeContexts(math.getAppealPoint());
+        List<String> experiences = getOrganizeContexts(math.getTeachingExperience());
+        List<String> recommends = getOrganizeContexts(classInfo.getRecommendStudent());
 
         return new TeacherMathResponse(
                 appealPoints,
@@ -150,26 +139,10 @@ public class TeacherMapper {
     public static TeacherEnglishResponse mapToTeacherEnglish(Teacher teacher, TeacherEnglish english) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
-        String appealPoint = english.getAppealPoint().replace("#", "");
-        List<String> appealPoints = Arrays.stream(appealPoint.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
-        String foreignExperience = english.getForeignExperience().replace("#", "");
-        List<String> foreignExperiences = Arrays.stream(foreignExperience.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
-        String teachingExperience = english.getTeachingExperience().replace("#", "");
-        List<String> experiences = Arrays.stream(teachingExperience.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
-        String recommendStudents = classInfo.getRecommendStudent().replace("#", "");
-        List<String> recommends = Arrays.stream(recommendStudents.split("\n")).toList()
-                .stream()
-                .map(String::trim)
-                .toList();
+        List<String> appealPoints = getOrganizeContexts(english.getAppealPoint());
+        List<String> foreignExperiences = getForeignExperiences(english);
+        List<String> experiences = getOrganizeContexts(english.getTeachingExperience());
+        List<String> recommends = getOrganizeContexts(classInfo.getRecommendStudent());
         return new TeacherEnglishResponse(
                 appealPoints,
                 classInfo.getComment(),
@@ -186,6 +159,26 @@ public class TeacherMapper {
                 classInfo.getTeachingStyleInfo2(),
                 recommends
         );
+    }
+
+    private static List<String> getOrganizeContexts(String context) {
+        String organizeContext = context.replace("#", "");
+        return Arrays.stream(organizeContext.split("\n")).toList()
+                .stream()
+                .map(String::trim)
+                .toList();
+    }
+
+    private static List<String> getForeignExperiences(TeacherEnglish english) {
+        List<String> foreignExperiences = new ArrayList<>();
+        if (english.getForeignExperience() != null) {
+            String foreignExperience = english.getForeignExperience().replace("#", "");
+            foreignExperiences = Arrays.stream(foreignExperience.split("\n")).toList()
+                    .stream()
+                    .map(String::trim)
+                    .toList();
+        }
+        return foreignExperiences;
     }
 
     public static MathCurriculumResponse mapToMathCurriculumResponse(TeacherMath math) {
