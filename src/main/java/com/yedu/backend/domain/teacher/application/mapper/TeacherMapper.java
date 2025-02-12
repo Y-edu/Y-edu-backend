@@ -47,12 +47,8 @@ public class TeacherMapper {
                 .teachingStyleInfo2(request.teachingStyleInfo1())
                 .recommendStudent(request.recommenedStudent())
                 .comment(request.comment())
-                .englishPossible(false)
-                .mathPossible(false);
-        if (request.englishPossible())
-            builder.englishPossible(true);
-        if (request.mathPossible())
-            builder.englishPossible(true);
+                .englishPossible(request.englishPossible())
+                .mathPossible(request.mathPossible());
         return builder.build();
     }
 
