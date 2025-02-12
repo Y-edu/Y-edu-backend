@@ -5,7 +5,9 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ParentsMapper {
     public static Parents mapToParents(ApplicationFormRequest request) {
         return Parents.builder()
@@ -17,9 +19,12 @@ public class ParentsMapper {
         // 가격 계산식 = 4주 기준 분 * 600
 
         char total = (char) (parents.getCount() + 96);
-        int classCount = getClassCount(request.classCount());
-        int classTime = getClassTime(request.classTime());
+        int classCount = getClassCount(request.classCount().trim());
+        log.info("classCount : {}", classCount);
+        int classTime = getClassTime(request.classTime().trim());
+        log.info("classTime : {}", classTime);
         int pay = classTime * classCount * 4 * 600;
+        log.info("pay : {}", pay);
         return ApplicationForm.builder()
                 .applicationFormId(District.fromString(request.district()) + String.valueOf(parents.getParentsId()) + total)
                 .parents(parents)
@@ -40,11 +45,11 @@ public class ParentsMapper {
 
     private static int getClassTime(String time) {
         if (time.equals("50분"))
-            return  50;
+            return 50;
         if (time.equals("60분"))
-            return  60;
+            return 60;
         if (time.equals("75분"))
-            return  75;
+            return 75;
         if (time.equals("100분"))
             return 100;
         if (time.equals("120분"))
