@@ -1,0 +1,1 @@
+ALTER TABLE application_form ADD pay int NOT NULL DEFAULT 0;
