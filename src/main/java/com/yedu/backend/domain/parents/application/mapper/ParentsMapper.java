@@ -19,6 +19,7 @@ public class ParentsMapper {
         char total = (char) (parents.getCount() + 96);
         int classCount = getClassCount(request.classCount());
         int classTime = getClassTime(request.classTime());
+        int pay = classTime * classCount * 4 * 600;
         return ApplicationForm.builder()
                 .applicationFormId(District.fromString(request.district()) + String.valueOf(parents.getParentsId()) + total)
                 .parents(parents)
@@ -33,36 +34,34 @@ public class ParentsMapper {
                 .classCount(request.classCount())
                 .classTime(request.classTime())
                 .source(request.source())
-                .pay(classTime*classCount*4*600)
+                .pay(pay)
                 .build();
     }
 
     private static int getClassTime(String time) {
-        int classTime = 0;
         if (time.equals("50분"))
-            classTime = 50;
+            return  50;
         if (time.equals("60분"))
-            classTime = 60;
+            return  60;
         if (time.equals("75분"))
-            classTime = 75;
+            return  75;
         if (time.equals("100분"))
-            classTime = 100;
+            return 100;
         if (time.equals("120분"))
-            classTime = 120;
-        return classTime;
+            return 120;
+        return 0;
     }
 
     private static int getClassCount(String count) {
-        int classCount = 0;
         if (count.equals("주 1회"))
-            classCount = 1;
+            return 1;
         else if (count.equals("주 2회"))
-            classCount = 2;
+            return 2;
         else if (count.equals("주 3회"))
-            classCount = 3;
+            return 3;
         else if (count.equals("주 4회"))
-            classCount = 4;
-        return classCount;
+            return 4;
+        return 0;
     }
 
     public static Goal mapToGoal(ApplicationForm applicationForm, String classGoal) {
