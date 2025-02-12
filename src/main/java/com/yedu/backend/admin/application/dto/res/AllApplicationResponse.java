@@ -9,6 +9,7 @@ public record AllApplicationResponse(
                                       String kakaoName,
                                       String classCount,
                                       String classTime,
+                                      int pay,
                                       String wantedSubject,
                                       String source,
                                       String createdAt,

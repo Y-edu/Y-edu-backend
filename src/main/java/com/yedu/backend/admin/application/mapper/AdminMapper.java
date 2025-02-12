@@ -26,6 +26,7 @@ public class AdminMapper {
                 kakaoName,
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
+                applicationForm.getPay(),
                 applicationForm.getWantedSubject().name(),
                 applicationForm.getSource(),
                 applicationForm.getCreatedAt().toString(),
@@ -64,33 +65,10 @@ public class AdminMapper {
     }
 
     public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm, List<String> goals) {
-        // 가격 계산식 = 4주 기준 분 * 600
-        String count = applicationForm.getClassCount();
-        int classCount = 0;
-        if (count.equals("주 1회"))
-            classCount = 1;
-        else if (count.equals("주 2회"))
-            classCount = 2;
-        else if (count.equals("주 3회"))
-            classCount = 3;
-        else if (count.equals("주 4회"))
-            classCount = 4;
-        String time = applicationForm.getClassTime();
-        int classTime = 0;
-        if (time.equals("50분"))
-            classTime = 50;
-        if (time.equals("60분"))
-            classTime = 60;
-        if (time.equals("75분"))
-            classTime = 75;
-        if (time.equals("100분"))
-            classTime = 100;
-        if (time.equals("120분"))
-            classTime = 120;
         return new ClassDetailsResponse(
-                classCount,
-                classTime,
-                classTime*classCount*4*600,
+                applicationForm.getClassCount(),
+                applicationForm.getClassTime(),
+                applicationForm.getPay(),
                 applicationForm.getAge(),
                 applicationForm.getWantedSubject(),
                 applicationForm.getOnline(),

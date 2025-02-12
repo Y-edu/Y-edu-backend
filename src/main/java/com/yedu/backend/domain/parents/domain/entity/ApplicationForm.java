@@ -58,6 +58,8 @@ public class ApplicationForm extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private boolean proceedStatus = false; // 처리 상태
+    @Column(nullable = false)
+    private int pay;
 
     public void updateProceedStatus() {
         proceedStatus = !proceedStatus;
