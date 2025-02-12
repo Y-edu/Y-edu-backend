@@ -29,8 +29,6 @@ public class ClassMatchingInfoUseCase {
                 .toList();
 
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
-        if (!classMatching.isWaiting())
-            throw new IllegalArgumentException();
 
         return mapToApplicationFormToTeacherResponse(classMatching, applicationForm, goals);
     }
