@@ -8,8 +8,8 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import java.util.List;
 
 public record ClassDetailsResponse(
-        int classCount,
-        int classTime,
+        String classCount,
+        String classTime,
         int pay,
         String age,
         ClassType wantedSubject,
