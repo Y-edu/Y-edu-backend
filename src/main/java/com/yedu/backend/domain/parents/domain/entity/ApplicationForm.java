@@ -57,7 +57,7 @@ public class ApplicationForm extends BaseEntity {
     private String source; //유입경로
     @Builder.Default
     @Column(nullable = false)
-    private boolean proceedStatus = false; // 처리 상태
+    private boolean proceedStatus = true; // 처리 상태
     @Column(nullable = false)
     private int pay;
 
