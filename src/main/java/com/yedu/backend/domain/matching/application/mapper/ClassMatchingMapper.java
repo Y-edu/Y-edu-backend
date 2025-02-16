@@ -22,6 +22,7 @@ public class ClassMatchingMapper {
                 applicationForm.getAge(),
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
+                (int) (applicationForm.getPay()*(5.0/6.0)),
                 applicationForm.getOnline(),
                 applicationForm.getDistrict().getDescription(),
                 applicationForm.getDong(),

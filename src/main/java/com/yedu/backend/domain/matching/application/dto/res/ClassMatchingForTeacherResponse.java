@@ -12,6 +12,7 @@ public record ClassMatchingForTeacherResponse(
         String age,
         String classCount,
         String classTime,
+        int pay,
         Online online,
         String district,
         String dong,

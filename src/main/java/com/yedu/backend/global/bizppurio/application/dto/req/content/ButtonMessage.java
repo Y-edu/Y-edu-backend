@@ -6,4 +6,8 @@ public record ButtonMessage(
         String templatecode,
         CommonButton[] button
 ) implements Message {
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }
