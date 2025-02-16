@@ -2,6 +2,7 @@ package com.yedu.backend.global.bizppurio.application.usecase;
 
 import com.yedu.backend.global.bizppurio.application.dto.res.BizppurioTokenResponse;
 import com.yedu.backend.global.config.redis.RedisRepository;
+import com.yedu.backend.global.discord.DiscordWebhookSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Base64Util;
@@ -28,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class BizppurioAuth {
     private final WebClient webClient;
     private final RedisRepository redisRepository;
+    private final DiscordWebhookSend discordWebhookSend;
 
     @Value("${bizppurio.token}")
     private String bizzppurioToken;
@@ -54,7 +56,7 @@ public class BizppurioAuth {
             log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
             return tokenResponse.accesstoken();
         } catch (Exception ex) {
-            //todo : 디코 웹훅
+            discordWebhookSend.sendAlarmTalkTokenError(ex.getMessage());
             log.error("비즈뿌리오 토큰 발급중 예외 발생");
             return "ERROR";
         }
@@ -67,12 +69,10 @@ public class BizppurioAuth {
                 .headers(h -> h.setContentType(APPLICATION_JSON))
                 .headers(h -> h.setBasicAuth(bizzpurioId, bizzpurioPw))
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> {
-                    log.error("비즈뿌리오 API 요청 실패 : {}", response.statusCode());
-                    return response.bodyToMono(String.class)
-                            .doOnNext(errorBody -> log.error("응답 본문 : {}", errorBody))
-                            .flatMap(error -> Mono.error(new IllegalArgumentException("API 요청 실패")));
-                })
+                .onStatus(HttpStatusCode::isError, response ->
+                        response.bodyToMono(String.class)
+                                .map(errorBody -> new IllegalArgumentException("비즈뿌리오 토큰 요청 실패: " + errorBody))
+                )
                 .bodyToMono(BizppurioTokenResponse.class)
                 .block();
     }

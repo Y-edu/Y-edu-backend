@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
 import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
 import com.yedu.backend.global.bizppurio.application.dto.res.MessageResponse;
+import com.yedu.backend.global.discord.DiscordWebhookSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,59 +21,54 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 @Component
 public class BizppurioSend {
+    private final static String SUCCESS = "7000";
     private final BizppurioAuth bizppurioAuth;
     private final ObjectMapper objectMapper;
     private final WebClient webClient;
+    private final DiscordWebhookSend discordWebhookSend;
 
     @Value("${bizppurio.message}")
     private String messageUrl;
 
     protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
+        CommonRequest commonRequest = messageSupplier.get();
+        String accessToken = bizppurioAuth.getAuth();
+        String request;
         try {
-            CommonRequest commonRequest = messageSupplier.get();
-            String accessToken = bizppurioAuth.getAuth();
-            String request = objectMapper.writeValueAsString(commonRequest);
-            log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
-            return webClient.post()
-                    .uri(messageUrl)
-                    .headers(h -> h.setContentType(APPLICATION_JSON))
-                    .headers(h -> h.setBearerAuth(accessToken))
-                    .bodyValue(request)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::isError, response -> {
-                        log.error("알림톡 발송 실패 : {}", response.statusCode());
-                        return response.bodyToMono(String.class)
-                                .doOnNext(errorBody -> log.error("응답 본문 : {}", errorBody))
-                                .flatMap(error -> Mono.error(new IllegalArgumentException("비즈뿌리오 알림톡 전송 API 요청 실패")));
-                    })
-                    .bodyToMono(MessageResponse.class)
-                    .doOnSubscribe(subscription -> log.info("알림톡 요청 시작"))
-                    .doOnNext(response -> log.info("알림톡 요청 결과 : {} {} {}", response.code(), response.description(), response.messagekey()))
-                    .doOnError(error -> log.error("알림톡 요청 중 오류 발생: {}", error.getMessage()))
-                    .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
-                    .doOnNext(this::check)
-                    .then();
-        } catch (Exception ex) {
-            log.error("알림톡 전송 예외 발생: {}", ex.getMessage());
-            //todo : 추가 처리 디코 웹훅
+            request = objectMapper.writeValueAsString(commonRequest);
+        } catch (Exception e) {
+            log.error("Json 직렬화 실패");
             return Mono.empty();
         }
-    }
+        log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
 
-    private void check(MessageResponse response) {
-        if (response.code() != 1000) {
-            log.error("전송실패 errorCode : {} errorMessage : {}", response.code(), response.description());
-            throw new IllegalArgumentException(response.code() + ", " + response.description());
-        }
-        log.info("알림톡 요청에 성공하였습니다.");
+        return webClient.post()
+                .uri(messageUrl)
+                .headers(h -> h.setContentType(APPLICATION_JSON))
+                .headers(h -> h.setBearerAuth(accessToken))
+                .bodyValue(request)
+                .retrieve()
+                // 200이 아닐 경우 예외 발생
+                .onStatus(HttpStatusCode::isError, response ->
+                    response.bodyToMono(String.class)
+                            .map(errorBody -> new IllegalArgumentException("비즈뿌리오 알림톡 전송 API 요청 실패: " + errorBody))
+                )
+                .bodyToMono(MessageResponse.class)
+                .doOnSubscribe(subscription -> log.info("알림톡 요청 시작"))
+                .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
+                .doOnError(error -> {
+                    log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
+                    discordWebhookSend.sendAlarmTalkError(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
+                })
+                .then();
     }
 
     public void checkByWebHook(MessageStatusRequest request) {
-        if (request.RESULT().equals("7000")) {
+        if (request.RESULT().equals(SUCCESS)) {
             log.info("{} 에 대한 알림톡 전송 완료", request.PHONE());
             return;
         }
         log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {}",  request.PHONE(), request.MSGID(), request.RESULT());
-        //todo : 디스코드 웹훅
+        discordWebhookSend.sendAlarmTalkError(request.PHONE(), request.MSGID(), request.RESULT());
     }
 }

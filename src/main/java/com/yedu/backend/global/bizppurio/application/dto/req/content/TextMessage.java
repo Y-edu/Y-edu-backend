@@ -5,4 +5,8 @@ public record TextMessage(
         String senderkey,
         String templatecode
 ) implements Message {
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }
