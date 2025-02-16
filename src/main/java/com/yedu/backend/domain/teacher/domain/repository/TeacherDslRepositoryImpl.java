@@ -94,6 +94,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                             .or(teacher.teacherInfo.name.like("%" + request.search() + "%"))
                             .or(teacher.status.stringValue().like("%" + request.search() + "%"))
                             .or(teacher.issue.like("%" + request.search() + "%"))
+                            .or(teacher.teacherSchoolInfo.major.like("%" + request.search() + "%"))
                             .or(subjectSpecifier(request.search()))
             );
         }
