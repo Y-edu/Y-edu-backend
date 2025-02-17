@@ -17,6 +17,6 @@ public class Goal {
     private long goalId;
     @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationForm applicationForm;
-    @Column(nullable = false, length = 45)
+    @Column(nullable = false, length = 100)
     private String classGoal;
 }
