@@ -11,6 +11,7 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import com.yedu.backend.global.config.s3.S3UploadService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import java.util.List;
 import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class TeacherManageUseCase {
@@ -84,6 +86,7 @@ public class TeacherManageUseCase {
     public void saveTeacherProfile(MultipartFile profile, TeacherProfileFormRequest request) {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
+        log.info("profile 사진 저장");
         teacherUpdateService.updateProfile(teacher, profileUrl);
         bizppurioTeacherMessage.applyAgree(teacher);
     }
