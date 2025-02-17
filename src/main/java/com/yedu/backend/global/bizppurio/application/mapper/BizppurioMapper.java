@@ -298,7 +298,7 @@ public class BizppurioMapper {
     public CommonRequest mapToNotifyCalling(Parents parents) {
         String message = ("신청서 접수 완료! ✅\n" +
                 "\n" +
-                "매칭 매니저가 꼼꼼하게 확인하고 있어요.  48시간 이내로 전화드릴게요. \n" +
+                "매칭 매니저가 꼼꼼하게 확인하고 있어요. 48시간 이내로 전화드릴게요. \n" +
                 "\n" +
                 "구체적인 수업 방향성과 교재는 선생님 매칭 후 상담하시게 됩니다. \n" +
                 "\n" +
