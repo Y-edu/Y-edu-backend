@@ -160,7 +160,7 @@ public class BizppurioMapper {
         String message = ("["+applicationForm.getDistrict().getDescription()+" "+applicationForm.getDong()+" 과외건 공지]" +
                 "\n" +
                 "\n" +
-                "안녕하세요 #{선생님 영어이름}선생님!\n" +
+                "안녕하세요 " + teacher.getTeacherInfo().getNickName() + "선생님!\n" +
                 "현재 "+applicationForm.getWantedSubject()+" "+applicationForm.getDistrict().getDescription()+" "+applicationForm.getDong()+"에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
                 "\n" +
                 "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +

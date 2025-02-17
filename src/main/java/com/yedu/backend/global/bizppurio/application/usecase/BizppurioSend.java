@@ -68,7 +68,7 @@ public class BizppurioSend {
             log.info("{} 에 대한 알림톡 전송 완료", request.PHONE());
             return;
         }
-        log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {}",  request.PHONE(), request.MSGID(), request.RESULT());
-        discordWebhookSend.sendAlarmTalkError(request.PHONE(), request.MSGID(), request.RESULT());
+        log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {}",  request.PHONE(), request.CMSGID(), request.RESULT());
+        discordWebhookSend.sendAlarmTalkError(request.PHONE(), request.CMSGID(), request.RESULT());
     }
 }
