@@ -54,6 +54,10 @@ public class ParentsMapper {
             return 100;
         if (time.equals("120분"))
             return 120;
+        if (time.equals("150분"))
+            return 150;
+        if (time.equals("200분"))
+            return 200;
         return 0;
     }
 
@@ -66,6 +70,8 @@ public class ParentsMapper {
             return 3;
         else if (count.equals("주 4회"))
             return 4;
+        if (count.equals("주 5회"))
+            return 5;
         return 0;
     }
 
