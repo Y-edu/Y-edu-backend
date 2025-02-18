@@ -279,7 +279,6 @@ public class BizppurioMapper {
 
     public CommonRequest mapToRecommendTeacher(ApplicationForm applicationForm, Teacher teacher) {
         Parents parents = applicationForm.getParents();
-        String header = "꼼꼼히 살펴보고 추천드려요";
         String title = "추천 : " + teacher.getTeacherInfo().getNickName() + " 선생님";
         String message = ("신청해주신 " + applicationForm.getDistrict() + " 과외 매칭을 위한 선생님을 안내드립니다.\n" +
                 "\n" +
