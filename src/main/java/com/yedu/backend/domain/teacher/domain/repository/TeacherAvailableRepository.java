@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface TeacherAvailableRepository extends JpaRepository<TeacherAvailable, Long>, TeacherAvailableDslRepository {
     List<TeacherAvailable> findAllByTeacher(Teacher teacher);
+
+
+    void deleteAllByTeacher_TeacherInfo_PhoneNumber(String phoneNumber);
 }

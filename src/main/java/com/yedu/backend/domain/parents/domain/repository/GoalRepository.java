@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     List<Goal> findAllByApplicationForm(ApplicationForm applicationForm);
+
+    void deleteAllByApplicationForm_Parents_PhoneNumber(String phoneNumber);
 }

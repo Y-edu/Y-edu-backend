@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface ParentsRepository extends JpaRepository<Parents, Long> {
     Optional<Parents> findByPhoneNumber(String phoneNumber);
+
+    void deleteAllByPhoneNumber(String phoneNumber);
 }
