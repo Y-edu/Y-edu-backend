@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Long>, TeacherDslRepository {
     Optional<Teacher> findByTeacherInfo_PhoneNumber(String PhoneNumber);
+
+    void deleteAllByTeacherInfo_PhoneNumber(String phoneNumber);
 }
