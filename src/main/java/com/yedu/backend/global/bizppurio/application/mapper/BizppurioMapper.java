@@ -290,7 +290,7 @@ public class BizppurioMapper {
         String teacherUrl = "https://www.yedu-tutor.com/teacher/" + teacher.getTeacherId() + "?subject=" + applicationForm.getWantedSubject().getDescription();
         CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, teacherUrl, teacherUrl);
         CommonButton simpleButton = new SimpleButton("이 선생님과 수업할래요", MESSAGE);
-        Message messageBody = new EmphasizeButtonMessage(message, title, header, yeduOfficialKey, recommendTeacher, new CommonButton[]{webButton, simpleButton});
+        Message messageBody = new EmphasizeButtonMessage(message, title, yeduOfficialKey, recommendTeacher, new CommonButton[]{webButton, simpleButton});
         return createCommonRequest(messageBody, parents.getPhoneNumber());
     }
 
