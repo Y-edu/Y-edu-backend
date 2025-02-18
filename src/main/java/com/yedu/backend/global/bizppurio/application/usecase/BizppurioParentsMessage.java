@@ -38,8 +38,8 @@ public class BizppurioParentsMessage {
                                 ))
                                 .toList()
                 )
-                .doFinally(ignore -> recommendGuide(applicationForm.getParents()))
-                .subscribe();
+                .block();
+        recommendGuide(applicationForm.getParents());
     }
 
 
