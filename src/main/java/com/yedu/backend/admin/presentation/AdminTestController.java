@@ -1,11 +1,10 @@
 package com.yedu.backend.admin.presentation;
 
-import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
 import com.yedu.backend.admin.domain.service.AdminGetService;
+import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.repository.ClassMatchingRepository;
-import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
@@ -20,18 +19,20 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
 import com.yedu.backend.domain.teacher.domain.repository.*;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
-import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -147,23 +148,37 @@ public class AdminTestController {
     public void recommendClass(@PathVariable String applicationFormId, @PathVariable String phoneNumber) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
+
+        Optional<ClassMatching> existingClassMatching = classMatchingRepository.findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(
+                applicationForm.getApplicationFormId(),
+                teacher.getTeacherId(),
+                teacher.getTeacherInfo().getPhoneNumber()
+        );
+        existingClassMatching.ifPresentOrElse(
+                classMatching -> {}, // 기존 매칭이 존재하면 아무 작업 안 함
+                () -> {
+                    ClassMatching newClassMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+                    classMatchingRepository.save(newClassMatching);
+                }
+        );
+
         teacherMessage.notifyClass(applicationForm, teacher);
     }
+    // 실제로 매칭을 하나 생성해줘야함
 
     @PostMapping("/test/teacher/accept/{applicationFormId}/{phoneNumber}")
     @Operation(summary = "선생님이 수업 신청시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 이미 가입은 했어야 합니다!")
     public void acceptCase(@PathVariable String phoneNumber, @PathVariable String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.notifyClass(applicationForm, teacher);
+        teacherMessage.acceptCase(applicationForm, teacher);
     }
 
-    @PostMapping("/test/teacher/refuse/{applicationFormId}/{phoneNumber}")
+    @PostMapping("/test/teacher/refuse/{phoneNumber}")
     @Operation(summary = "선생님이 수업 거절시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 가입은 했어야 합니다!")
-    public void refuseCase(@PathVariable String applicationFormId, @PathVariable String phoneNumber) {
-        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
+    public void refuseCase(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.notifyClass(applicationForm, teacher);
+        teacherMessage.refuseCase(teacher);
     }
 
     @PostMapping("/test/parents/apply/{phoneNumber}")
