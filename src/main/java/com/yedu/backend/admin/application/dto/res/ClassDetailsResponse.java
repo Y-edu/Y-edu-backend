@@ -12,6 +12,7 @@ public record ClassDetailsResponse(
         String classTime,
         int pay,
         String age,
+        String wantTime,
         ClassType wantedSubject,
         Online online,
         Gender favoriteGender,
