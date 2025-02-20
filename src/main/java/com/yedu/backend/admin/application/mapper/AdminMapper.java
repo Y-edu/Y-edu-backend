@@ -51,9 +51,12 @@ public class AdminMapper {
 
     public static AlarmTalkResponse mapToAlarmTalkResponse(ClassMatching classMatching) {
         Teacher teacher = classMatching.getTeacher();
+        ApplicationForm applicationForm = classMatching.getApplicationForm();
         String refuseReason = Optional.ofNullable(classMatching.getRefuseReason()).orElse(null);
         return new AlarmTalkResponse(
                 classMatching.getClassMatchingId(),
+                teacher.getTeacherId(),
+                applicationForm.getWantedSubject(),
                 classMatching.getMatchStatus(),
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
@@ -70,6 +73,7 @@ public class AdminMapper {
                 applicationForm.getClassTime(),
                 applicationForm.getPay(),
                 applicationForm.getAge(),
+                applicationForm.getWantTime(),
                 applicationForm.getWantedSubject(),
                 applicationForm.getOnline(),
                 applicationForm.getFavoriteGender(),
