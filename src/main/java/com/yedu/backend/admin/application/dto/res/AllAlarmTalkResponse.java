@@ -1,6 +1,7 @@
 package com.yedu.backend.admin.application.dto.res;
 
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public record AllAlarmTalkResponse(
 ) {
     public record AlarmTalkResponse(
             long classMatchingId,
+            long teacherId,
+            ClassType subject,
             MatchingStatus status,
             String nickName,
             String name,
