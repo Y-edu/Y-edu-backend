@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 public class BizppurioMapper {
     @Value("${bizppurio.id}")
     private String id;
