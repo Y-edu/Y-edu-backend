@@ -67,21 +67,15 @@ public class AdminTestController {
                 .build();
         TeacherEnglish teacherEnglish = TeacherEnglish.builder()
                 .teacher(teacher)
-                .appealPoint("이러이러한 부분")
                 .foreignExperience("# abc")
-                .managementStyle("abc")
                 .teachingExperience("# abc")
                 .teachingHistory(3)
-                .managementStyle("이러이러")
                 .teachingStyle("이러이러")
                 .build();
         TeacherMath teacherMath = TeacherMath.builder()
                 .teacher(teacher)
-                .appealPoint("이러이러한 부분")
-                .managementStyle("abc")
                 .teachingExperience("# abc")
                 .teachingHistory(3)
-                .managementStyle("이러이러")
                 .teachingStyle("이러이러")
                 .build();
         teacherSaveService.saveTeacher(teacher, List.of(TeacherAvailable.builder()
