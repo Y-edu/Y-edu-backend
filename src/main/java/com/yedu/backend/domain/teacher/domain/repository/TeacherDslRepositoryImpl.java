@@ -31,6 +31,10 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     @Override
     public List<Teacher> findAllMatchingApplicationForm(ApplicationForm applicationForm) {
         // 지역, 성별, 과목
+        return getTeachers(applicationForm);
+    }
+
+    private List<Teacher> getTeachers(ApplicationForm applicationForm) {
         District district = applicationForm.getDistrict();
         Gender favoriteGender = applicationForm.getFavoriteGender();
         ClassType subject = applicationForm.getWantedSubject();
@@ -64,7 +68,11 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     }
 
     @Override
-    public List<Teacher> findAllSearchTeacher(TeacherSearchRequest request) {
+    public List<Teacher> findAllSearchTeacher(ApplicationForm applicationForm, TeacherSearchRequest request) {
+        List<Long> teacherIds = getTeachers(applicationForm)
+                .stream().map(Teacher::getTeacherId)
+                .toList();
+
         BooleanBuilder builder = searchLikeSpecifier(request);
         builder.and(districtSpecifier(request.districts()))
                 .and(subjectSpecifier(request.subjects()))
@@ -77,7 +85,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .leftJoin(teacherDistrict)
                 .fetchJoin()
                 .on(teacher.eq(teacherDistrict.teacher))
-                .where(builder) // 동적 조건 적용
+                .where(builder, teacher.teacherId.notIn(teacherIds)) // 동적 조건 적용
                 .orderBy(
                         statusOrderSpecifier(),
                         universityOrderSpecifier()
