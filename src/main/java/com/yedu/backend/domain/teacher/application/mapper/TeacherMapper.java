@@ -27,13 +27,12 @@ public class TeacherMapper {
     }
 
     public static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoFormRequest request) {
-        boolean etc = University.checkEtc(request.univercity());
+        boolean etc = University.checkEtc(request.university());
         return TeacherSchoolInfo.builder()
-                .university(request.univercity())
+                .university(request.university())
                 .etc(etc)
                 .major(request.major())
                 .highSchool(request.highSchool())
-                .highSchoolType(request.highSchoolType())
                 .build();
     }
 
@@ -45,7 +44,6 @@ public class TeacherMapper {
                 .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
                 .teachingStyleInfo1(request.teachingStyleInfo1())
                 .teachingStyleInfo2(request.teachingStyleInfo1())
-                .recommendStudent(request.recommenedStudent())
                 .comment(request.comment())
                 .englishPossible(request.englishPossible())
                 .mathPossible(request.mathPossible());
@@ -80,11 +78,9 @@ public class TeacherMapper {
     public static TeacherEnglish mapToTeacherEnglish(Teacher teacher, TeacherInfoFormRequest request) {
         return TeacherEnglish.builder()
                 .teacher(teacher)
-                .appealPoint(request.english().appealPoint())
                 .teachingExperience(request.english().teachingExperience())
                 .teachingHistory(Integer.parseInt(request.english().teachingHistory()))
                 .teachingStyle(request.english().teachingStyle())
-                .managementStyle(request.english().managementStyle())
                 .foreignExperience(request.english().foreignExperience())
                 .build();
     }
@@ -92,11 +88,9 @@ public class TeacherMapper {
     public static TeacherMath mapToTeacherMath(Teacher teacher, TeacherInfoFormRequest request) {
         return TeacherMath.builder()
                 .teacher(teacher)
-                .appealPoint(request.math().appealPoint())
                 .teachingExperience(request.math().teachingExperience())
                 .teachingHistory(Integer.parseInt(request.math().teachingHistory()))
                 .teachingStyle(request.math().teachingStyle())
-                .managementStyle(request.math().managementStyle())
                 .build();
     }
 
@@ -111,12 +105,9 @@ public class TeacherMapper {
     public static TeacherMathResponse mapToTeacherMathResponse(Teacher teacher, TeacherMath math) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
-        List<String> appealPoints = getOrganizeContexts(math.getAppealPoint());
         List<String> experiences = getOrganizeContexts(math.getTeachingExperience());
-        List<String> recommends = getOrganizeContexts(classInfo.getRecommendStudent());
 
         return new TeacherMathResponse(
-                appealPoints,
                 classInfo.getComment(),
                 classInfo.getIntroduce(),
                 math.getTeachingHistory(),
@@ -127,20 +118,16 @@ public class TeacherMapper {
                 classInfo.getTeachingStyle1().getDescription(),
                 classInfo.getTeachingStyleInfo1(),
                 classInfo.getTeachingStyle2().getDescription(),
-                classInfo.getTeachingStyleInfo2(),
-                recommends
+                classInfo.getTeachingStyleInfo2()
         );
     }
 
     public static TeacherEnglishResponse mapToTeacherEnglish(Teacher teacher, TeacherEnglish english) {
         TeacherClassInfo classInfo = teacher.getTeacherClassInfo();
         TeacherSchoolInfo schoolInfo = teacher.getTeacherSchoolInfo();
-        List<String> appealPoints = getOrganizeContexts(english.getAppealPoint());
         List<String> foreignExperiences = getForeignExperiences(english);
         List<String> experiences = getOrganizeContexts(english.getTeachingExperience());
-        List<String> recommends = getOrganizeContexts(classInfo.getRecommendStudent());
         return new TeacherEnglishResponse(
-                appealPoints,
                 classInfo.getComment(),
                 classInfo.getIntroduce(),
                 english.getTeachingHistory(),
@@ -152,8 +139,7 @@ public class TeacherMapper {
                 classInfo.getTeachingStyle1().getDescription(),
                 classInfo.getTeachingStyleInfo1(),
                 classInfo.getTeachingStyle2().getDescription(),
-                classInfo.getTeachingStyleInfo2(),
-                recommends
+                classInfo.getTeachingStyleInfo2()
         );
     }
 
@@ -178,11 +164,11 @@ public class TeacherMapper {
     }
 
     public static MathCurriculumResponse mapToMathCurriculumResponse(TeacherMath math) {
-        return new MathCurriculumResponse(math.getTeachingStyle(), math.getManagementStyle());
+        return new MathCurriculumResponse(math.getTeachingStyle());
     }
 
     public static EnglishCurriculumResponse mapToEnglishCurriculumResponse(TeacherInfo teacherInfo, TeacherEnglish english) {
-        return new EnglishCurriculumResponse(english.getTeachingStyle(), english.getManagementStyle(), teacherInfo.getVideo());
+        return new EnglishCurriculumResponse(english.getTeachingStyle(), teacherInfo.getVideo());
     }
 
     public static DistrictAndTimeResponse mapToDistrictAndTimeResponse(List<String> districts, Map<Day, List<LocalTime>> availableTimes) {

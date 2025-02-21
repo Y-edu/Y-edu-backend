@@ -17,7 +17,7 @@ public class TeacherEnglish {
     private long englishId;
     @ManyToOne(fetch = FetchType.LAZY)
     private Teacher teacher;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String appealPoint;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String teachingExperience;
@@ -25,7 +25,7 @@ public class TeacherEnglish {
     private int teachingHistory;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String teachingStyle;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String managementStyle;
     @Column(columnDefinition = "TEXT")
     private String foreignExperience;

@@ -28,7 +28,7 @@ public class TeacherClassInfo {
     private String teachingStyleInfo1;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String teachingStyleInfo2;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String recommendStudent;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String comment; //하고싶은 말
