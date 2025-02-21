@@ -54,8 +54,8 @@ public class AdminGetService {
         return goalRepository.findAllByApplicationForm(applicationForm);
     }
 
-    public List<Teacher> allTeacherBySearch(TeacherSearchRequest teacherSearchRequest) {
-        return teacherRepository.findAllSearchTeacher(teacherSearchRequest);
+    public List<Teacher> allTeacherBySearch(ApplicationForm applicationForm, TeacherSearchRequest teacherSearchRequest) {
+        return teacherRepository.findAllSearchTeacher(applicationForm, teacherSearchRequest);
     }
 
     public Teacher teacherById(long teacherId) {

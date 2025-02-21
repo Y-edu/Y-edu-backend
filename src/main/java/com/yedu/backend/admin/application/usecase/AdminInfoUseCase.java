@@ -68,8 +68,9 @@ public class AdminInfoUseCase {
         return mapToClassDetailsResponse(applicationForm, classGoals);
     }
 
-    public AllFilteringTeacher searchAllTeacher(TeacherSearchRequest request) {
-        List<Teacher> teachers = adminGetService.allTeacherBySearch(request);
+    public AllFilteringTeacher searchAllTeacher(String applicationFormId, TeacherSearchRequest request) {
+        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
+        List<Teacher> teachers = adminGetService.allTeacherBySearch(applicationForm, request);
         return  new AllFilteringTeacher(teachers.stream()
                 .map(teacher -> {
                     List<TeacherDistrict> teacherDistricts = adminGetService.allDistrictByTeacher(teacher);

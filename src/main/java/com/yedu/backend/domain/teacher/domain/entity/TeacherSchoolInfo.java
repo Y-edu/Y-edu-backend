@@ -24,6 +24,5 @@ public class TeacherSchoolInfo {
     //고등학교 정보
     @Column(nullable = false)
     private String highSchool;
-    @Column(nullable = false)
     private String highSchoolType;
 }

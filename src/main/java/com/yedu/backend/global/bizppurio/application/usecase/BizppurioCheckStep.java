@@ -16,16 +16,17 @@ public class BizppurioCheckStep {
     private static final String COUNSEL = "COUNSEL";
 
     public void checkNextStep(MessageStatusRequest request) {
-        getCacheValue(request.REFKEY()).ifPresent(stepValue -> processNextStep(stepValue, request.PHONE()));
+        getCacheValue(request.REFKEY()).ifPresent(stepValue -> processNextStep(stepValue, request));
     }
 
     private Optional<String> getCacheValue(String refKey) {
         return redisRepository.getValues(refKey);
     }
 
-    private void processNextStep(String stepValue, String phone) {
+    private void processNextStep(String stepValue, MessageStatusRequest request) {
         if (COUNSEL.equals(stepValue)) {
-            teacherMessage.photoSubmit(phone);
+            teacherMessage.photoSubmit(request.PHONE());
+            redisRepository.deleteValues(request.REFKEY());
         }
     }
 }

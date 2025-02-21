@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface TeacherDslRepository {
     List<Teacher> findAllMatchingApplicationForm(ApplicationForm applicationForm);
-
-    List<Teacher> findAllSearchTeacher(TeacherSearchRequest request);
+    List<Teacher> findAllSearchTeacher(ApplicationForm applicationForm, TeacherSearchRequest request);
 }

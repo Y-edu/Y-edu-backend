@@ -85,16 +85,16 @@ public class AdminController {
         return ResponseEntity.ok(classDetails);
     }
 
-    @GetMapping("/details/matching/search")
+    @GetMapping("/details/matching/search/{applicationFormId}")
     @Operation(summary = "선생님 검색", description = "선생님 검색 API")
     public ResponseEntity<AllFilteringTeacher> searchTeachers(
             @RequestParam(required = false) List<String> districts,
             @RequestParam(required = false) List<ClassType> subjects,
             @RequestParam(required = false) List<String> universities,
             @RequestParam(required = false) List<TeacherGender> genders,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search, @PathVariable String applicationFormId) {
         TeacherSearchRequest request = new TeacherSearchRequest(districts, subjects, universities, genders, search);
-        AllFilteringTeacher allFilteringTeacher = adminInfoUseCase.searchAllTeacher(request);
+        AllFilteringTeacher allFilteringTeacher = adminInfoUseCase.searchAllTeacher(applicationFormId, request);
         return ResponseEntity.ok(allFilteringTeacher);
     }
 
