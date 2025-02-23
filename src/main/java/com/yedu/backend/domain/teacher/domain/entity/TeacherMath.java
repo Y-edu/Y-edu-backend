@@ -19,7 +19,7 @@ public class TeacherMath {
     private Teacher teacher;
     @Column(columnDefinition = "TEXT")
     private String appealPoint;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String teachingExperience;
     @Column(nullable = false)
     private int teachingHistory;
