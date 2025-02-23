@@ -23,6 +23,20 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.prefix-profile}")
     private String profile;
 
+//    public String saveProfileByGoogleDrive(byte[] fileBytes) {
+//        String fileName = profile + "/" + UUID.randomUUID() + ".jpg";
+//
+//        // 3. S3에 업로드
+//        InputStream inputStream = new ByteArrayInputStream(fileBytes);
+//        ObjectMetadata metadata = new ObjectMetadata();
+//        metadata.setContentLength(fileBytes.length);
+//        metadata.setContentType("image/jpeg");
+//
+//        amazonS3.putObject(bucket, fileName, inputStream, metadata);
+//
+//        return amazonS3.getUrl(bucket, fileName).toString();
+//    }
+
     public String saveProfileFile(MultipartFile multipartFile) {
         return getString(multipartFile, profile);
     }

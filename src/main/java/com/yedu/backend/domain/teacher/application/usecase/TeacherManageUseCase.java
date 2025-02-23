@@ -94,7 +94,6 @@ public class TeacherManageUseCase {
     public void submitContract(TeacherContractRequest request) {
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         bizppurioTeacherMessage.matchingChannel(teacher);
-        bizppurioTeacherMessage.applyChannel(teacher);
     }
 
     public List<Teacher> notifyClass(ApplicationForm applicationForm) {
