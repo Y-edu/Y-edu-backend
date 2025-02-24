@@ -3,10 +3,7 @@ package com.yedu.backend.domain.teacher.application.mapper;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.domain.entity.*;
-import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
-import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
-import com.yedu.backend.domain.teacher.domain.entity.constant.University;
+import com.yedu.backend.domain.teacher.domain.entity.constant.*;
 import com.yedu.backend.global.excel.application.dto.TeacherInfoRequest;
 
 import java.time.LocalTime;
@@ -221,6 +218,7 @@ public class TeacherMapper {
                 .teacherClassInfo(mapToTeacherClassInfo(request))
                 .source(request.source())
                 .marketingAgree(request.marketingAgree())
+                .status(TeacherStatus.활동중)
                 .build();
     }
 

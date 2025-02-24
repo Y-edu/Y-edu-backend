@@ -12,10 +12,7 @@ import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
 import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.teacher.domain.entity.*;
-import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
-import com.yedu.backend.domain.teacher.domain.entity.constant.District;
-import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
-import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
+import com.yedu.backend.domain.teacher.domain.entity.constant.*;
 import com.yedu.backend.domain.teacher.domain.repository.*;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
@@ -64,6 +61,7 @@ public class AdminTestController {
                 .teacherClassInfo(new TeacherClassInfo("나는 이러한 선생님", TeachingStyle.CARING, TeachingStyle.FUN, "저런 방식", "저런 방식", "# 이런 학생", "이러이러하다", true, true))
                 .teacherSchoolInfo(new TeacherSchoolInfo("대학교", true, "학과", "고등학교", "외고"))
                 .source("기타")
+                .status(TeacherStatus.활동중)
                 .build();
         TeacherEnglish teacherEnglish = TeacherEnglish.builder()
                 .teacher(teacher)

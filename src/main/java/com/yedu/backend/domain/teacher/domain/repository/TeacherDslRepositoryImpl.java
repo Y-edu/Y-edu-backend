@@ -47,7 +47,8 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .on(teacher.eq(teacherDistrict.teacher))
                 .where(genderSpecifier(favoriteGender)
                         .and(subjectSpecifier(subject))
-                        .and(teacherDistrict.district.eq(district)))
+                        .and(teacherDistrict.district.eq(district))
+                        .and(teacher.status.eq(TeacherStatus.활동중)))
                 .fetch();
     }
 
@@ -85,7 +86,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .leftJoin(teacherDistrict)
                 .fetchJoin()
                 .on(teacher.eq(teacherDistrict.teacher))
-                .where(builder, teacher.teacherId.notIn(teacherIds)) // 동적 조건 적용
+                .where(builder, teacher.teacherId.notIn(teacherIds), teacher.status.eq(TeacherStatus.활동중)) // 동적 조건 적용
                 .orderBy(
                         statusOrderSpecifier(),
                         universityOrderSpecifier()
