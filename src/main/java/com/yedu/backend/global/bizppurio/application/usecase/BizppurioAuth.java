@@ -2,7 +2,7 @@ package com.yedu.backend.global.bizppurio.application.usecase;
 
 import com.yedu.backend.global.bizppurio.application.dto.res.BizppurioTokenResponse;
 import com.yedu.backend.global.config.redis.RedisRepository;
-import com.yedu.backend.global.discord.DiscordWebhookSend;
+import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Base64Util;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class BizppurioAuth {
     private final WebClient webClient;
     private final RedisRepository redisRepository;
-    private final DiscordWebhookSend discordWebhookSend;
+    private final DiscordWebhookUseCase discordWebhookUseCase;
 
     @Value("${bizppurio.token}")
     private String bizzppurioToken;
@@ -56,7 +55,7 @@ public class BizppurioAuth {
             log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
             return tokenResponse.accesstoken();
         } catch (Exception ex) {
-            discordWebhookSend.sendAlarmTalkTokenError(ex.getMessage());
+            discordWebhookUseCase.sendAlarmTalkTokenError(ex.getMessage());
             log.error("비즈뿌리오 토큰 발급중 예외 발생");
             return "ERROR";
         }

@@ -10,6 +10,7 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import com.yedu.backend.global.config.s3.S3UploadService;
+import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class TeacherManageUseCase {
     private final TeacherUpdateService teacherUpdateService;
     private final S3UploadService s3UploadService;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
+    private final DiscordWebhookUseCase discordWebhookUseCase;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -86,15 +88,16 @@ public class TeacherManageUseCase {
     public void saveTeacherProfile(MultipartFile profile, TeacherProfileFormRequest request) {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
-        log.info("profile 사진 저장");
         teacherUpdateService.updateProfile(teacher, profileUrl);
         bizppurioTeacherMessage.applyAgree(teacher);
     }
 
     public void submitContract(TeacherContractRequest request) {
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
+        List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
         teacherUpdateService.updateActive(teacher);
         bizppurioTeacherMessage.matchingChannel(teacher);
+        discordWebhookUseCase.sendTeacherRegister(teacher, teacherDistricts);
     }
 
     public List<Teacher> notifyClass(ApplicationForm applicationForm) {
