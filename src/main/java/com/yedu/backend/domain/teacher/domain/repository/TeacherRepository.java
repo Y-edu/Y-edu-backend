@@ -9,4 +9,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long>, Teacher
     Optional<Teacher> findByTeacherInfo_PhoneNumber(String PhoneNumber);
 
     void deleteAllByTeacherInfo_PhoneNumber(String phoneNumber);
+
+    Optional<Teacher> findByTeacherInfo_NameAndTeacherInfo_NickName(String name, String nickName);
 }
