@@ -1,0 +1,1 @@
+ALTER TABLE teacher MODIFY COLUMN status enum ('등록중', '활동중', '일시정지', '종료') DEFAULT '등록중';

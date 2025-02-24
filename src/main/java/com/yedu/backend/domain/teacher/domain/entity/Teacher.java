@@ -30,7 +30,7 @@ public class Teacher extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private TeacherStatus status = TeacherStatus.활동중; //활동 상태 (관리자 수락 대기)
+    private TeacherStatus status = TeacherStatus.등록중; //활동 상태 (관리자 수락 대기)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private TeacherGrade grade = TeacherGrade.STANDARD; //등급
@@ -62,5 +62,8 @@ public class Teacher extends BaseEntity {
     }
     public void updateIssue(String issue) {
         this.issue = issue;
+    }
+    public void updateActive() {
+        this.status = TeacherStatus.활동중;
     }
 }
