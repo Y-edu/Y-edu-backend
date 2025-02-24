@@ -45,7 +45,7 @@ public class TeacherMapper {
                 .teachingStyle1(TeachingStyle.fromString(request.teachingStyle1()))
                 .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
                 .teachingStyleInfo1(request.teachingStyleInfo1())
-                .teachingStyleInfo2(request.teachingStyleInfo1())
+                .teachingStyleInfo2(request.teachingStyleInfo2())
                 .comment(request.comment())
                 .englishPossible(request.englishPossible())
                 .mathPossible(request.mathPossible());
@@ -207,7 +207,7 @@ public class TeacherMapper {
                 .teachingStyle1(TeachingStyle.fromString(request.teachingStyle1()))
                 .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
                 .teachingStyleInfo1(request.teachingStyleInfo1())
-                .teachingStyleInfo2(request.teachingStyleInfo1())
+                .teachingStyleInfo2(request.teachingStyleInfo2())
                 .comment(request.comment())
                 .englishPossible(request.englishPossible())
                 .mathPossible(request.mathPossible());
