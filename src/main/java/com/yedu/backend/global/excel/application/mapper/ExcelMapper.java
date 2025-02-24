@@ -10,33 +10,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.yedu.backend.global.excel.constant.TeacherExcelColumn.*;
+
 public class ExcelMapper {
 
     public static TeacherInfoRequest mapToInfoRequest(Row row) {
-        String email = getStringValue(row.getCell(1));
-        String name = getStringValue(row.getCell(2));
-        String nickName = getStringValue(row.getCell(3));
-        String phoneNumber = getStringValue(row.getCell(4));
-        double birthNum = getNumericValue(row.getCell(5));
+        String email = getStringValue(row.getCell(EMAIL.getIndex()));
+        String name = getStringValue(row.getCell(NAME.getIndex()));
+        String nickName = getStringValue(row.getCell(NICKNAME.getIndex()));
+        String phoneNumber = getStringValue(row.getCell(PHONE_NUMBER.getIndex()));
+        double birthNum = getNumericValue(row.getCell(BIRTH.getIndex()));
         String birth = birthNum == 0 ? null : String.valueOf(birthNum);
-        String gender = getStringValue(row.getCell(6));
-        String university = getStringValue(row.getCell(7));
-        String major = getStringValue(row.getCell(8));
-        String highSchool = getStringValue(row.getCell(9));
-        String highSchoolType = getStringValue(row.getCell(10));
-        String introduce = getStringValue(row.getCell(11));
-        String teachingStyle1 = getStringValue(row.getCell(12));
-        String teachingStyleInfo1 = getStringValue(row.getCell(13));
-        String teachingStyle2 = getStringValue(row.getCell(14));
-        String teachingStyleInfo2 = getStringValue(row.getCell(15));
-        boolean englishPossible = getBooleanValueByString(row.getCell(16));
-        boolean mathPossible = getBooleanValueByString(row.getCell(23));
-        String recommendStudent = getStringValue(row.getCell(29));
-        String comment = getStringValue(row.getCell(30));
+        String gender = getStringValue(row.getCell(GENDER.getIndex()));
+        String university = getStringValue(row.getCell(UNIVERSITY.getIndex()));
+        String major = getStringValue(row.getCell(MAJOR.getIndex()));
+        String highSchool = getStringValue(row.getCell(HIGH_SCHOOL.getIndex()));
+        String highSchoolType = getStringValue(row.getCell(HIGH_SCHOOL_TYPE.getIndex()));
+        String introduce = getStringValue(row.getCell(INTRODUCE.getIndex()));
+        String teachingStyle1 = getStringValue(row.getCell(TEACHING_STYLE_1.getIndex()));
+        String teachingStyleInfo1 = getStringValue(row.getCell(TEACHING_STYLE_INFO_1.getIndex()));
+        String teachingStyle2 = getStringValue(row.getCell(TEACHING_STYLE_2.getIndex()));
+        String teachingStyleInfo2 = getStringValue(row.getCell(TEACHING_STYLE_INFO_2.getIndex()));
+        boolean englishPossible = getBooleanValueByString(row.getCell(ENGLISH_POSSIBLE.getIndex()));
+        boolean mathPossible = getBooleanValueByString(row.getCell(MATH_POSSIBLE.getIndex()));
+        String recommendStudent = getStringValue(row.getCell(RECOMMEND_STUDENT.getIndex()));
+        String comment = getStringValue(row.getCell(COMMENT.getIndex()));
         List<List<String>> available = new ArrayList<>();
-        List<String> region = Arrays.stream((getStringValue(row.getCell(38)))
+        List<String> region = Arrays.stream((getStringValue(row.getCell(REGION.getIndex())))
                 .split(",")).toList();
-        String source = getStringValue(row.getCell(39));
+        String source = getStringValue(row.getCell(SOURCE.getIndex()));
         boolean marketingAgree = true;
 
         return new TeacherInfoRequest(
@@ -47,11 +49,11 @@ public class ExcelMapper {
     }
 
     private static TeacherInfoRequest.Math getMath(Row row) {
-        int mathTeachingHistory = (int) getNumericValue(row.getCell(24));
-        String mathAppealPoint = getStringValue(row.getCell(25));
-        String mathTeachingExperience = getStringValue(row.getCell(26));
-        String mathTeachingStyle = getStringValue(row.getCell(27));
-        String mathManageStyle = getStringValue(row.getCell(28));
+        int mathTeachingHistory = (int) getNumericValue(row.getCell(MATH_TEACHING_HISTORY.getIndex()));
+        String mathAppealPoint = getStringValue(row.getCell(MATH_APPEAL_POINT.getIndex()));
+        String mathTeachingExperience = getStringValue(row.getCell(MATH_TEACHING_EXPERIENCE.getIndex()));
+        String mathTeachingStyle = getStringValue(row.getCell(MATH_TEACHING_STYLE.getIndex()));
+        String mathManageStyle = getStringValue(row.getCell(MATH_MANAGE_STYLE.getIndex()));
         return new TeacherInfoRequest.Math(
                 mathAppealPoint,
                 mathTeachingExperience,
@@ -62,12 +64,12 @@ public class ExcelMapper {
     }
 
     private static TeacherInfoRequest.English getEnglish(Row row) {
-        int englishTeachingHistory = (int) getNumericValue(row.getCell(17));
-        String englishAppealPoint = getStringValue(row.getCell(18));
-        String englishTeachingExperience = getStringValue(row.getCell(19));
-        String englishForeignExperience = getStringValue(row.getCell(20));
-        String englishTeachingStyle = getStringValue(row.getCell(21));
-        String englishManagementStyle = getStringValue(row.getCell(22));
+        int englishTeachingHistory = (int) getNumericValue(row.getCell(ENGLISH_TEACHING_HISTORY.getIndex()));
+        String englishAppealPoint = getStringValue(row.getCell(ENGLISH_APPEAL_POINT.getIndex()));
+        String englishTeachingExperience = getStringValue(row.getCell(ENGLISH_TEACHING_EXPERIENCE.getIndex()));
+        String englishForeignExperience = getStringValue(row.getCell(ENGLISH_FOREIGN_EXPERIENCE.getIndex()));
+        String englishTeachingStyle = getStringValue(row.getCell(ENGLISH_TEACHING_STYLE.getIndex()));
+        String englishManagementStyle = getStringValue(row.getCell(ENGLISH_MANAGEMENT_STYLE.getIndex()));
         // 영어 과외 정보
         return new TeacherInfoRequest.English(
                 englishAppealPoint,
