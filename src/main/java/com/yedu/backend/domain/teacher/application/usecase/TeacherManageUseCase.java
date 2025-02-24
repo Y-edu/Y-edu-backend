@@ -95,7 +95,6 @@ public class TeacherManageUseCase {
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateActive(teacher);
         bizppurioTeacherMessage.matchingChannel(teacher);
-        bizppurioTeacherMessage.applyChannel(teacher);
     }
 
     public List<Teacher> notifyClass(ApplicationForm applicationForm) {

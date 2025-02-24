@@ -7,6 +7,7 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeachingStyle;
 import com.yedu.backend.domain.teacher.domain.entity.constant.University;
+import com.yedu.backend.global.excel.application.dto.TeacherInfoRequest;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TeacherMapper {
-    public static TeacherInfo mapToTeacherInfo(TeacherInfoFormRequest request) {
+
+    private static TeacherInfo mapToTeacherInfo(TeacherInfoFormRequest request) {
         return TeacherInfo.builder()
                 .name(request.name())
                 .nickName(request.nickName())
@@ -26,7 +28,7 @@ public class TeacherMapper {
                 .build();
     }
 
-    public static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoFormRequest request) {
+    private static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoFormRequest request) {
         boolean etc = University.checkEtc(request.university());
         return TeacherSchoolInfo.builder()
                 .university(request.university())
@@ -36,14 +38,14 @@ public class TeacherMapper {
                 .build();
     }
 
-    public static TeacherClassInfo mapToTeacherClassInfo(TeacherInfoFormRequest request) {
+    private static TeacherClassInfo mapToTeacherClassInfo(TeacherInfoFormRequest request) {
         // style enum으로 사용 예정
         TeacherClassInfo.TeacherClassInfoBuilder builder = TeacherClassInfo.builder()
                 .introduce(request.introduce())
                 .teachingStyle1(TeachingStyle.fromString(request.teachingStyle1()))
                 .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
                 .teachingStyleInfo1(request.teachingStyleInfo1())
-                .teachingStyleInfo2(request.teachingStyleInfo1())
+                .teachingStyleInfo2(request.teachingStyleInfo2())
                 .comment(request.comment())
                 .englishPossible(request.englishPossible())
                 .mathPossible(request.mathPossible());
@@ -144,6 +146,8 @@ public class TeacherMapper {
     }
 
     private static List<String> getOrganizeContexts(String context) {
+        if (context == null)
+            return new ArrayList<>();
         String organizeContext = context.replace("#", "");
         return Arrays.stream(organizeContext.split("\n")).toList()
                 .stream()
@@ -174,4 +178,69 @@ public class TeacherMapper {
     public static DistrictAndTimeResponse mapToDistrictAndTimeResponse(List<String> districts, Map<Day, List<LocalTime>> availableTimes) {
         return new DistrictAndTimeResponse(districts, availableTimes);
     }
+
+    private static TeacherInfo mapToTeacherInfo(TeacherInfoRequest request) {
+        return TeacherInfo.builder()
+                .name(request.name())
+                .nickName(request.nickName())
+                .email(request.email())
+                .phoneNumber(request.phoneNumber())
+                .birth(request.birth())
+                .gender(request.gender())
+                .build();
+    }
+
+    private static TeacherSchoolInfo mapToTeacherSchoolInfo(TeacherInfoRequest request) {
+        boolean etc = University.checkEtc(request.university());
+        return TeacherSchoolInfo.builder()
+                .university(request.university())
+                .etc(etc)
+                .major(request.major())
+                .highSchool(request.highSchool())
+                .build();
+    }
+
+    private static TeacherClassInfo mapToTeacherClassInfo(TeacherInfoRequest request) {
+        // style enum으로 사용 예정
+        TeacherClassInfo.TeacherClassInfoBuilder builder = TeacherClassInfo.builder()
+                .introduce(request.introduce())
+                .teachingStyle1(TeachingStyle.fromString(request.teachingStyle1()))
+                .teachingStyle2(TeachingStyle.fromString(request.teachingStyle2()))
+                .teachingStyleInfo1(request.teachingStyleInfo1())
+                .teachingStyleInfo2(request.teachingStyleInfo2())
+                .comment(request.comment())
+                .englishPossible(request.englishPossible())
+                .mathPossible(request.mathPossible());
+        return builder.build();
+    }
+
+    public static Teacher mapToTeacher(TeacherInfoRequest request) {
+        return Teacher.builder()
+                .teacherInfo(mapToTeacherInfo(request))
+                .teacherSchoolInfo(mapToTeacherSchoolInfo(request))
+                .teacherClassInfo(mapToTeacherClassInfo(request))
+                .source(request.source())
+                .marketingAgree(request.marketingAgree())
+                .build();
+    }
+
+    public static TeacherEnglish mapToTeacherEnglish(Teacher teacher, TeacherInfoRequest request) {
+        return TeacherEnglish.builder()
+                .teacher(teacher)
+                .teachingExperience(request.english().teachingExperience())
+                .teachingHistory(request.english().teachingHistory())
+                .teachingStyle(request.english().teachingStyle())
+                .foreignExperience(request.english().foreignExperience())
+                .build();
+    }
+
+    public static TeacherMath mapToTeacherMath(Teacher teacher, TeacherInfoRequest request) {
+        return TeacherMath.builder()
+                .teacher(teacher)
+                .teachingExperience(request.math().teachingExperience())
+                .teachingHistory(request.math().teachingHistory())
+                .teachingStyle(request.math().teachingStyle())
+                .build();
+    }
+
 }

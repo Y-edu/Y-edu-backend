@@ -1,0 +1,1 @@
+ALTER TABLE teacher MODIFY COLUMN profile text;
