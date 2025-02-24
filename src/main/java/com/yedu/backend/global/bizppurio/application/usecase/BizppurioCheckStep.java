@@ -11,12 +11,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BizppurioCheckStep {
     private final RedisRepository redisRepository;
-    private final BizppurioTeacherMessage teacherMessage;
 
     private static final String COUNSEL = "COUNSEL";
 
     public void checkNextStep(MessageStatusRequest request) {
-        getCacheValue(request.REFKEY()).ifPresent(stepValue -> processNextStep(stepValue, request));
+//        getCacheValue(request.REFKEY()).ifPresent(stepValue -> processNextStep(stepValue, request));
     }
 
     private Optional<String> getCacheValue(String refKey) {
@@ -25,7 +24,6 @@ public class BizppurioCheckStep {
 
     private void processNextStep(String stepValue, MessageStatusRequest request) {
         if (COUNSEL.equals(stepValue)) {
-            teacherMessage.photoSubmit(request.PHONE());
             redisRepository.deleteValues(request.REFKEY());
         }
     }

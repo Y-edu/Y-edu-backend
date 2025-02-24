@@ -19,6 +19,5 @@ public class BizppurioController {
     @PostMapping("/result/webhook")
     public void resultWebHook(@RequestBody MessageStatusRequest request) {
         bizppurioSend.checkByWebHook(request);
-        bizppurioCheckStep.checkNextStep(request);
     }
 }

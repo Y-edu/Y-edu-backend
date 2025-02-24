@@ -17,6 +17,11 @@ public class TeacherGetService {
     private final TeacherAvailableRepository availableRepository;
     private final TeacherDistrictRepository districtRepository;
 
+    public Teacher byNameAndNickName(String name, String nickName) {
+        return teacherRepository.findByTeacherInfo_NameAndTeacherInfo_NickName(name, nickName)
+                .orElseThrow();
+    }
+
     public Teacher byPhoneNumber(String phoneNumber) {
         return teacherRepository.findByTeacherInfo_PhoneNumber(phoneNumber)
                 .orElseThrow();

@@ -20,6 +20,7 @@ public record AllFilteringTeacher(
         String major,
         List<String> districts,
         String video,
-        String issue
+        String issue,
+        String phoneNumber
         ){}
 }

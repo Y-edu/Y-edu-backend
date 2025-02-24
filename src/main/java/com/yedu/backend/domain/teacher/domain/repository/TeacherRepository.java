@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Long>, TeacherDslRepository {
-    Optional<Teacher> findByTeacherInfo_PhoneNumber(String PhoneNumber);
+    Optional<Teacher> findByTeacherInfo_PhoneNumber(String phoneNumber);
 
     void deleteAllByTeacherInfo_PhoneNumber(String phoneNumber);
+
+    Optional<Teacher> findByTeacherInfo_NameAndTeacherInfo_NickName(String name, String nickName);
 }

@@ -25,7 +25,7 @@ public class TeacherInfo {
     private String email;
     @Column(nullable = false, unique = true)
     private String phoneNumber;
-    @Column(nullable = false)
+    @Column
     private String birth;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

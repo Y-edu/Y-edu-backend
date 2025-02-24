@@ -134,7 +134,6 @@ public class AdminTestController {
     public void finApplyAgree(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
         teacherMessage.matchingChannel(teacher);
-        teacherMessage.applyChannel(teacher);
     }
 
     @PostMapping("/test/teacher/recommend/{applicationFormId}/{phoneNumber}")
