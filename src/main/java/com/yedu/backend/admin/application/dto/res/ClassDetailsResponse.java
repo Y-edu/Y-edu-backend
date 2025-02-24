@@ -19,6 +19,7 @@ public record ClassDetailsResponse(
         District district,
         String dong,
         List<String> goals,
-        String teacherStyle
+        String teacherStyle,
+        String referral
 ) {
 }
