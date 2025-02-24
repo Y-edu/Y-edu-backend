@@ -41,8 +41,8 @@ public class AdminGetService {
         return applicationFormRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
-    public List<ClassMatching> allMatching(ApplicationForm applicationForm) {
-        return classMatchingRepository.allByApplicationForm(applicationForm);
+    public List<ClassMatching> allMatching(String applicationFormId) {
+        return classMatchingRepository.allByApplicationForm(applicationFormId);
     }
 
     public ApplicationForm applicationFormById(String applicationFormId) {
@@ -54,8 +54,8 @@ public class AdminGetService {
         return goalRepository.findAllByApplicationForm(applicationForm);
     }
 
-    public List<Teacher> allTeacherBySearch(ApplicationForm applicationForm, TeacherSearchRequest teacherSearchRequest) {
-        return teacherRepository.findAllSearchTeacher(applicationForm, teacherSearchRequest);
+    public List<Teacher> allTeacherBySearch(List<ClassMatching> classMatchings, TeacherSearchRequest teacherSearchRequest) {
+        return teacherRepository.findAllSearchTeacher(classMatchings, teacherSearchRequest);
     }
 
     public Teacher teacherById(long teacherId) {

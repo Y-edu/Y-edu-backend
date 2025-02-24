@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
-import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +18,9 @@ public class ClassMatchingDslRepositoryImpl implements ClassMatchingDslRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ClassMatching> allByApplicationForm(ApplicationForm applicationForm) {
+    public List<ClassMatching> allByApplicationForm(String applicationFormId) {
         return queryFactory.selectFrom(classMatching)
-                .where(classMatching.applicationForm.eq(applicationForm))
+                .where(classMatching.applicationForm.applicationFormId.eq(applicationFormId))
                 .orderBy(statusOrderSpecifier())
                 .fetch();
     }
