@@ -28,8 +28,8 @@ public class BizppurioTeacherMessage {
                 .subscribe();
     }
 
-    public void photoSubmit(String phoneNumber) {
-        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyPhotoSubmit(phoneNumber)).subscribe();
+    public void photoSubmit(Teacher teacher) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToApplyPhotoSubmit(teacher)).subscribe();
     }
 
     public void photoHurry(Teacher teacher) {

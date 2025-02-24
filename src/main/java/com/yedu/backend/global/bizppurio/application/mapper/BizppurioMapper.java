@@ -108,7 +108,7 @@ public class BizppurioMapper {
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 
-    public CommonRequest mapToApplyPhotoSubmit(String phoneNumber) {
+    public CommonRequest mapToApplyPhotoSubmit(Teacher teacher) {
         String message = ("지원서는 Y-Edu가 프로필로 만들어, 이후 매칭 시 학부모님께 전달드릴게요. \n" +
                 "\n" +
                 "다음 단계는 프로필 사진과 영상을 구글폼으로 제출해 주세요. \uD83D\uDE42\n" +
@@ -128,7 +128,7 @@ public class BizppurioMapper {
                 "사진과 영상은 꼭 3일 이내 제출해주세요!");
         CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, photoSubmitUrl, photoSubmitUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyPhotoSubmit, new CommonButton[]{webLinkButton});
-        return createCommonRequest(messageBody, phoneNumber);
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 
     public CommonRequest mapToPhotoHurry(Teacher teacher) {

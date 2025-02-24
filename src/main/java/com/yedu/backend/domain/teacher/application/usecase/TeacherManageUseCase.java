@@ -43,7 +43,7 @@ public class TeacherManageUseCase {
         teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
 
         // 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
-        bizppurioTeacherMessage.counselStartAndPhotoSubmit(teacher);
+        bizppurioTeacherMessage.photoSubmit(teacher);
     }
 
     private TeacherMath getTeacherMath(TeacherInfoFormRequest request, Teacher teacher) {
