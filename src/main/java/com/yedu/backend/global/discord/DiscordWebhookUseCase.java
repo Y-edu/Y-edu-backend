@@ -1,0 +1,72 @@
+package com.yedu.backend.global.discord;
+
+import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static com.yedu.backend.global.discord.DiscordMapper.*;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class DiscordWebhookUseCase {
+    private final DiscordWebhookClient webhookClient;
+    @Value("${discord.profile}")
+    private String profileUrl;
+
+    public void sendAlarmTalkTokenError(String errorMessage) {
+        List<Field> fields = List.of(
+                mapToField("에러 메시지 및 코드", errorMessage),
+                mapToField("비즈뿌리오 코드 참고", "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft")
+        );
+        DiscordWebhookRequest request = mapToDiscordWithServerAlarm("비즈뿌리오 토큰 발급 실패", "비즈뿌리오 토큰 발급에 실패하였습니다", fields);
+        webhookClient.sendServerAlarm(request);
+    }
+
+    public void sendAlarmTalkError(String phoneNumber, String content, String errorCode) {
+        List<Field> fields = List.of(
+                mapToField("핸드폰번호", phoneNumber),
+                mapToField("알림톡 내용", content),
+                mapToField("에러 메시지 및 코드", errorCode),
+                mapToField("비즈뿌리오 코드 참고", "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft")
+        );
+        DiscordWebhookRequest request = mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);
+        webhookClient.sendServerAlarm(request);
+    }
+
+    public void sendTeacherRegister(Teacher teacher, List<TeacherDistrict> districts) {
+        StringBuilder subject = new StringBuilder();
+        StringBuilder teacherLink = new StringBuilder();
+        if (teacher.getTeacherClassInfo().isMathPossible()) {
+            subject.append("수학 ");
+            teacherLink.append("✅ 수학 : ")
+                    .append(profileUrl)
+                    .append(teacher.getTeacherId()).append("?subject=math\n");
+        }
+        if (teacher.getTeacherClassInfo().isEnglishPossible()) {
+            subject.append("영어");
+            teacherLink.append("✅ 영어 : ")
+                    .append(profileUrl)
+                    .append(teacher.getTeacherId()).append("?subject=english\n");
+        }
+        StringBuilder regions = new StringBuilder();
+        districts.forEach(district -> regions.append(district.getDistrict()).append("\n"));
+
+        List<Field> fields = List.of(
+                mapToField("⏰ " + LocalDateTime.now(), ""),
+                mapToField("선생님 정보", "✅ 이름 : " + teacher.getTeacherInfo().getName() + "\n" +
+                        "✅ 영어 이름 : " + teacher.getTeacherInfo().getNickName() + "\n" +
+                        "\n✅ 수업 상세\n" + subject + "\n\n✅ 수업 가능 지역\n" + regions + "\n"),
+                mapToField("쌤 프로필", teacherLink.toString())
+        );
+
+        DiscordWebhookRequest request = mapToDiscordWithTeacherAlarm("🔥 약관폼이 제출되었어요 🔥", fields);
+        webhookClient.sendTeacherRegisterAlarm(request);
+    }
+}

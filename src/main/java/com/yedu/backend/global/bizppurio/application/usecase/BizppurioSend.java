@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
 import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
 import com.yedu.backend.global.bizppurio.application.dto.res.MessageResponse;
-import com.yedu.backend.global.discord.DiscordWebhookSend;
+import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ public class BizppurioSend {
     private final BizppurioAuth bizppurioAuth;
     private final ObjectMapper objectMapper;
     private final WebClient webClient;
-    private final DiscordWebhookSend discordWebhookSend;
+    private final DiscordWebhookUseCase discordWebhookUseCase;
 
     @Value("${bizppurio.message}")
     private String messageUrl;
@@ -58,7 +58,7 @@ public class BizppurioSend {
                 .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
                 .doOnError(error -> {
                     log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-                    discordWebhookSend.sendAlarmTalkError(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
+                    discordWebhookUseCase.sendAlarmTalkError(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
                 })
                 .then();
     }
@@ -69,6 +69,6 @@ public class BizppurioSend {
             return;
         }
         log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {}",  request.PHONE(), request.CMSGID(), request.RESULT());
-        discordWebhookSend.sendAlarmTalkError(request.PHONE(), request.CMSGID(), request.RESULT());
+        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), request.CMSGID(), request.RESULT());
     }
 }
