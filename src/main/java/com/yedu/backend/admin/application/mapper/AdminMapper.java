@@ -63,7 +63,8 @@ public class AdminMapper {
                 0,
                 0,
                 0,
-                refuseReason
+                refuseReason,
+                teacher.getTeacherInfo().getPhoneNumber()
         );
     }
 
@@ -106,7 +107,8 @@ public class AdminMapper {
                 teacher.getTeacherSchoolInfo().getMajor(),
                 districts,
                 teacherInfo.getVideo(),
-                teacher.getIssue()
+                teacher.getIssue(),
+                teacherInfo.getPhoneNumber()
         );
     }
 }

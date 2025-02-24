@@ -21,6 +21,7 @@ public record AllAlarmTalkResponse(
             int responseTime,
             int accept,
             int total,
-            String refuseReason
+            String refuseReason,
+            String phoneNumber
     ) {}
 }
