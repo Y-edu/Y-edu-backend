@@ -9,6 +9,9 @@ public class TeacherUpdateService {
         teacher.updateProfile(profile);
     }
     public void updateAlertCount(Teacher teacher) {
-        teacher.updateMessageCount();;
+        teacher.updateMessageCount();
+    }
+    public void updateActive(Teacher teacher) {
+        teacher.updateActive();
     }
 }
