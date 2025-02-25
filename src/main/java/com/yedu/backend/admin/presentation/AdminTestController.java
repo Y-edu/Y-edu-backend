@@ -117,7 +117,7 @@ public class AdminTestController {
     @Operation(summary = "구글폼 프로필 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 가입은 이미 선생님으로 했어야 합니다!")
     public void finProfile(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.counselStartAndPhotoSubmit(teacher);
+        teacherMessage.photoSubmit(teacher);
     }
 
     @PostMapping("/test/teacher/photo/{phoneNumber}")
