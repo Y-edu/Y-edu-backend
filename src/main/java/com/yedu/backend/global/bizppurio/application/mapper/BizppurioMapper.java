@@ -67,6 +67,7 @@ public class BizppurioMapper {
 
     private static final String WEB_LINK = "WL";
     private static final String BOT = "BK";
+    private static final String CHANNEL = "AC";
     private static final String MESSAGE = "MD";
 
     public CommonRequest mapToApplyChannel(Teacher teacher) {
@@ -109,23 +110,20 @@ public class BizppurioMapper {
     }
 
     public CommonRequest mapToApplyPhotoSubmit(Teacher teacher) {
-        String message = ("지원서는 Y-Edu가 프로필로 만들어, 이후 매칭 시 학부모님께 전달드릴게요. \n" +
+        String message = ("안녕하세요 선생님 \uD83D\uDE42\n" +
                 "\n" +
-                "다음 단계는 프로필 사진과 영상을 구글폼으로 제출해 주세요. \uD83D\uDE42\n" +
+                "지원서가 정상적으로 제출되었어요.\n" +
+                "Y-Edu의 선생님으로 지원해주셔서 감사합니다. \n" +
                 "\n" +
-                "\uD83D\uDCF7 프로필 사진 포인트\n" +
-                "- 증명사진도 좋아요 \n" +
-                "- 사진의 배경이 원색으로 깔끔해야합니다. \n" +
+                "지원서는 Y-Edu가 프로필로 만들어, 과외 매칭 시 학부모님께 전달드릴게요. \n" +
                 "\n" +
-                "\uD83D\uDCF9 영상 제출 포인트 (선택)\n" +
-                "- 30초 정도의 영상입니다. \n" +
-                "- 영어 과목은 80% 이상 영어로!\n" +
-                "- 비율은 가로가 길게 촬영\n" +
-                "- 제출 시 매칭 확률 47% up\n" +
+                "다음 단계로 프로필 사진과 영상을 구글폼으로 제출해주세요. \uD83D\uDE00\n" +
                 "\n" +
-                "영상은 첫 수업 아이에게 앞으로의 수업을 설명해주는 내용이면 됩니다. (구글폼에 가이드 참고)\n" +
+                "✅ 제출 포인트\n" +
+                "- [필수] 프로필 사진 \n" +
+                "- [선택] 영어 수업 소개영상 \n" +
                 "\n" +
-                "사진과 영상은 꼭 3일 이내 제출해주세요!");
+                "구체적인 설명은 아래 버튼을 눌러 구글폼에서 확인할 수 있으며, 꼭 3일 이내 제출 부탁드려요 \uD83D\uDE47\uD83C\uDFFB\u200D♀\uFE0F");
         CommonButton webLinkButton = new WebButton("사진/영상 제출하기", WEB_LINK, photoSubmitUrl, photoSubmitUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyPhotoSubmit, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
@@ -213,18 +211,16 @@ public class BizppurioMapper {
                 "영어이름 : " + teacherInfo.getNickName() + "\n" +
                 "전화번호 : " + teacherInfo.getPhoneNumber() + "\n" +
                 "\n" +
-                teacherInfo.getNickName() + " 선생님 등록을 위한 모든 절차가 완료되었습니다. \n" +
+                teacherInfo.getNickName() + " 선생님 등록을 위한 모든 절차가 완료되었습니다. \uD83C\uDF89\n" +
                 "\n" +
-                "해당 채널은 선생님이 신청하셨던 지역의 ‘과외 건이 공지’되는 채널입니다.  \n" +
+                "해당 채널은 선생님이 신청하셨던 지역의 ‘과외 공지’가 전달되는 채널입니다.  \n" +
                 "\n" +
                 "이 채널만큼은 꼼꼼히 확인 및 반응해주셔야 해요!\n" +
                 "\n" +
                 "공지되는 과외건에 대해 3시간 이내에 반복적으로 반응이 없을 경우, 과외건 공지가 줄어들게 된다는 사실을 명심해주세요! ☝\uD83C\uDFFB\n" +
                 "\n" +
-                "아래 버튼을 눌러, 과외 공지를 받기 시작해주세요. 회신 메세지가 없어도 설정이 완료된 것이니 안심해주세요.  \n" +
-                "\n" +
                 "앞으로 잘부탁드립니다 선생님! \uD83D\uDE42");
-        CommonButton simpleButton = new SimpleButton("과외 받기 시작하기", BOT);
+        CommonButton simpleButton = new SimpleButton("채널 추가", CHANNEL);
         Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingChannel, new CommonButton[]{simpleButton});
         return createCommonRequest(messageBody, teacherInfo.getPhoneNumber());
     }
