@@ -31,7 +31,7 @@ public class AdminInfoUseCase {
         List<ApplicationForm> applicationForms = adminGetService.allApplication();
         return new AllApplicationResponse(applicationForms.stream()
                 .map(applicationForm -> {
-                    List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm);
+                    List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm.getApplicationFormId());
                     int accept = (int)classMatchings.stream()
                             .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
                             .count();
@@ -47,7 +47,7 @@ public class AdminInfoUseCase {
 
     public AllAlarmTalkResponse getAlarmTalkInfo(String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm);
+        List<ClassMatching> classMatchings = adminGetService.allMatching(applicationFormId);
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
                 .map(AdminMapper::mapToAlarmTalkResponse)
                 .toList();
@@ -69,8 +69,8 @@ public class AdminInfoUseCase {
     }
 
     public AllFilteringTeacher searchAllTeacher(String applicationFormId, TeacherSearchRequest request) {
-        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-        List<Teacher> teachers = adminGetService.allTeacherBySearch(applicationForm, request);
+        List<ClassMatching> classMatchings = adminGetService.allMatching(applicationFormId);
+        List<Teacher> teachers = adminGetService.allTeacherBySearch(classMatchings, request);
         return  new AllFilteringTeacher(teachers.stream()
                 .map(teacher -> {
                     List<TeacherDistrict> teacherDistricts = adminGetService.allDistrictByTeacher(teacher);

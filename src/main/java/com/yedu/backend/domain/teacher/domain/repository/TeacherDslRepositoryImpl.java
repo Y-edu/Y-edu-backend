@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
@@ -69,9 +70,9 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     }
 
     @Override
-    public List<Teacher> findAllSearchTeacher(ApplicationForm applicationForm, TeacherSearchRequest request) {
-        List<Long> teacherIds = getTeachers(applicationForm)
-                .stream().map(Teacher::getTeacherId)
+    public List<Teacher> findAllSearchTeacher(List<ClassMatching> classMatchings, TeacherSearchRequest request) {
+        List<Long> teacherIds = classMatchings.stream()
+                .map(classMatching -> classMatching.getTeacher().getTeacherId())
                 .toList();
 
         BooleanBuilder builder = searchLikeSpecifier(request);
