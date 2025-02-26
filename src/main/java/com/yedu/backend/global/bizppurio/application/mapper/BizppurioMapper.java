@@ -96,15 +96,13 @@ public class BizppurioMapper {
     public CommonRequest mapToApplyAgree(Teacher teacher) {
         String message = ("이제 한 단계만 남았어요! \n" +
                 "\n" +
-                "선생님께 과외를 찾아드리고, 보수를 전산드리기 위해 위임 약관 동의가 필요합니다. \uD83D\uDE00\n" +
+                "선생님께 과외를 찾아드리고, 보수를 정산드리기 위해 위임 약관 동의가 필요합니다. \uD83D\uDE00\n" +
                 "\n" +
                 "아래 서류를 미리 준비해주세요\n" +
                 "1. 신분증 사본 (원천세 신고용)\n" +
-                "2 재학/졸업 증명서 (증빙용)\n" +
+                "2. 재학/졸업 증명서 or 학생증\n" +
                 "\n" +
-                "재학, 졸업 증명서 발행이 불가한 경우엔 상담 요청을해주세요. \n" +
-                "\n" +
-                "아래 약관 동의 후엔, 선생님 등록이 완료되어 ‘매칭 채널’에서 과외건을 받아보실 수 있습니다. \uD83D\uDE04");
+                "아래 약관 동의 후엔, 선생님 등록이 완료되어 ‘매칭 카카오톡 채널’에서 과외건을 받아보실 수 있습니다. \uD83D\uDE04");
         CommonButton webLinkButton = new WebButton("약관 동의하고 등록완료하기", WEB_LINK, applyAgreeUrl, applyAgreeUrl);
         Message messageBody = new ButtonMessage(message, yeduApplyKey, applyAgree, new CommonButton[]{webLinkButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
