@@ -67,6 +67,7 @@ public class ExcelManageUseCase {
                     String[] split = fileName.split("_");
                     String name = split[0];
                     String nickName = split[1];
+                    log.info("name : {} nickName : {}", name, nickName);
                     Teacher teacher = teacherGetService.byNameAndNickName(name, nickName);
                     String profileUrl = s3UploadService.saveProfileFile(profile);
                     teacherUpdateService.updateProfile(teacher, profileUrl);
