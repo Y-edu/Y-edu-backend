@@ -27,10 +27,10 @@ public class ClassMatchingDslRepositoryImpl implements ClassMatchingDslRepositor
 
     private OrderSpecifier<Integer> statusOrderSpecifier() {
         return new CaseBuilder()
-                .when(classMatching.matchStatus.eq(MatchingStatus.수락)).then(1)
-                .when(classMatching.matchStatus.eq(MatchingStatus.거절)).then(2)
-                .when(classMatching.matchStatus.eq(MatchingStatus.대기)).then(3)
-                .when(classMatching.matchStatus.eq(MatchingStatus.전송)).then(4)
+                .when(classMatching.matchStatus.eq(MatchingStatus.전송)).then(1)
+                .when(classMatching.matchStatus.eq(MatchingStatus.수락)).then(2)
+                .when(classMatching.matchStatus.eq(MatchingStatus.거절)).then(3)
+                .when(classMatching.matchStatus.eq(MatchingStatus.대기)).then(4)
                 .otherwise(Integer.MAX_VALUE)
                 .asc();
     }
