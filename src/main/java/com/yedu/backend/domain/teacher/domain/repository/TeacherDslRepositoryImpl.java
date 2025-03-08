@@ -89,6 +89,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .on(teacher.eq(teacherDistrict.teacher))
                 .where(builder, teacher.teacherId.notIn(teacherIds), teacher.status.eq(TeacherStatus.활동중)) // 동적 조건 적용
                 .orderBy(
+                        teacher.createdAt.desc(),
                         statusOrderSpecifier(),
                         universityOrderSpecifier()
                 )
