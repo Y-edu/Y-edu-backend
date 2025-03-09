@@ -100,6 +100,7 @@ public class AdminMapper {
                 teacherInfo.getNickName(),
                 classTypes,
                 teacherInfo.getName(),
+                teacherInfo.getGender(),
                 teacher.getStatus(),
                 0,
                 0,
