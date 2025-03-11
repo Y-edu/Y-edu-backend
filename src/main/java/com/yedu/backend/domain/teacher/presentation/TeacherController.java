@@ -83,4 +83,11 @@ public class TeacherController {
         DistrictAndTimeResponse districtAndTimeResponse = infoUseCase.districtAndTime(teacherId);
         return ResponseEntity.ok(districtAndTimeResponse);
     }
+
+    @GetMapping("/info/{name}/{phoneNumber}")
+    @Operation(summary = "선생님 이름, 전화번호 기반 선생님 정보 조회")
+    public ResponseEntity<TeacherInfoResponse> teacherMyPage(@PathVariable String name, @PathVariable String phoneNumber) {
+        TeacherInfoResponse teacherInfoResponse = infoUseCase.teacherMyPage(name, phoneNumber);
+        return ResponseEntity.ok(teacherInfoResponse);
+    }
 }

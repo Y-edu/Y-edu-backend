@@ -53,4 +53,9 @@ public class TeacherGetService {
     public List<Teacher> applicationFormTeachers(ApplicationForm applicationForm) {
         return teacherRepository.findAllMatchingApplicationForm(applicationForm);
     }
+
+    public Teacher byNameAndPhoneNumber(String name, String phoneNumber) {
+        return teacherRepository.findByTeacherInfo_NameAndTeacherInfo_PhoneNumber(name, phoneNumber)
+                .orElseThrow();
+    }
 }
