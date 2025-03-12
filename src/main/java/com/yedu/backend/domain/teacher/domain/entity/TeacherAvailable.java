@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.teacher.domain.entity;
 
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
+import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.time.LocalTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeacherAvailable {
+public class TeacherAvailable extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long availableId;
