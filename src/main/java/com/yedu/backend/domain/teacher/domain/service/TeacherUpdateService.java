@@ -14,4 +14,7 @@ public class TeacherUpdateService {
     public void updateActive(Teacher teacher) {
         teacher.updateActive();
     }
+    public void updateStatus(Teacher teacher, boolean alarmTalk) {
+        teacher.updateStatusByAlarmTalk(alarmTalk);
+    }
 }

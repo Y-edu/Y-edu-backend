@@ -66,4 +66,12 @@ public class Teacher extends BaseEntity {
     public void updateActive() {
         this.status = TeacherStatus.활동중;
     }
+
+    public void updateStatusByAlarmTalk(boolean alarmTalk) {
+        if (alarmTalk) {
+            this.status = TeacherStatus.활동중;
+            return;
+        }
+        this.status = TeacherStatus.일시정지;
+    }
 }
