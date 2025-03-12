@@ -1,11 +1,9 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.*;
 import com.yedu.backend.domain.teacher.domain.entity.*;
+import com.yedu.backend.domain.teacher.domain.service.TeacherDeleteService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
@@ -31,6 +29,7 @@ public class TeacherManageUseCase {
     private final TeacherSaveService teacherSaveService;
     private final TeacherGetService teacherGetService;
     private final TeacherUpdateService teacherUpdateService;
+    private final TeacherDeleteService teacherDeleteService;
     private final S3UploadService s3UploadService;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
     private final DiscordWebhookUseCase discordWebhookUseCase;
@@ -113,5 +112,14 @@ public class TeacherManageUseCase {
     public void changeAlarmTalkStatus(AlarmTalkChangeRequest request) {
         Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
         teacherUpdateService.updateStatus(teacher, request.alarmTalk());
+    }
+
+    public void changeDistrict(DistrictChangeRequest request) {
+        Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
+        teacherDeleteService.allByTeacher(teacher);
+        List<TeacherDistrict> districts = request.districts().stream()
+                .map(region -> mapToTeacherDistrict(teacher, region))
+                .toList();
+        teacherSaveService.saveDistricts(districts);
     }
 }

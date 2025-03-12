@@ -25,4 +25,8 @@ public class TeacherSaveService {
         if (math != null)
             mathRepository.save(math);
     }
+
+    public void saveDistricts(List<TeacherDistrict> districts) {
+        districts.forEach(districtRepository::save);
+    }
 }
