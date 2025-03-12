@@ -74,4 +74,10 @@ public class Teacher extends BaseEntity {
         }
         this.status = TeacherStatus.일시정지;
     }
+
+    public boolean isActive() {
+        if (this.status == TeacherStatus.활동중 || this.status == TeacherStatus.일시정지)
+            return true;
+        return false;
+    }
 }
