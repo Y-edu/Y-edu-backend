@@ -1,7 +1,5 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
@@ -13,10 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
-import static com.yedu.backend.domain.teacher.domain.entity.QTeacherAvailable.teacherAvailable;
 
 @RequiredArgsConstructor
 @Service
@@ -56,12 +52,21 @@ public class TeacherInfoUseCase {
 
     public DistrictAndTimeResponse districtAndTime(long teacherId) {
         Teacher teacher = teacherGetService.byId(teacherId);
-        List<TeacherAvailable> teacherAvailables = teacherGetService.availablesByTeacher(teacher);
-        List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
+        List<String> districts = getDistricts(teacher);
+        SortedMap<Day, List<LocalTime>> availableTimes = getDayListSortedMap(teacher);
 
-        List<String> districts = teacherDistricts.stream()
-                .map(teacherDistrict -> teacherDistrict.getDistrict().getDescription())
-                .toList();
+        return mapToDistrictAndTimeResponse(districts, availableTimes);
+    }
+
+    public TeacherInfoResponse teacherMyPage(String name, String phoneNumber) {
+        Teacher teacher = teacherGetService.byNameAndPhoneNumber(name, phoneNumber);
+        List<String> districts = getDistricts(teacher);
+        SortedMap<Day, List<LocalTime>> available = getDayListSortedMap(teacher);
+        return mapToTeacherInfoResponse(teacher, districts, available);
+    }
+
+    private SortedMap<Day, List<LocalTime>> getDayListSortedMap(Teacher teacher) {
+        List<TeacherAvailable> teacherAvailables = teacherGetService.availablesByTeacher(teacher);
 
         SortedMap<Day, List<LocalTime>> availableTimes = new TreeMap<>(Comparator.comparingInt(Day::getDayNum));
         Arrays.stream(Day.values()).forEach(day -> availableTimes.put(day, new ArrayList<>()));
@@ -71,7 +76,15 @@ public class TeacherInfoUseCase {
             List<LocalTime> availables = availableTimes.get(day);
             availables.add(teacherAvailable.getAvailableTime());
         });
-
-        return mapToDistrictAndTimeResponse(districts, availableTimes);
+        return availableTimes;
     }
+
+    private List<String> getDistricts(Teacher teacher) {
+        List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
+
+        return teacherDistricts.stream()
+                .map(teacherDistrict -> teacherDistrict.getDistrict().getDescription())
+                .toList();
+    }
+
 }

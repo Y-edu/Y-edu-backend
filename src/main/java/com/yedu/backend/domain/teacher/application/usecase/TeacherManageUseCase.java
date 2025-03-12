@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
@@ -107,5 +108,10 @@ public class TeacherManageUseCase {
             bizppurioTeacherMessage.notifyClass(applicationForm, teacher);
         });
         return teachers;
+    }
+
+    public void changeAlarmTalkStatus(AlarmTalkChangeRequest request) {
+        Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
+        teacherUpdateService.updateStatus(teacher, request.alarmTalk());
     }
 }

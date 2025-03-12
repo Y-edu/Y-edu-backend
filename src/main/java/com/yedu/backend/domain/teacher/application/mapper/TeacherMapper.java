@@ -241,4 +241,9 @@ public class TeacherMapper {
                 .build();
     }
 
+    public static TeacherInfoResponse mapToTeacherInfoResponse(Teacher teacher, List<String> districts, Map<Day, List<LocalTime>> available) {
+        boolean alarmTalk = teacher.getStatus() == TeacherStatus.활동중;
+        return new TeacherInfoResponse(teacher.getTeacherInfo().getName(), alarmTalk, districts, available);
+    }
+
 }
