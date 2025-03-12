@@ -102,4 +102,11 @@ public class TeacherController {
         manageUseCase.changeDistrict(request);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/info/available")
+    @Operation(summary = "선생님 가능 지역 변경")
+    public ResponseEntity changeAvailable(@RequestBody AvailableChangeRequest request) {
+        manageUseCase.changeAvailable(request);
+        return ResponseEntity.ok().build();
+    }
 }

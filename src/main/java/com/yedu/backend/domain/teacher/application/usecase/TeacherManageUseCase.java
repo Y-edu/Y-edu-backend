@@ -37,7 +37,7 @@ public class TeacherManageUseCase {
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
         List<TeacherDistrict> teacherDistricts = getTeacherDistricts(request, teacher);
-        List<TeacherAvailable> teacherAvailables = getTeacherAvailables(request, teacher);
+        List<TeacherAvailable> teacherAvailables = getTeacherAvailables(request.available(), teacher);
         TeacherEnglish english = getTeacherEnglish(request, teacher);
         TeacherMath math = getTeacherMath(request, teacher);
         teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
@@ -60,13 +60,12 @@ public class TeacherManageUseCase {
         return english;
     }
 
-    private List<TeacherAvailable> getTeacherAvailables(TeacherInfoFormRequest request, Teacher teacher) {
-        List<List<String>> availables = request.available();
+    private List<TeacherAvailable> getTeacherAvailables(List<List<String>> available, Teacher teacher) {
         List<TeacherAvailable> teacherAvailables = new ArrayList<>();
 
-        for (int day = 0; day < availables.size(); day++) {
+        for (int day = 0; day < available.size(); day++) {
             int finalDay = day;
-            List<String> times = availables.get(day);
+            List<String> times = available.get(day);
             times.stream()
                     .filter(time -> !time.equals("불가"))  // "불가"가 아닌 값만 필터링
                     .forEach(time -> {
@@ -116,10 +115,17 @@ public class TeacherManageUseCase {
 
     public void changeDistrict(DistrictChangeRequest request) {
         Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
-        teacherDeleteService.allByTeacher(teacher);
+        teacherDeleteService.districtByTeacher(teacher);
         List<TeacherDistrict> districts = request.districts().stream()
                 .map(region -> mapToTeacherDistrict(teacher, region))
                 .toList();
         teacherSaveService.saveDistricts(districts);
+    }
+
+    public void changeAvailable(AvailableChangeRequest request) {
+        Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
+        teacherDeleteService.availableByTeacher(teacher);
+        List<TeacherAvailable> availables = getTeacherAvailables(request.available(), teacher);
+        teacherSaveService.saveAvailable(availables);
     }
 }

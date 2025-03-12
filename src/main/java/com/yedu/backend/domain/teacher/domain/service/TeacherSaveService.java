@@ -29,4 +29,8 @@ public class TeacherSaveService {
     public void saveDistricts(List<TeacherDistrict> districts) {
         districts.forEach(districtRepository::save);
     }
+
+    public void saveAvailable(List<TeacherAvailable> availables) {
+        availables.forEach(availableRepository::save);
+    }
 }
