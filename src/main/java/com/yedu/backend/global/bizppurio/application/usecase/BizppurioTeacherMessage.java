@@ -2,7 +2,6 @@ package com.yedu.backend.global.bizppurio.application.usecase;
 
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
-import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
 import com.yedu.backend.global.bizppurio.application.mapper.BizppurioMapper;
 import com.yedu.backend.global.config.redis.RedisRepository;
@@ -58,5 +57,13 @@ public class BizppurioTeacherMessage {
 
     public void refuseCase(Teacher teacher) {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRefuseCase(teacher)).subscribe();
+    }
+
+    public void refuseCaseNow(Teacher teacher) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRefuseCaseNow(teacher)).subscribe();
+    }
+
+    public void refuseCaseDistrict(Teacher teacher) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToRefuseCaseDistrict(teacher)).subscribe();
     }
 }
