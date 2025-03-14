@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.yedu.backend.domain.matching.domain.entity.constant.RefuseReason.UNABLE_DISTRICT;
+import static com.yedu.backend.domain.matching.domain.entity.constant.RefuseReason.UNABLE_NOW;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -36,8 +39,16 @@ public class ClassMatchingManageUseCase {
         if (!classMatching.isWaiting())
             throw new IllegalArgumentException();
         classMatchingUpdateService.updateRefuse(classMatching, request);
-
         Teacher teacher = classMatching.getTeacher();
+        String refuseReason = request.refuseReason();
+        if (refuseReason.equals(UNABLE_NOW.getReason())) {
+            bizppurioTeacherMessage.refuseCaseNow(teacher);
+            return;
+        }
+        if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
+            bizppurioTeacherMessage.refuseCaseDistrict(teacher);
+            return;
+        }
         bizppurioTeacherMessage.refuseCase(teacher);
     }
 

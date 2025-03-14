@@ -45,6 +45,10 @@ public class BizppurioMapper {
     private String matchingAcceptCase;
     @Value("${bizppurio.yedu_matching_template.refuse_case}")
     private String matchingRefuseCase;
+    @Value("${bizppurio.yedu_matching_template.refuse_case_now}")
+    private String matchingRefuseCaseNow;
+    @Value("${bizppurio.yedu_matching_template.refuse_case_district}")
+    private String matchingRefuseCaseDistrict;
     @Value("${bizppurio.yedu_matching_template.matching_channel}")
     private String matchingChannel;
     @Value("${bizppurio.yedu_offical_template.recommend_guide}")
@@ -65,6 +69,8 @@ public class BizppurioMapper {
     private String photoHurryUrl;
     @Value("${bizppurio.url.write_application_form}")
     private String writeApplicationFormUrl;
+    @Value("${bizppurio.url.refuse_change_form}")
+    private String refuseChangeFormUrl;
 
     private static final String WEB_LINK = "WL";
     private static final String BOT = "BK";
@@ -229,6 +235,36 @@ public class BizppurioMapper {
                 "요건 수정이나, 과외 공지 중단 요청은 상담 직원에게 말씀해주세요.");
         CommonButton simpleButton = new SimpleButton("상담 매니저에게 요청하기", BOT);
         Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{simpleButton});
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
+    }
+
+    public CommonRequest mapToRefuseCaseNow(Teacher teacher) {
+        String message = ("[과외 가능지역 변경 안내]\n" +
+                "\n" +
+                teacher.getTeacherInfo().getNickName() + " 선생님. \n" +
+                "\n" +
+                "현재 발송되고 있는 과외건 공지가 실제 가능한 지역과 다를 경우, 과외 가능 지역 업데이트가 필요합니다.\n" +
+                "\n" +
+                "아래 버튼을 클릭하여 과외 설정 페이지 접속 후 지역을 변경하실 수 있습니다. \n" +
+                "\n" +
+                "과외 설정을 최신화 하시면, 가능한 지역의 과외건 공지만 받아보실 수 있습니다. \uD83D\uDE09");
+        CommonButton webButton = new WebButton("과외 설정 페이지로 이동", WEB_LINK, refuseChangeFormUrl, refuseChangeFormUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{webButton});
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
+    }
+
+    public CommonRequest mapToRefuseCaseDistrict(Teacher teacher) {
+        String message = ("[과외 가능지역 변경 안내]\n" +
+                "\n" +
+                teacher.getTeacherInfo().getNickName() + " 선생님.\n" +
+                "\n" +
+                "현재 발송되고 있는 과외건 공지가 실제 가능한 지역과 다를 경우, 과외 가능 지역 업데이트가 필요합니다.\n" +
+                "\n" +
+                "아래 버튼을 클릭하여 과외 설정 페이지 접속 후 지역을 변경하실 수 있습니다.\n" +
+                "\n" +
+                "과외 설정을 최신화 하시면, 가능한 지역의 과외건 공지만 받아보실 수 있습니다. \uD83D\uDE09");
+        CommonButton webButton = new WebButton("과외 설정 페이지로 이동", WEB_LINK, refuseChangeFormUrl, refuseChangeFormUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{webButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 
