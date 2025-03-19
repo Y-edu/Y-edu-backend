@@ -8,6 +8,7 @@ import com.yedu.backend.domain.matching.domain.service.ClassMatchingSaveService;
 import com.yedu.backend.domain.matching.domain.service.ClassMatchingUpdateService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.yedu.backend.domain.matching.domain.entity.constant.RefuseReason.UNABLE_DISTRICT;
-import static com.yedu.backend.domain.matching.domain.entity.constant.RefuseReason.UNABLE_NOW;
+import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_DISTRICT;
+import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_NOW;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class ClassMatchingManageUseCase {
     private final ClassMatchingSaveService classMatchingSaveService;
     private final ClassMatchingGetService classMatchingGetService;
     private final ClassMatchingUpdateService classMatchingUpdateService;
+    private final TeacherUpdateService teacherUpdateService;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
 
     public void saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
@@ -41,14 +43,21 @@ public class ClassMatchingManageUseCase {
         classMatchingUpdateService.updateRefuse(classMatching, request);
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
+        sendBizppurioMessage(teacher, refuseReason);
+    }
+
+    private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
         if (refuseReason.equals(UNABLE_NOW.getReason())) {
+            teacherUpdateService.plusRefuseCount(teacher);
             bizppurioTeacherMessage.refuseCaseNow(teacher);
             return;
         }
         if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
+            teacherUpdateService.plusRefuseCount(teacher);
             bizppurioTeacherMessage.refuseCaseDistrict(teacher);
             return;
         }
+        teacherUpdateService.clearRefuseCount(teacher);
         bizppurioTeacherMessage.refuseCase(teacher);
     }
 
