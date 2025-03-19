@@ -162,26 +162,24 @@ public class BizppurioMapper {
     public CommonRequest mapToNotifyClass(ApplicationForm applicationForm, Teacher teacher) {
         String message;
         if (applicationForm.getOnline().equals(Online.비대면)) {
-            message = ("[" + applicationForm.getDistrict().getDescription() + " 과외건 공지]" +
-                    "\n" +
+            message = ("[" + applicationForm.getApplicationFormId() + " 과외건 공지]\n" +
                     "\n" +
                     "안녕하세요 " + teacher.getTeacherInfo().getNickName() + "선생님!\n" +
-                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict().getDescription() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
+                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
                     "\n" +
-                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +
+                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 버튼을 눌러 선택해주세요.\n" +
                     "\n" +
                     "* 무응답이 반복되면, 과외공지에 전송이 줄어들 수 있습니다.\n" +
                     "* '넘기기'를 연속으로 한다고 하여 받는 불이익은 없습니다.\n" +
                     "\n" +
                     "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
         } else {
-            message = ("[" + applicationForm.getDistrict().getDescription() + " " +  applicationForm.getDong() + " 과외건 공지]" +
-                    "\n" +
+            message = ("[" + applicationForm.getApplicationFormId() + " 과외건 공지]\n" +
                     "\n" +
                     "안녕하세요 " + teacher.getTeacherInfo().getNickName() + "선생님!\n" +
-                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict().getDescription() + " " +  applicationForm.getDong() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
+                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict() + " " + applicationForm.getDong() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
                     "\n" +
-                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +
+                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 버튼을 눌러 선택해주세요.\n" +
                     "\n" +
                     "* 무응답이 반복되면, 과외공지에 전송이 줄어들 수 있습니다.\n" +
                     "* '넘기기'를 연속으로 한다고 하여 받는 불이익은 없습니다.\n" +
