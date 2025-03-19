@@ -69,6 +69,7 @@ public class ClassMatchingManageUseCase {
 
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Teacher teacher = classMatching.getTeacher();
+        teacherUpdateService.clearRefuseCount(teacher);
         bizppurioTeacherMessage.acceptCase(applicationForm, teacher);
     }
 }
