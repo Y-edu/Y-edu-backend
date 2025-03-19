@@ -43,6 +43,8 @@ public class Teacher extends BaseEntity {
     private String source; //유입경로
     @Column(nullable = false)
     private boolean marketingAgree;
+    @Column(nullable = false)
+    private int refuseCount;
 
     private int classCount; //수업 횟수
     private int alertMessageCount; //알림톡 발송 횟수
@@ -79,5 +81,13 @@ public class Teacher extends BaseEntity {
         if (this.status == TeacherStatus.활동중 || this.status == TeacherStatus.일시정지)
             return true;
         return false;
+    }
+
+    public void plusRefuseCount() {
+        this.refuseCount++;
+    }
+
+    public void clearRefuseCount() {
+        this.refuseCount = 0;
     }
 }

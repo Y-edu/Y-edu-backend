@@ -1,4 +1,4 @@
-package com.yedu.backend.domain.matching.domain.entity.constant;
+package com.yedu.backend.domain.matching.application.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
