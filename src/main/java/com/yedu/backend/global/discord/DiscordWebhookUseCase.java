@@ -29,11 +29,23 @@ public class DiscordWebhookUseCase {
         webhookClient.sendServerAlarm(request);
     }
 
-    public void sendAlarmTalkError(String phoneNumber, String content, String errorCode) {
+    public void sendAlarmTalkError(String phoneNumber, String content, String code, String message) {
         List<Field> fields = List.of(
                 mapToField("핸드폰번호", phoneNumber),
                 mapToField("알림톡 내용", content),
-                mapToField("에러 메시지 및 코드", errorCode),
+                mapToField("에러 코드", code),
+                mapToField("에러 메시지", message),
+                mapToField("비즈뿌리오 코드 참고", "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft")
+        );
+        DiscordWebhookRequest request = mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);
+        webhookClient.sendServerAlarm(request);
+    }
+
+    public void sendAlarmTalkErrorWithFirst(String phoneNumber, String content, String code) {
+        List<Field> fields = List.of(
+                mapToField("핸드폰번호", phoneNumber),
+                mapToField("알림톡 내용", content),
+                mapToField("에러 코드 및 코드", code),
                 mapToField("비즈뿌리오 코드 참고", "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft")
         );
         DiscordWebhookRequest request = mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);

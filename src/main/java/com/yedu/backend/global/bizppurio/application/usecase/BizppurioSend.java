@@ -1,6 +1,7 @@
 package com.yedu.backend.global.bizppurio.application.usecase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yedu.backend.global.bizppurio.application.constant.BizppurioResponseCode;
 import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
 import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
 import com.yedu.backend.global.bizppurio.application.dto.res.MessageResponse;
@@ -58,7 +59,7 @@ public class BizppurioSend {
                 .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
                 .doOnError(error -> {
                     log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-                    discordWebhookUseCase.sendAlarmTalkError(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
+                    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
                 })
                 .then();
     }
@@ -68,7 +69,10 @@ public class BizppurioSend {
             log.info("{} 에 대한 알림톡 전송 완료", request.PHONE());
             return;
         }
-        log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {}",  request.PHONE(), request.CMSGID(), request.RESULT());
-        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), request.CMSGID(), request.RESULT());
+        BizppurioResponseCode bizppurioResponseCode = BizppurioResponseCode.findByCode(Integer.parseInt(request.RESULT())).get();
+        String errorMessage = bizppurioResponseCode.getMessage();
+        int code = bizppurioResponseCode.getCode();
+        log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {} {}",  request.PHONE(), request.CMSGID(), code, errorMessage);
+        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), request.CMSGID(), String.valueOf(code), errorMessage);
     }
 }
