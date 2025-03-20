@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.teacher.domain.entity;
 
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
+import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeacherDistrict {
+public class TeacherDistrict extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long districtId;

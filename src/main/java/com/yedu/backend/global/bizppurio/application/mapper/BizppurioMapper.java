@@ -45,6 +45,10 @@ public class BizppurioMapper {
     private String matchingAcceptCase;
     @Value("${bizppurio.yedu_matching_template.refuse_case}")
     private String matchingRefuseCase;
+    @Value("${bizppurio.yedu_matching_template.refuse_case_now}")
+    private String matchingRefuseCaseNow;
+    @Value("${bizppurio.yedu_matching_template.refuse_case_district}")
+    private String matchingRefuseCaseDistrict;
     @Value("${bizppurio.yedu_matching_template.matching_channel}")
     private String matchingChannel;
     @Value("${bizppurio.yedu_offical_template.recommend_guide}")
@@ -65,6 +69,8 @@ public class BizppurioMapper {
     private String photoHurryUrl;
     @Value("${bizppurio.url.write_application_form}")
     private String writeApplicationFormUrl;
+    @Value("${bizppurio.url.refuse_change_form}")
+    private String refuseChangeFormUrl;
 
     private static final String WEB_LINK = "WL";
     private static final String BOT = "BK";
@@ -156,26 +162,24 @@ public class BizppurioMapper {
     public CommonRequest mapToNotifyClass(ApplicationForm applicationForm, Teacher teacher) {
         String message;
         if (applicationForm.getOnline().equals(Online.비대면)) {
-            message = ("[" + applicationForm.getDistrict().getDescription() + " 과외건 공지]" +
-                    "\n" +
+            message = ("[" + applicationForm.getApplicationFormId() + " 과외건 공지]\n" +
                     "\n" +
                     "안녕하세요 " + teacher.getTeacherInfo().getNickName() + "선생님!\n" +
-                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict().getDescription() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
+                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
                     "\n" +
-                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +
+                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 버튼을 눌러 선택해주세요.\n" +
                     "\n" +
                     "* 무응답이 반복되면, 과외공지에 전송이 줄어들 수 있습니다.\n" +
                     "* '넘기기'를 연속으로 한다고 하여 받는 불이익은 없습니다.\n" +
                     "\n" +
                     "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
         } else {
-            message = ("[" + applicationForm.getDistrict().getDescription() + " " +  applicationForm.getDong() + " 과외건 공지]" +
-                    "\n" +
+            message = ("[" + applicationForm.getApplicationFormId() + " 과외건 공지]\n" +
                     "\n" +
                     "안녕하세요 " + teacher.getTeacherInfo().getNickName() + "선생님!\n" +
-                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict().getDescription() + " " +  applicationForm.getDong() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
+                    "현재 " + applicationForm.getWantedSubject() + " " + applicationForm.getDistrict() + " " + applicationForm.getDong() + "에 과외건이 들어와 공지드립니다. \uD83D\uDD14\n" +
                     "\n" +
-                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 응답해주세요.\n" +
+                    "아래 버튼을 통해 과외건 정보를 확인하고, '신청하기' / '넘기기' 중 하나를 3시간 안에 버튼을 눌러 선택해주세요.\n" +
                     "\n" +
                     "* 무응답이 반복되면, 과외공지에 전송이 줄어들 수 있습니다.\n" +
                     "* '넘기기'를 연속으로 한다고 하여 받는 불이익은 없습니다.\n" +
@@ -229,6 +233,36 @@ public class BizppurioMapper {
                 "요건 수정이나, 과외 공지 중단 요청은 상담 직원에게 말씀해주세요.");
         CommonButton simpleButton = new SimpleButton("상담 매니저에게 요청하기", BOT);
         Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCase, new CommonButton[]{simpleButton});
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
+    }
+
+    public CommonRequest mapToRefuseCaseNow(Teacher teacher) {
+        String message = ("[과외건 공지 수신 설정 안내]\n" +
+                "\n" +
+                teacher.getTeacherInfo().getNickName() + " 선생님.\n" +
+                "\n" +
+                "’지금은 수업이 불가’한 이유로 매칭을 거절하셨네요!\n" +
+                "\n" +
+                "혹시 현재 과외가 어려운 상황으로 잠시 과외건 공지를 받지 않으시려면 아래 버튼을 클릭하여 과외 설정 페이지 접속 후\n" +
+                "\n" +
+                "‘과외건 공지 받기’ 메뉴에서 비활성화 하시면 메세지 전송이 중단됩니다. \uD83D\uDE42");
+        CommonButton webButton = new WebButton("과외 설정 페이지로 이동", WEB_LINK, refuseChangeFormUrl, refuseChangeFormUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCaseNow, new CommonButton[]{webButton});
+        return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
+    }
+
+    public CommonRequest mapToRefuseCaseDistrict(Teacher teacher) {
+        String message = ("[과외 가능지역 변경 안내]\n" +
+                "\n" +
+                teacher.getTeacherInfo().getNickName() + " 선생님.\n" +
+                "\n" +
+                "현재 발송되고 있는 과외건 공지가 실제 가능한 지역과 다를 경우, 과외 가능 지역 업데이트가 필요합니다.\n" +
+                "\n" +
+                "아래 버튼을 클릭하여 과외 설정 페이지 접속 후 지역을 변경하실 수 있습니다.\n" +
+                "\n" +
+                "과외 설정을 최신화 하시면, 가능한 지역의 과외건 공지만 받아보실 수 있습니다. \uD83D\uDE09");
+        CommonButton webButton = new WebButton("과외 설정 페이지로 이동", WEB_LINK, refuseChangeFormUrl, refuseChangeFormUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, matchingRefuseCaseDistrict, new CommonButton[]{webButton});
         return createCommonRequest(messageBody, teacher.getTeacherInfo().getPhoneNumber());
     }
 

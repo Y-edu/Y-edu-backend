@@ -1,8 +1,6 @@
 package com.yedu.backend.domain.teacher.presentation;
 
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
-import com.yedu.backend.domain.teacher.application.dto.req.TeacherProfileFormRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.*;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
@@ -82,5 +80,33 @@ public class TeacherController {
     public ResponseEntity<DistrictAndTimeResponse> availableInfo(@PathVariable long teacherId) {
         DistrictAndTimeResponse districtAndTimeResponse = infoUseCase.districtAndTime(teacherId);
         return ResponseEntity.ok(districtAndTimeResponse);
+    }
+
+    @GetMapping("/info/{name}/{phoneNumber}")
+    @Operation(summary = "선생님 이름, 전화번호 기반 선생님 정보 조회")
+    public ResponseEntity<TeacherInfoResponse> teacherMyPage(@PathVariable String name, @PathVariable String phoneNumber) {
+        TeacherInfoResponse teacherInfoResponse = infoUseCase.teacherMyPage(name, phoneNumber);
+        return ResponseEntity.ok(teacherInfoResponse);
+    }
+
+    @PutMapping("/info/active/talk")
+    @Operation(summary = "선생님 알림톡 수신 여부 수정 true/false")
+    public ResponseEntity changeAlarmTalk(@RequestBody AlarmTalkChangeRequest request) {
+        manageUseCase.changeAlarmTalkStatus(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/info/district")
+    @Operation(summary = "선생님 가능 지역 변경")
+    public ResponseEntity changeDistrict(@RequestBody DistrictChangeRequest request) {
+        manageUseCase.changeDistrict(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/info/available")
+    @Operation(summary = "선생님 가능 지역 변경")
+    public ResponseEntity changeAvailable(@RequestBody AvailableChangeRequest request) {
+        manageUseCase.changeAvailable(request);
+        return ResponseEntity.ok().build();
     }
 }

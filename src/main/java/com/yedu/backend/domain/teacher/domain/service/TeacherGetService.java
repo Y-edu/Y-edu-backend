@@ -3,6 +3,7 @@ package com.yedu.backend.domain.teacher.domain.service;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.repository.*;
+import com.yedu.backend.domain.teacher.exception.InActiveTeacherException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -53,4 +54,14 @@ public class TeacherGetService {
     public List<Teacher> applicationFormTeachers(ApplicationForm applicationForm) {
         return teacherRepository.findAllMatchingApplicationForm(applicationForm);
     }
+
+    public Teacher byNameAndPhoneNumber(String name, String phoneNumber) {
+        Teacher teacher = teacherRepository.findByTeacherInfo_NameAndTeacherInfo_PhoneNumber(name, phoneNumber)
+                .orElseThrow();
+        if (!teacher.isActive()) {
+            throw new InActiveTeacherException();
+        }
+        return teacher;
+    }
+
 }

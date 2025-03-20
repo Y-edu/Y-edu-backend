@@ -14,4 +14,13 @@ public class TeacherUpdateService {
     public void updateActive(Teacher teacher) {
         teacher.updateActive();
     }
+    public void updateStatus(Teacher teacher, boolean alarmTalk) {
+        teacher.updateStatusByAlarmTalk(alarmTalk);
+    }
+    public void plusRefuseCount(Teacher teacher) {
+        teacher.plusRefuseCount();
+    }
+    public void clearRefuseCount(Teacher teacher) {
+        teacher.clearRefuseCount();
+    }
 }
