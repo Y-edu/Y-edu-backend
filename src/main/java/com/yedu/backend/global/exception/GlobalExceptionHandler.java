@@ -1,6 +1,6 @@
 package com.yedu.backend.global.exception;
 
-import com.yedu.backend.domain.teacher.exception.InActiveTeacherException;
+import com.yedu.backend.global.exception.teacher.InActiveTeacherException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity handleInActiveException(InActiveTeacherException ex) {
         log.error(LOG_FORMAT, ex.getCode(), ex.getStackTrace());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getCode());
+    }
+
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity handleApplicationException(ApplicationException ex) {
+        log.error(LOG_FORMAT, ex.getCode(), ex.getMessage());
+        return ResponseEntity.internalServerError().body(ex.getCode());
     }
 
     @ExceptionHandler(Exception.class)
