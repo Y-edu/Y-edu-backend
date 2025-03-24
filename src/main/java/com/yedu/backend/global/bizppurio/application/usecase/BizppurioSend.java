@@ -5,6 +5,7 @@ import com.yedu.backend.global.bizppurio.application.constant.BizppurioResponseC
 import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
 import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
 import com.yedu.backend.global.bizppurio.application.dto.res.MessageResponse;
+import com.yedu.backend.global.config.redis.RedisRepository;
 import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -22,15 +24,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 @Component
 public class BizppurioSend {
-    private final static String SUCCESS = "7000";
+
     private final BizppurioAuth bizppurioAuth;
     private final ObjectMapper objectMapper;
     private final WebClient webClient;
     private final DiscordWebhookUseCase discordWebhookUseCase;
-
+    private final RedisRepository redisRepository;
+    private final static String SUCCESS = "7000";
     @Value("${bizppurio.message}")
     private String messageUrl;
-
+    
     protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
         CommonRequest commonRequest = messageSupplier.get();
         String accessToken = bizppurioAuth.getAuth();
@@ -41,8 +44,10 @@ public class BizppurioSend {
             log.error("Json 직렬화 실패");
             return Mono.empty();
         }
-        log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
-
+        log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().message());
+        String refkey = commonRequest.refkey();
+        String message = commonRequest.content().message().getMessage();
+        redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
         return webClient.post()
                 .uri(messageUrl)
                 .headers(h -> h.setContentType(APPLICATION_JSON))
@@ -59,7 +64,7 @@ public class BizppurioSend {
                 .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
                 .doOnError(error -> {
                     log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-                    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
+                    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().message().getMessage(), error.getMessage());
                 })
                 .then();
     }
@@ -72,7 +77,8 @@ public class BizppurioSend {
         BizppurioResponseCode bizppurioResponseCode = BizppurioResponseCode.findByCode(Integer.parseInt(request.RESULT())).get();
         String errorMessage = bizppurioResponseCode.getMessage();
         int code = bizppurioResponseCode.getCode();
-        log.error("{} 에 대한 알림톡 전송 실패, MessageKey : {} ResultCode : {} {}",  request.PHONE(), request.CMSGID(), code, errorMessage);
-        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), request.CMSGID(), String.valueOf(code), errorMessage);
+        String message = redisRepository.getValues(request.REFKEY()).orElseGet(null);
+        log.error("{} 에 대한 알림톡 전송 실패, 내용 {} \nRefKey : {} ResultCode : {} {}",  request.PHONE(), message, request.REFKEY(), code, errorMessage);
+        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), message, String.valueOf(code), errorMessage);
     }
 }
