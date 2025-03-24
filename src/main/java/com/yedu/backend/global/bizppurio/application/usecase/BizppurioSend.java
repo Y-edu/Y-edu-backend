@@ -74,10 +74,11 @@ public class BizppurioSend {
             log.info("{} 에 대한 알림톡 전송 완료", request.PHONE());
             return;
         }
-        BizppurioResponseCode bizppurioResponseCode = BizppurioResponseCode.findByCode(Integer.parseInt(request.RESULT())).get();
+        BizppurioResponseCode bizppurioResponseCode = BizppurioResponseCode.findByCode(Integer.parseInt(request.RESULT()))
+                .orElseGet(() -> BizppurioResponseCode.NOTFOUND_ERROR);
         String errorMessage = bizppurioResponseCode.getMessage();
         int code = bizppurioResponseCode.getCode();
-        String message = redisRepository.getValues(request.REFKEY()).orElseGet(null);
+        String message = redisRepository.getValues(request.REFKEY()).orElse("내용 알 수 없음");
         log.error("{} 에 대한 알림톡 전송 실패, 내용 {} \nRefKey : {} ResultCode : {} {}",  request.PHONE(), message, request.REFKEY(), code, errorMessage);
         discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), message, String.valueOf(code), errorMessage);
     }
