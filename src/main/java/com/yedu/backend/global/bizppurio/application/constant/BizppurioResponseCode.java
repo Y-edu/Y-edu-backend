@@ -77,7 +77,8 @@ public enum BizppurioResponseCode {
     UNKNOWN_ERROR_502(5003, "알 수 없는 오류 발생"),
     TOO_MANY_CONNECTIONS(5004, "너무 많은 커넥션"),
     UNKNOWN_ERROR_504(5005, "알 수 없는 오류 발생"),
-    PREPAID_BALANCE_LACK(9070, "선불 잔액 부족 (API 응답이 아닌 리포트로 전달)");
+    PREPAID_BALANCE_LACK(9070, "선불 잔액 부족 (API 응답이 아닌 리포트로 전달)"),
+    NOTFOUND_ERROR(0000, "API 문서에서 확인할 수 없는 예외 - 직접 전송 결과 확인 필요");
 
     private final int code;
     private final String message;
