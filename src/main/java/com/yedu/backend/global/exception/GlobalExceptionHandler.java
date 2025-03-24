@@ -1,6 +1,6 @@
 package com.yedu.backend.global.exception;
 
-import com.yedu.backend.domain.teacher.exception.InActiveTeacherException;
+import com.yedu.backend.global.exception.teacher.InActiveTeacherException;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
