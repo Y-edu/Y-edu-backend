@@ -13,6 +13,8 @@ public class ClassMatchingGetService {
 
     public ClassMatching classMatchingByApplicationFormIdAndTeacherId(String applicationFormId, long teacherId, String phoneNumber) {
         return classMatchingRepository.findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(applicationFormId, teacherId, phoneNumber)
-                .orElseThrow(MatchingNotFoundException::new);
+                .orElseThrow(() -> new MatchingNotFoundException(
+                        applicationFormId, teacherId, phoneNumber
+        ));
     }
 }

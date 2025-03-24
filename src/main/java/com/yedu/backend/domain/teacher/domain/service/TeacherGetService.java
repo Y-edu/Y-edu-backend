@@ -20,27 +20,27 @@ public class TeacherGetService {
 
     public Teacher byNameAndNickName(String name, String nickName) {
         return teacherRepository.findByTeacherInfo_NameAndTeacherInfo_NickName(name, nickName)
-                .orElseThrow(TeacherNotFoundByNameAndNickNameException::new);
+                .orElseThrow(() -> new TeacherNotFoundByNameAndNickNameException(name, nickName));
     }
 
     public Teacher byPhoneNumber(String phoneNumber) {
         return teacherRepository.findByTeacherInfo_PhoneNumber(phoneNumber)
-                .orElseThrow(TeacherNotFoundByPhoneNumberException::new);
+                .orElseThrow(() -> new TeacherNotFoundByPhoneNumberException(phoneNumber));
     }
 
     public Teacher byId(long teacherId) {
         return teacherRepository.findById(teacherId)
-                .orElseThrow(TeacherNotFoundByIdException::new);
+                .orElseThrow(() -> new TeacherNotFoundByIdException(teacherId));
     }
 
     public TeacherEnglish englishByTeacher(Teacher teacher) {
         return englishRepository.findByTeacher(teacher)
-                .orElseThrow(NotFoundEnglishTeacherException::new);
+                .orElseThrow(() -> new NotFoundEnglishTeacherException(teacher.getTeacherId()));
     }
 
     public TeacherMath mathByTeacher(Teacher teacher) {
         return mathRepository.findByTeacher(teacher)
-                .orElseThrow(NotFoundMathTeacherException::new);
+                .orElseThrow(() -> new NotFoundMathTeacherException(teacher.getTeacherId()));
     }
 
     public List<TeacherAvailable> availablesByTeacher(Teacher teacher) {
@@ -57,9 +57,9 @@ public class TeacherGetService {
 
     public Teacher byNameAndPhoneNumber(String name, String phoneNumber) {
         Teacher teacher = teacherRepository.findByTeacherInfo_NameAndTeacherInfo_PhoneNumber(name, phoneNumber)
-                .orElseThrow(TeacherLoginFailException::new);
+                .orElseThrow(() -> new TeacherLoginFailException(name, phoneNumber));
         if (!teacher.isActive()) {
-            throw new InActiveTeacherException();
+            throw new InActiveTeacherException(teacher.getTeacherId());
         }
         return teacher;
     }

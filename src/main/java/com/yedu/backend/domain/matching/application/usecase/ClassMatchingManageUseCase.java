@@ -40,7 +40,7 @@ public class ClassMatchingManageUseCase {
     public void refuseClassMatching(String applicationFormId, long teacherId, String phoneNumber, ClassMatchingRefuseRequest request) {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
-            throw new MatchingStatusException();
+            throw new MatchingStatusException(classMatching.getClassMatchingId());
         classMatchingUpdateService.updateRefuse(classMatching, request);
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
@@ -65,7 +65,7 @@ public class ClassMatchingManageUseCase {
     public void acceptClassMatching(String applicationFormId, long teacherId, String phoneNumber) {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
-            throw new MatchingStatusException();
+            throw new MatchingStatusException(classMatching.getClassMatchingId());
         classMatchingUpdateService.updateAccept(classMatching);
 
         ApplicationForm applicationForm = classMatching.getApplicationForm();

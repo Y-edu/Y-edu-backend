@@ -6,7 +6,7 @@ import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
 import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
-import com.yedu.backend.global.exception.parents.ParentsNotFoundException;
+import com.yedu.backend.global.exception.parents.ApplicationFormNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class ParentsGetService {
 
     public ApplicationForm applicationFormByFormId(String applicationFormId) {
         return applicationFormRepository.findById(applicationFormId)
-                .orElseThrow(ParentsNotFoundException::new);
+                .orElseThrow(() -> new ApplicationFormNotFoundException(applicationFormId));
     }
 
     public List<Goal> goalsByApplicationForm(ApplicationForm applicationForm) {

@@ -20,6 +20,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getCode());
     }
 
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity handleApplicationException(ApplicationException ex) {
+        log.error(LOG_FORMAT, ex.getCode(), ex.getMessage());
+        return ResponseEntity.internalServerError().body(ex.getCode());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleInternalServerException(Exception ex) {
         log.error(LOG_FORMAT, "500", ex.getStackTrace());
