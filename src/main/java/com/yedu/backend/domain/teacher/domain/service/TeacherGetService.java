@@ -3,7 +3,7 @@ package com.yedu.backend.domain.teacher.domain.service;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.repository.*;
-import com.yedu.backend.domain.teacher.exception.InActiveTeacherException;
+import com.yedu.backend.global.exception.teacher.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,27 +20,27 @@ public class TeacherGetService {
 
     public Teacher byNameAndNickName(String name, String nickName) {
         return teacherRepository.findByTeacherInfo_NameAndTeacherInfo_NickName(name, nickName)
-                .orElseThrow();
+                .orElseThrow(TeacherNotFoundByNameAndNickNameException::new);
     }
 
     public Teacher byPhoneNumber(String phoneNumber) {
         return teacherRepository.findByTeacherInfo_PhoneNumber(phoneNumber)
-                .orElseThrow();
+                .orElseThrow(TeacherNotFoundByPhoneNumberException::new);
     }
 
     public Teacher byId(long teacherId) {
         return teacherRepository.findById(teacherId)
-                .orElseThrow();
+                .orElseThrow(TeacherNotFoundByIdException::new);
     }
 
     public TeacherEnglish englishByTeacher(Teacher teacher) {
         return englishRepository.findByTeacher(teacher)
-                .orElseThrow();
+                .orElseThrow(NotFoundEnglishTeacherException::new);
     }
 
     public TeacherMath mathByTeacher(Teacher teacher) {
         return mathRepository.findByTeacher(teacher)
-                .orElseThrow();
+                .orElseThrow(NotFoundMathTeacherException::new);
     }
 
     public List<TeacherAvailable> availablesByTeacher(Teacher teacher) {
@@ -57,7 +57,7 @@ public class TeacherGetService {
 
     public Teacher byNameAndPhoneNumber(String name, String phoneNumber) {
         Teacher teacher = teacherRepository.findByTeacherInfo_NameAndTeacherInfo_PhoneNumber(name, phoneNumber)
-                .orElseThrow();
+                .orElseThrow(TeacherLoginFailException::new);
         if (!teacher.isActive()) {
             throw new InActiveTeacherException();
         }
