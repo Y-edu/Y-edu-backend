@@ -23,4 +23,7 @@ public class TeacherUpdateService {
     public void clearRefuseCount(Teacher teacher) {
         teacher.clearRefuseCount();
     }
+    public void updateRemind(Teacher teacher) {
+        teacher.updateRemind();
+    }
 }
