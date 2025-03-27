@@ -44,9 +44,9 @@ public class BizppurioSend {
             log.error("Json 직렬화 실패");
             return Mono.empty();
         }
-        log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().message());
+        log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
         String refkey = commonRequest.refkey();
-        String message = commonRequest.content().message().getMessage();
+        String message = commonRequest.content().at().getMessage();
         redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
         return webClient.post()
                 .uri(messageUrl)
@@ -64,7 +64,7 @@ public class BizppurioSend {
                 .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
                 .doOnError(error -> {
                     log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-                    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().message().getMessage(), error.getMessage());
+                    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
                 })
                 .then();
     }
