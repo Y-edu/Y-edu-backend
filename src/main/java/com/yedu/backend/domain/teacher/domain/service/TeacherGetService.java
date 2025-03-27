@@ -64,4 +64,8 @@ public class TeacherGetService {
         return teacher;
     }
 
+    public List<Teacher> remindTeachers() {
+        return teacherRepository.getRemindTeacher();
+    }
+
 }
