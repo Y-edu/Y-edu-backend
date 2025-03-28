@@ -10,6 +10,7 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
+import com.yedu.backend.global.exception.matching.MatchingStatusException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,7 @@ public class ClassMatchingManageUseCase {
     public void refuseClassMatching(String applicationFormId, long teacherId, String phoneNumber, ClassMatchingRefuseRequest request) {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
-            throw new IllegalArgumentException();
+            throw new MatchingStatusException(classMatching.getClassMatchingId());
         classMatchingUpdateService.updateRefuse(classMatching, request);
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
@@ -64,7 +65,7 @@ public class ClassMatchingManageUseCase {
     public void acceptClassMatching(String applicationFormId, long teacherId, String phoneNumber) {
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacherId, phoneNumber);
         if (!classMatching.isWaiting())
-            throw new IllegalArgumentException();
+            throw new MatchingStatusException(classMatching.getClassMatchingId());
         classMatchingUpdateService.updateAccept(classMatching);
 
         ApplicationForm applicationForm = classMatching.getApplicationForm();
