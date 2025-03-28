@@ -17,6 +17,8 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -215,5 +217,14 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .when(teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스")).then(6)
                 .otherwise(Integer.MAX_VALUE) // 그 외의 경우는 가장 뒤로 정렬
                 .asc(); // 오름차순 정렬
+    }
+
+    @Override
+    public List<Teacher> getRemindTeacher() {
+        return queryFactory.selectFrom(teacher)
+                .where(teacher.status.eq(TeacherStatus.등록중),
+                        teacher.createdAt.before(LocalDate.now().atStartOfDay().minusDays(1L)),
+                        teacher.remind.isFalse())
+                .fetch();
     }
 }

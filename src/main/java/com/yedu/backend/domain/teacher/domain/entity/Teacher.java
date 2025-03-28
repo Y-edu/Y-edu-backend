@@ -45,6 +45,8 @@ public class Teacher extends BaseEntity {
     private boolean marketingAgree;
     @Column(nullable = false)
     private int refuseCount;
+    @Column(nullable = false)
+    private boolean remind;
 
     private int classCount; //수업 횟수
     private int alertMessageCount; //알림톡 발송 횟수
@@ -89,5 +91,9 @@ public class Teacher extends BaseEntity {
 
     public void clearRefuseCount() {
         this.refuseCount = 0;
+    }
+
+    public void updateRemind() {
+        this.remind = true;
     }
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface TeacherDslRepository {
     List<Teacher> findAllMatchingApplicationForm(ApplicationForm applicationForm);
     List<Teacher> findAllSearchTeacher(List<ClassMatching> classMatchings, TeacherSearchRequest request);
+    List<Teacher> getRemindTeacher();
 }

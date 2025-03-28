@@ -12,6 +12,7 @@ import com.yedu.backend.global.config.s3.S3UploadService;
 import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -127,5 +128,14 @@ public class TeacherManageUseCase {
         teacherDeleteService.availableByTeacher(teacher);
         List<TeacherAvailable> availables = getTeacherAvailables(request.available(), teacher);
         teacherSaveService.saveAvailable(availables);
+    }
+
+    @Scheduled(cron = "0 0 8 * * *")
+    public void remindAlarm() {
+        teacherGetService.remindTeachers()
+                .forEach(teacher -> {
+                    bizppurioTeacherMessage.photoHurry(teacher);
+                    teacherUpdateService.updateRemind(teacher);
+                });
     }
 }
