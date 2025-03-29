@@ -132,8 +132,10 @@ public class TeacherManageUseCase {
 
     @Scheduled(cron = "0 0 8 * * *")
     public void remindAlarm() {
+        log.info("리마인드 알림톡 전송 시작");
         teacherGetService.remindTeachers()
                 .forEach(teacher -> {
+                    log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
                     bizppurioTeacherMessage.photoHurry(teacher);
                     teacherUpdateService.updateRemind(teacher);
                 });
