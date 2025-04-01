@@ -71,6 +71,9 @@ public class Teacher extends BaseEntity {
         this.status = TeacherStatus.활동중;
     }
 
+    public void updateStep() {
+        this.status = TeacherStatus.사진및영상제출;
+    }
     public void updateStatusByAlarmTalk(boolean alarmTalk) {
         if (alarmTalk) {
             this.status = TeacherStatus.활동중;

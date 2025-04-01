@@ -89,6 +89,7 @@ public class TeacherManageUseCase {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateProfile(teacher, profileUrl);
+        teacherUpdateService.updateFormStep(teacher);
         bizppurioTeacherMessage.applyAgree(teacher);
     }
 
