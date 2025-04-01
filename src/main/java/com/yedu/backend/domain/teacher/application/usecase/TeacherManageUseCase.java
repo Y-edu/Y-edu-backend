@@ -12,6 +12,7 @@ import com.yedu.backend.global.config.s3.S3UploadService;
 import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,6 +89,7 @@ public class TeacherManageUseCase {
         String profileUrl = s3UploadService.saveProfileFile(profile);
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateProfile(teacher, profileUrl);
+        teacherUpdateService.updateFormStep(teacher);
         bizppurioTeacherMessage.applyAgree(teacher);
     }
 
@@ -127,5 +129,16 @@ public class TeacherManageUseCase {
         teacherDeleteService.availableByTeacher(teacher);
         List<TeacherAvailable> availables = getTeacherAvailables(request.available(), teacher);
         teacherSaveService.saveAvailable(availables);
+    }
+
+    @Scheduled(cron = "0 0 20 * * *")
+    public void remindAlarm() {
+        log.info("리마인드 알림톡 전송 시작");
+        teacherGetService.remindTeachers()
+                .forEach(teacher -> {
+                    log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
+                    bizppurioTeacherMessage.photoHurry(teacher);
+                    teacherUpdateService.updateRemind(teacher);
+                });
     }
 }

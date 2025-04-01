@@ -8,6 +8,9 @@ public class TeacherUpdateService {
     public void updateProfile(Teacher teacher, String profile) {
         teacher.updateProfile(profile);
     }
+    public void updateFormStep(Teacher teacher) {
+        teacher.updateStep();
+    }
     public void updateAlertCount(Teacher teacher) {
         teacher.updateMessageCount();
     }
@@ -22,5 +25,8 @@ public class TeacherUpdateService {
     }
     public void clearRefuseCount(Teacher teacher) {
         teacher.clearRefuseCount();
+    }
+    public void updateRemind(Teacher teacher) {
+        teacher.updateRemind();
     }
 }

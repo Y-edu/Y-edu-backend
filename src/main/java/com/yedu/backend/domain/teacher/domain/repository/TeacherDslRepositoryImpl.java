@@ -17,6 +17,7 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,7 +91,6 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .where(builder, teacher.teacherId.notIn(teacherIds), teacher.status.eq(TeacherStatus.활동중)) // 동적 조건 적용
                 .orderBy(
                         teacher.createdAt.desc(),
-                        statusOrderSpecifier(),
                         universityOrderSpecifier()
                 )
                 .fetch();
@@ -197,9 +197,10 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     private OrderSpecifier<Integer> statusOrderSpecifier() {
         return new CaseBuilder()
                 .when(teacher.status.eq(TeacherStatus.활동중)).then(1)
-                .when(teacher.status.eq(TeacherStatus.등록중)).then(2)
-                .when(teacher.status.eq(TeacherStatus.일시정지)).then(3)
-                .when(teacher.status.eq(TeacherStatus.종료)).then(4)
+                .when(teacher.status.eq(TeacherStatus.사진영상제출완료)).then(2)
+                .when(teacher.status.eq(TeacherStatus.등록폼작성완료)).then(3)
+                .when(teacher.status.eq(TeacherStatus.일시정지)).then(4)
+                .when(teacher.status.eq(TeacherStatus.종료)).then(5)
                 .otherwise(Integer.MAX_VALUE)
                 .asc();
     }
@@ -215,5 +216,14 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .when(teacher.teacherSchoolInfo.university.eq("한양대학교 서울캠퍼스")).then(6)
                 .otherwise(Integer.MAX_VALUE) // 그 외의 경우는 가장 뒤로 정렬
                 .asc(); // 오름차순 정렬
+    }
+
+    @Override
+    public List<Teacher> getRemindTeacher() {
+        return queryFactory.selectFrom(teacher)
+                .where(teacher.status.eq(TeacherStatus.등록폼작성완료),
+                        teacher.createdAt.before(LocalDate.now().atStartOfDay().minusDays(1L)),
+                        teacher.remind.isFalse())
+                .fetch();
     }
 }

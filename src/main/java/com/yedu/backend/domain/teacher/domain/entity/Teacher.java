@@ -30,7 +30,7 @@ public class Teacher extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private TeacherStatus status = TeacherStatus.등록중; //활동 상태 (관리자 수락 대기)
+    private TeacherStatus status = TeacherStatus.등록폼작성완료;
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private TeacherGrade grade = TeacherGrade.STANDARD; //등급
@@ -45,6 +45,8 @@ public class Teacher extends BaseEntity {
     private boolean marketingAgree;
     @Column(nullable = false)
     private int refuseCount;
+    @Column(nullable = false)
+    private boolean remind;
 
     private int classCount; //수업 횟수
     private int alertMessageCount; //알림톡 발송 횟수
@@ -69,6 +71,9 @@ public class Teacher extends BaseEntity {
         this.status = TeacherStatus.활동중;
     }
 
+    public void updateStep() {
+        this.status = TeacherStatus.사진영상제출완료;
+    }
     public void updateStatusByAlarmTalk(boolean alarmTalk) {
         if (alarmTalk) {
             this.status = TeacherStatus.활동중;
@@ -89,5 +94,9 @@ public class Teacher extends BaseEntity {
 
     public void clearRefuseCount() {
         this.refuseCount = 0;
+    }
+
+    public void updateRemind() {
+        this.remind = true;
     }
 }
