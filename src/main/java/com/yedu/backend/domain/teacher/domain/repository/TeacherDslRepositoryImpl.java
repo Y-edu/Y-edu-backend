@@ -197,7 +197,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     private OrderSpecifier<Integer> statusOrderSpecifier() {
         return new CaseBuilder()
                 .when(teacher.status.eq(TeacherStatus.활동중)).then(1)
-                .when(teacher.status.eq(TeacherStatus.사진및영상제출)).then(2)
+                .when(teacher.status.eq(TeacherStatus.사진영상제출완료)).then(2)
                 .when(teacher.status.eq(TeacherStatus.등록폼작성완료)).then(3)
                 .when(teacher.status.eq(TeacherStatus.일시정지)).then(4)
                 .when(teacher.status.eq(TeacherStatus.종료)).then(5)
