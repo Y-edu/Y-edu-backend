@@ -72,7 +72,7 @@ public class Teacher extends BaseEntity {
     }
 
     public void updateStep() {
-        this.status = TeacherStatus.사진및영상제출;
+        this.status = TeacherStatus.사진영상제출완료;
     }
     public void updateStatusByAlarmTalk(boolean alarmTalk) {
         if (alarmTalk) {
