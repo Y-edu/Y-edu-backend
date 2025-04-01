@@ -130,7 +130,7 @@ public class TeacherManageUseCase {
         teacherSaveService.saveAvailable(availables);
     }
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 20 * * *")
     public void remindAlarm() {
         log.info("리마인드 알림톡 전송 시작");
         teacherGetService.remindTeachers()
