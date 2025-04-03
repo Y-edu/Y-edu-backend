@@ -1,6 +1,6 @@
-package com.yedu.backend.global.bizppurio.application.usecase;
+package com.yedu.backend.bizppurio.application.usecase;
 
-import com.yedu.backend.global.bizppurio.application.dto.res.BizppurioTokenResponse;
+import com.yedu.backend.bizppurio.application.dto.res.BizppurioTokenResponse;
 import com.yedu.backend.global.config.redis.RedisRepository;
 import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;

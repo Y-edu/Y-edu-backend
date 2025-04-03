@@ -1,4 +1,4 @@
-package com.yedu.backend.global.bizppurio.application.dto.req.content;
+package com.yedu.backend.bizppurio.application.dto.req.content;
 
 public record ButtonMessage(
         String message,

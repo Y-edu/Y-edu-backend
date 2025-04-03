@@ -1,10 +1,10 @@
-package com.yedu.backend.global.bizppurio.application.usecase;
+package com.yedu.backend.bizppurio.application.usecase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yedu.backend.global.bizppurio.application.constant.BizppurioResponseCode;
-import com.yedu.backend.global.bizppurio.application.dto.req.CommonRequest;
-import com.yedu.backend.global.bizppurio.application.dto.req.MessageStatusRequest;
-import com.yedu.backend.global.bizppurio.application.dto.res.MessageResponse;
+import com.yedu.backend.bizppurio.application.constant.BizppurioResponseCode;
+import com.yedu.backend.bizppurio.application.dto.req.CommonRequest;
+import com.yedu.backend.bizppurio.application.dto.req.MessageStatusRequest;
+import com.yedu.backend.bizppurio.application.dto.res.MessageResponse;
 import com.yedu.backend.global.config.redis.RedisRepository;
 import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
