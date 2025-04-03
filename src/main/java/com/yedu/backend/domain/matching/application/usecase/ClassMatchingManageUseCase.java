@@ -9,7 +9,7 @@ import com.yedu.backend.domain.matching.domain.service.ClassMatchingUpdateServic
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
-import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
+import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
 import com.yedu.backend.global.exception.matching.MatchingStatusException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_DISTRICT;
 import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_NOW;
+import static com.yedu.backend.global.event.mapper.EventMapper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +29,14 @@ public class ClassMatchingManageUseCase {
     private final ClassMatchingGetService classMatchingGetService;
     private final ClassMatchingUpdateService classMatchingUpdateService;
     private final TeacherUpdateService teacherUpdateService;
-    private final BizppurioTeacherMessage bizppurioTeacherMessage;
+    private final BizppurioEventPublisher bizppurioEventPublisher;
 
-    public void saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
-        teachers.stream()
+    public List<ClassMatching> saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
+        List<ClassMatching> classMatchings = teachers.stream()
                 .map(teacher -> ClassMatchingMapper.mapToClassMatching(teacher, applicationForm))
-                .toList()
-                .forEach(classMatchingSaveService::save);
+                .toList();
+        classMatchings.forEach(classMatchingSaveService::save);
+        return classMatchings;
     }
 
     public void refuseClassMatching(String applicationFormId, long teacherId, String phoneNumber, ClassMatchingRefuseRequest request) {
@@ -50,16 +52,16 @@ public class ClassMatchingManageUseCase {
     private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
         if (refuseReason.equals(UNABLE_NOW.getReason())) {
             teacherUpdateService.plusRefuseCount(teacher);
-            bizppurioTeacherMessage.refuseCaseNow(teacher);
+            bizppurioEventPublisher.publishMatchingRefuseCaseNowEvent(mapToMatchingRefuseCaseNowEvent(teacher));
             return;
         }
         if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
             teacherUpdateService.plusRefuseCount(teacher);
-            bizppurioTeacherMessage.refuseCaseDistrict(teacher);
+            bizppurioEventPublisher.publishMatchingRefuseCaseDistrictEvent(mapToMatchingRefuseCaseDistrictEvent(teacher));
             return;
         }
         teacherUpdateService.clearRefuseCount(teacher);
-        bizppurioTeacherMessage.refuseCase(teacher);
+        bizppurioEventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
     }
 
     public void acceptClassMatching(String applicationFormId, long teacherId, String phoneNumber) {
@@ -68,9 +70,8 @@ public class ClassMatchingManageUseCase {
             throw new MatchingStatusException(classMatching.getClassMatchingId());
         classMatchingUpdateService.updateAccept(classMatching);
 
-        ApplicationForm applicationForm = classMatching.getApplicationForm();
         Teacher teacher = classMatching.getTeacher();
         teacherUpdateService.clearRefuseCount(teacher);
-        bizppurioTeacherMessage.acceptCase(applicationForm, teacher);
+        bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
     }
 }

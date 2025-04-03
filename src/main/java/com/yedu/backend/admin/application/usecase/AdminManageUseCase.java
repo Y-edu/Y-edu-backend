@@ -9,14 +9,16 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
-import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
-import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
+import com.yedu.backend.global.event.dto.RecommendTeacherEvent;
+import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.yedu.backend.global.event.mapper.EventMapper.*;
 
 @Transactional
 @Service
@@ -26,8 +28,7 @@ public class AdminManageUseCase {
     private final AdminGetService adminGetService;
     private final AdminUpdateService adminUpdateService;
     private final AdminSaveService adminSaveService;
-    private final BizppurioParentsMessage bizppurioParentsMessage;
-    private final BizppurioTeacherMessage bizppurioTeacherMessage;
+    private final BizppurioEventPublisher bizppurioEventPublisher;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -50,12 +51,17 @@ public class AdminManageUseCase {
     }
 
     public void recommendTeacher(RecommendTeacherRequest request) {
-        List<ClassMatching> classMatchings = request.classMatchingIds()
+        List<RecommendTeacherEvent> recommendTeacherEvents = request.classMatchingIds()
                 .stream()
-                .map(adminGetService::classMatchingById)
+                .map(id -> {
+                    ClassMatching classMatching = adminGetService.classMatchingById(id);
+                    adminUpdateService.updateClassMatchingSend(classMatching);
+                    return mapToRecommendTeacherEvent(classMatching);
+                })
                 .toList();
-        classMatchings.forEach(adminUpdateService::updateClassMatchingSend);
-        bizppurioParentsMessage.recommendTeacher(classMatchings);
+        recommendTeacherEvents.forEach(bizppurioEventPublisher::publishRecommendTeacherEvent);
+        RecommendTeacherEvent recommendTeacherEvent = recommendTeacherEvents.get(0);
+        bizppurioEventPublisher.publishRecommendGuideEvent(mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
     }
 
     public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
@@ -65,7 +71,7 @@ public class AdminManageUseCase {
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     adminSaveService.saveClassMatching(classMatching);
                     adminUpdateService.updateAlertCount(teacher);
-                    bizppurioTeacherMessage.notifyClass(applicationForm, teacher);
+                    bizppurioEventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
                 });
     }
 }
