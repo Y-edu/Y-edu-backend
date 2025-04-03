@@ -19,7 +19,7 @@ public class ParentsController {
     private final ParentsManageUseCase parentsManageUseCase;
 
     @PostMapping("/save/application")
-    @Operation(summary = "학부모 신청건 API")
+    @Operation(summary = "Tally 제출 - 학부모 신청건 API")
     public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
         parentsManageUseCase.saveParentsAndApplication(request);
         return ResponseEntity.ok().build();

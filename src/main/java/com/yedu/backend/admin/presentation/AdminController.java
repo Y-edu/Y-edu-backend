@@ -30,56 +30,56 @@ public class AdminController {
     private final AdminAuthUseCase adminAuthUseCase;
 
     @GetMapping("/all/matching")
-    @Operation(summary = "들어온 매칭건 조회", description = "모든 들어온 매칭건을 조회하는 API")
+    @Operation(summary = "매칭 관리 - 들어온 모든 신청서 조회", description = "모든 들어온 신청서을 조회하는 API")
     public ResponseEntity<AllApplicationResponse> allApplication() {
         AllApplicationResponse allApplication = adminInfoUseCase.getAllApplication();
         return ResponseEntity.ok(allApplication);
     }
 
     @PutMapping("/matching/{applicationFormId}")
-    @Operation(summary = "처리상태 반대로 변경", description = "해당 매칭건의 현상태 변경 API - 완료는 미완료로, 미완료는 완료로")
+    @Operation(summary = "매칭 관리 - 처리상태 반대로 변경", description = "해당 신청서의 현상태 변경 API - 완료는 미완료로, 미완료는 완료로")
     public ResponseEntity updateProceedStatus(@PathVariable String applicationFormId) {
         adminManageUseCase.updateProceedStatus(applicationFormId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/details/matching/parents/{parentsId}")
-    @Operation(summary = "학부모 카카오 이름 변경", description = "특정 학부모 카카오 이름 변경 API")
+    @Operation(summary = "신청서 상세조회 - 학부모 카카오 이름 변경", description = "특정 학부모 카카오 이름 변경 API")
     public ResponseEntity updateParentsName(@PathVariable long parentsId, @RequestBody ParentsKakaoNameRequest request) {
         adminManageUseCase.updateParentsKakaoName(parentsId, request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/teacher/issue/{teacherId}")
-    @Operation(summary = "선생님 간단 비고 수정", description = "선생님 간단 비고 수정 API")
+    @Operation(summary = "선생님 검색 - 선생님 간단 비고 수정", description = "선생님 간단 비고 수정 API")
     public ResponseEntity updateTeacherIssue(@PathVariable long teacherId, @RequestBody TeacherIssueRequest request) {
         adminManageUseCase.updateTeacherIssue(teacherId, request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/teacher/video/{teacherId}")
-    @Operation(summary = "선생님 유튜브 링크 수정", description = "선생님 유튜브 링크 수정 API")
+    @Operation(summary = "선생님 검색 - 선생님 유튜브 링크 수정", description = "선생님 유튜브 링크 수정 API")
     public ResponseEntity updateTeacherIssue(@PathVariable long teacherId, @RequestBody TeacherVideoRequest request) {
         adminManageUseCase.updateTeacherVideo(teacherId, request);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/details/matching/parents/{applicationFormId}")
-    @Operation(summary = "매칭 학부모 정보", description = "학부모 정보 (신청건ID, 카카오 이름, 전화번호 등등) 조회 API")
+    @Operation(summary = "신청서 상세조회 - 매칭 학부모 정보", description = "학부모 정보 (신청건ID, 카카오 이름, 전화번호 등등) 조회 API")
     public ResponseEntity<CommonParentsResponse> commonParents(@PathVariable String applicationFormId) {
         CommonParentsResponse parentsInfo = adminInfoUseCase.getParentsInfo(applicationFormId);
         return ResponseEntity.ok(parentsInfo);
     }
 
     @GetMapping("/details/matching/alarm/{applicationFormId}")
-    @Operation(summary = "매칭건 알림톡 현황 조회", description = "매칭건 알림톡 현황 조회 API")
+    @Operation(summary = "신청서 상세조회 - 매칭건 알림톡 현황 조회", description = "신청서 알림톡 현황 조회 API")
     public ResponseEntity<AllAlarmTalkResponse> allAlarmTalk(@PathVariable String applicationFormId) {
         AllAlarmTalkResponse alarmTalkInfo = adminInfoUseCase.getAlarmTalkInfo(applicationFormId);
         return ResponseEntity.ok(alarmTalkInfo);
     }
 
     @GetMapping("/details/matching/class/{applicationFormId}")
-    @Operation(summary = "매칭건 수업 상세 조회", description = "매칭건 수업 상세 정보 조회 API")
+    @Operation(summary = "신청서 상세조회 - 신청서 수업 조건 조회", description = "신청서 수업 상세 정보 조회 API")
     public ResponseEntity<ClassDetailsResponse> classDetails(@PathVariable String applicationFormId) {
         ClassDetailsResponse classDetails = adminInfoUseCase.getClassDetails(applicationFormId);
         return ResponseEntity.ok(classDetails);
@@ -99,14 +99,14 @@ public class AdminController {
     }
 
     @PostMapping("/details/matching/recommend")
-    @Operation(summary = "학부모에게 선생님 제안 알림톡 전송", description = "학부모에게 선생님 제안 알림톡 전송 API")
+    @Operation(summary = "신청서 상세조회 - 학부모에게 선생님 제안 알림톡 전송", description = "학부모에게 선생님 제안 알림톡 전송 API")
     public ResponseEntity recommendTeacher(@RequestBody RecommendTeacherRequest request) {
         adminManageUseCase.recommendTeacher(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/details/matching/proposal/{applicationFormId}")
-    @Operation(summary = "선생님에게 과외 제안 알림톡 전송", description = "선생님에게 과외 제안 알림톡 전송 API")
+    @Operation(summary = "신청서 상세조회 - 선생님 검색시 선생님에게 과외 제안 알림톡 전송", description = "선생님에게 과외 제안 알림톡 전송 API")
     public ResponseEntity proposalTeacher(@PathVariable String applicationFormId, @RequestBody ProposalTeacherRequest request) {
         adminManageUseCase.proposalTeacher(applicationFormId, request);
         return ResponseEntity.ok().build();

@@ -19,21 +19,21 @@ public class ClassMatchingController {
     private final ClassMatchingManageUseCase matchingManageUseCase;
 
     @GetMapping("/application/{applicationFormId}/{teacherId}/{phoneNumber}")
-    @Operation(summary = "과외 신청 및 보유 페이지 조회 API", description = "선생님에게 보여지는 과외 신청 및 보유 페이지 조회 API")
+    @Operation(summary = "과외 공지 선생님 알림톡 - 과외 신청 및 보류 페이지 조회 API", description = "선생님에게 보여지는 과외 신청 및 보유 페이지 조회 API")
     public ResponseEntity<ClassMatchingForTeacherResponse> applicationToTeacher(@PathVariable String applicationFormId, @PathVariable long teacherId, @PathVariable String phoneNumber) {
         ClassMatchingForTeacherResponse classMatchingForTeacherResponse = matchingInfoUseCase.applicationFormToTeacher(applicationFormId, teacherId, phoneNumber);
         return ResponseEntity.ok(classMatchingForTeacherResponse);
     }
 
     @PutMapping("/application/refuse/{applicationFormId}/{teacherId}/{phoneNumber}")
-    @Operation(summary = "과외 거절 API")
+    @Operation(summary = "과외 공지 선생님 알림톡 - 과외 거절 API")
     public ResponseEntity refuseApplication(@PathVariable String applicationFormId, @PathVariable long teacherId, @PathVariable String phoneNumber, @RequestBody ClassMatchingRefuseRequest request) {
         matchingManageUseCase.refuseClassMatching(applicationFormId, teacherId, phoneNumber, request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/application/accept/{applicationFormId}/{teacherId}/{phoneNumber}")
-    @Operation(summary = "과외 신청 API")
+    @Operation(summary = "과외 공지 선생님 알림톡 - 과외 수락 API")
     public ResponseEntity acceptApplication(@PathVariable String applicationFormId, @PathVariable long teacherId, @PathVariable String phoneNumber) {
         matchingManageUseCase.acceptClassMatching(applicationFormId, teacherId, phoneNumber);
         return ResponseEntity.ok().build();
