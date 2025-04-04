@@ -48,4 +48,8 @@ public class ClassMatching extends BaseEntity {
     public void updateSend() {
         this.matchStatus = MatchingStatus.전송;
     }
+
+    public void schedule(){
+        this.matchStatus = MatchingStatus.매칭;
+    }
 }
