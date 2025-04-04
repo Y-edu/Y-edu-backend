@@ -17,4 +17,9 @@ public class ClassMatchingGetService {
                         applicationFormId, teacherId, phoneNumber
         ));
     }
+
+    public ClassMatching getById(Long classMatchingId) {
+        return classMatchingRepository.findById(classMatchingId)
+            .orElseThrow(() -> new MatchingNotFoundException(classMatchingId));
+    }
 }

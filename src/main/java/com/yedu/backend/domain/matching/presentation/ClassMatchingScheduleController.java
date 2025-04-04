@@ -8,6 +8,7 @@ import com.yedu.backend.domain.matching.application.usecase.ClassScheduleMatchin
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,21 +27,25 @@ public class ClassMatchingScheduleController {
 
     @PostMapping
     @Operation(summary = "선생님과 학부모의 일정 조율 매칭 신청 API")
-    public ClassScheduleMatchingResponse requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
+    public ResponseEntity<ClassScheduleMatchingResponse> requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
         Long managementId = scheduleMatchingUseCase.schedule(request);
 
-        return new ClassScheduleMatchingResponse(managementId);
+        return ResponseEntity.ok(new ClassScheduleMatchingResponse(managementId));
     }
 
     @DeleteMapping
     @Operation(summary = "매칭 거절 API")
-    public void refuseScheduleMatch(@RequestBody ClassScheduleRefuseRequest request) {
+    public ResponseEntity<Void> refuseScheduleMatch(@RequestBody ClassScheduleRefuseRequest request) {
         scheduleMatchingUseCase.refuse(request);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping
     @Operation(summary = "매칭 확정 API")
-    public void confirmScheduleMatch(@RequestBody ClassScheduleConfirmRequest request) {
+    public ResponseEntity<Void> confirmScheduleMatch(@RequestBody ClassScheduleConfirmRequest request) {
         scheduleMatchingUseCase.confirm(request);
+
+        return ResponseEntity.noContent().build();
     }
 }
