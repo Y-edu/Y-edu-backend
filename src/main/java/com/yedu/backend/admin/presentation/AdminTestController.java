@@ -4,6 +4,7 @@ import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.repository.ClassMatchingRepository;
+import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
@@ -16,8 +17,7 @@ import com.yedu.backend.domain.teacher.domain.entity.constant.*;
 import com.yedu.backend.domain.teacher.domain.repository.*;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
-import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
-import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
+import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +31,16 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.yedu.backend.global.event.mapper.EventMapper.*;
+import static com.yedu.backend.global.event.mapper.EventMapper.mapToPhotoSubmitEvent;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "ADMIN TEST Controller", description = "여러가지 테스트용 API입니다")
 @Transactional
 public class AdminTestController {
     private final TeacherSaveService teacherSaveService;
-    private final BizppurioTeacherMessage teacherMessage;
     private final TeacherGetService teacherGetService;
-    private final BizppurioParentsMessage parentsMessage;
     private final ParentsGetService parentsGetService;
     private final AdminGetService adminGetService;
     private final ParentsSaveService parentsSaveService;
@@ -52,6 +53,8 @@ public class AdminTestController {
     private final TeacherEnglishRepository teacherEnglishRepository;
     private final TeacherMathRepository teacherMathRepository;
     private final TeacherRepository teacherRepository;
+    private final ClassMatchingGetService classMatchingGetService;
+    private final BizppurioEventPublisher bizppurioEventPublisher;
 
     @PostMapping("/test/teacher/signup/{phoneNumber}")
     @Operation(summary = "선생님 간편 가입 - 전화번호를 넣어주세요 (간편가입이라 내용은 기대하지 마세요)")
@@ -117,21 +120,21 @@ public class AdminTestController {
     @Operation(summary = "구글폼 프로필 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 가입은 이미 선생님으로 했어야 합니다!")
     public void finProfile(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.photoSubmit(teacher);
+        bizppurioEventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
     }
 
     @PostMapping("/test/teacher/photo/{phoneNumber}")
     @Operation(summary = "구글폼 사진 및 영상 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
     public void finPhoto(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.applyAgree(teacher);
+        bizppurioEventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
     }
 
     @PostMapping("/test/teacher/agree/{phoneNumber}")
     @Operation(summary = "계약서 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
     public void finApplyAgree(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.matchingChannel(teacher);
+        bizppurioEventPublisher.publishInviteMatchingChannelInfoEvent(mapToInviteMatchingChannelInfoEvent(teacher));
     }
 
     @PostMapping("/test/teacher/recommend/{applicationFormId}/{phoneNumber}")
@@ -149,27 +152,27 @@ public class AdminTestController {
                 classMatching -> {}, // 기존 매칭이 존재하면 아무 작업 안 함
                 () -> {
                     ClassMatching newClassMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
-                    classMatchingRepository.save(newClassMatching);
+                    ClassMatching classMatching = classMatchingRepository.save(newClassMatching);
+                    bizppurioEventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
                 }
         );
 
-        teacherMessage.notifyClass(applicationForm, teacher);
     }
     // 실제로 매칭을 하나 생성해줘야함
 
     @PostMapping("/test/teacher/accept/{applicationFormId}/{phoneNumber}")
     @Operation(summary = "선생님이 수업 신청시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 이미 가입은 했어야 합니다!")
     public void acceptCase(@PathVariable String phoneNumber, @PathVariable String applicationFormId) {
-        ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.acceptCase(applicationForm, teacher);
+        ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacher.getTeacherId(), phoneNumber);
+        bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
     }
 
     @PostMapping("/test/teacher/refuse/{phoneNumber}")
     @Operation(summary = "선생님이 수업 거절시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 가입은 했어야 합니다!")
     public void refuseCase(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        teacherMessage.refuseCase(teacher);
+        bizppurioEventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
     }
 
     @PostMapping("/test/parents/apply/{phoneNumber}")
@@ -177,6 +180,6 @@ public class AdminTestController {
     public void finApplicationForm(@PathVariable String phoneNumber) {
         Parents parents = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
                 .orElseThrow();
-        parentsMessage.notifyCalling(parents);
+        bizppurioEventPublisher.publishNotifyCallingEvent(mapToNotifyCallingEvent(parents));
     }
 }
