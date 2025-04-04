@@ -54,6 +54,19 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void confirm(ClassScheduleConfirmRequest request) {
+    ClassManagement classManagement = findClassManagementWithSchedule(
+        request);
+
+    classManagement.updateManagement(
+        request.textBook(),
+        request.firstDay().date(),
+        new ClassTime(request.firstDay().start(), request.firstDay().classMinute())
+    );
+
+    //TODO : bizppurioEventPublisher 알림톡 발송 처리
+  }
+
+  private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request) {
     ClassManagement classManagement = managementQueryService.queryById(
         request.classScheduleManagementId());
 
@@ -64,12 +77,6 @@ public class ClassScheduleMatchingUseCase {
         .build())
         .forEach(classManagement::addSchedule);
 
-    classManagement.updateManagement(
-        request.textBook(),
-        request.firstDay().date(),
-        new ClassTime(request.firstDay().start(), request.firstDay().classMinute())
-    );
-
-    //TODO : bizppurioEventPublisher 알림톡 발송 처리
+    return classManagement;
   }
 }
