@@ -2,6 +2,7 @@ package com.yedu.backend.domain.matching.presentation;
 
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
+import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleMatchingResponse;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.backend.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +26,10 @@ public class ClassMatchingScheduleController {
 
     @PostMapping
     @Operation(summary = "선생님과 학부모의 일정 조율 매칭 신청 API")
-    public Long requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
-        return scheduleMatchingUseCase.schedule(request);
+    public ClassScheduleMatchingResponse requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
+        Long managementId = scheduleMatchingUseCase.schedule(request);
+
+        return new ClassScheduleMatchingResponse(managementId);
     }
 
     @DeleteMapping
