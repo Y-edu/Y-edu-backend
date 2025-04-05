@@ -28,7 +28,7 @@ public class ClassMatchingScheduleController {
 
     private final ClassScheduleMatchingUseCase scheduleMatchingUseCase;
 
-    @GetMapping("/{classScheduleManagementId}")
+    @GetMapping
     @Operation(summary = "상담 결과 조회 API", description = "classScheduleManagementId 또는 classMatchingId로 상담결과를 조회합니다. (둘 다 넘겨줄 경우 classScheduleManagementId로 조회합니다) ")
     public ResponseEntity<ClassScheduleRetrieveResponse> retrieveSchedule(@ParameterObject ClassScheduleRetrieveRequest request) {
         ClassScheduleRetrieveResponse response = scheduleMatchingUseCase.retrieve(request);
