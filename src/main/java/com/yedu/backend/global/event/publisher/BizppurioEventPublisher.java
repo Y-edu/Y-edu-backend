@@ -57,4 +57,18 @@ public class BizppurioEventPublisher {
     public void publishRecommendGuideEvent(RecommendGuideEvent event) {
         applicationEventPublisher.publishEvent(event);
     }
+
+    public void publishMatchingEvent(MatchingParentsEvent parentsEvent, TeacherExchangeEvent teacherEvent) {
+        applicationEventPublisher.publishEvent(parentsEvent);
+        applicationEventPublisher.publishEvent(teacherEvent);
+    }
+
+    public void publishMatchingConfirmEvent(ParentsClassInfoEvent parentsClassInfoEvent, MatchingConfirmTeacherEvent teacherEvent) {
+        applicationEventPublisher.publishEvent(parentsClassInfoEvent);
+        applicationEventPublisher.publishEvent(teacherEvent);
+    }
+
+    public void publishTeacherClassRemindEvent(TeacherClassRemindEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
 }
