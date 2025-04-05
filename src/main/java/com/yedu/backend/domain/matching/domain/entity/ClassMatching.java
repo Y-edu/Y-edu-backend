@@ -1,6 +1,5 @@
 package com.yedu.backend.domain.matching.domain.entity;
 
-import static com.yedu.backend.domain.matching.domain.vo.ResponseRate.RESPONSE_HOUR;
 
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
@@ -49,10 +48,5 @@ public class ClassMatching extends BaseEntity {
 
     public void updateSend() {
         this.matchStatus = MatchingStatus.전송;
-    }
-
-    public boolean responseComplete(){
-        return (matchStatus == MatchingStatus.수락 || matchStatus == MatchingStatus.거절)
-            && getUpdatedAt().isBefore(getCreatedAt().plusHours(RESPONSE_HOUR));
     }
 }

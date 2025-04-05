@@ -7,12 +7,10 @@ import com.yedu.backend.admin.application.mapper.AdminMapper;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
-import com.yedu.backend.domain.matching.domain.vo.ResponseRate;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +48,9 @@ public class AdminInfoUseCase {
     public AllAlarmTalkResponse getAlarmTalkInfo(String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         List<ClassMatching> classMatchings = adminGetService.allMatching(applicationFormId);
-        Map<Long, ResponseRate> responseRateWithTeacherId = ResponseRate.calculate(classMatchings);
 
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
-                .map(matching-> AdminMapper.mapToAlarmTalkResponse(matching, responseRateWithTeacherId.get(matching.getTeacher().getTeacherId())))
+                .map(AdminMapper::mapToAlarmTalkResponse)
                 .toList();
         int accept = (int)classMatchings.stream()
                 .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
