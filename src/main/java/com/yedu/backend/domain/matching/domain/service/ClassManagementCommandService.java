@@ -27,13 +27,15 @@ public class ClassManagementCommandService {
         ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
         classMatching.schedule();
 
-        ClassManagement classManagement = ClassManagement.builder()
-            .classMatching(classMatching)
-            .build();
-
-        classManagementRepository.save(classManagement);
-
-        return classManagement.getClassManagementId();
+        return classManagementRepository
+            .findByClassMatching_ClassMatchingId(request.classMatchingId())
+            .orElseGet(() -> {
+                ClassManagement newClassManagement = ClassManagement.builder()
+                    .classMatching(classMatching)
+                    .build();
+                return classManagementRepository.save(newClassManagement);
+            })
+            .getClassManagementId();
     }
 
     public void delete(ClassScheduleRefuseRequest request, Long id) {
