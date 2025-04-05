@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
+import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.application.dto.res.*;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
@@ -87,4 +88,7 @@ public class TeacherInfoUseCase {
                 .toList();
     }
 
+    public List<Teacher> allApplicationFormTeacher(ApplicationForm applicationForm) {
+        return teacherGetService.applicationFormTeachers(applicationForm);
+    }
 }
