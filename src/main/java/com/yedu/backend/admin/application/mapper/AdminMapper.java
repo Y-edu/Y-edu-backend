@@ -6,6 +6,7 @@ import com.yedu.backend.admin.application.dto.res.AllFilteringTeacher.FilteringT
 import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.vo.ResponseRate;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
@@ -49,7 +50,7 @@ public class AdminMapper {
         );
     }
 
-    public static AlarmTalkResponse mapToAlarmTalkResponse(ClassMatching classMatching) {
+    public static AlarmTalkResponse mapToAlarmTalkResponse(ClassMatching classMatching, ResponseRate responseRate) {
         Teacher teacher = classMatching.getTeacher();
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         String refuseReason = Optional.ofNullable(classMatching.getRefuseReason()).orElse(null);
@@ -60,9 +61,9 @@ public class AdminMapper {
                 classMatching.getMatchStatus(),
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
+                Optional.ofNullable(responseRate).map(ResponseRate::getResponseTime).orElse(0),
                 0,
-                0,
-                0,
+                Optional.ofNullable(responseRate).map(ResponseRate::getTotal).orElse(0),
                 refuseReason,
                 teacher.getTeacherInfo().getPhoneNumber()
         );
