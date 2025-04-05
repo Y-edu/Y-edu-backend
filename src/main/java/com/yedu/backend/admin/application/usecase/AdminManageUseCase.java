@@ -68,6 +68,7 @@ public class AdminManageUseCase {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         request.teacherIds().forEach(id -> {
                     Teacher teacher = adminGetService.teacherById(id);
+                    teacher.increaseRequestCount();
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     adminSaveService.saveClassMatching(classMatching);
                     adminUpdateService.updateAlertCount(teacher);
