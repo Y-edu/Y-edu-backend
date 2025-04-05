@@ -19,22 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/matching/schedule")
 @RequiredArgsConstructor
-@Tag(name = "CLASS_MATCHING_SCHEDULE Controller")
+@Tag(name = "CLASS_MATCHING_SCHEDULE Controller", description = "매칭 후반부 자동화 스프린트에 사용될 API")
 public class ClassMatchingScheduleController {
 
     private final ClassScheduleMatchingUseCase scheduleMatchingUseCase;
 
 
     @PostMapping
-    @Operation(summary = "선생님과 학부모의 일정 조율 매칭 신청 API")
+    @Operation(summary = "상담 신행 API")
     public ResponseEntity<ClassScheduleMatchingResponse> requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
-        Long managementId = scheduleMatchingUseCase.schedule(request);
+        String key = scheduleMatchingUseCase.schedule(request);
 
-        return ResponseEntity.ok(new ClassScheduleMatchingResponse(managementId));
+        return ResponseEntity.ok(new ClassScheduleMatchingResponse(key));
     }
 
     @DeleteMapping
-    @Operation(summary = "매칭 거절 API")
+    @Operation(summary = "상담 후 미진행 API")
     public ResponseEntity<Void> refuseScheduleMatch(@RequestBody ClassScheduleRefuseRequest request) {
         scheduleMatchingUseCase.refuse(request);
 
@@ -42,7 +42,7 @@ public class ClassMatchingScheduleController {
     }
 
     @PutMapping
-    @Operation(summary = "매칭 확정 API")
+    @Operation(summary = "상담 후 진행 API")
     public ResponseEntity<Void> confirmScheduleMatch(@RequestBody ClassScheduleConfirmRequest request) {
         scheduleMatchingUseCase.confirm(request);
 

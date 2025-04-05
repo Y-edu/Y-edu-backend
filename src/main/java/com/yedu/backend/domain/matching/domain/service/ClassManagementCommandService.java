@@ -36,17 +36,16 @@ public class ClassManagementCommandService {
         return classManagement.getClassManagementId();
     }
 
-    public void delete(ClassScheduleRefuseRequest request) {
-        ClassManagement classManagement = queryById(request.classScheduleManagementId());
+    public void delete(ClassScheduleRefuseRequest request, Long id) {
+        ClassManagement classManagement = queryById(id);
 
         classManagement.refuse(request.refuseReason());
 
         classManagementRepository.delete(classManagement);
     }
 
-    public void confirm(ClassScheduleConfirmRequest request) {
-        ClassManagement classManagement = findClassManagementWithSchedule(
-            request);
+    public void confirm(ClassScheduleConfirmRequest request, Long id) {
+        ClassManagement classManagement = findClassManagementWithSchedule(request, id);
 
         classManagement.updateManagement(
             request.textBook(),
@@ -55,9 +54,8 @@ public class ClassManagementCommandService {
         );
     }
 
-    private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request) {
-        ClassManagement classManagement = queryById(
-            request.classScheduleManagementId());
+    private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request, Long id) {
+        ClassManagement classManagement = queryById(id);
 
         request.schedules().stream().map(schedule-> ClassSchedule.builder()
                 .classManagement(classManagement)

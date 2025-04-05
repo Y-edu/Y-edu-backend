@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record ClassScheduleConfirmRequest(
-    Long classScheduleManagementId,
+    String classScheduleManagementId,
     String textBook,
     List<Schedule> schedules,
     FirstDay firstDay
