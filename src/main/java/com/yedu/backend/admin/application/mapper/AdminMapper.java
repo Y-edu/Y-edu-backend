@@ -61,8 +61,8 @@ public class AdminMapper {
                 classMatching.getMatchStatus(),
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
-                Optional.ofNullable(responseRate).map(ResponseRate::getResponseTime).orElse(0),
                 0,
+                Optional.ofNullable(responseRate).map(ResponseRate::getAccept).orElse(0),
                 Optional.ofNullable(responseRate).map(ResponseRate::getTotal).orElse(0),
                 refuseReason,
                 teacher.getTeacherInfo().getPhoneNumber()

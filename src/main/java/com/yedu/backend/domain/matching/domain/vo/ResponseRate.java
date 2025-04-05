@@ -1,11 +1,9 @@
 package com.yedu.backend.domain.matching.domain.vo;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
-import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ResponseRate {
 
-  private static final int NOT_RESPONSE_HOUR = 24;
+  public static final int RESPONSE_HOUR = 12;
 
   private final Long teacherId;
 
-  private final Integer responseTime;
+  private final Integer accept;
 
   private final Integer total;
 
@@ -37,15 +35,10 @@ public class ResponseRate {
 
     int total = classMatchings.size();
     int responseCount = (int) classMatchings.stream()
-        .filter(respondCondition())
+        .filter(ClassMatching::responseComplete)
         .count();
 
     return new ResponseRate(teacherId, responseCount, total);
-  }
-
-  private static Predicate<ClassMatching> respondCondition() {
-    return classMatching -> classMatching.getMatchStatus() != MatchingStatus.대기 && classMatching.getUpdatedAt().isBefore(classMatching.getCreatedAt().plusHours(NOT_RESPONSE_HOUR));
-
   }
 
 }
