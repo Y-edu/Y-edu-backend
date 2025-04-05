@@ -4,6 +4,7 @@ import com.yedu.backend.admin.application.dto.req.*;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
+import com.yedu.backend.admin.domain.service.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
@@ -26,6 +27,7 @@ public class AdminManageUseCase {
     private final AdminGetService adminGetService;
     private final AdminUpdateService adminUpdateService;
     private final AdminSaveService adminSaveService;
+    private final ResponseRateStorage responseRateStorage;
     private final BizppurioParentsMessage bizppurioParentsMessage;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
 
@@ -62,7 +64,9 @@ public class AdminManageUseCase {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         request.teacherIds().forEach(id -> {
                     Teacher teacher = adminGetService.teacherById(id);
-                    teacher.increaseRequestCount();
+                    teacher.plusRequestCount();
+                    responseRateStorage.cache(teacher.getTeacherId());
+
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     adminSaveService.saveClassMatching(classMatching);
                     adminUpdateService.updateAlertCount(teacher);

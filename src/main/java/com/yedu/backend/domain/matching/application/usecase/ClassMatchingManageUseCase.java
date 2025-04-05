@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.matching.application.usecase;
 
+import com.yedu.backend.admin.domain.service.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
@@ -27,6 +28,7 @@ public class ClassMatchingManageUseCase {
     private final ClassMatchingSaveService classMatchingSaveService;
     private final ClassMatchingGetService classMatchingGetService;
     private final ClassMatchingUpdateService classMatchingUpdateService;
+    private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
 
@@ -45,6 +47,8 @@ public class ClassMatchingManageUseCase {
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
         sendBizppurioMessage(teacher, refuseReason);
+
+        plusResponseCount(teacherId, teacher);
     }
 
     private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
@@ -72,5 +76,14 @@ public class ClassMatchingManageUseCase {
         Teacher teacher = classMatching.getTeacher();
         teacherUpdateService.clearRefuseCount(teacher);
         bizppurioTeacherMessage.acceptCase(applicationForm, teacher);
+
+        plusResponseCount(teacherId, teacher);
+    }
+
+    private void plusResponseCount(long teacherId, Teacher teacher) {
+        if (!responseRateStorage.has(teacherId)){
+            return;
+        }
+        teacherUpdateService.plusResponseCount(teacher);
     }
 }

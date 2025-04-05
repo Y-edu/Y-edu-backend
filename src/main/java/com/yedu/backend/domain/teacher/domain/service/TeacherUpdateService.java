@@ -29,4 +29,8 @@ public class TeacherUpdateService {
     public void updateRemind(Teacher teacher) {
         teacher.updateRemind();
     }
+
+    public void plusResponseCount(Teacher teacher) {
+        teacher.plusResponseCount();
+    }
 }

@@ -91,14 +91,10 @@ public class Teacher extends BaseEntity {
     }
 
     public void plusRefuseCount() {
-        this.totalRequestCount++;
-        this.responseCount++;
         this.refuseCount++;
     }
 
     public void clearRefuseCount() {
-        this.totalRequestCount++;
-        this.responseCount++;
         this.refuseCount = 0;
     }
 
@@ -106,7 +102,11 @@ public class Teacher extends BaseEntity {
         this.remind = true;
     }
 
-    public void increaseRequestCount() {
+    public void plusRequestCount() {
         this.totalRequestCount++;
+    }
+
+    public void plusResponseCount() {
+        this.responseCount++;
     }
 }
