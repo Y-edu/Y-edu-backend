@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.function.Supplier;
@@ -30,11 +29,10 @@ public class BizppurioSend {
     private final WebClient webClient;
     private final DiscordWebhookUseCase discordWebhookUseCase;
     private final RedisRepository redisRepository;
-    private final static String SUCCESS = "7000";
     @Value("${bizppurio.message}")
     private String messageUrl;
     
-    protected Mono<Void> sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
+    protected String sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
         CommonRequest commonRequest = messageSupplier.get();
         String accessToken = bizppurioAuth.getAuth();
         String request;
@@ -42,13 +40,13 @@ public class BizppurioSend {
             request = objectMapper.writeValueAsString(commonRequest);
         } catch (Exception e) {
             log.error("Json 직렬화 실패");
-            return Mono.empty();
+            throw new IllegalArgumentException("Json 직렬화 실패");
         }
         log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
         String refkey = commonRequest.refkey();
         String message = commonRequest.content().at().getMessage();
         redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
-        return webClient.post()
+        webClient.post()
                 .uri(messageUrl)
                 .headers(h -> h.setContentType(APPLICATION_JSON))
                 .headers(h -> h.setBearerAuth(accessToken))
@@ -66,20 +64,7 @@ public class BizppurioSend {
                     log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
                     discordWebhookUseCase.sendAlarmTalkErrorWithFirst(commonRequest.to(), commonRequest.content().at().getMessage(), error.getMessage());
                 })
-                .then();
-    }
-
-    public void checkByWebHook(MessageStatusRequest request) {
-        if (request.RESULT().equals(SUCCESS)) {
-            log.info("{} 에 대한 알림톡 전송 완료", request.PHONE());
-            return;
-        }
-        BizppurioResponseCode bizppurioResponseCode = BizppurioResponseCode.findByCode(Integer.parseInt(request.RESULT()))
-                .orElseGet(() -> BizppurioResponseCode.NOTFOUND_ERROR);
-        String errorMessage = bizppurioResponseCode.getMessage();
-        int code = bizppurioResponseCode.getCode();
-        String message = redisRepository.getValues(request.REFKEY()).orElse("내용 알 수 없음");
-        log.error("{} 에 대한 알림톡 전송 실패, 내용 {} \nRefKey : {} ResultCode : {} {}",  request.PHONE(), message, request.REFKEY(), code, errorMessage);
-        discordWebhookUseCase.sendAlarmTalkError(request.PHONE(), message, String.valueOf(code), errorMessage);
+                .subscribe();
+        return refkey;
     }
 }

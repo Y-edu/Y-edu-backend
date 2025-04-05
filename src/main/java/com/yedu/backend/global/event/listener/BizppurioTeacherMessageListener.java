@@ -65,4 +65,23 @@ public class BizppurioTeacherMessageListener {
     public void handleRefuseCaseDistrict(MatchingRefuseCaseDistrictEvent event) {
         bizppurioTeacherMessage.refuseCaseDistrict(event);
     }
+
+    @EventListener
+    @Async
+    public void handleTeacherExchange(TeacherExchangeEvent event) {
+        bizppurioTeacherMessage.teacherExchange(event);
+    }
+
+    @EventListener
+    @Async
+    public void handleTeacherClassRemind(TeacherClassRemindEvent event) {
+        bizppurioTeacherMessage.teacherClassRemind(event);
+    }
+
+    @EventListener
+    @Async
+    public void handleMatchingConfirmTeacher(MatchingConfirmTeacherEvent event) {
+        bizppurioTeacherMessage.matchingConfirmTeacher(event);
+    }
+
 }

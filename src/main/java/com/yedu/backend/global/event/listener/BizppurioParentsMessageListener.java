@@ -1,9 +1,7 @@
 package com.yedu.backend.global.event.listener;
 
 import com.yedu.backend.bizppurio.application.usecase.BizppurioParentsMessage;
-import com.yedu.backend.global.event.dto.RecommendTeacherEvent;
-import com.yedu.backend.global.event.dto.NotifyCallingEvent;
-import com.yedu.backend.global.event.dto.RecommendGuideEvent;
+import com.yedu.backend.global.event.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -31,5 +29,17 @@ public class BizppurioParentsMessageListener {
     @Async
     public void handleRecommendGuide(RecommendGuideEvent event) {
         bizppurioParentsMessage.recommendGuide(event);
+    }
+
+    @EventListener
+    @Async
+    public void handleMatchingParentsEvent(MatchingParentsEvent event) {
+        bizppurioParentsMessage.matchingParents(event);
+    }
+
+    @EventListener
+    @Async
+    public void handleParentsClassInfoEvent(ParentsClassInfoEvent event) {
+        bizppurioParentsMessage.parentsClassInfo(event);
     }
 }
