@@ -26,7 +26,7 @@ public class ClassMatchingScheduleController {
 
 
     @PostMapping
-    @Operation(summary = "상담 신행 API")
+    @Operation(summary = "상담 신청 API")
     public ResponseEntity<ClassScheduleMatchingResponse> requestScheduleMatch(@RequestBody ClassScheduleMatchingRequest request) {
         String key = scheduleMatchingUseCase.schedule(request);
 
