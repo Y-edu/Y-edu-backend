@@ -2,7 +2,7 @@ package com.yedu.backend.admin.domain.service;
 
 import com.yedu.backend.global.config.redis.RedisRepository;
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class ResponseRateStorage {
   public void cache(Long teacherId){
     String key = buildKey(teacherId);
 
-    redisRepository.setValues(key, LocalTime.now().toString(), Duration.ofHours(RESPONSE_BEFORE));
+    redisRepository.setValues(key, LocalDateTime.now().toString(), Duration.ofHours(RESPONSE_BEFORE));
   }
 
   public boolean has(Long teacherId){
