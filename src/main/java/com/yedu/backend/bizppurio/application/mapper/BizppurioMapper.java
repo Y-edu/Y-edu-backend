@@ -51,33 +51,33 @@ public class BizppurioMapper {
     private String recommendTeacher;
     @Value("${bizppurio.yedu_offical_template.notify_calling}")
     private String notifyCalling;
-    @Value("${bizppurio.yedu_offical_template.parents_exchange}")
+    @Value("${bizppurio.yedu_offical_template.parents_exchange:-}")
     private String parentsExchange;
-    @Value("${bizppurio.yedu_offical_template.parents_class_notice}")
+    @Value("${bizppurio.yedu_offical_template.parents_class_notice:-}")
     private String parentsClassNotice;
-    @Value("${bizppurio.yedu_offical_template.parents_class_info}")
+    @Value("${bizppurio.yedu_offical_template.parents_class_info:-}")
     private String parentsClassInfo;
-    @Value("${bizppurio.yedu_offical_template.teacher_exchnage}")
+    @Value("${bizppurio.yedu_offical_template.teacher_exchnage:-}")
     private String teacherExchange;
-    @Value("${bizppurio.yedu_offical_template.teacher_class_remind}")
+    @Value("${bizppurio.yedu_offical_template.teacher_class_remind:-}")
     private String teacherClassRemind;
-    @Value("${bizppurio.yedu_offical_template.class_guide}")
+    @Value("${bizppurio.yedu_offical_template.class_guide:-}")
     private String classGuide;
-    @Value("${bizppurio.yedu_offical_template.introduce_finish_talk}")
+    @Value("${bizppurio.yedu_offical_template.introduce_finish_talk:-}")
     private String introduceFinishTalk;
-    @Value("${bizppurio.yedu_offical_template.introduce_write_finish_talk}")
+    @Value("${bizppurio.yedu_offical_template.introduce_write_finish_talk:-}")
     private String introduceWriteFinishTalk;
     @Value("${bizppurio.url.apply_agree}")
     private String applyAgreeUrl;
     @Value("${bizppurio.url.photo_submit}")
     private String photoSubmitUrl;
-    @Value("${bizppurio.url.photo_hurry}")
+    @Value("${bizppurio.url.photo_hurry:-}")
     private String photoHurryUrl;
-    @Value("${bizppurio.url.refuse_change_form}")
+    @Value("${bizppurio.url.refuse_change_form:-}")
     private String refuseChangeFormUrl;
-    @Value("${bizppurio.url.result_share_form}")
+    @Value("${bizppurio.url.result_share_form:-}")
     private String resultShareFormUrl;
-    @Value("${bizppurio.url.class_guide}")
+    @Value("${bizppurio.url.class_guide:-}")
     private String classGuideUrl;
 
     private static final String WEB_LINK = "WL";
