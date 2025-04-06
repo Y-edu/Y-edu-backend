@@ -61,4 +61,8 @@ public class ClassMatching extends BaseEntity {
         this.matchStatus = MatchingStatus.과외결렬;
         this.refuseReason = refuseReason;
     }
+
+    public boolean isScheduleConfirm() {
+        return this.matchStatus == MatchingStatus.최종매칭;
+    }
 }
