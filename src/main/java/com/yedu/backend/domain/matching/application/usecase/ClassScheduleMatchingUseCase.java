@@ -14,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
-
 
 @RequiredArgsConstructor
 @Component
@@ -34,28 +32,30 @@ public class ClassScheduleMatchingUseCase {
     ClassManagement classManagement = managementCommandService.schedule(request);
     String key = keyStorage.storeAndGet(classManagement.getClassManagementId());
 
-    bizppurioEventPublisher.publishMatchingEvent(
-            mapToMatchingParentsEvent(classManagement),
-            mapToTeacherExchangeEvent(classManagement)
-    );
+    // TODO 알림톡 검수완료시 추가
+    //    bizppurioEventPublisher.publishMatchingEvent(
+    //            mapToMatchingParentsEvent(classManagement),
+    //            mapToTeacherExchangeEvent(classManagement)
+    //    );
     return key;
   }
 
   public void refuse(ClassScheduleRefuseRequest request) {
     keyStorage.getAndExpire(request.classScheduleManagementId(),
-            key-> managementCommandService.delete(request, key)
+        key -> managementCommandService.delete(request, key)
     );
     //TODO : 디스코드 알람 처리
   }
 
   public void confirm(ClassScheduleConfirmRequest request) {
-    keyStorage.getAndExpire(request.classScheduleManagementId(), key->{
-              ClassManagement classManagement = managementCommandService.confirm(request, key);
-              bizppurioEventPublisher.publishMatchingConfirmEvent(
-                      mapToParentsClassInfoEvent(classManagement),
-                      mapToMatchingConfirmTeacherEvent(classManagement)
-              ); //학부모 수업 정보, 공유 선생님 규정 안내, 완료톡 안내 전송
-            }
+    keyStorage.getAndExpire(request.classScheduleManagementId(), key -> {
+          ClassManagement classManagement = managementCommandService.confirm(request, key);
+          // TODO 알림톡 검수완료시 추가
+          //  bizppurioEventPublisher.publishMatchingConfirmEvent(
+          //    mapToParentsClassInfoEvent(classManagement),
+          //    mapToMatchingConfirmTeacherEvent(classManagement)
+          //  ); //학부모 수업 정보, 공유 선생님 규정 안내, 완료톡 안내 전송
+        }
     );
   }
 
@@ -63,7 +63,7 @@ public class ClassScheduleMatchingUseCase {
     Long id = keyStorage.get(request.classScheduleManagementId());
 
     return managementQueryService.query(request, id)
-            .map(ClassScheduleRetrieveResponse::of)
-            .orElse(ClassScheduleRetrieveResponse.empty());
+        .map(ClassScheduleRetrieveResponse::of)
+        .orElse(ClassScheduleRetrieveResponse.empty());
   }
 }
