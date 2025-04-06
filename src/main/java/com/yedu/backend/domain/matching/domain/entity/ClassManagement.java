@@ -45,16 +45,17 @@ public class ClassManagement extends BaseEntity {
     private ClassTime classTime;
 
     public void refuse(String reason) {
-        classMatching.updateRefuse(reason);
+        classMatching.refuseSchedule(reason);
     }
 
     public void addSchedule(ClassSchedule schedule) {
         schedules.add(schedule);
     }
 
-    public void updateManagement(String textbook, LocalDate firstDay, ClassTime classTime) {
+    public void confirm(String textbook, LocalDate firstDay, ClassTime classTime) {
         this.textbook = textbook;
         this.firstDay = firstDay;
         this.classTime = classTime;
+        this.classMatching.confirmSchedule();
     }
 }

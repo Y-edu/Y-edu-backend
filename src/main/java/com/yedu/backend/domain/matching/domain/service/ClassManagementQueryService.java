@@ -20,10 +20,14 @@ public class ClassManagementQueryService {
             return classManagementRepository.findById(id);
         }
         if (request.classMatchingId() != null){
-            return classManagementRepository.findByClassMatching_ClassMatchingId(request.classMatchingId());
+            return query(request.classMatchingId());
         }
-
         return Optional.empty();
     }
+
+    public Optional<ClassManagement> query(Long classMatchingId) {
+        return classManagementRepository.findByClassMatching_ClassMatchingId(classMatchingId);
+    }
+
 
 }
