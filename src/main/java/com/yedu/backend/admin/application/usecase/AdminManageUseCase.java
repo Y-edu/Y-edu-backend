@@ -10,6 +10,7 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioParentsMessage;
 import com.yedu.backend.global.bizppurio.application.usecase.BizppurioTeacherMessage;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AdminManageUseCase {
     private final ResponseRateStorage responseRateStorage;
     private final BizppurioParentsMessage bizppurioParentsMessage;
     private final BizppurioTeacherMessage bizppurioTeacherMessage;
+    private final TeacherUpdateService teacherUpdateService;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -64,7 +66,7 @@ public class AdminManageUseCase {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         request.teacherIds().forEach(id -> {
                     Teacher teacher = adminGetService.teacherById(id);
-                    teacher.plusRequestCount();
+                    teacherUpdateService.plusRequestCount(teacher);
                     responseRateStorage.cache(teacher.getTeacherId());
 
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);

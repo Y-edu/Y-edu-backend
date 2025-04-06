@@ -33,4 +33,8 @@ public class TeacherUpdateService {
     public void plusResponseCount(Teacher teacher) {
         teacher.plusResponseCount();
     }
+
+    public void plusRequestCount(Teacher teacher) {
+        teacher.plusRequestCount();
+    }
 }
