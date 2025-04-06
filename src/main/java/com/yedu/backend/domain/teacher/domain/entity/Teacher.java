@@ -50,8 +50,10 @@ public class Teacher extends BaseEntity {
 
     private int classCount; //수업 횟수
     private int alertMessageCount; //알림톡 발송 횟수
-    private double responseRate; //답변율
-    private double responseTime; //답변 평균 시간
+
+    private int responseCount; // 응답 횟수
+
+    private int totalRequestCount; // 전체 요청 횟수
 
     public void updateProfile(String profile) {
         teacherInfo.updateProfile(profile);
@@ -98,5 +100,13 @@ public class Teacher extends BaseEntity {
 
     public void updateRemind() {
         this.remind = true;
+    }
+
+    public void plusRequestCount() {
+        this.totalRequestCount++;
+    }
+
+    public void plusResponseCount() {
+        this.responseCount++;
     }
 }
