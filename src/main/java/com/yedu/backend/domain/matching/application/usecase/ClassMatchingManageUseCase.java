@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.matching.application.usecase;
 
+import com.yedu.backend.admin.domain.service.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
@@ -28,13 +29,17 @@ public class ClassMatchingManageUseCase {
     private final ClassMatchingSaveService classMatchingSaveService;
     private final ClassMatchingGetService classMatchingGetService;
     private final ClassMatchingUpdateService classMatchingUpdateService;
+    private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
     private final BizppurioEventPublisher bizppurioEventPublisher;
 
     public List<ClassMatching> saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
         List<ClassMatching> classMatchings = teachers.stream()
-                .map(teacher -> ClassMatchingMapper.mapToClassMatching(teacher, applicationForm))
-                .toList();
+            .map(teacher -> {
+              responseRateStorage.cache(teacher.getTeacherId());
+              teacherUpdateService.plusRequestCount(teacher);
+              return ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+            }).toList();
         classMatchings.forEach(classMatchingSaveService::save);
         return classMatchings;
     }
@@ -47,6 +52,8 @@ public class ClassMatchingManageUseCase {
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
         sendBizppurioMessage(teacher, refuseReason);
+
+        plusResponseCount(teacherId, teacher);
     }
 
     private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
@@ -73,5 +80,13 @@ public class ClassMatchingManageUseCase {
         Teacher teacher = classMatching.getTeacher();
         teacherUpdateService.clearRefuseCount(teacher);
         bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+        plusResponseCount(teacherId, teacher);
+    }
+
+    private void plusResponseCount(long teacherId, Teacher teacher) {
+        if (!responseRateStorage.has(teacherId)){
+            return;
+        }
+        teacherUpdateService.plusResponseCount(teacher);
     }
 }
