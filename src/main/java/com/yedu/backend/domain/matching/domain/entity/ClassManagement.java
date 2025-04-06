@@ -34,7 +34,7 @@ public class ClassManagement extends BaseEntity {
     @JoinColumn(name = "class_matching_id")
     private ClassMatching classMatching;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "classManagement")
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "classManagement")
     private List<ClassSchedule> schedules = new ArrayList<>();
 
     private String textbook;
