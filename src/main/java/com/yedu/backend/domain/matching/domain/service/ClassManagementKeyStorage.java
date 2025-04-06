@@ -2,7 +2,9 @@ package com.yedu.backend.domain.matching.domain.service;
 
 import com.yedu.backend.global.config.redis.RedisRepository;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,14 +29,25 @@ public class ClassManagementKeyStorage {
         return uuid.toString();
     }
 
-    public Long get(String uuid){
+    public Long getAndExpire(String uuid, Consumer<Long> consumer){
         String key = buildKey(uuid);
-        String value = redisRepository.getValues(key).orElseThrow(() -> {
-            log.error("존재하지 않은 key 접근 [%s]".formatted(uuid));
-            return new IllegalArgumentException();
+        Long value = get(uuid);
+
+        Optional.ofNullable(value).ifPresentOrElse(foundValue-> {
+            consumer.accept(foundValue);
+            redisRepository.deleteValues(key);
+        }, ()-> {
+            log.error("존재하지 않는 key [%s]", key);
+            throw new IllegalArgumentException();
         });
 
-        return Long.valueOf(value);
+        return value;
+    }
+
+    public Long get(String uuid) {
+        String key = buildKey(uuid);
+
+        return redisRepository.getValues(key).map(Long::valueOf).orElse(null);
     }
 
     private String buildKey(String uuid) {

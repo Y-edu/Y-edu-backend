@@ -10,14 +10,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+import static com.yedu.backend.global.event.dto.MatchingConfirmTeacherEvent.*;
+import static com.yedu.backend.global.event.dto.MatchingParentsEvent.*;
+
 @Component
 public class BizppurioMapper {
     @Value("${bizppurio.id}")
     private String id;
     @Value("${bizppurio.number}")
     private String number;
-    @Value("${bizppurio.phone_number}")
-    private String phoneNumber;
     @Value("${bizppurio.yedu_tutor}")
     private String yeduTutorKey;
     @Value("${bizppurio.yedu_apply}")
@@ -26,16 +27,12 @@ public class BizppurioMapper {
     private String yeduMatchingKey;
     @Value("${bizppurio.yedu_official}")
     private String yeduOfficialKey;
-    @Value("${bizppurio.yedu_tutor_template.apply_channel}")
-    private String applyChannel;
     @Value("${bizppurio.yedu_apply_template.agree}")
     private String applyAgree;
     @Value("${bizppurio.yedu_apply_template.photo_hurry}")
     private String applyPhotoHurry;
     @Value("${bizppurio.yedu_apply_template.photo_submit}")
     private String applyPhotoSubmit;
-    @Value("${bizppurio.yedu_apply_template.counsel_start}")
-    private String counselStart;
     @Value("${bizppurio.yedu_matching_template.notify_class}")
     private String notifyClass;
     @Value("${bizppurio.yedu_matching_template.accept_case}")
@@ -50,24 +47,38 @@ public class BizppurioMapper {
     private String matchingChannel;
     @Value("${bizppurio.yedu_offical_template.recommend_guide}")
     private String recommendGuid;
-    @Value("${bizppurio.yedu_offical_template.before_check}")
-    private String beforeCheck;
-    @Value("${bizppurio.yedu_offical_template.write_application_form}")
-    private String writeApplicationForm;
     @Value("${bizppurio.yedu_offical_template.recommend_teacher}")
     private String recommendTeacher;
     @Value("${bizppurio.yedu_offical_template.notify_calling}")
     private String notifyCalling;
+    @Value("${bizppurio.yedu_offical_template.parents_exchange}")
+    private String parentsExchange;
+    @Value("${bizppurio.yedu_offical_template.parents_class_notice}")
+    private String parentsClassNotice;
+    @Value("${bizppurio.yedu_offical_template.parents_class_info}")
+    private String parentsClassInfo;
+    @Value("${bizppurio.yedu_offical_template.teacher_exchnage}")
+    private String teacherExchange;
+    @Value("${bizppurio.yedu_offical_template.teacher_class_remind}")
+    private String teacherClassRemind;
+    @Value("${bizppurio.yedu_offical_template.class_guide}")
+    private String classGuide;
+    @Value("${bizppurio.yedu_offical_template.introduce_finish_talk}")
+    private String introduceFinishTalk;
+    @Value("${bizppurio.yedu_offical_template.introduce_write_finish_talk}")
+    private String introduceWriteFinishTalk;
     @Value("${bizppurio.url.apply_agree}")
     private String applyAgreeUrl;
     @Value("${bizppurio.url.photo_submit}")
     private String photoSubmitUrl;
     @Value("${bizppurio.url.photo_hurry}")
     private String photoHurryUrl;
-    @Value("${bizppurio.url.write_application_form}")
-    private String writeApplicationFormUrl;
     @Value("${bizppurio.url.refuse_change_form}")
     private String refuseChangeFormUrl;
+    @Value("${bizppurio.url.result_share_form}")
+    private String resultShareFormUrl;
+    @Value("${bizppurio.url.class_guide}")
+    private String classGuideUrl;
 
     private static final String WEB_LINK = "WL";
     private static final String BOT = "BK";
@@ -158,10 +169,10 @@ public class BizppurioMapper {
     public CommonRequest mapToMatchingAcceptCase(MatchingAcceptCaseInfoEvent matchingAcceptCaseInfoEvent) {
         String message;
         if (matchingAcceptCaseInfoEvent.online().equals(Online.비대면)) {
-             message = ("[과외 신청완료]" +
+            message = ("[과외 신청완료]" +
                     "\n" +
                     "\n" +
-                     matchingAcceptCaseInfoEvent.district().getDescription() + " " + matchingAcceptCaseInfoEvent.classType() + " " + matchingAcceptCaseInfoEvent.age() + " 과외건 신청이 완료되었습니다! \uD83D\uDE42\n" +
+                    matchingAcceptCaseInfoEvent.district().getDescription() + " " + matchingAcceptCaseInfoEvent.classType() + " " + matchingAcceptCaseInfoEvent.age() + " 과외건 신청이 완료되었습니다! \uD83D\uDE42\n" +
                     "\n" +
                     "학부모님이 신청해주신 선생님 프로필들을 전달 받으신 후, 답변 주실 예정입니다.\n" +
                     "\n" +
@@ -291,6 +302,135 @@ public class BizppurioMapper {
                 "매칭 매니저와 전화상담에서는 아이에게 딱 맞는 선생님에 대해 상담과 추천을 받을 수 있어요\uD83D\uDE42");
         Message messageBody = new TextMessage(message, yeduOfficialKey, notifyCalling);
         return createCommonRequest(messageBody, notifyCallingEvent.phoneNumber());
+    }
+
+    public CommonRequest mapToParentsExchangePhoneNumber(ParentsExchangeEvent parentsExchangeEvent) {
+        String message = ("\uD83C\uDF89과외 매칭이 성사됐어요! \uD83C\uDF89\n" +
+                "\n" +
+                "✅ " + parentsExchangeEvent.nickName() + " 선생님 연락처 \n" +
+                ": " + parentsExchangeEvent.teacherPhoneNumber() + "\n" +
+                "\n" +
+                "선생님이 24시간 내로 전화상담을 주실 예정이며, 학부모님께서 먼저 연락 남기셔도 괜찮습니다 \uD83D\uDE42\n" +
+                "\n" +
+                "Y-Edu는 관리형 매칭 서비스로, 이후 수업료 입금은 선생님이 아닌 Y-Edu를 통해 진행됩니다. \n" +
+                "\n" +
+                "또한, 선생님 교체를 원하실 경우 언제든지 말씀해주시면 빠르게 반영하여 교체 진행해 드릴게요 \uD83D\uDE0A\n" +
+                " \n" +
+                "문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.\n" +
+                "\n" +
+                "감사합니다!");
+        Message messageBody = new TextMessage(message, yeduOfficialKey, parentsExchange);
+        return createCommonRequest(messageBody, parentsExchangeEvent.parentsPhoneNumber());
+    }
+
+    public CommonRequest mapToParentsClassNotice(ParentsClassNoticeEvent parentsClassNoticeEvent) {
+        String message = ("\uD83D\uDCE2 수업 진행 시 주의사항을 안내드려요 \n" +
+                "\n" +
+                "✅ 수업 취소(휴강) 규정\n" +
+                "수업 취소(휴강) 요청은 최소 ‘전날 밤 10시'까지 부탁드립니다.\n" +
+                "\n" +
+                "전날 밤 10시 이후, 혹은 수업 당일에 갑작스럽게 수업을 취소(휴강) 하시는 경우, 회차가 진행된 것으로 인정되어 수업료가 차감됩니다. \n" +
+                "\n" +
+                "선생님들께서 수업을 위해 대중교통으로 이동하는 도중 수업이 취소되거나 시간대 변경 연락을 갑작스럽게 받으시는 경우가 빈번하여,\n" +
+                "휴강 관련 규정을 마련하였으니 선생님들을 위해 양해 부탁드려요 \uD83D\uDE4F\n" +
+                "\n" +
+                "감사합니다! \uD83D\uDE42");
+        Message messageBody = new TextMessage(message, yeduOfficialKey, parentsClassNotice);
+        return createCommonRequest(messageBody, parentsClassNoticeEvent.phoneNumber());
+    }
+
+    public CommonRequest mapToParentsClassInfo(ParentsClassInfoEvent parentsClassInfoEvent) {
+        String message = ("\uD83D\uDCCB 전화상담 후 수업정보 전달 \uD83D\uDCCB\n" +
+                "\n" +
+                "#{nickName) 선생님\n" +
+                "✅ 수업 시수 : 주 #{classNumber}회 #{teachingTime}분 \n" +
+                "✅ 수업 시간 : #{수업시간}\n" +
+                "✅ 첫 수업 : #{month}월 #{date}일 #{day}요일 #{firstTime}\n" +
+                "✅ 교재 : #{변수}\n" +
+                "\n" +
+                "선생님과 전화 상담 시 확정한 수업 정보를 정리드릴게요. \n" +
+                "\n" +
+                "앞으로 잘 부탁드립니다 \uD83D\uDE47\uD83C\uDFFB\u200D♀\uFE0F");
+        Message messageBody = new TextMessage(message, yeduOfficialKey, parentsClassInfo);
+        return createCommonRequest(messageBody, null);
+    } //todo : 어떻게 동작하는지에 대해서 이해가 필요할 듯
+
+    public CommonRequest mapToTeacherExchangePhoneNumber(TeacherExchangeEvent teacherExchangeEvent) {
+        String message = ("\uD83C\uDF89 과외 매칭을 축하드립니다!\n" +
+                "\n" +
+                teacherExchangeEvent.applicationFormId() + "\n" +
+                "✅ 수업 시수 : 주  + " + teacherExchangeEvent.classCount() + "회 " + teacherExchangeEvent.time() + " 분\n" +
+                "✅ 아이 나이 : " + teacherExchangeEvent.age() + "\n" +
+                "✅ 장소 : " + teacherExchangeEvent.district() + "\n" +
+                "✅ 보수 : " + teacherExchangeEvent.money() + " 원\n" +
+                "\n" +
+                "학부모님 연락처 : " + teacherExchangeEvent.parentsPhoneNumber() + "\n" +
+                "\n" +
+                "아래 철차에 따라 학부모님께 연락 부탁드려요!\n" +
+                "\n" +
+                "1\uFE0F⃣ 바로 학부모님께 문자를 통해 선생님 소개 후, 전화상담 시간을 잡아주세요.\n" +
+                "\n" +
+                "2\uFE0F⃣ 24시간 내로 전화상담을 진행해주세요.\n" +
+                "전화 상담 시, 수업 방향성/ 수업 교재/ 첫수업일 / 정규 수업 요일, 일시 를 확정해주세요.\n" +
+                "\n" +
+                "3\uFE0F⃣ 전화상담 결과 공유\n" +
+                "전화 상담 내용을 기록하는 링크를 미리 보내드릴게요.\n" +
+                "전화 상담 후, 링크로 들어가 상담 결과를 작성 후 제출해주세요. \uD83D\uDE4F\n" +
+                "\n" +
+                "☝\uD83C\uDFFB상담 결과 공유가 완료되지 않으면 보수 지급이 지연될 수 있습니다!");
+        CommonButton webButton = new WebButton("전화상담 결과 공유하기", WEB_LINK, resultShareFormUrl + teacherExchangeEvent.managementId(), resultShareFormUrl + teacherExchangeEvent.managementId());
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, teacherExchange, new CommonButton[]{webButton});
+        return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
+    }
+
+    public CommonRequest mapToTeacherClassRemind(TeacherClassRemindEvent teacherClassRemindEvent) {
+        String message = ("⏰ 상담 내용 공유 리마인드\n" +
+                "\n" +
+                "안녕하세요, " + teacherClassRemindEvent.nickName() + "선생님!\n" +
+                "\n" +
+                "매칭 후 24시간 이내에 전화 상담 결과를 공유해주시지 않아 연락드려요.\n" +
+                "\n" +
+                "정확한 보수 정산을 위해 상담 결과 공유가 꼭 필요합니다! 첫 수업일 전에 공유 부탁드려요 \uD83D\uDE4F");
+        CommonButton webButton = new WebButton("전화상담 결과 공유하기", WEB_LINK, resultShareFormUrl + teacherClassRemindEvent.managementId(), resultShareFormUrl + teacherClassRemindEvent.managementId());
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, teacherClassRemind, new CommonButton[]{webButton});
+        return createCommonRequest(messageBody, teacherClassRemindEvent.phoneNumber());
+    }
+
+    public CommonRequest mapToClassGuide(ClassGuideEvent classGuideEvent) {
+        String message = ("\uD83D\uDCE2 [필독] 활동 규정 \uD83D\uDCE2\n" +
+                "\n" +
+                "과외 진행 시 꼭 확인이 필요한 규정을 안내드려요. \n" +
+                "\n" +
+                "첫 수업일 전, 반드시 아래 링크를 통해 규정집을 확인해주세요 \uD83D\uDE4F");
+        CommonButton webButton = new WebButton("수업 가이드 보기", WEB_LINK, classGuideUrl, classGuideUrl);
+        Message messageBody = new ButtonMessage(message, yeduMatchingKey, classGuide, new CommonButton[]{webButton});
+        return createCommonRequest(messageBody, classGuideEvent.phoneNumber());
+    }
+
+    public CommonRequest mapToIntroduceFinishTalk(IntroduceFinishTalkEvent introduceFinishTalkEvent) {
+        String message = ("\uD83D\uDCE2 완료톡 쌓기 안내 \uD83D\uDCE2\n" +
+                "\n" +
+                "매 수업이 끝난 직후, 본 채널에 ‘수업을 완료했다’는 기록을 메세지로 보내주셔야 합니다! ☝\uD83C\uDFFB\n" +
+                "\n" +
+                "다음 전송한 메세지 내용을 복사하신 후, 아래에 수업 완료 내역을 추가하여 다시 보내주세요. \uD83D\uDE42\n" +
+                "\n" +
+                "완료톡에 기반해 급여 정산이 이루어지기에 정확하게 작성 부탁드립니다. \n" +
+                "\n" +
+                "1\uFE0F⃣ 실제로 진행된 수업 분을 써주세요. \n" +
+                "(지각해 40분 수업했다면 40분 기록)\n" +
+                "2\uFE0F⃣ 휴강도 적어주세요. \n" +
+                "3\uFE0F⃣ 담당자가 완료톡을 수정하여 보냈다면 수정한 메세지를 복붙해 이어 추가해주세요.");
+        Message messageBody = new TextMessage(message, yeduTutorKey, introduceFinishTalk);
+        return createCommonRequest(messageBody, introduceFinishTalkEvent.phoneNumber());
+    }
+
+    public CommonRequest mapToIntroduceWriteFinishTalk(IntroduceWriteFinishTalkEvent introduceWriteFinishTalkEvent) {
+        String message = (introduceWriteFinishTalkEvent.applicationFormId() + " (주 " + introduceWriteFinishTalkEvent.count() + "회 " + introduceWriteFinishTalkEvent.time() + "분) (" + 4*introduceWriteFinishTalkEvent.count() + "회 기준)\n" +
+                "- 0월 00일 1회차 00분 완료 \n" +
+                "\n" +
+                "0을 실제 숫자로 채워주세요. 2회차는 진행 후, 1회차 내용 아래에 추가하여 보내주시면 됩니다. ");
+        Message messageBody = new TextMessage(message, yeduTutorKey, introduceWriteFinishTalk);
+        return createCommonRequest(messageBody, introduceWriteFinishTalkEvent.phoneNumber());
     }
 
     private CommonRequest createCommonRequest(Message messageBody, String phoneNumber) {

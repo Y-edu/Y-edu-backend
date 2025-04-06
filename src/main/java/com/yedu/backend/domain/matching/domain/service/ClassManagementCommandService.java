@@ -23,17 +23,18 @@ public class ClassManagementCommandService {
     private final ClassMatchingGetService classMatchingGetService;
 
 
-    public Long schedule(ClassScheduleMatchingRequest request){
+    public ClassManagement schedule(ClassScheduleMatchingRequest request){
         ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
         classMatching.schedule();
 
-        ClassManagement classManagement = ClassManagement.builder()
-            .classMatching(classMatching)
-            .build();
-
-        classManagementRepository.save(classManagement);
-
-        return classManagement.getClassManagementId();
+        return classManagementRepository
+            .findByClassMatching_ClassMatchingId(request.classMatchingId())
+            .orElseGet(() -> {
+                ClassManagement newClassManagement = ClassManagement.builder()
+                    .classMatching(classMatching)
+                    .build();
+                return classManagementRepository.save(newClassManagement);
+            });
     }
 
     public void delete(ClassScheduleRefuseRequest request, Long id) {
@@ -44,7 +45,7 @@ public class ClassManagementCommandService {
         classManagementRepository.delete(classManagement);
     }
 
-    public void confirm(ClassScheduleConfirmRequest request, Long id) {
+    public ClassManagement confirm(ClassScheduleConfirmRequest request, Long id) {
         ClassManagement classManagement = findClassManagementWithSchedule(request, id);
 
         classManagement.updateManagement(
@@ -52,6 +53,7 @@ public class ClassManagementCommandService {
             request.firstDay().date(),
             new ClassTime(request.firstDay().start(), request.firstDay().classMinute())
         );
+        return classManagement;
     }
 
     private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request, Long id) {
