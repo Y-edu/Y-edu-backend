@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/bizppurio")
 public class BizppurioController {
-    private final BizppurioSend bizppurioSend;
     private final BizppurioCheckStep bizppurioCheckStep;
 
     @PostMapping("/result/webhook")
     public void resultWebHook(@RequestBody MessageStatusRequest request) {
-        bizppurioSend.checkByWebHook(request);
+        bizppurioCheckStep.checkByWebHook(request);
     }
 }
