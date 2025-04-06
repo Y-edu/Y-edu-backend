@@ -35,6 +35,7 @@ public class ClassMatchingManageUseCase {
     public void saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
         teachers.stream()
                 .map(teacher -> {
+                    responseRateStorage.cache(teacher.getTeacherId());
                     teacherUpdateService.plusRequestCount(teacher);
                     return ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                 })
