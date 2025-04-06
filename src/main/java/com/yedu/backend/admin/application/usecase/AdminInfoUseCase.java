@@ -59,6 +59,7 @@ public class AdminInfoUseCase {
     public AllAlarmTalkResponse getAlarmTalkInfo(String applicationFormId) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         List<ClassMatching> classMatchings = adminGetService.allMatching(applicationFormId);
+
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
                 .map(AdminMapper::mapToAlarmTalkResponse)
                 .toList();

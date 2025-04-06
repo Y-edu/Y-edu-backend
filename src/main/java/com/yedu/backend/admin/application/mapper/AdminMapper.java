@@ -80,8 +80,8 @@ public class AdminMapper {
                 teacher.getTeacherInfo().getNickName(),
                 teacher.getTeacherInfo().getName(),
                 0,
-                0,
-                0,
+                teacher.getResponseCount(),
+                teacher.getTotalRequestCount(),
                 refuseReason,
                 teacher.getTeacherInfo().getPhoneNumber()
         );
