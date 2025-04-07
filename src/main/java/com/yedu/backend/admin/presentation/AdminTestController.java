@@ -10,7 +10,6 @@ import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
 import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
-import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.teacher.domain.entity.*;
 import com.yedu.backend.domain.teacher.domain.entity.constant.*;
@@ -41,7 +40,6 @@ import static com.yedu.backend.global.event.mapper.EventMapper.mapToPhotoSubmitE
 public class AdminTestController {
     private final TeacherSaveService teacherSaveService;
     private final TeacherGetService teacherGetService;
-    private final ParentsGetService parentsGetService;
     private final AdminGetService adminGetService;
     private final ParentsSaveService parentsSaveService;
     private final ApplicationFormRepository applicationFormRepository;
@@ -173,13 +171,5 @@ public class AdminTestController {
     public void refuseCase(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
         bizppurioEventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
-    }
-
-    @PostMapping("/test/parents/apply/{phoneNumber}")
-    @Operation(summary = "학부모 탈리 폼 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 학부모로 이미 가입은 했어야 합니다!")
-    public void finApplicationForm(@PathVariable String phoneNumber) {
-        Parents parents = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
-                .orElseThrow();
-        bizppurioEventPublisher.publishNotifyCallingEvent(mapToNotifyCallingEvent(parents));
     }
 }
