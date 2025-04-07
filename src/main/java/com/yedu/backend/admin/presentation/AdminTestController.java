@@ -171,12 +171,4 @@ public class AdminTestController {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
         teacherMessage.refuseCase(teacher);
     }
-
-    @PostMapping("/test/parents/apply/{phoneNumber}")
-    @Operation(summary = "학부모 탈리 폼 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 학부모로 이미 가입은 했어야 합니다!")
-    public void finApplicationForm(@PathVariable String phoneNumber) {
-        Parents parents = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
-                .orElseThrow();
-        parentsMessage.notifyCalling(parents);
-    }
 }
