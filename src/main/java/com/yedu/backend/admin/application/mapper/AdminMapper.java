@@ -50,9 +50,9 @@ public class AdminMapper {
         return management.getSchedules().stream()
             .map(schedule -> new ApplicationResponse.ScheduledClass(
                 schedule.getDay(),
-                Optional.ofNullable(schedule.getClassTime()).map(ClassTime::getStart).orElse(null),
-                Optional.ofNullable(schedule.getClassTime()).map(ClassTime::getClassMinute).orElse(null))
-            )
+                schedule.getClassTime().getStart(),
+                schedule.getClassTime().getClassMinute()
+            ))
             .toList();
     }
 

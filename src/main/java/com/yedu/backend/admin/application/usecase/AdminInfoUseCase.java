@@ -37,7 +37,7 @@ public class AdminInfoUseCase {
                 .map(applicationForm -> {
                     List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm.getApplicationFormId());
                     int accept = (int)classMatchings.stream()
-                            .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
+                            .filter(ClassMatching::isAcceptStatus)
                             .count();
 
                   Optional<ClassManagement> classManagement = classMatchings.stream()
