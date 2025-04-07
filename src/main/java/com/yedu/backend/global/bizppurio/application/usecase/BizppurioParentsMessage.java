@@ -20,6 +20,10 @@ public class BizppurioParentsMessage {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToWriteApplicationForm(parents)).subscribe();
     }
 
+    public void notifyCalling(Parents parents) {
+        bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToNotifyCalling(parents)).subscribe();
+    }
+
     public void beforeCheck(Parents parents) {
         bizppurioSend.sendMessageWithExceptionHandling(() -> bizppurioMapper.mapToBeforeCheck(parents)).subscribe();
     }
