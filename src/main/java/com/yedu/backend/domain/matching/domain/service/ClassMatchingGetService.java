@@ -2,7 +2,9 @@ package com.yedu.backend.domain.matching.domain.service;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.repository.ClassMatchingRepository;
+import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.global.exception.matching.MatchingNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,10 @@ public class ClassMatchingGetService {
                 .orElseThrow(() -> new MatchingNotFoundException(
                         applicationFormId, teacherId, phoneNumber
         ));
+    }
+
+    public List<ClassMatching> getByApplicationForm(ApplicationForm applicationForm) {
+        return classMatchingRepository.findByApplicationForm(applicationForm);
     }
 
     public ClassMatching getById(Long classMatchingId) {
