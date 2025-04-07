@@ -10,10 +10,6 @@ import org.springframework.stereotype.Component;
 public class BizppurioEventPublisher {
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public void publishNotifyCallingEvent(NotifyCallingEvent event) {
-        applicationEventPublisher.publishEvent(event);
-    }
-
     public void publishPhotoSubmitEvent(PhotoSubmitEvent event) {
         applicationEventPublisher.publishEvent(event);
     }

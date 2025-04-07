@@ -12,7 +12,6 @@ import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.yedu.backend.domain.parents.application.mapper.ParentsMapper.*;
-import static com.yedu.backend.global.event.mapper.EventMapper.mapToNotifyCallingEvent;
 
 @RequiredArgsConstructor
 @Service
@@ -32,7 +30,6 @@ public class ParentsManageUseCase {
     private final TeacherManageUseCase teacherManageUseCase;
     private final TeacherInfoUseCase teacherInfoUseCase;
     private final ClassMatchingManageUseCase classMatchingManageUseCase;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
 
     public void saveParentsAndApplication(ApplicationFormRequest request) {
         Parents parents = parentsGetService.optionalParentsByPhoneNumber(request.phoneNumber())
@@ -47,6 +44,5 @@ public class ParentsManageUseCase {
         List<Teacher> teachers = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
         List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm);// 매칭 저장
         teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송
-        bizppurioEventPublisher.publishNotifyCallingEvent(mapToNotifyCallingEvent(parents));
     }
 }
