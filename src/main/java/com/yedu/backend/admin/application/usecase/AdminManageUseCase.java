@@ -10,9 +10,9 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.event.dto.RecommendTeacherEvent;
 import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
-import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,9 +30,9 @@ public class AdminManageUseCase {
     private final AdminGetService adminGetService;
     private final AdminUpdateService adminUpdateService;
     private final AdminSaveService adminSaveService;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
     private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
+    private final BizppurioEventPublisher bizppurioEventPublisher;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);

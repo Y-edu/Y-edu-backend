@@ -35,12 +35,11 @@ public class ClassMatchingManageUseCase {
 
     public List<ClassMatching> saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
         List<ClassMatching> classMatchings = teachers.stream()
-                .map(teacher -> {
-                  responseRateStorage.cache(teacher.getTeacherId());
-                  teacherUpdateService.plusRequestCount(teacher);
-                  return ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
-                })
-                .toList();
+            .map(teacher -> {
+              responseRateStorage.cache(teacher.getTeacherId());
+              teacherUpdateService.plusRequestCount(teacher);
+              return ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+            }).toList();
         classMatchings.forEach(classMatchingSaveService::save);
         return classMatchings;
     }
@@ -52,8 +51,9 @@ public class ClassMatchingManageUseCase {
         classMatchingUpdateService.updateRefuse(classMatching, request);
         Teacher teacher = classMatching.getTeacher();
         String refuseReason = request.refuseReason();
-      plusResponseCount(teacherId, teacher);
         sendBizppurioMessage(teacher, refuseReason);
+
+        plusResponseCount(teacherId, teacher);
     }
 
     private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
@@ -79,14 +79,14 @@ public class ClassMatchingManageUseCase {
 
         Teacher teacher = classMatching.getTeacher();
         teacherUpdateService.clearRefuseCount(teacher);
-        plusResponseCount(teacherId, teacher);
         bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+        plusResponseCount(teacherId, teacher);
     }
 
     private void plusResponseCount(long teacherId, Teacher teacher) {
-      if (!responseRateStorage.has(teacherId)){
-        return;
-      }
-      teacherUpdateService.plusResponseCount(teacher);
+        if (!responseRateStorage.has(teacherId)){
+            return;
+        }
+        teacherUpdateService.plusResponseCount(teacher);
     }
 }

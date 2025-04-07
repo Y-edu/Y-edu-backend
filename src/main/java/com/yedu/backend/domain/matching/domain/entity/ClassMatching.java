@@ -50,7 +50,20 @@ public class ClassMatching extends BaseEntity {
         this.matchStatus = MatchingStatus.전송;
     }
 
-    public void schedule(){
+    public void startSchedule(){
         this.matchStatus = MatchingStatus.매칭;
+    }
+
+    public void confirmSchedule(){
+        this.matchStatus = MatchingStatus.최종매칭;
+    }
+
+    public void refuseSchedule(String refuseReason){
+        this.matchStatus = MatchingStatus.과외결렬;
+        this.refuseReason = refuseReason;
+    }
+
+    public boolean isScheduleConfirm() {
+        return this.matchStatus == MatchingStatus.최종매칭;
     }
 }

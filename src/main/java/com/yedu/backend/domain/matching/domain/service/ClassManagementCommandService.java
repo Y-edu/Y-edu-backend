@@ -25,7 +25,7 @@ public class ClassManagementCommandService {
 
     public ClassManagement schedule(ClassScheduleMatchingRequest request){
         ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
-        classMatching.schedule();
+        classMatching.startSchedule();
 
         return classManagementRepository
             .findByClassMatching_ClassMatchingId(request.classMatchingId())
@@ -48,7 +48,7 @@ public class ClassManagementCommandService {
     public ClassManagement confirm(ClassScheduleConfirmRequest request, Long id) {
         ClassManagement classManagement = findClassManagementWithSchedule(request, id);
 
-        classManagement.updateManagement(
+        classManagement.confirm(
             request.textBook(),
             request.firstDay().date(),
             new ClassTime(request.firstDay().start(), request.firstDay().classMinute())
