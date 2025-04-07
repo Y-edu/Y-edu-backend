@@ -5,9 +5,9 @@ import com.yedu.backend.admin.application.dto.res.AllApplicationResponse.Applica
 import com.yedu.backend.admin.application.dto.res.AllFilteringTeacher.FilteringTeacher;
 import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
+import com.yedu.backend.admin.application.dto.res.ScheduledClass;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
-import com.yedu.backend.domain.matching.domain.vo.ClassTime;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
@@ -24,10 +24,7 @@ public class AdminMapper {
     public static ApplicationResponse mapToApplicationResponse(ApplicationForm applicationForm, int accept, int total, Optional<ClassManagement> classManagement) {
         Parents parents = applicationForm.getParents();
         String kakaoName = Optional.ofNullable(parents.getKakaoName()).orElse(null);
-        List<ApplicationResponse.ScheduledClass> scheduledClasses = classManagement
-            .map(AdminMapper::mapSchedulesToScheduledClasses)
-            .orElse(Collections.emptyList());
-
+        List<ScheduledClass> scheduledClasses = getScheduledClasses(classManagement);
 
         return new ApplicationResponse(
                 applicationForm.getApplicationFormId(),
@@ -44,16 +41,6 @@ public class AdminMapper {
                 parents.getPhoneNumber(),
                 applicationForm.isProceedStatus()
         );
-    }
-
-    private static List<ApplicationResponse.ScheduledClass> mapSchedulesToScheduledClasses(ClassManagement management) {
-        return management.getSchedules().stream()
-            .map(schedule -> new ApplicationResponse.ScheduledClass(
-                schedule.getDay(),
-                Optional.ofNullable(schedule.getClassTime()).map(ClassTime::getStart).orElse(null),
-                Optional.ofNullable(schedule.getClassTime()).map(ClassTime::getClassMinute).orElse(null))
-            )
-            .toList();
     }
 
     public static CommonParentsResponse mapToCommonParentsResponse(ApplicationForm applicationForm) {
@@ -87,10 +74,13 @@ public class AdminMapper {
         );
     }
 
-    public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm, List<String> goals) {
+    public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm, List<String> goals, Optional<ClassManagement> classManagement) {
+        List<ScheduledClass> scheduledClasses = getScheduledClasses(classManagement);
+
         return new ClassDetailsResponse(
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
+                scheduledClasses,
                 applicationForm.getPay(),
                 applicationForm.getAge(),
                 applicationForm.getWantTime(),
@@ -103,6 +93,22 @@ public class AdminMapper {
                 applicationForm.getFavoriteStyle(),
                 applicationForm.getSource()
         );
+    }
+
+    private static List<ScheduledClass> mapSchedulesToScheduledClasses(ClassManagement management) {
+        return management.getSchedules().stream()
+            .map(schedule -> new ScheduledClass(
+                schedule.getDay(),
+                schedule.getClassTime().getStart(),
+                schedule.getClassTime().getClassMinute()
+            ))
+            .toList();
+    }
+
+    private static List<ScheduledClass> getScheduledClasses(Optional<ClassManagement> classManagement) {
+        return classManagement
+            .map(AdminMapper::mapSchedulesToScheduledClasses)
+            .orElse(Collections.emptyList());
     }
 
     public static FilteringTeacher mapToAllFilteringTeacherResponse(Teacher teacher, List<String> districts) {

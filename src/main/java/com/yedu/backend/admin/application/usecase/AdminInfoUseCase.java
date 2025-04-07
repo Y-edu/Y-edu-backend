@@ -7,8 +7,8 @@ import com.yedu.backend.admin.application.mapper.AdminMapper;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
-import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
+import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
@@ -29,22 +29,17 @@ import static com.yedu.backend.admin.application.mapper.AdminMapper.*;
 @Transactional(readOnly = true)
 public class AdminInfoUseCase {
     private final AdminGetService adminGetService;
-  private final ClassManagementQueryService classManagementQueryService;
+    private final ClassManagementQueryService classManagementQueryService;
+    private final ClassMatchingGetService classMatchingGetService;
 
   public AllApplicationResponse getAllApplication() {
         List<ApplicationForm> applicationForms = adminGetService.allApplication();
         return new AllApplicationResponse(applicationForms.stream()
                 .map(applicationForm -> {
                     List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm.getApplicationFormId());
-                    int accept = (int)classMatchings.stream()
-                            .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
-                            .count();
+                  int accept = acceptCount(classMatchings);
 
-                  Optional<ClassManagement> classManagement = classMatchings.stream()
-                      .filter(ClassMatching::isScheduleConfirm)
-                      .findFirst()
-                      .map(classMatching -> classManagementQueryService.query(
-                          classMatching.getClassMatchingId()).get());
+                  Optional<ClassManagement> classManagement = findFirstScheduleConfirmClassManagement(classMatchings);
 
                   return mapToApplicationResponse(applicationForm, accept, classMatchings.size(), classManagement);
                 })
@@ -63,9 +58,7 @@ public class AdminInfoUseCase {
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
                 .map(AdminMapper::mapToAlarmTalkResponse)
                 .toList();
-        int accept = (int)classMatchings.stream()
-                .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
-                .count();
+        int accept = acceptCount(classMatchings);
         int time = (int)Duration.between(applicationForm.getCreatedAt(), LocalDateTime.now())
                 .toMinutes();
         return new AllAlarmTalkResponse(accept, classMatchings.size(), time, alarmTalkResponses);
@@ -77,10 +70,21 @@ public class AdminInfoUseCase {
         List<String> classGoals = goals.stream()
                 .map(Goal::getClassGoal)
                 .toList();
-        return mapToClassDetailsResponse(applicationForm, classGoals);
+      Optional<ClassManagement> classManagement = findFirstScheduleConfirmClassManagement(classMatchingGetService.getByApplicationForm(applicationForm));
+
+      return mapToClassDetailsResponse(applicationForm, classGoals, classManagement);
     }
 
-    public AllFilteringTeacher searchAllTeacher(String applicationFormId, TeacherSearchRequest request) {
+    private Optional<ClassManagement> findFirstScheduleConfirmClassManagement(
+        List<ClassMatching> classMatchingGetService) {
+        return classMatchingGetService.stream()
+          .filter(ClassMatching::isScheduleConfirm)
+          .findFirst()
+          .map(classMatching -> classManagementQueryService.query(
+              classMatching.getClassMatchingId()).get());
+    }
+
+  public AllFilteringTeacher searchAllTeacher(String applicationFormId, TeacherSearchRequest request) {
         List<ClassMatching> classMatchings = adminGetService.allMatching(applicationFormId);
         List<Teacher> teachers = adminGetService.allTeacherBySearch(classMatchings, request);
         return  new AllFilteringTeacher(teachers.stream()
@@ -92,5 +96,11 @@ public class AdminInfoUseCase {
                     return mapToAllFilteringTeacherResponse(teacher, districts);
                 })
                 .toList());
+    }
+
+    private int acceptCount(List<ClassMatching> classMatchings) {
+        return (int) classMatchings.stream()
+            .filter(ClassMatching::isAcceptStatus)
+            .count();
     }
 }

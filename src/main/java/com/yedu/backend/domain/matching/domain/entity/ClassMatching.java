@@ -5,6 +5,7 @@ import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.global.entity.BaseEntity;
+import com.yedu.backend.global.exception.matching.MatchingNotSendStatusException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +52,9 @@ public class ClassMatching extends BaseEntity {
     }
 
     public void startSchedule(){
+        if (this.matchStatus != MatchingStatus.전송){
+            throw new MatchingNotSendStatusException(this.classMatchingId);
+        }
         this.matchStatus = MatchingStatus.매칭;
     }
 
@@ -65,5 +69,13 @@ public class ClassMatching extends BaseEntity {
 
     public boolean isScheduleConfirm() {
         return this.matchStatus == MatchingStatus.최종매칭;
+    }
+
+    public boolean isAcceptStatus() {
+        return this.matchStatus == MatchingStatus.수락 ||
+            this.matchStatus == MatchingStatus.전송 ||
+            this.matchStatus == MatchingStatus.매칭 ||
+            this.matchStatus == MatchingStatus.최종매칭 ||
+            this.matchStatus == MatchingStatus.과외결렬;
     }
 }

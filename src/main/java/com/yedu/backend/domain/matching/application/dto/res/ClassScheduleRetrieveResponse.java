@@ -1,4 +1,4 @@
-package com.yedu.backend.domain.matching.application.dto.req;
+package com.yedu.backend.domain.matching.application.dto.res;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.vo.ClassTime;
