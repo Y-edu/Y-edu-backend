@@ -36,9 +36,7 @@ public class AdminInfoUseCase {
         return new AllApplicationResponse(applicationForms.stream()
                 .map(applicationForm -> {
                     List<ClassMatching> classMatchings = adminGetService.allMatching(applicationForm.getApplicationFormId());
-                    int accept = (int)classMatchings.stream()
-                            .filter(ClassMatching::isAcceptStatus)
-                            .count();
+                  int accept = acceptCount(classMatchings);
 
                   Optional<ClassManagement> classManagement = classMatchings.stream()
                       .filter(ClassMatching::isScheduleConfirm)
@@ -63,9 +61,7 @@ public class AdminInfoUseCase {
         List<AlarmTalkResponse> alarmTalkResponses = classMatchings.stream()
                 .map(AdminMapper::mapToAlarmTalkResponse)
                 .toList();
-        int accept = (int)classMatchings.stream()
-                .filter(classMatching -> classMatching.getMatchStatus().equals(MatchingStatus.수락) || classMatching.getMatchStatus().equals(MatchingStatus.전송))
-                .count();
+        int accept = acceptCount(classMatchings);
         int time = (int)Duration.between(applicationForm.getCreatedAt(), LocalDateTime.now())
                 .toMinutes();
         return new AllAlarmTalkResponse(accept, classMatchings.size(), time, alarmTalkResponses);
@@ -92,5 +88,11 @@ public class AdminInfoUseCase {
                     return mapToAllFilteringTeacherResponse(teacher, districts);
                 })
                 .toList());
+    }
+
+    private int acceptCount(List<ClassMatching> classMatchings) {
+        return (int) classMatchings.stream()
+            .filter(ClassMatching::isAcceptStatus)
+            .count();
     }
 }
