@@ -4,7 +4,7 @@ import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleConfirm
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
-import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveResponse;
+import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementKeyStorage;

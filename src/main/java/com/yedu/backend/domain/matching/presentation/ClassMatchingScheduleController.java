@@ -2,10 +2,10 @@ package com.yedu.backend.domain.matching.presentation;
 
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
-import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleMatchingResponse;
+import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
-import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveResponse;
+import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.backend.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
