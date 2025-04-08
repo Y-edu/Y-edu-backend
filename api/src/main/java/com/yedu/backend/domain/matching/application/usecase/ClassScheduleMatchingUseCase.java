@@ -9,6 +9,7 @@ import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementKeyStorage;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
+import com.yedu.backend.global.discord.DiscordWebhookUseCase;
 import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ public class ClassScheduleMatchingUseCase {
 
   private final ClassManagementKeyStorage keyStorage;
 
+  private final DiscordWebhookUseCase discordWebhookUseCase;
+
   private final BizppurioEventPublisher bizppurioEventPublisher;
 
   public String schedule(ClassScheduleMatchingRequest request) {
@@ -42,9 +45,11 @@ public class ClassScheduleMatchingUseCase {
 
   public void refuse(ClassScheduleRefuseRequest request) {
     keyStorage.getAndExpire(request.classScheduleManagementId(),
-        key -> managementCommandService.delete(request, key)
+        key -> {
+          managementCommandService.delete(request, key);
+          discordWebhookUseCase.sendScheduleCancel(request.refuseReason());
+        }
     );
-    //TODO : 디스코드 알람 처리
   }
 
   public void confirm(ClassScheduleConfirmRequest request) {

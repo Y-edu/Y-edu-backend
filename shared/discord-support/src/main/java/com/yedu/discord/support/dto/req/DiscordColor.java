@@ -1,4 +1,4 @@
-package com.yedu.backend.global.discord;
+package com.yedu.discord.support.dto.req;
 
 public enum DiscordColor {
     RED(16711680), // 🔴 빨간색 (오류)
