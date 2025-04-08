@@ -2,9 +2,13 @@ package com.yedu.backend.global.discord;
 
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
+import com.yedu.discord.support.DiscordWebClientTemplate;
+import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
+import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,7 +20,7 @@ import static com.yedu.backend.global.discord.DiscordMapper.*;
 @RequiredArgsConstructor
 @Slf4j
 public class DiscordWebhookUseCase {
-    private final DiscordWebhookClient webhookClient;
+    private final DiscordWebClientTemplate webhookClient;
     @Value("${discord.profile}")
     private String profileUrl;
 
@@ -50,6 +54,19 @@ public class DiscordWebhookUseCase {
         );
         DiscordWebhookRequest request = mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);
         webhookClient.sendServerAlarm(request);
+    }
+
+    @Async
+    public void sendScheduleCancel(String refuseReason) {
+        // todo 병훈님께 디코 알림 문구 어떻게 나가면될지 문의
+        List<Field> fields = List.of(
+            mapToField("👩‍🏫 선생님 이름", "티모"),
+            mapToField("👨‍👩‍👧 학부모 이름", "베인"),
+            mapToField("❌ 매칭 취소 사유", refuseReason)
+        );
+        DiscordWebhookRequest request = mapToDiscordWithScheduleCancel("⚠️매칭이 취소되었어요⚠️", fields);
+
+        webhookClient.sendScheduleCancel(request);
     }
 
     public void sendTeacherRegister(Teacher teacher, List<TeacherDistrict> districts) {

@@ -1,5 +1,6 @@
 plugins {
 	java
+	id ("java-library")
 	id ("org.springframework.boot") version "3.4.2"
 	id ("io.spring.dependency-management") version "1.1.7"
 }
@@ -11,6 +12,7 @@ version = "0.0.1-SNAPSHOT"
 
 allprojects {
 	apply(plugin = "java")
+	apply(plugin = "java-library")
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "io.spring.dependency-management")
 	java {
