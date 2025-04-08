@@ -38,6 +38,4 @@ out/
 
 ### yml ###
 /api/src/main/resources/application.yml
-/api/src/main/resources/application.yaml
 /api/src/main/resources/application-*.yml
-/api/src/main/resources/application-*.yaml
