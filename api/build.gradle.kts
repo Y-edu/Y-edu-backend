@@ -41,3 +41,13 @@ dependencies {
     // excel 읽기용 poi
     implementation ("org.apache.poi:poi-ooxml:5.4.0")
 }
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+val jar: Jar by tasks
+val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
+
+bootJar.enabled = true
+jar.enabled = true
