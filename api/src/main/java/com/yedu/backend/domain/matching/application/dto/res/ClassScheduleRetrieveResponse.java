@@ -32,8 +32,7 @@ public record ClassScheduleRetrieveResponse(
   public record FirstDay(
       LocalDate date,
       @Schema(example = "12:00")
-      LocalTime start,
-      Integer classMinute
+      LocalTime start
   ) {
 
   }
@@ -61,7 +60,7 @@ public record ClassScheduleRetrieveResponse(
             .toList()
         )
         .firstDay(firstDayClassTime != null ?
-            new FirstDay(classManagement.getFirstDay(), firstDayClassTime.getStart(), firstDayClassTime.getClassMinute()) : null)
+            new FirstDay(classManagement.getFirstDay(), firstDayClassTime.getStart()) : null)
         .build();
   }
 }
