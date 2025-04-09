@@ -1,4 +1,4 @@
-package com.yedu.backend.global.discord;
+package com.yedu.discord.support;
 
 import com.yedu.discord.support.dto.req.DiscordColor;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
@@ -16,15 +16,9 @@ public class DiscordMapper {
         );
     }
 
-    public static DiscordWebhookRequest mapToDiscordWithTeacherAlarm(String title, List<Field> fields) {
+    public static DiscordWebhookRequest mapToDiscordWithInformation(String title, List<Field> fields) {
         return new DiscordWebhookRequest(
                 List.of(new Embed(title, null, DiscordColor.LIGHT_BLUE.getCode(), fields, new Footer(null)))
-        );
-    }
-
-    public static DiscordWebhookRequest mapToDiscordWithScheduleCancel(String title, List<Field> fields) {
-        return new DiscordWebhookRequest(
-            List.of(new Embed(title, null, DiscordColor.LIGHT_BLUE.getCode(), fields, new Footer(null)))
         );
     }
 

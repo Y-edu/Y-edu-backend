@@ -1,17 +1,16 @@
 package com.yedu.discord.support;
 
 import com.yedu.common.WebClientProperties;
+import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("discord")
 record DiscordWebClientProperties(
-    Webhook webhook,
+    Map<DiscordWebhookType, String> webhooks,
     WebClientProperties webClientProperties
 ) {
 
-  public record Webhook(
-      String url,
-      String teacher,
-      String scheduleCancel
-  ) {}
+  public String resolveUrl(DiscordWebhookType webhookType) {
+    return webhooks.get(webhookType);
+  }
 }

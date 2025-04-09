@@ -27,9 +27,7 @@ public record ClassScheduleConfirmRequest(
   public record FirstDay(
       LocalDate date,
       @Schema(example = "12:00")
-      LocalTime start,
-      @Schema(example = "50", description = "수업시간")
-      Integer classMinute
+      LocalTime start
   ){
 
   }

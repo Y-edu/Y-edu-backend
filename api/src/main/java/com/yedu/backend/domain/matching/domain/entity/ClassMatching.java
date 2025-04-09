@@ -78,4 +78,11 @@ public class ClassMatching extends BaseEntity {
             this.matchStatus == MatchingStatus.최종매칭 ||
             this.matchStatus == MatchingStatus.과외결렬;
     }
+
+    public ClassMatching initializeProxy() {
+        teacher.getTeacherInfo().getName();
+        applicationForm.getParents().getKakaoName();
+
+        return this;
+    }
 }
