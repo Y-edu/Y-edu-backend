@@ -16,21 +16,9 @@ public class DiscordWebClientTemplate {
 
   private final DiscordWebClientProperties properties;
 
-  public void sendServerAlarm(DiscordWebhookRequest webhookRequest) {
-    sendWebhook(properties.webhook().url(), webhookRequest);
-  }
-
-  public void sendTeacherRegisterAlarm(DiscordWebhookRequest webhookRequest) {
-    sendWebhook(properties.webhook().teacher(), webhookRequest);
-  }
-
-  public void sendScheduleCancel(DiscordWebhookRequest webhookRequest) {
-    sendWebhook(properties.webhook().scheduleCancel(), webhookRequest);
-  }
-
-  private void sendWebhook(String url, DiscordWebhookRequest request){
+  public void sendWebhook(DiscordWebhookType webhookType, DiscordWebhookRequest request){
     discordWebClient.post()
-        .uri(url)
+        .uri(properties.resolveUrl(webhookType))
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
         .bodyValue(request)
@@ -40,5 +28,6 @@ public class DiscordWebClientTemplate {
         .doOnError(error -> log.error("Discord 웹훅 전송 실패: {}", error.getMessage()))
         .subscribe();
   }
+
 
 }

@@ -6,6 +6,7 @@ import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRefuseR
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
 import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementKeyStorage;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
@@ -46,8 +47,8 @@ public class ClassScheduleMatchingUseCase {
   public void refuse(ClassScheduleRefuseRequest request) {
     keyStorage.getAndExpire(request.classScheduleManagementId(),
         key -> {
-          managementCommandService.delete(request, key);
-          discordWebhookUseCase.sendScheduleCancel(request.refuseReason());
+          ClassMatching classMatching = managementCommandService.delete(request, key);
+          discordWebhookUseCase.sendScheduleCancel(classMatching.getTeacher(), classMatching.getApplicationForm(), request.refuseReason());
         }
     );
   }

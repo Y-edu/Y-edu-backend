@@ -16,4 +16,7 @@ public class ClassTime{
 
   private Integer classMinute;
 
+  public ClassTime(LocalTime start) {
+    this.start = start;
+  }
 }

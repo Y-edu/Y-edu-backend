@@ -37,12 +37,14 @@ public class ClassManagementCommandService {
             });
     }
 
-    public void delete(ClassScheduleRefuseRequest request, Long id) {
+    public ClassMatching delete(ClassScheduleRefuseRequest request, Long id) {
         ClassManagement classManagement = queryById(id);
 
         classManagement.refuse(request.refuseReason());
 
         classManagementRepository.delete(classManagement);
+
+        return classManagement.getClassMatching().initializeProxy();
     }
 
     public ClassManagement confirm(ClassScheduleConfirmRequest request, Long id) {
@@ -51,7 +53,7 @@ public class ClassManagementCommandService {
         classManagement.confirm(
             request.textBook(),
             request.firstDay().date(),
-            new ClassTime(request.firstDay().start(), request.firstDay().classMinute())
+            new ClassTime(request.firstDay().start())
         );
         return classManagement;
     }
