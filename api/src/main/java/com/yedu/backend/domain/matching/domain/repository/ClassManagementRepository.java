@@ -14,5 +14,5 @@ import org.springframework.stereotype.Repository;
 public interface ClassManagementRepository extends JpaRepository<ClassManagement, Long>{
 
   Optional<ClassManagement> findByClassMatching_ClassMatchingId(Long classMatchingId);
-  List<ClassManagement> findAllByRemindIsFalseAndCreatedAtIsBeforeAndClassMatching_MatchStatus(LocalDateTime time, MatchingStatus status);
+  List<ClassManagement> findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(LocalDateTime time, MatchingStatus status);
 }

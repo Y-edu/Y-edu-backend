@@ -34,6 +34,6 @@ public class ClassManagementQueryService {
     }
 
     public List<ClassManagement> query() {
-        return classManagementRepository.findAllByRemindIsFalseAndCreatedAtIsBeforeAndClassMatching_MatchStatus(LocalDateTime.now().minusDays(1L), MatchingStatus.매칭);
+        return classManagementRepository.findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(LocalDateTime.now().minusDays(1L), MatchingStatus.매칭);
     }
 }
