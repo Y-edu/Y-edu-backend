@@ -398,7 +398,7 @@ public class BizppurioMapper {
                 "\n" +
                 parentsClassInfoEvent.nickName() + " 선생님\n" +
                 "✅ 수업 시수 : 주 " + classTimes.size() + "회 " + classMinuteString + "분 \n" +
-                "✅ 수업 시간 : " + classTimeString + "\n" +
+                "✅ 수업 시간 : \n" + classTimeString + "\n" +
                 "✅ 첫 수업 : " + month + "월 " + day + "일 " + firstDayOfWeek + "요일 " + firstDay.start().format(formatter) + "\n" +
                 "✅ 교재 : " + parentsClassInfoEvent.book() + "\n" +
                 "\n" +
@@ -413,7 +413,7 @@ public class BizppurioMapper {
         String message = ("\uD83C\uDF89 과외 매칭을 축하드립니다!\n" +
                 "\n" +
                 teacherExchangeEvent.applicationFormId() + "\n" +
-                "✅ 수업 시수 : 주  + " + teacherExchangeEvent.classCount() + "회 " + teacherExchangeEvent.time() + " 분\n" +
+                "✅ 수업 시수 : " + teacherExchangeEvent.classCount() + " " + teacherExchangeEvent.time() + "\n" +
                 "✅ 아이 나이 : " + teacherExchangeEvent.age() + "\n" +
                 "✅ 장소 : " + teacherExchangeEvent.district() + "\n" +
                 "\n" +
