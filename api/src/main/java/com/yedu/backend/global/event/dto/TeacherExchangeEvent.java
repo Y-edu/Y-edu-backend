@@ -9,6 +9,6 @@ public record TeacherExchangeEvent(
         int money,
         String parentsPhoneNumber,
         String teacherPhoneNumber,
-        long managementId
+        String managementId
 ) {
 }
