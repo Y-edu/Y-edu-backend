@@ -58,7 +58,7 @@ public class ClassScheduleMatchingUseCase {
     keyStorage.getAndExpire(request.classScheduleManagementId(), key -> {
               ClassManagement classManagement = managementCommandService.confirm(request, key);
               bizppurioEventPublisher.publishMatchingConfirmEvent(
-                      mapToParentsClassInfoEvent(classManagement), //todo mapper완성 필요
+                      mapToParentsClassInfoEvent(classManagement),
                       mapToMatchingConfirmTeacherEvent(classManagement)
               ); //학부모 수업 정보, 공유 선생님 규정 안내, 완료톡 안내 전송
             }
