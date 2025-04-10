@@ -16,6 +16,8 @@ import com.yedu.backend.global.event.dto.MatchingRefuseCaseNowEvent;
 import com.yedu.backend.global.event.dto.NotifyCallingEvent;
 import com.yedu.backend.global.event.dto.NotifyClassInfoEvent;
 import com.yedu.backend.global.event.dto.ParentsClassInfoEvent;
+import com.yedu.backend.global.event.dto.ParentsClassInfoEvent.ClassTime;
+import com.yedu.backend.global.event.dto.ParentsClassInfoEvent.FirstDay;
 import com.yedu.backend.global.event.dto.PhotoHurryEvent;
 import com.yedu.backend.global.event.dto.PhotoSubmitEvent;
 import com.yedu.backend.global.event.dto.RecommendGuideEvent;
@@ -28,7 +30,12 @@ import com.yedu.backend.bizppurio.application.dto.req.ContentRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.yedu.backend.global.event.dto.MatchingConfirmTeacherEvent.*;
 import static com.yedu.backend.global.event.dto.MatchingParentsEvent.*;
@@ -363,45 +370,44 @@ public class BizppurioMapper {
     }
 
     public CommonRequest mapToParentsClassInfo(ParentsClassInfoEvent parentsClassInfoEvent) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<ClassTime> classTimes = parentsClassInfoEvent.classTimes();
+        List<Integer> classMinutes = classTimes.stream()
+                .map(ParentsClassInfoEvent.ClassTime::classMinute)
+                .distinct()
+                .sorted()
+                .toList();
+        AtomicInteger index = new AtomicInteger();
+        String classMinuteString = classMinutes.stream()
+                .map(minute -> minute + (index.incrementAndGet() == classMinutes.size() ? "" : "분"))
+                .collect(Collectors.joining(", "));
+
+        String classTimeString = classTimes.stream()
+                .map(classTime -> String.format("[ %s %s 부터 %d분 ]",
+                        classTime.day(), classTime.startTime().format(formatter), classTime.classMinute()))
+                .collect(Collectors.joining("\n"));
+
+        FirstDay firstDay = parentsClassInfoEvent.firstDay();
+        String month = String.valueOf(firstDay.date().getMonthValue());
+        String day = String.valueOf(firstDay.date().getDayOfMonth());
+        DayOfWeek dayOfWeek = firstDay.date().getDayOfWeek();
+        String firstDayOfWeek = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN); // "목"
+
         String message = ("\uD83D\uDCCB 전화상담 후 수업정보 전달 \uD83D\uDCCB\n" +
                 "\n" +
                 parentsClassInfoEvent.nickName() + " 선생님\n" +
-                "✅ 수업 시수 : 주 #{classNumber}회 #{teachingTime}분 \n" +
-                "✅ 수업 시간 : #{수업시간}\n" +
-                "✅ 첫 수업 : #{month}월 #{date}일 #{day}요일 #{firstTime}\n" +
-                "✅ 교재 : #{변수}\n" +
+                "✅ 수업 시수 : 주 " + classTimes.size() + "회 " + classMinuteString + "분 \n" +
+                "✅ 수업 시간 : " + classTimeString + "\n" +
+                "✅ 첫 수업 : " + month + "월 " + day + "일 " + firstDayOfWeek + "요일 " + firstDay.start().format(formatter) + "\n" +
+                "✅ 교재 : " + parentsClassInfoEvent.book() + "\n" +
                 "\n" +
                 "선생님과 전화 상담 시 확정한 수업 정보를 정리드릴게요. \n" +
                 "\n" +
                 "앞으로 잘 부탁드립니다 \uD83D\uDE47\uD83C\uDFFB\u200D♀\uFE0F");
         Message messageBody = new TextMessage(message, yeduOfficialKey, parentsClassInfo);
-        return createCommonRequest(messageBody, null);
-        /**
-         *   "classScheduleManagementId": "c4ca4238-a0b9-3382-8dcc-509a6f75849b",
-         *   "textBook" : "수학의정석", // 교재 정보
-         *   "schedules": [ // 학부모와 조율한 스케쥴
-         *     {
-         *       "day": "월",
-         *       "start" : "14:00",
-         *       "classMinute": 50
-         *     },
-         *     {
-         *       "day": "화",
-         *       "start" : "15:00",
-         *       "classMinute": 50
-         *     }
-         *   ],
-         *   "firstDay": { // 첫 수업일
-         *     "date": "2025-04-12",
-         *     "start" : "14:00",
-         *     "classMinute": 50
-         *   }
-         * }
-         *
-         * 데이터가 이렇게 들어오잖아요, 여기서 day, start, classMinute 조합해서
-         * [ 월 14:00 부터 50분 ], [ 화 15:00 부터 50분 ]
-         */
-    } //todo : 어떻게 동작하는지에 대해서 이해가 필요할 듯
+        return createCommonRequest(messageBody, parentsClassInfoEvent.parentsPhoneNumber());
+    }
 
     public CommonRequest mapToTeacherExchangePhoneNumber(TeacherExchangeEvent teacherExchangeEvent) {
         String message = ("\uD83C\uDF89 과외 매칭을 축하드립니다!\n" +

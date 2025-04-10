@@ -128,8 +128,32 @@ public class EventMapper {
     }
 
     public static ParentsClassInfoEvent mapToParentsClassInfoEvent(ClassManagement classManagement) {
-        return null;
-    } //todo : 완성 필요
+        ClassMatching classMatching = classManagement.getClassMatching();
+        Teacher teacher = classMatching.getTeacher();
+        Parents parents = classMatching.getApplicationForm().getParents();
+        return new ParentsClassInfoEvent(
+                teacher.getTeacherInfo().getNickName(),
+                classManagement.getSchedules()
+                        .stream()
+                        .map(EventMapper::mapToClassTime)
+                        .toList(),
+                mapToFirstDay(classManagement),
+                classManagement.getTextbook(),
+                parents.getPhoneNumber()
+        );
+    }
+
+    private static ParentsClassInfoEvent.ClassTime mapToClassTime(ClassSchedule classSchedule) {
+        return new ParentsClassInfoEvent.ClassTime(
+                classSchedule.getDay().toString(),
+                classSchedule.getClassTime().getStart(),
+                classSchedule.getClassTime().getClassMinute()
+        );
+    }
+
+    private static ParentsClassInfoEvent.FirstDay mapToFirstDay(ClassManagement classManagement) {
+        return new ParentsClassInfoEvent.FirstDay(classManagement.getFirstDay(), classManagement.getClassTime().getStart());
+    }
 
     public static TeacherClassRemindEvent mapToTeacherClassRemindEvent(ClassManagement classManagement) {
         Teacher teacher = classManagement.getClassMatching().getTeacher();
