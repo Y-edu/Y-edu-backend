@@ -38,4 +38,10 @@ public class ClassMatchingController {
         matchingManageUseCase.acceptClassMatching(applicationFormId, teacherId, phoneNumber);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/remind")
+    public ResponseEntity matchingRemind() {
+        matchingManageUseCase.remindClassMatching();
+        return ResponseEntity.ok().build();
+    }
 }

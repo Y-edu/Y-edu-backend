@@ -2,7 +2,11 @@ package com.yedu.backend.domain.matching.domain.service;
 
 import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
+import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.matching.domain.repository.ClassManagementRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,5 +33,7 @@ public class ClassManagementQueryService {
         return classManagementRepository.findByClassMatching_ClassMatchingId(classMatchingId);
     }
 
-
+    public List<ClassManagement> query() {
+        return classManagementRepository.findAllByRemindIsFalseAndCreatedAtIsBeforeAndClassMatching_MatchStatus(LocalDateTime.now().minusDays(1L), MatchingStatus.매칭);
+    }
 }
