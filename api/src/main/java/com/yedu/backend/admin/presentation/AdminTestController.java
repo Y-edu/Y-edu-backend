@@ -10,7 +10,6 @@ import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
 import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
-import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherAvailable;
@@ -56,7 +55,6 @@ import static com.yedu.backend.global.event.mapper.EventMapper.mapToPhotoSubmitE
 public class AdminTestController {
     private final TeacherSaveService teacherSaveService;
     private final TeacherGetService teacherGetService;
-    private final ParentsGetService parentsGetService;
     private final AdminGetService adminGetService;
     private final ParentsSaveService parentsSaveService;
     private final ApplicationFormRepository applicationFormRepository;

@@ -160,13 +160,13 @@ public class EventMapper {
         return new TeacherClassRemindEvent(teacher.getTeacherInfo().getNickName(), teacher.getTeacherInfo().getPhoneNumber(), classManagement.getClassManagementId());
     }
 
-    public static TeacherExchangeEvent mapToTeacherExchangeEvent(ClassManagement classManagement) {
+    public static TeacherExchangeEvent mapToTeacherExchangeEvent(String key, ClassManagement classManagement) {
         ClassMatching classMatching = classManagement.getClassMatching();
         Teacher teacher = classMatching.getTeacher();
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Parents parents = applicationForm.getParents();
         return new TeacherExchangeEvent(
-                applicationForm.getApplicationFormId(),
+                key,
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
                 applicationForm.getAge(),
@@ -174,7 +174,7 @@ public class EventMapper {
                 applicationForm.getPay(),
                 parents.getPhoneNumber(),
                 teacher.getTeacherInfo().getPhoneNumber(),
-                classManagement.getClassManagementId());
+                key);
     }
 
     public static MatchingParentsEvent mapToMatchingParentsEvent(ClassManagement classManagement) {
