@@ -58,6 +58,10 @@ public class ClassManagementCommandService {
         return classManagement;
     }
 
+    public void completeRemind(ClassManagement classManagement) {
+        classManagement.completeRemind();
+    }
+
     private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request, Long id) {
         ClassManagement classManagement = queryById(id);
 

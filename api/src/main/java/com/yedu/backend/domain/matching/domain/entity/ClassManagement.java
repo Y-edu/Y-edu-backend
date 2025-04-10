@@ -44,6 +44,8 @@ public class ClassManagement extends BaseEntity {
     @Embedded
     private ClassTime classTime;
 
+    private boolean remind;
+
     public void refuse(String reason) {
         classMatching.refuseSchedule(reason);
     }
@@ -57,5 +59,9 @@ public class ClassManagement extends BaseEntity {
         this.firstDay = firstDay;
         this.classTime = classTime;
         this.classMatching.confirmSchedule();
+    }
+
+    public void completeRemind() {
+        this.remind = true;
     }
 }
