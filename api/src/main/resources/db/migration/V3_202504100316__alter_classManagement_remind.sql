@@ -1,0 +1,1 @@
+ALTER TABLE class_management ADD COLUMN remind bit NOT NULL DEFAULT FALSE;
