@@ -40,7 +40,7 @@ public class ClassScheduleMatchingUseCase {
 
     bizppurioEventPublisher.publishMatchingEvent(
             mapToMatchingParentsEvent(classManagement),
-            mapToTeacherExchangeEvent(classManagement)
+            mapToTeacherExchangeEvent(key, classManagement)
     );
     return key;
   }
