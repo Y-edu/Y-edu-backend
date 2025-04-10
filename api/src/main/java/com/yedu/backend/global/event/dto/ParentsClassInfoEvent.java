@@ -1,17 +1,24 @@
 package com.yedu.backend.global.event.dto;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public record ParentsClassInfoEvent(
         String nickName,
-        int classCount,
-        List<String> days,
-        List<String> startTime,
-        List<Integer> classMinute,
-        String teacherPhoneNumber,
+        List<ClassTime> classTimes,
+        FirstDay firstDay,
+        String book,
         String parentsPhoneNumber
 ) {
     public record ClassTime (
+            String day,
+            LocalTime startTime,
+            int classMinute
+    ){}
 
+    public record FirstDay(
+            LocalDate date,
+            LocalTime start
     ){}
 }

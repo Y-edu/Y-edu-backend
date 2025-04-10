@@ -3,11 +3,13 @@ package com.yedu.discord.support;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 
 @Slf4j
 @Component
@@ -39,6 +41,8 @@ public class DiscordWebClientTemplate {
             log.error("요청 직렬화 실패: {}", e.getMessage(), e);
           }
         })
+        .retryWhen(Retry.backoff(properties.retryCount(),
+            Duration.ofSeconds(properties.retryIntervalSeconds())))
         .subscribe();
   }
 
