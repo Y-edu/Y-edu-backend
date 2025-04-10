@@ -34,8 +34,11 @@ public class ClassManagementKeyStorage {
         Long value = get(uuid);
 
         Optional.ofNullable(value).ifPresentOrElse(foundValue-> {
-            consumer.accept(foundValue);
-            redisRepository.deleteValues(key);
+            try{
+                consumer.accept(foundValue);
+            }finally {
+                redisRepository.deleteValues(key);
+            }
         }, ()-> {
             log.error("존재하지 않는 key [%s]", key);
             throw new IllegalArgumentException();
