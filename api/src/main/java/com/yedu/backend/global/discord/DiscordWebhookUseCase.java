@@ -8,6 +8,8 @@ import com.yedu.discord.support.DiscordWebhookType;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.util.StringUtils;
 
 import static com.yedu.discord.support.DiscordMapper.*;
 
@@ -67,14 +70,23 @@ public class DiscordWebhookUseCase {
 
     @Async
     public void sendScheduleCancel(Teacher teacher, ApplicationForm applicationForm, String refuseReason) {
+        String parentName = safeText(() -> applicationForm.getParents().getKakaoName());
+        String teacherName = safeText(() -> teacher.getTeacherInfo().getName());
+
         List<Field> fields = List.of(
-            mapToField("✅ 선생님 이름", teacher.getTeacherInfo().getName()),
-            mapToField("✅ 학부모 이름", applicationForm.getParents().getKakaoName()),
+            mapToField("✅ 선생님 이름", teacherName),
+            mapToField("✅ 학부모 이름", parentName),
             mapToField("✅ 매칭 취소 사유", refuseReason),
             mapToField("✅ 매칭 취소 일시", currentTime())
         );
         DiscordWebhookRequest request = mapToDiscordWithInformation("⚠️ 매칭이 취소되었어요 ⚠️", fields);
         webhookClient.sendWebhook(DiscordWebhookType.SCHEDULE_CANCEL,request);
+    }
+
+    private String safeText(Supplier<String> supplier) {
+        return Optional.ofNullable(supplier.get())
+            .filter(StringUtils::hasText)
+            .orElse("(이름 미입력)");
     }
 
     @Async
