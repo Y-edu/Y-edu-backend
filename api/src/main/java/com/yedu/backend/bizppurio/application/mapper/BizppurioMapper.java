@@ -398,7 +398,7 @@ public class BizppurioMapper {
                 "\n" +
                 parentsClassInfoEvent.nickName() + " 선생님\n" +
                 "✅ 수업 시수 : 주 " + classTimes.size() + "회 " + classMinuteString + "분 \n" +
-                "✅ 수업 시간 : " + classTimeString + "\n" +
+                "✅ 수업 시간 : \n" + classTimeString + "\n" +
                 "✅ 첫 수업 : " + month + "월 " + day + "일 " + firstDayOfWeek + "요일 " + firstDay.start().format(formatter) + "\n" +
                 "✅ 교재 : " + parentsClassInfoEvent.book() + "\n" +
                 "\n" +
@@ -413,7 +413,7 @@ public class BizppurioMapper {
         String message = ("\uD83C\uDF89 과외 매칭을 축하드립니다!\n" +
                 "\n" +
                 teacherExchangeEvent.applicationFormId() + "\n" +
-                "✅ 수업 시수 : 주  + " + teacherExchangeEvent.classCount() + "회 " + teacherExchangeEvent.time() + " 분\n" +
+                "✅ 수업 시수 : " + teacherExchangeEvent.classCount() + " " + teacherExchangeEvent.time() + "\n" +
                 "✅ 아이 나이 : " + teacherExchangeEvent.age() + "\n" +
                 "✅ 장소 : " + teacherExchangeEvent.district() + "\n" +
                 "\n" +
@@ -478,10 +478,15 @@ public class BizppurioMapper {
     }
 
     public CommonRequest mapToIntroduceWriteFinishTalk(IntroduceWriteFinishTalkEvent introduceWriteFinishTalkEvent) {
-        String message = (introduceWriteFinishTalkEvent.applicationFormId() + " (주 " + introduceWriteFinishTalkEvent.count() + "회 " + introduceWriteFinishTalkEvent.time() + "분) (" + 4*introduceWriteFinishTalkEvent.count() + "회 기준)\n" +
+        String message = ("\uD83D\uDCCC 완료톡 작성 예시 \uD83D\uDCCC\n" +
+                "\n" +
+                "완료톡 작성 예시를 알려드릴게요. 매 수업이 끝난 후 아래 내용대로 완료톡 작성을 부탁드립니다! \uD83D\uDE0A\n" +
+                "\n" +
+                "예시)\n" +
+                introduceWriteFinishTalkEvent.applicationFormId() + " (주 " + introduceWriteFinishTalkEvent.count() + "회 " + introduceWriteFinishTalkEvent.time() + "분) (" + (introduceWriteFinishTalkEvent.count()*4) + "회 기준)\n" +
                 "- 0월 00일 1회차 00분 완료 \n" +
                 "\n" +
-                "0을 실제 숫자로 채워주세요. 2회차는 진행 후, 1회차 내용 아래에 추가하여 보내주시면 됩니다. ");
+                "0을 실제 숫자로 채워주세요. 2회차는 진행 후, 1회차 내용 아래에 추가하여 보내주시면 됩니다.");
         Message messageBody = new TextMessage(message, yeduTutorKey, introduceWriteFinishTalk);
         return createCommonRequest(messageBody, introduceWriteFinishTalkEvent.phoneNumber());
     }
