@@ -166,7 +166,7 @@ public class EventMapper {
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Parents parents = applicationForm.getParents();
         return new TeacherExchangeEvent(
-                key,
+                applicationForm.getApplicationFormId(),
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
                 applicationForm.getAge(),
