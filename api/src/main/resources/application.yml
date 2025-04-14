@@ -1,0 +1,58 @@
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: none
+spring:
+  config:
+    import: optional:application-local.yml
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0B
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+jwt:
+  refreshExpiration: 1209600
+  accessExpiration: 86400
+
+cloud:
+  aws:
+    credentials:
+      instance-profile: false
+    region:
+      auto: false
+    stack:
+      auto: false
+
+discord:
+  retry-count: 2
+  retry-interval-seconds: 3
+  web-client-properties:
+    connection-time-out: 10
+    read-time-out: 10
+    write-time-out: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus,mappings'
