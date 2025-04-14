@@ -1,4 +1,4 @@
-package com.yedu.backend.global.config.redis;
+package com.yedu.common.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;

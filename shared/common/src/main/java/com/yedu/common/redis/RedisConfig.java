@@ -1,4 +1,4 @@
-package com.yedu.backend.global.config.redis;
+package com.yedu.common.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
