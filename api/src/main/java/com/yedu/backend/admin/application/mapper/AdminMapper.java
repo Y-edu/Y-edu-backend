@@ -80,6 +80,7 @@ public class AdminMapper {
         return new ClassDetailsResponse(
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
+                classManagement.map(ClassManagement::getTextbook).orElse(null),
                 scheduledClasses,
                 applicationForm.getPay(),
                 applicationForm.getAge(),
