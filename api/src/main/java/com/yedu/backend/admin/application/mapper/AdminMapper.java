@@ -8,6 +8,7 @@ import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
 import com.yedu.backend.admin.application.dto.res.ScheduledClass;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.vo.ClassTime;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
@@ -15,6 +16,7 @@ import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherClassInfo;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,10 +79,17 @@ public class AdminMapper {
     public static ClassDetailsResponse mapToClassDetailsResponse(ApplicationForm applicationForm, List<String> goals, Optional<ClassManagement> classManagement) {
         List<ScheduledClass> scheduledClasses = getScheduledClasses(classManagement);
 
+        LocalTime firstClassStartTime = classManagement
+            .flatMap(cm -> Optional.ofNullable(cm.getClassTime()))
+            .map(ClassTime::getStart)
+            .orElse(null);
+
         return new ClassDetailsResponse(
                 applicationForm.getClassCount(),
                 applicationForm.getClassTime(),
                 classManagement.map(ClassManagement::getTextbook).orElse(null),
+                classManagement.map(ClassManagement::getFirstDay).orElse(null),
+                firstClassStartTime,
                 scheduledClasses,
                 applicationForm.getPay(),
                 applicationForm.getAge(),
