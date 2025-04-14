@@ -13,4 +13,4 @@ ENV SPRING_PROFILE=$PROFILE
 # application.yml 파일 복사
 COPY api/src/main/resources/application*.yml /config/
 # 컨테이너 실행 시 실행할 명령어
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=/config/ --spring.profiles.active=$SPRING_PROFILE"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=file:/config/ --spring.profiles.active=$SPRING_PROFILE"]
