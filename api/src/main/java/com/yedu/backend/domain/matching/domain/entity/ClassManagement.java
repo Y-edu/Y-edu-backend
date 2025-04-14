@@ -59,7 +59,6 @@ public class ClassManagement extends BaseEntity {
         this.firstDay = firstDay;
         this.classTime = classTime;
         this.classMatching.confirmSchedule();
-        this.remind = true;
     }
 
     public void completeRemind() {
