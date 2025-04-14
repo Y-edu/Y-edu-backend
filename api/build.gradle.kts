@@ -1,7 +1,5 @@
 
 dependencies {
-    api(project(":shared:discord-support"))
-    api(project(":shared:bizppurio-support"))
     api(project(":shared:common"))
 
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
