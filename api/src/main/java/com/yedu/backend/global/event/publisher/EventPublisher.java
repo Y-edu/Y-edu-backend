@@ -1,28 +1,15 @@
 package com.yedu.backend.global.event.publisher;
 
-import com.yedu.backend.global.event.dto.ApplyAgreeEvent;
-import com.yedu.backend.global.event.dto.InviteMatchingChannelInfoEvent;
-import com.yedu.backend.global.event.dto.MatchingAcceptCaseInfoEvent;
-import com.yedu.backend.global.event.dto.MatchingConfirmTeacherEvent;
-import com.yedu.backend.global.event.dto.MatchingParentsEvent;
-import com.yedu.backend.global.event.dto.MatchingRefuseCaseDistrictEvent;
-import com.yedu.backend.global.event.dto.MatchingRefuseCaseEvent;
-import com.yedu.backend.global.event.dto.MatchingRefuseCaseNowEvent;
-import com.yedu.backend.global.event.dto.NotifyClassInfoEvent;
-import com.yedu.backend.global.event.dto.ParentsClassInfoEvent;
-import com.yedu.backend.global.event.dto.PhotoHurryEvent;
-import com.yedu.backend.global.event.dto.PhotoSubmitEvent;
-import com.yedu.backend.global.event.dto.RecommendGuideEvent;
-import com.yedu.backend.global.event.dto.RecommendTeacherEvent;
-import com.yedu.backend.global.event.dto.TeacherClassRemindEvent;
-import com.yedu.backend.global.event.dto.TeacherExchangeEvent;
+import com.yedu.common.event.bizppurio.*;
+import com.yedu.common.event.discord.ScheduleCancelEvent;
+import com.yedu.common.event.discord.TeacherRegisterEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BizppurioEventPublisher {
+public class EventPublisher {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     public void publishPhotoSubmitEvent(PhotoSubmitEvent event) {
@@ -81,6 +68,14 @@ public class BizppurioEventPublisher {
     }
 
     public void publishTeacherClassRemindEvent(TeacherClassRemindEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
+
+    public void publishScheduleCancelEvent(ScheduleCancelEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
+
+    public void publishTeacherRegisterEvent(TeacherRegisterEvent event) {
         applicationEventPublisher.publishEvent(event);
     }
 }
