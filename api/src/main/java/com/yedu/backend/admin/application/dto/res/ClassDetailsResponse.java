@@ -10,6 +10,7 @@ import java.util.List;
 public record ClassDetailsResponse(
         String classCount,
         String classTime,
+        String textBook,
         List<ScheduledClass> scheduledClasses,
         int pay,
         String age,
