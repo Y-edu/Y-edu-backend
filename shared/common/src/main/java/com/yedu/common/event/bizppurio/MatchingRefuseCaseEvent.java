@@ -1,4 +1,4 @@
-package com.yedu.backend.global.event.dto;
+package com.yedu.common.event.bizppurio;
 
 public record MatchingRefuseCaseEvent(
         String nickName,

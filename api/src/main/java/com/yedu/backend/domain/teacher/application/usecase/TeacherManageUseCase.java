@@ -17,8 +17,7 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.config.s3.S3UploadService;
-import com.yedu.backend.global.discord.DiscordWebhookUseCase;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
+import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
 
 @Service
 @Slf4j
@@ -42,8 +42,7 @@ public class TeacherManageUseCase {
     private final TeacherUpdateService teacherUpdateService;
     private final TeacherDeleteService teacherDeleteService;
     private final S3UploadService s3UploadService;
-    private final DiscordWebhookUseCase discordWebhookUseCase;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
+    private final EventPublisher eventPublisher;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -54,7 +53,7 @@ public class TeacherManageUseCase {
         teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
 
         // 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
-        bizppurioEventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
+        eventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
     }
 
     private TeacherMath getTeacherMath(TeacherInfoFormRequest request, Teacher teacher) {
@@ -100,22 +99,22 @@ public class TeacherManageUseCase {
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         teacherUpdateService.updateProfile(teacher, profileUrl);
         teacherUpdateService.updateFormStep(teacher);
-        bizppurioEventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
+        eventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
     }
 
     public void submitContract(TeacherContractRequest request) {
         Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
         List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
         teacherUpdateService.updateActive(teacher);
-        bizppurioEventPublisher.publishInviteMatchingChannelInfoEvent(mapToInviteMatchingChannelInfoEvent(teacher));
-        discordWebhookUseCase.sendTeacherRegister(teacher, teacherDistricts);
+        eventPublisher.publishInviteMatchingChannelInfoEvent(mapToInviteMatchingChannelInfoEvent(teacher));
+        eventPublisher.publishTeacherRegisterEvent(mapToTeacherRegisterEvent(teacher, teacherDistricts));
     }
 
     public void notifyClass(List<ClassMatching> classMatchings) {
         classMatchings.forEach(classMatching -> {
             Teacher teacher = classMatching.getTeacher();
             teacherUpdateService.updateAlertCount(teacher);
-            bizppurioEventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+            eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
         });
     }
 
@@ -146,8 +145,8 @@ public class TeacherManageUseCase {
         teacherGetService.remindTeachers()
                 .forEach(teacher -> {
                     log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
-                    bizppurioEventPublisher.publishPhotoHurryEvent(mapToPhotoHurryEvent(teacher));
                     teacherUpdateService.updateRemind(teacher);
+                    eventPublisher.publishPhotoHurryEvent(mapToPhotoHurryEvent(teacher));
                 });
     }
 }
