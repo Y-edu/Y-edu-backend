@@ -1,6 +1,7 @@
 package com.yedu.backend.global.event.publisher;
 
 import com.yedu.common.event.bizppurio.*;
+import com.yedu.common.event.discord.AlarmTalkErrorInfoEvent;
 import com.yedu.common.event.discord.ScheduleCancelEvent;
 import com.yedu.common.event.discord.TeacherRegisterEvent;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,10 @@ public class EventPublisher {
     }
 
     public void publishTeacherRegisterEvent(TeacherRegisterEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
+
+    public void publishAlarmTalkErrorInfoEvent(AlarmTalkErrorInfoEvent event) {
         applicationEventPublisher.publishEvent(event);
     }
 }

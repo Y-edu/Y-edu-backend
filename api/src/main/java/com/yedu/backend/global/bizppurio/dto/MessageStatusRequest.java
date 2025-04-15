@@ -1,4 +1,4 @@
-package com.yedu.bizppurio.support.application.dto.req;
+package com.yedu.backend.global.bizppurio.dto;
 
 public record MessageStatusRequest(
     String DEVICE,

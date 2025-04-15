@@ -1,10 +1,12 @@
-package com.yedu.bizppurio.support.application.usecase;
+package com.yedu.backend.global.bizppurio.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yedu.bizppurio.support.application.constant.BizppurioResponseCode;
-import com.yedu.bizppurio.support.application.dto.req.MessageStatusRequest;
-import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.backend.global.bizppurio.constant.BizppurioResponseCode;
+import com.yedu.backend.global.bizppurio.dto.MessageStatusRequest;
+import com.yedu.bizppurio.support.application.usecase.BizppurioParentsMessage;
+import com.yedu.bizppurio.support.application.usecase.BizppurioTeacherMessage;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.redis.RedisRepository;
@@ -12,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.yedu.bizppurio.support.event.mapper.DiscordEventMapper.*;
+import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class BizppurioCheckStep {
     private final ObjectMapper objectMapper;
     private final BizppurioTeacherMessage teacherMessage;
     private final BizppurioParentsMessage parentsMessage;
-    private final BizppurioModuleEventPublisher bizppurioModuleEventPublisher;
+    private final EventPublisher eventPublisher;
 
     public void checkByWebHook(MessageStatusRequest request) {
         if (request.RESULT().equals(SUCCESS)) {
@@ -72,6 +74,6 @@ public class BizppurioCheckStep {
         int code = bizppurioResponseCode.getCode();
         String message = redisRepository.getValues(request.REFKEY()).orElse("내용 알 수 없음");
         log.error("{} 에 대한 알림톡 전송 실패, 내용 {} \nRefKey : {} ResultCode : {} {}",  request.PHONE(), message, request.REFKEY(), code, errorMessage);
-        bizppurioModuleEventPublisher.publishAlarmTalkErrorInfoEvent(mapToAlarmTalkErrorInfoEvent(request.PHONE(), message, String.valueOf(code), errorMessage));
+        eventPublisher.publishAlarmTalkErrorInfoEvent(mapToAlarmTalkErrorInfoEvent(request.PHONE(), message, String.valueOf(code), errorMessage));
     }
 }

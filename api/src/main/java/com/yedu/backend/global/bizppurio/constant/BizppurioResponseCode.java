@@ -1,4 +1,4 @@
-package com.yedu.bizppurio.support.application.constant;
+package com.yedu.backend.global.bizppurio.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

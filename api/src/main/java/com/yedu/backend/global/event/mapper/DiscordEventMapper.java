@@ -44,4 +44,8 @@ public class DiscordEventMapper {
         TeacherInfo teacherInfo = teacher.getTeacherInfo();
         return new TeacherRegisterEvent(teacherInfo.getName(), teacherInfo.getNickName(), subject.toString(), teacherLink.toString(), regions.toString());
     }
+
+    public static AlarmTalkErrorInfoEvent mapToAlarmTalkErrorInfoEvent(String phoneNumber, String content, String code, String message) {
+        return new AlarmTalkErrorInfoEvent(phoneNumber, content, code, message);
+    }
 }
