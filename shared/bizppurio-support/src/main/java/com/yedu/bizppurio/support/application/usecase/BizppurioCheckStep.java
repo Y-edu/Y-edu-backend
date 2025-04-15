@@ -1,12 +1,10 @@
-package com.yedu.backend.global.bizppurio.handler;
+package com.yedu.bizppurio.support.application.usecase;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yedu.backend.global.event.publisher.EventPublisher;
-import com.yedu.backend.global.bizppurio.constant.BizppurioResponseCode;
-import com.yedu.backend.global.bizppurio.dto.MessageStatusRequest;
-import com.yedu.bizppurio.support.application.usecase.BizppurioParentsMessage;
-import com.yedu.bizppurio.support.application.usecase.BizppurioTeacherMessage;
+import com.yedu.bizppurio.support.application.constant.BizppurioResponseCode;
+import com.yedu.bizppurio.support.application.dto.req.MessageStatusRequest;
+import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.redis.RedisRepository;
@@ -14,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
+import static com.yedu.bizppurio.support.event.mapper.DiscordEventMapper.*;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class BizppurioCheckStep {
     private final ObjectMapper objectMapper;
     private final BizppurioTeacherMessage teacherMessage;
     private final BizppurioParentsMessage parentsMessage;
-    private final EventPublisher eventPublisher;
+    private final BizppurioModuleEventPublisher eventPublisher;
 
     public void checkByWebHook(MessageStatusRequest request) {
         if (request.RESULT().equals(SUCCESS)) {
