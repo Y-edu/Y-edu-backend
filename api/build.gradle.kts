@@ -1,6 +1,7 @@
 
 dependencies {
-    api(project(":shared:common"))
+    implementation(project(":shared:common"))
+    implementation(project(":shared:bizppurio-support"))
 
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation ("org.springframework.boot:spring-boot-starter-data-redis")
