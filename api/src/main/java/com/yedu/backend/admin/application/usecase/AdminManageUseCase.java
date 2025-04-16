@@ -15,8 +15,8 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
-import com.yedu.backend.global.event.dto.RecommendTeacherEvent;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
 
 @Transactional
 @Service
@@ -36,7 +36,7 @@ public class AdminManageUseCase {
     private final AdminSaveService adminSaveService;
     private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
+    private final EventPublisher eventPublisher;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -67,9 +67,9 @@ public class AdminManageUseCase {
                     return mapToRecommendTeacherEvent(classMatching);
                 })
                 .toList();
-        recommendTeacherEvents.forEach(bizppurioEventPublisher::publishRecommendTeacherEvent);
+        recommendTeacherEvents.forEach(eventPublisher::publishRecommendTeacherEvent);
         RecommendTeacherEvent recommendTeacherEvent = recommendTeacherEvents.get(0);
-        bizppurioEventPublisher.publishRecommendGuideEvent(mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
+        eventPublisher.publishRecommendGuideEvent(mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
     }
 
     public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
@@ -82,7 +82,7 @@ public class AdminManageUseCase {
                     ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     adminSaveService.saveClassMatching(classMatching);
                     adminUpdateService.updateAlertCount(teacher);
-                    bizppurioEventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+                    eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
                 });
     }
 }

@@ -1,6 +1,6 @@
 package com.yedu.discord.support;
 
-import com.yedu.common.WebClientProperties;
+import com.yedu.common.webclient.WebClientProperties;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -8,7 +8,7 @@ import com.yedu.backend.domain.matching.domain.service.*;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.backend.global.exception.matching.MatchingStatusException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 
 import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_DISTRICT;
 import static com.yedu.backend.domain.matching.application.constant.RefuseReason.UNABLE_NOW;
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class ClassMatchingManageUseCase {
     private final ClassManagementCommandService classManagementCommandService;
     private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
+    private final EventPublisher eventPublisher;
 
     public List<ClassMatching> saveAllClassMatching(List<Teacher> teachers, ApplicationForm applicationForm) {
         List<ClassMatching> classMatchings = teachers.stream()
@@ -60,16 +60,16 @@ public class ClassMatchingManageUseCase {
     private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
         if (refuseReason.equals(UNABLE_NOW.getReason())) {
             teacherUpdateService.plusRefuseCount(teacher);
-            bizppurioEventPublisher.publishMatchingRefuseCaseNowEvent(mapToMatchingRefuseCaseNowEvent(teacher));
+            eventPublisher.publishMatchingRefuseCaseNowEvent(mapToMatchingRefuseCaseNowEvent(teacher));
             return;
         }
         if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
             teacherUpdateService.plusRefuseCount(teacher);
-            bizppurioEventPublisher.publishMatchingRefuseCaseDistrictEvent(mapToMatchingRefuseCaseDistrictEvent(teacher));
+            eventPublisher.publishMatchingRefuseCaseDistrictEvent(mapToMatchingRefuseCaseDistrictEvent(teacher));
             return;
         }
         teacherUpdateService.clearRefuseCount(teacher);
-        bizppurioEventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
+        eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
     }
 
     public void acceptClassMatching(String applicationFormId, long teacherId, String phoneNumber) {
@@ -80,7 +80,7 @@ public class ClassMatchingManageUseCase {
 
         Teacher teacher = classMatching.getTeacher();
         teacherUpdateService.clearRefuseCount(teacher);
-        bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+        eventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
         plusResponseCount(teacherId, teacher);
     }
 
@@ -99,7 +99,7 @@ public class ClassMatchingManageUseCase {
                     classManagementCommandService.completeRemind(classManagement);
                     return mapToTeacherClassRemindEvent(classManagement);
                 })
-                .forEach(bizppurioEventPublisher::publishTeacherClassRemindEvent);
+                .forEach(eventPublisher::publishTeacherClassRemindEvent);
     }
 
     private boolean checkTime() {

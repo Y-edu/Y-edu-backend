@@ -1,6 +1,6 @@
 package com.yedu.discord.support;
 
-import com.yedu.common.WebClientProperties;
+import com.yedu.common.webclient.WebClientProperties;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;

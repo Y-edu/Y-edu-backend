@@ -31,7 +31,7 @@ import com.yedu.backend.domain.teacher.domain.repository.TeacherMathRepository;
 import com.yedu.backend.domain.teacher.domain.repository.TeacherRepository;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +45,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
-import static com.yedu.backend.global.event.mapper.EventMapper.mapToPhotoSubmitEvent;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.mapToPhotoSubmitEvent;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,7 +67,7 @@ public class AdminTestController {
     private final TeacherMathRepository teacherMathRepository;
     private final TeacherRepository teacherRepository;
     private final ClassMatchingGetService classMatchingGetService;
-    private final BizppurioEventPublisher bizppurioEventPublisher;
+    private final EventPublisher eventPublisher;
 
     @PostMapping("/test/teacher/signup/{phoneNumber}")
     @Operation(summary = "선생님 간편 가입 - 전화번호를 넣어주세요 (간편가입이라 내용은 기대하지 마세요)")
@@ -134,21 +134,21 @@ public class AdminTestController {
     @Operation(summary = "구글폼 프로필 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 가입은 이미 선생님으로 했어야 합니다!")
     public void finProfile(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        bizppurioEventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
+        eventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
     }
 
     @PostMapping("/test/teacher/photo/{phoneNumber}")
     @Operation(summary = "구글폼 사진 및 영상 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
     public void finPhoto(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        bizppurioEventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
+        eventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
     }
 
     @PostMapping("/test/teacher/agree/{phoneNumber}")
     @Operation(summary = "계약서 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
     public void finApplyAgree(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        bizppurioEventPublisher.publishInviteMatchingChannelInfoEvent(mapToInviteMatchingChannelInfoEvent(teacher));
+        eventPublisher.publishInviteMatchingChannelInfoEvent(mapToInviteMatchingChannelInfoEvent(teacher));
     }
 
     @PostMapping("/test/teacher/recommend/{applicationFormId}/{phoneNumber}")
@@ -167,7 +167,7 @@ public class AdminTestController {
                 () -> {
                     ClassMatching newClassMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
                     ClassMatching classMatching = classMatchingRepository.save(newClassMatching);
-                    bizppurioEventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+                    eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
                 }
         );
 
@@ -179,13 +179,13 @@ public class AdminTestController {
     public void acceptCase(@PathVariable String phoneNumber, @PathVariable String applicationFormId) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
         ClassMatching classMatching = classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(applicationFormId, teacher.getTeacherId(), phoneNumber);
-        bizppurioEventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+        eventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
     }
 
     @PostMapping("/test/teacher/refuse/{phoneNumber}")
     @Operation(summary = "선생님이 수업 거절시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 가입은 했어야 합니다!")
     public void refuseCase(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-        bizppurioEventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
+        eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
     }
 }

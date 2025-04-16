@@ -10,13 +10,13 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementKeyStorage;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
-import com.yedu.backend.global.discord.DiscordWebhookUseCase;
-import com.yedu.backend.global.event.publisher.BizppurioEventPublisher;
+import com.yedu.backend.global.event.publisher.EventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.yedu.backend.global.event.mapper.EventMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
+import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
 
 
 @RequiredArgsConstructor
@@ -30,15 +30,13 @@ public class ClassScheduleMatchingUseCase {
 
   private final ClassManagementKeyStorage keyStorage;
 
-  private final DiscordWebhookUseCase discordWebhookUseCase;
-
-  private final BizppurioEventPublisher bizppurioEventPublisher;
+  private final EventPublisher eventPublisher;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     ClassManagement classManagement = managementCommandService.schedule(request);
     String key = keyStorage.storeAndGet(classManagement.getClassManagementId());
 
-    bizppurioEventPublisher.publishMatchingEvent(
+    eventPublisher.publishMatchingEvent(
             mapToMatchingParentsEvent(classManagement),
             mapToTeacherExchangeEvent(key, classManagement)
     );
@@ -49,7 +47,7 @@ public class ClassScheduleMatchingUseCase {
     keyStorage.getAndExpire(request.classScheduleManagementId(),
             key -> {
               ClassMatching classMatching = managementCommandService.delete(request, key);
-              discordWebhookUseCase.sendScheduleCancel(classMatching.getTeacher(), classMatching.getApplicationForm(), request.refuseReason());
+                eventPublisher.publishScheduleCancelEvent(mapToScheduleCancelEvent(classMatching.getTeacher(), classMatching.getApplicationForm(), request.refuseReason()));
             }
     );
   }
@@ -57,7 +55,7 @@ public class ClassScheduleMatchingUseCase {
   public void confirm(ClassScheduleConfirmRequest request) {
     keyStorage.getAndExpire(request.classScheduleManagementId(), key -> {
               ClassManagement classManagement = managementCommandService.confirm(request, key);
-              bizppurioEventPublisher.publishMatchingConfirmEvent(
+              eventPublisher.publishMatchingConfirmEvent(
                       mapToParentsClassInfoEvent(classManagement),
                       mapToMatchingConfirmTeacherEvent(classManagement)
               );
