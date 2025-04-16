@@ -9,11 +9,11 @@ public class DiscordEventMapper {
         return new AlarmTalkErrorWithFirstEvent(phoneNumber, content, code);
     }
 
-    public static AlarmTalkErrorInfoEvent mapToAlarmTalkErrorInfoEvent(String phoneNumber, String content, String code, String message) {
-        return new AlarmTalkErrorInfoEvent(phoneNumber, content, code, message);
-    }
-
     public static AlarmTalkErrorMessageEvent mapToAlarmTalkErrorMessageEvent(String message) {
         return new AlarmTalkErrorMessageEvent(message);
+    }
+
+    public static AlarmTalkErrorInfoEvent mapToAlarmTalkErrorInfoEvent(String phoneNumber, String content, String code, String message) {
+        return new AlarmTalkErrorInfoEvent(phoneNumber, content, code, message);
     }
 }

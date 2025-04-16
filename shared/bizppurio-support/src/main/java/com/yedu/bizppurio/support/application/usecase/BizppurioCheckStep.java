@@ -26,7 +26,7 @@ public class BizppurioCheckStep {
     private final ObjectMapper objectMapper;
     private final BizppurioTeacherMessage teacherMessage;
     private final BizppurioParentsMessage parentsMessage;
-    private final BizppurioModuleEventPublisher bizppurioModuleEventPublisher;
+    private final BizppurioModuleEventPublisher eventPublisher;
 
     public void checkByWebHook(MessageStatusRequest request) {
         if (request.RESULT().equals(SUCCESS)) {
@@ -72,6 +72,6 @@ public class BizppurioCheckStep {
         int code = bizppurioResponseCode.getCode();
         String message = redisRepository.getValues(request.REFKEY()).orElse("내용 알 수 없음");
         log.error("{} 에 대한 알림톡 전송 실패, 내용 {} \nRefKey : {} ResultCode : {} {}",  request.PHONE(), message, request.REFKEY(), code, errorMessage);
-        bizppurioModuleEventPublisher.publishAlarmTalkErrorInfoEvent(mapToAlarmTalkErrorInfoEvent(request.PHONE(), message, String.valueOf(code), errorMessage));
+        eventPublisher.publishAlarmTalkErrorInfoEvent(mapToAlarmTalkErrorInfoEvent(request.PHONE(), message, String.valueOf(code), errorMessage));
     }
 }

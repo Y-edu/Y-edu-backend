@@ -1,7 +1,7 @@
-package com.yedu.bizppurio.support.presentation;
+package com.yedu.backend.global.bizppurio;
 
-import com.yedu.bizppurio.support.application.dto.req.MessageStatusRequest;
 import com.yedu.bizppurio.support.application.usecase.BizppurioCheckStep;
+import com.yedu.bizppurio.support.application.dto.req.MessageStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

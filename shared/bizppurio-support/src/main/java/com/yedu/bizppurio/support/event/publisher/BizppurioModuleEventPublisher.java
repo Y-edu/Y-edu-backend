@@ -16,11 +16,11 @@ public class BizppurioModuleEventPublisher {
         applicationEventPublisher.publishEvent(event);
     }
 
-    public void publishAlarmTalkErrorInfoEvent(AlarmTalkErrorInfoEvent event) {
+    public void publishAlarmTalkErrorMessageEvent(AlarmTalkErrorMessageEvent event) {
         applicationEventPublisher.publishEvent(event);
     }
 
-    public void publishAlarmTalkErrorMessageEvent(AlarmTalkErrorMessageEvent event) {
+    public void publishAlarmTalkErrorInfoEvent(AlarmTalkErrorInfoEvent event) {
         applicationEventPublisher.publishEvent(event);
     }
 }
