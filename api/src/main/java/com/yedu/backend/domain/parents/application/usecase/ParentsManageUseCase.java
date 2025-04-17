@@ -3,20 +3,27 @@ package com.yedu.backend.domain.parents.application.usecase;
 import com.yedu.backend.domain.matching.application.usecase.ClassMatchingManageUseCase;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.application.dto.req.ApplicationFormRequest;
+import com.yedu.backend.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
+import com.yedu.backend.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
+import com.yedu.backend.domain.parents.application.mapper.ApplicationFormAvailableMapper;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
+import com.yedu.backend.domain.parents.domain.service.ApplicationFormAvailableQueryService;
 import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.common.redis.RedisRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.springframework.util.StringUtils;
 
 import static com.yedu.backend.domain.parents.application.mapper.ParentsMapper.*;
 
@@ -30,6 +37,8 @@ public class ParentsManageUseCase {
     private final TeacherManageUseCase teacherManageUseCase;
     private final TeacherInfoUseCase teacherInfoUseCase;
     private final ClassMatchingManageUseCase classMatchingManageUseCase;
+    private final ApplicationFormAvailableQueryService applicationFormAvailableQueryService;
+    private final RedisRepository redisRepository;
 
     public void saveParentsAndApplication(ApplicationFormRequest request) {
         Parents parents = parentsGetService.optionalParentsByPhoneNumber(request.phoneNumber())
@@ -44,5 +53,19 @@ public class ParentsManageUseCase {
         List<Teacher> teachers = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
         List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm);// 매칭 저장
         teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송
+    }
+
+    public ApplicationFormTimeTableResponse retrieveTimeTable(ApplicationFormTimeTableRequest request) {
+        if (StringUtils.hasText(request.applicationFormId())){
+            return Optional.of(applicationFormAvailableQueryService.query(request.applicationFormId()))
+                .map(ApplicationFormAvailableMapper::map)
+                .get();
+        }
+
+        return redisRepository.getValues(request.token())
+            .map(applicationFormAvailableQueryService::query)
+            .map(ApplicationFormAvailableMapper::map)
+            .orElseGet(ApplicationFormTimeTableResponse::empty);
+
     }
 }
