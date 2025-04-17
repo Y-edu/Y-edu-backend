@@ -7,8 +7,10 @@ import com.yedu.backend.domain.parents.application.dto.req.ApplicationFormTimeTa
 import com.yedu.backend.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
 import com.yedu.backend.domain.parents.application.mapper.ApplicationFormAvailableMapper;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
+import com.yedu.backend.domain.parents.domain.service.ApplicationFormAvailableCommandService;
 import com.yedu.backend.domain.parents.domain.service.ApplicationFormAvailableQueryService;
 import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
@@ -38,6 +40,7 @@ public class ParentsManageUseCase {
     private final TeacherInfoUseCase teacherInfoUseCase;
     private final ClassMatchingManageUseCase classMatchingManageUseCase;
     private final ApplicationFormAvailableQueryService applicationFormAvailableQueryService;
+    private final ApplicationFormAvailableCommandService applicationFormAvailableCommandService;
     private final RedisRepository redisRepository;
 
     public void saveParentsAndApplication(ApplicationFormRequest request) {
@@ -50,6 +53,10 @@ public class ParentsManageUseCase {
                 .map(goal -> mapToGoal(applicationForm, goal))
                 .toList();
         parentsSaveService.saveApplication(applicationForm, goals);
+
+        List<ApplicationFormAvailable> applicationFormAvailables = ApplicationFormAvailableMapper.map(request.dayTimes(), applicationForm.getApplicationFormId());
+        applicationFormAvailableCommandService.saveAll(applicationFormAvailables);
+
         List<Teacher> teachers = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
         List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm);// 매칭 저장
         teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송

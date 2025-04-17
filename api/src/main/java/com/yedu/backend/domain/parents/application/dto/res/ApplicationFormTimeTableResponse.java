@@ -1,21 +1,14 @@
 package com.yedu.backend.domain.parents.application.dto.res;
 
-import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
-import java.time.LocalTime;
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record ApplicationFormTimeTableResponse(
     String applicationFormId,
-    List<Time> times
+    List<DayTime> dayTimes
 ) {
-  public record Time(
-      Day day,
-      List<LocalTime> times
-  ){
-
-  }
 
   public static ApplicationFormTimeTableResponse empty() {
     return ApplicationFormTimeTableResponse.builder().build();
