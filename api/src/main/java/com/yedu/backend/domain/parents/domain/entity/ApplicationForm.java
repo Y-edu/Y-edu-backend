@@ -41,7 +41,7 @@ public class ApplicationForm extends BaseEntity {
     private String favoriteCondition; // 원하는 선생님 요건
     @Enumerated(EnumType.STRING)
     private Level educationImportance; // 학벌 중요도
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String favoriteStyle; //선생님 스타일
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
