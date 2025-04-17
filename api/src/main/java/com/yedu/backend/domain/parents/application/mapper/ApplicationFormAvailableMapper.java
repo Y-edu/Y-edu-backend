@@ -2,6 +2,7 @@ package com.yedu.backend.domain.parents.application.mapper;
 
 import com.yedu.backend.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationFormAvailable;
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import java.time.LocalTime;
 import java.util.List;
@@ -23,13 +24,25 @@ public class ApplicationFormAvailableMapper {
                 Collectors.mapping(ApplicationFormAvailable::getAvailableTime, Collectors.toList())
             ));
 
-        List<ApplicationFormTimeTableResponse.Time> times = groupedByDay.entrySet().stream()
-            .map(entry -> new ApplicationFormTimeTableResponse.Time(entry.getKey(), entry.getValue()))
+        List<DayTime> times = groupedByDay.entrySet().stream()
+            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
             .toList();
 
         return ApplicationFormTimeTableResponse.builder()
             .applicationFormId(applicationFormAvailables.get(0).getApplicationFormId())
-            .times(times)
+            .dayTimes(times)
             .build();
+    }
+
+    public static List<ApplicationFormAvailable> map(List<DayTime> dayTimes, String applicationFormId) {
+        return dayTimes.stream()
+            .flatMap(dayTime -> dayTime.getTimes().stream()
+                .map(time -> ApplicationFormAvailable.builder()
+                    .applicationFormId(applicationFormId)
+                    .day(dayTime.getDay())
+                    .availableTime(time)
+                    .build()
+                )
+            ).toList();
     }
 }
