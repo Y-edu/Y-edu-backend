@@ -55,7 +55,7 @@ public class BizppurioEventMapper {
         );
     }
 
-    public static NotifyClassInfoEvent mapToNotifyClassInfoEvent(ClassMatching classMatching) {
+    public static NotifyClassInfoEvent mapToNotifyClassInfoEvent(ClassMatching classMatching, String teacherToken) {
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Teacher teacher = classMatching.getTeacher();
         TeacherInfo teacherInfo = teacher.getTeacherInfo();
@@ -67,7 +67,8 @@ public class BizppurioEventMapper {
                 applicationForm.getDistrict().getDescription(),
                 applicationForm.getDong(),
                 teacher.getTeacherId(),
-                teacherInfo.getPhoneNumber()
+                teacherInfo.getPhoneNumber(),
+                teacherToken
         );
     }
 

@@ -15,9 +15,11 @@ import com.yedu.backend.domain.parents.domain.service.ApplicationFormAvailableQu
 import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
+import com.yedu.backend.domain.parents.domain.service.TeacherTokenStorage;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
+import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.common.redis.RedisRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class ParentsManageUseCase {
     private final ApplicationFormAvailableQueryService applicationFormAvailableQueryService;
     private final ApplicationFormAvailableCommandService applicationFormAvailableCommandService;
     private final RedisRepository redisRepository;
+    private final TeacherTokenStorage teacherTokenStorage;
 
     public void saveParentsAndApplication(ApplicationFormRequest request) {
         Parents parents = parentsGetService.optionalParentsByPhoneNumber(request.phoneNumber())
@@ -59,8 +62,9 @@ public class ParentsManageUseCase {
 
         TeacherWithAvailable teacherWithAvailable = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
         int classCount = getClassCount(applicationForm.getClassCount());
-        List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(
-            teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables), applicationForm);// 매칭 저장
+        List<Teacher> teachers = teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables);
+        List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm);// 매칭 저장
+
         teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송
     }
 

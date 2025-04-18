@@ -1,8 +1,10 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.parents.domain.service.TeacherTokenStorage;
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -43,6 +45,7 @@ public class TeacherManageUseCase {
     private final TeacherDeleteService teacherDeleteService;
     private final S3UploadService s3UploadService;
     private final EventPublisher eventPublisher;
+    private final TeacherTokenStorage teacherTokenStorage;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -113,8 +116,10 @@ public class TeacherManageUseCase {
     public void notifyClass(List<ClassMatching> classMatchings) {
         classMatchings.forEach(classMatching -> {
             Teacher teacher = classMatching.getTeacher();
+            String teacherToken = teacherTokenStorage.create(teacher.getTeacherId());
+
             teacherUpdateService.updateAlertCount(teacher);
-            eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+            eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching, teacherToken));
         });
     }
 
@@ -137,6 +142,17 @@ public class TeacherManageUseCase {
         teacherDeleteService.availableByTeacher(teacher);
         List<TeacherAvailable> availables = getTeacherAvailables(request.available(), teacher);
         teacherSaveService.saveAvailable(availables);
+    }
+
+    public void changeAvailable(AvailableChangeTokenRequest request) {
+        teacherTokenStorage.get(request.token())
+            .ifPresent(teacherId-> {
+                Teacher teacher = teacherGetService.byId(teacherId);
+                teacherDeleteService.availableByTeacher(teacher);
+                List<TeacherAvailable> teacherAvailables = mapToTeacherAvailable(teacher,
+                    request.dayTimes());
+                teacherSaveService.saveAvailable(teacherAvailables);
+            });
     }
 
     @Scheduled(cron = "0 0 20 * * *")

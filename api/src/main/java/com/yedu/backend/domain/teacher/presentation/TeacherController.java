@@ -2,6 +2,7 @@ package com.yedu.backend.domain.teacher.presentation;
 
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -108,16 +109,24 @@ public class TeacherController {
     }
 
     @PutMapping("/info/district")
-    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경")
+    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 시간 변경")
     public ResponseEntity changeDistrict(@RequestBody DistrictChangeRequest request) {
         manageUseCase.changeDistrict(request);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/info/available")
-    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경")
+    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 시간 변경")
     public ResponseEntity changeAvailable(@RequestBody AvailableChangeRequest request) {
         manageUseCase.changeAvailable(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/token/info/available")
+    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 시간 변경 (토큰기반)")
+    public ResponseEntity<Void> changeAvailable(@RequestBody AvailableChangeTokenRequest request) {
+        manageUseCase.changeAvailable(request);
+
+        return ResponseEntity.noContent().build();
     }
 }

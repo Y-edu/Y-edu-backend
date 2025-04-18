@@ -40,6 +40,6 @@ public class TeacherSaveService {
     }
 
     public void saveAvailable(List<TeacherAvailable> availables) {
-        availables.forEach(availableRepository::save);
+        availableRepository.saveAll(availables);
     }
 }
