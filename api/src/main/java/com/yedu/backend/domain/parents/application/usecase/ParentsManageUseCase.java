@@ -17,7 +17,7 @@ import com.yedu.backend.domain.parents.domain.service.ParentsSaveService;
 import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
-import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
 import com.yedu.common.redis.RedisRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -57,8 +57,10 @@ public class ParentsManageUseCase {
         List<ApplicationFormAvailable> applicationFormAvailables = ApplicationFormAvailableMapper.map(request.dayTimes(), applicationForm.getApplicationFormId());
         applicationFormAvailableCommandService.saveAll(applicationFormAvailables);
 
-        List<Teacher> teachers = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
-        List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(teachers, applicationForm);// 매칭 저장
+        TeacherWithAvailable teacherWithAvailable = teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
+        int classCount = getClassCount(applicationForm.getClassCount());
+        List<ClassMatching> classMatchings = classMatchingManageUseCase.saveAllClassMatching(
+            teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables), applicationForm);// 매칭 저장
         teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송
     }
 

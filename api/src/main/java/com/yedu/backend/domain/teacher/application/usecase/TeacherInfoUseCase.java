@@ -8,6 +8,7 @@ import com.yedu.backend.domain.teacher.application.dto.res.TeacherCommonsInfoRes
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherEnglishResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherInfoResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherMathResponse;
+import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
@@ -98,7 +99,7 @@ public class TeacherInfoUseCase {
                 .toList();
     }
 
-    public List<Teacher> allApplicationFormTeacher(ApplicationForm applicationForm) {
+    public TeacherWithAvailable allApplicationFormTeacher(ApplicationForm applicationForm) {
         return teacherGetService.applicationFormTeachers(applicationForm);
     }
 }

@@ -61,7 +61,7 @@ public class ParentsMapper {
         return 0;
     }
 
-    private static int getClassCount(String count) {
+    public static int getClassCount(String count) {
         if (count.equals("주 1회"))
             return 1;
         else if (count.equals("주 2회"))

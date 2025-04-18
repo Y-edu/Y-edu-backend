@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.domain.entity;
 
+import com.yedu.backend.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -26,4 +27,10 @@ public class TeacherAvailable extends BaseEntity {
     private Day day;
     @ManyToOne(fetch = FetchType.LAZY)
     private Teacher teacher;
+
+
+    public boolean isSameTo(ApplicationFormAvailable applicationFormAvailable){
+        return applicationFormAvailable.getAvailableTime().equals(availableTime)
+            && applicationFormAvailable.getDay().equals(day);
+    }
 }
