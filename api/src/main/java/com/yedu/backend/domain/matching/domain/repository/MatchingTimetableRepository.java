@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MatchingTimetableRepository extends JpaRepository<MatchingTimetable, Long> {
     List<MatchingTimetable> findAllByClassMatching_ClassMatchingId(long classMatchingId);
+    boolean existsByClassMatching_ClassMatchingId(long classMatchingId);
 }
