@@ -26,6 +26,6 @@ public class MatchingTimetable extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Day day;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private ClassMatching classMatching;
 }
