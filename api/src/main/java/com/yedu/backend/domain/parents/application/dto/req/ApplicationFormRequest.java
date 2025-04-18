@@ -4,6 +4,7 @@ import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import java.util.List;
 
 public record ApplicationFormRequest(
@@ -19,6 +20,7 @@ public record ApplicationFormRequest(
         String district,
         String dong,
         String wantTime,
-        String source
+        String source,
+        List<DayTime> dayTimes
 ) {
 }

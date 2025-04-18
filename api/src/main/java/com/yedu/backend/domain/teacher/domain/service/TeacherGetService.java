@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.teacher.domain.service;
 
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherDistrict;
@@ -18,6 +19,7 @@ import com.yedu.backend.global.exception.teacher.TeacherLoginFailException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByIdException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByNameAndNickNameException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByPhoneNumberException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +67,11 @@ public class TeacherGetService {
         return districtRepository.findAllByTeacher(teacher);
     }
 
-    public List<Teacher> applicationFormTeachers(ApplicationForm applicationForm) {
-        return teacherRepository.findAllMatchingApplicationForm(applicationForm);
+    public TeacherWithAvailable applicationFormTeachers(ApplicationForm applicationForm) {
+        Map<Teacher, List<TeacherAvailable>> dto = teacherRepository.findAllMatchingApplicationForm(
+            applicationForm);
+
+        return new TeacherWithAvailable(dto);
     }
 
     public Teacher byNameAndPhoneNumber(String name, String phoneNumber) {

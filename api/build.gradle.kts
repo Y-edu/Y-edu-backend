@@ -3,6 +3,7 @@ dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:bizppurio-support"))
 
+    implementation ("org.springframework.boot:spring-boot-starter-validation")
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation ("org.springframework.boot:spring-boot-starter-data-redis")
     implementation ("org.springframework.boot:spring-boot-starter-security")
@@ -46,6 +47,7 @@ dependencies {
 }
 
 tasks.test {
+    systemProperty("spring.profiles.active", "dev")
     useJUnitPlatform()
 }
 

@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.teacher.domain.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -11,9 +12,12 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
+import com.yedu.backend.domain.teacher.domain.entity.TeacherAvailable;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +27,7 @@ import java.util.Objects;
 
 import static com.querydsl.core.types.dsl.Expressions.TRUE;
 import static com.yedu.backend.domain.teacher.domain.entity.QTeacher.teacher;
+import static com.yedu.backend.domain.teacher.domain.entity.QTeacherAvailable.teacherAvailable;
 import static com.yedu.backend.domain.teacher.domain.entity.QTeacherDistrict.teacherDistrict;
 
 @Repository
@@ -31,22 +36,25 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Teacher> findAllMatchingApplicationForm(ApplicationForm applicationForm) {
+    public Map<Teacher, List<TeacherAvailable>> findAllMatchingApplicationForm(ApplicationForm applicationForm) {
         // 지역, 성별, 과목
-        return getTeachers(applicationForm);
+         return getTeachers(applicationForm).stream()
+             .collect(Collectors.groupingBy(
+                 tuple -> tuple.get(teacher),
+                 Collectors.mapping(tuple -> tuple.get(teacherAvailable), Collectors.toList())
+     ));
     }
 
-    private List<Teacher> getTeachers(ApplicationForm applicationForm) {
+    private List<Tuple> getTeachers(ApplicationForm applicationForm) {
         District district = applicationForm.getDistrict();
         Gender favoriteGender = applicationForm.getFavoriteGender();
         ClassType subject = applicationForm.getWantedSubject();
 
-        return queryFactory.select(teacher)
+         return queryFactory.select(teacher, teacherAvailable)
                 .from(teacher)
                 .distinct()
-                .leftJoin(teacherDistrict)
-                .fetchJoin()
-                .on(teacher.eq(teacherDistrict.teacher))
+                .innerJoin(teacherAvailable).fetchJoin().on(teacher.eq(teacherAvailable.teacher))
+                .leftJoin(teacherDistrict).fetchJoin().on(teacher.eq(teacherDistrict.teacher))
                 .where(genderSpecifier(favoriteGender)
                         .and(subjectSpecifier(subject))
                         .and(teacherDistrict.district.eq(district))
