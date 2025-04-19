@@ -9,8 +9,6 @@ import lombok.Builder;
 
 @Builder
 public record TeacherAllInformationResponse(
-    Long teacherId,
-    Long matchingId,
     ClassType subject,
     String profile,
     String nickName,

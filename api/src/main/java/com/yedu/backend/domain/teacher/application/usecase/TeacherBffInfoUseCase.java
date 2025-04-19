@@ -7,7 +7,7 @@ import com.yedu.backend.domain.teacher.application.dto.res.TeacherAllInformation
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherCommonsInfoResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherEnglishResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.TeacherMathResponse;
-import com.yedu.cache.support.dto.TeacherRecommend;
+import com.yedu.cache.support.dto.MatchingTimeTableDto;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.common.type.ClassType;
 import java.util.concurrent.CompletableFuture;
@@ -24,12 +24,12 @@ public class TeacherBffInfoUseCase {
 
     private final TeacherInfoUseCase teacherInfoUseCase;
 
-    private final KeyStorage<TeacherRecommend> teacherRecommendTokenStorage;
+    private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
 
     public TeacherAllInformationResponse retrieveAllInformation(String token) {
-        TeacherRecommend teacherRecommend = teacherRecommendTokenStorage.get(token);
-        Long teacherId = teacherRecommend.teacherId();
-        ClassType classType = teacherRecommend.classType();
+        MatchingTimeTableDto matchingTimeTableDto = matchingTimetableKeyStorage.get(token);
+        Long teacherId = matchingTimeTableDto.teacherId();
+        ClassType classType = matchingTimeTableDto.classType();
 
         CompletableFuture<TeacherCommonsInfoResponse> commonsFuture =
             CompletableFuture.supplyAsync(() -> teacherInfoUseCase.teacherCommonsInfo(teacherId));
@@ -56,8 +56,6 @@ public class TeacherBffInfoUseCase {
         Object curriculumInfo = curriculumInfoFuture.join();
 
         TeacherAllInformationResponse.TeacherAllInformationResponseBuilder builder = TeacherAllInformationResponse.builder()
-            .teacherId(teacherId)
-            .matchingId(teacherRecommend.matchingId())
             .profile(commonsInfoResponse.profile())
             .nickName(commonsInfoResponse.nickName())
             .available(districtAndTimeResponse.availables())
