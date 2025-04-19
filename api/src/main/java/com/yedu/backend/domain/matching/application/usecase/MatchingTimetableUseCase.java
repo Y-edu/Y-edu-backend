@@ -5,7 +5,7 @@ import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRet
 import com.yedu.backend.domain.matching.application.dto.res.MatchingTimetableRetrieveResponse;
 import com.yedu.backend.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.backend.domain.matching.domain.service.MatchingTimetableCommandService;
-import com.yedu.backend.domain.matching.domain.service.MatchingTimetableKeyStorage;
+import com.yedu.cache.support.storage.AbstractKeyStorage;
 import com.yedu.backend.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.*;
 public class MatchingTimetableUseCase {
     private final MatchingTimetableQueryService matchingTimetableQueryService;
     private final MatchingTimetableCommandService matchingTimetableCommandService;
-    private final MatchingTimetableKeyStorage keyStorage;
+    private final AbstractKeyStorage<Long> matchingTimetableKeyStorage;
 
     public MatchingTimetableRetrieveResponse retrieveMatchingTimetable(MatchingTimeTableRetrieveRequest request) {
         List<MatchingTimetable> timetables = matchingTimetableQueryService.query(request.classMatchingId());
@@ -40,7 +40,7 @@ public class MatchingTimetableUseCase {
     }
 
     public void matchingTimetable(MatchingTimeTableRequest request) {
-        Long classMatchingId = keyStorage.get(request.classMatchingToken());
+        Long classMatchingId = matchingTimetableKeyStorage.get(request.classMatchingToken());
         matchingTimetableCommandService.matchingTimetable(classMatchingId, request.dayTimes());
         //todo : 입금 안내 알림톡 전송
     }

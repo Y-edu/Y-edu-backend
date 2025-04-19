@@ -1,9 +1,8 @@
-package com.yedu.backend.domain.matching.utils;
+package com.yedu.cache.support.storage;
 
 import com.yedu.cache.support.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -11,25 +10,28 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
-public class KeyStorage {
-    private static final int CACHE_EXPIRE_DAYS = 30;
+public abstract class AbstractKeyStorage<T> implements KeyStorage<T> {
+
+    private final String keyTemplate;
+
+    private final Duration ttl;
 
     private final RedisRepository redisRepository;
 
-    public String storeAndGet(Long id, String type){
+    @Override
+    public String storeAndGet(T id){
         UUID uuid = UUID.nameUUIDFromBytes(id.toString().getBytes());
-        String key = buildKey(uuid.toString(), type);
+        String key = buildKey(uuid.toString());
 
-        redisRepository.setValues(key, id.toString(), Duration.ofDays(CACHE_EXPIRE_DAYS));
+        redisRepository.setValues(key, id.toString(), ttl);
 
         return uuid.toString();
     }
-
-    public Long getAndExpire(String uuid, Consumer<Long> consumer, String type){
-        String key = buildKey(uuid, type);
-        Long value = get(uuid, type);
+    @Override
+    public T getAndExpire(String uuid, Consumer<T> consumer){
+        String key = buildKey(uuid);
+        T value = get(uuid);
 
         Optional.ofNullable(value).ifPresentOrElse(foundValue-> {
             try{
@@ -44,14 +46,16 @@ public class KeyStorage {
 
         return value;
     }
+    @Override
+    public T get(String uuid) {
+        String key = buildKey(uuid);
 
-    public Long get(String uuid, String type) {
-        String key = buildKey(uuid, type);
-
-        return redisRepository.getValues(key).map(Long::valueOf).orElse(null);
+        return redisRepository.getValues(key).map(value-> (T) value).orElse(null);
     }
 
-    private String buildKey(String uuid, String type) {
-        return type.formatted(uuid);
+    private String buildKey(String uuid) {
+        return keyTemplate.formatted(uuid);
     }
+
+
 }

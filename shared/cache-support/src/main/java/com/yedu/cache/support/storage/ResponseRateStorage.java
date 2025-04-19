@@ -1,4 +1,4 @@
-package com.yedu.backend.admin.domain.service;
+package com.yedu.cache.support.storage;
 
 import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
