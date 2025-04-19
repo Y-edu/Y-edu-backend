@@ -58,7 +58,7 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherVideo(teacher, request.video());
     }
 
-    public void recommendTeacher(RecommendTeacherRequest request) {
+    public void recommendTeacher(RecommendTeacherRequest request) { //todo : 알림톡 링크 수정 필요 (토큰 활용)
         List<RecommendTeacherEvent> recommendTeacherEvents = request.classMatchingIds()
                 .stream()
                 .map(id -> {
