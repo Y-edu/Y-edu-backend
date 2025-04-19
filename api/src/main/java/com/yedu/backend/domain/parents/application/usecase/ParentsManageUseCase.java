@@ -18,7 +18,7 @@ import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class ParentsManageUseCase {
                 .get();
         }
 
-        return redisRepository.getValues(request.token())
+        return redisRepository.getValues(request.token()) //todo 토큰저장 & 조회로직 분리
             .map(applicationFormAvailableQueryService::query)
             .map(ApplicationFormAvailableMapper::map)
             .orElseGet(ApplicationFormTimeTableResponse::empty);

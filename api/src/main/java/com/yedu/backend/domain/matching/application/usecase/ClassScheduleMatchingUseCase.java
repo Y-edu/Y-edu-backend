@@ -8,7 +8,8 @@ import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleRetriev
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
-import com.yedu.backend.domain.matching.domain.service.ClassManagementKeyStorage;
+import com.yedu.cache.support.storage.AbstractKeyStorage;
+import com.yedu.cache.support.storage.ClassManagementKeyStorage;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,13 @@ public class ClassScheduleMatchingUseCase {
 
   private final ClassManagementQueryService managementQueryService;
 
-  private final ClassManagementKeyStorage keyStorage;
+  private final AbstractKeyStorage<Long> classManagementKeyStorage;
 
   private final EventPublisher eventPublisher;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     ClassManagement classManagement = managementCommandService.schedule(request);
-    String key = keyStorage.storeAndGet(classManagement.getClassManagementId());
+    String key = classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
 
     eventPublisher.publishMatchingEvent(
             mapToMatchingParentsEvent(classManagement),
@@ -44,7 +45,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void refuse(ClassScheduleRefuseRequest request) {
-    keyStorage.getAndExpire(request.classScheduleManagementId(),
+    classManagementKeyStorage.getAndExpire(request.classScheduleManagementId(),
             key -> {
               ClassMatching classMatching = managementCommandService.delete(request, key);
                 eventPublisher.publishScheduleCancelEvent(mapToScheduleCancelEvent(classMatching.getTeacher(), classMatching.getApplicationForm(), request.refuseReason()));
@@ -53,7 +54,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void confirm(ClassScheduleConfirmRequest request) {
-    keyStorage.getAndExpire(request.classScheduleManagementId(), key -> {
+    classManagementKeyStorage.getAndExpire(request.classScheduleManagementId(), key -> {
               ClassManagement classManagement = managementCommandService.confirm(request, key);
               eventPublisher.publishMatchingConfirmEvent(
                       mapToParentsClassInfoEvent(classManagement),
@@ -64,7 +65,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public ClassScheduleRetrieveResponse retrieve(ClassScheduleRetrieveRequest request) {
-    Long id = keyStorage.get(request.classScheduleManagementId());
+    Long id = classManagementKeyStorage.get(request.classScheduleManagementId());
 
     return managementQueryService.query(request, id)
             .map(ClassScheduleRetrieveResponse::of)

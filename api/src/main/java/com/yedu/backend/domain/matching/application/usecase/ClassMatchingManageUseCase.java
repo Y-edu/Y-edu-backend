@@ -1,6 +1,6 @@
 package com.yedu.backend.domain.matching.application.usecase;
 
-import com.yedu.backend.admin.domain.service.ResponseRateStorage;
+import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;

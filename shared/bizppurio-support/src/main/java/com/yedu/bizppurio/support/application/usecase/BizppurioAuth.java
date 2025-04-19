@@ -2,7 +2,7 @@ package com.yedu.bizppurio.support.application.usecase;
 
 import com.yedu.bizppurio.support.application.dto.res.BizppurioTokenResponse;
 import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Base64Util;
