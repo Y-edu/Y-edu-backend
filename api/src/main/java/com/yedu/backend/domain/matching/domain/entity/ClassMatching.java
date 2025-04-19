@@ -52,7 +52,7 @@ public class ClassMatching extends BaseEntity {
     }
 
     public void startSchedule(){
-        if (this.matchStatus != MatchingStatus.전송){
+        if (this.matchStatus != MatchingStatus.입금확인){
             throw new MatchingNotSendStatusException(this.classMatchingId);
         }
         this.matchStatus = MatchingStatus.매칭;
@@ -76,7 +76,15 @@ public class ClassMatching extends BaseEntity {
             this.matchStatus == MatchingStatus.전송 ||
             this.matchStatus == MatchingStatus.매칭 ||
             this.matchStatus == MatchingStatus.최종매칭 ||
+            this.matchStatus == MatchingStatus.입금확인 ||
             this.matchStatus == MatchingStatus.과외결렬;
+    }
+
+    public void makeMatchingTimetable() {
+        if (this.matchStatus != MatchingStatus.전송){
+            throw new MatchingNotSendStatusException(this.classMatchingId);
+        }
+        this.matchStatus = MatchingStatus.입금확인;
     }
 
     public ClassMatching initializeProxy() {

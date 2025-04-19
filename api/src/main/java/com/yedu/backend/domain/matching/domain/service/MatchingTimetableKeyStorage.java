@@ -10,10 +10,9 @@ import java.util.function.Consumer;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ClassManagementKeyStorage {
+public class MatchingTimetableKeyStorage {
 
-    private static final String KEY = "class-management:%s";
-
+    private static final String KEY = "class-matching:%s";
     private final KeyStorage keyStorage;
 
     public String storeAndGet(Long id){
