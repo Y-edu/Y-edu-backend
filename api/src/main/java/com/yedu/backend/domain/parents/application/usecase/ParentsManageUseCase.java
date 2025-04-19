@@ -71,7 +71,7 @@ public class ParentsManageUseCase {
                 .get();
         }
 
-        return redisRepository.getValues(request.token())
+        return redisRepository.getValues(request.token()) //todo 토큰저장 & 조회로직 분리
             .map(applicationFormAvailableQueryService::query)
             .map(ApplicationFormAvailableMapper::map)
             .orElseGet(ApplicationFormTimeTableResponse::empty);
