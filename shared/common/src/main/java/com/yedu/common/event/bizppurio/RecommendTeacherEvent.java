@@ -5,6 +5,7 @@ public record RecommendTeacherEvent(
         String teacherNickName,
         String district,
         String classType,
-        long teacherId
+        long teacherId,
+        String token
 ) {
 }

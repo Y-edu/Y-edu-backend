@@ -1,6 +1,6 @@
 package com.yedu.backend.admin.application.dto.req;
 
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 
 import java.util.List;

@@ -16,7 +16,7 @@ import java.util.List;
 import static com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.*;
 
 public class BizppurioEventMapper {
-    public static RecommendTeacherEvent mapToRecommendTeacherEvent(ClassMatching classMatching) {
+    public static RecommendTeacherEvent mapToRecommendTeacherEvent(ClassMatching classMatching, String token) {
         ApplicationForm applicationForm = classMatching.getApplicationForm();
         Parents parents = applicationForm.getParents();
         Teacher teacher = classMatching.getTeacher();
@@ -26,7 +26,8 @@ public class BizppurioEventMapper {
                 teacher.getTeacherInfo().getNickName(),
                 applicationForm.getDistrict().getDescription(),
                 applicationForm.getWantedSubject().toString(),
-                teacher.getTeacherId()
+                teacher.getTeacherId(),
+                token
         );
     }
 

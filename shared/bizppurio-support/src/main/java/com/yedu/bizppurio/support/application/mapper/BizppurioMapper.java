@@ -295,7 +295,7 @@ public class BizppurioMapper {
                 "Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. \uD83D\uDE00\n" +
                 "\n" +
                 "아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 선생님을 카카오 채팅으로 말씀해주세요");
-        String teacherUrl = "https://www.yedu-tutor.com/teacher/" + recommendTeacherEvent.teacherId() + "?subject=" + recommendTeacherEvent.classType();
+        String teacherUrl = "https://www.yedu-tutor.com/teacher/" + recommendTeacherEvent.token();
         CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, teacherUrl, teacherUrl);
         CommonButton simpleButton = new SimpleButton("이 선생님과 수업할래요", MESSAGE);
         Message messageBody = new EmphasizeButtonMessage(message, title, yeduOfficialKey, recommendTeacher, new CommonButton[]{webButton, simpleButton});

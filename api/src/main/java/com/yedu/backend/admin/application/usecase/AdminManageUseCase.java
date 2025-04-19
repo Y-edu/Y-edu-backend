@@ -8,6 +8,8 @@ import com.yedu.backend.admin.application.dto.req.TeacherVideoRequest;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
+import com.yedu.cache.support.dto.TeacherRecommend;
+import com.yedu.common.type.ClassType;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
@@ -16,6 +18,7 @@ import com.yedu.backend.domain.parents.domain.entity.Parents;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.cache.support.storage.TeacherRecommendTokenStorage;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,7 @@ public class AdminManageUseCase {
     private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
     private final EventPublisher eventPublisher;
+    private final TeacherRecommendTokenStorage teacherRecommendTokenStorage;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -58,13 +62,14 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherVideo(teacher, request.video());
     }
 
-    public void recommendTeacher(RecommendTeacherRequest request) { //todo : 알림톡 링크 수정 필요 (토큰 활용)
+    public void recommendTeacher(RecommendTeacherRequest request) {
         List<RecommendTeacherEvent> recommendTeacherEvents = request.classMatchingIds()
                 .stream()
                 .map(id -> {
                     ClassMatching classMatching = adminGetService.classMatchingById(id);
                     adminUpdateService.updateClassMatchingSend(classMatching);
-                    return mapToRecommendTeacherEvent(classMatching);
+                    String token = createTeacherRecommendToken(classMatching);
+                    return mapToRecommendTeacherEvent(classMatching, token);
                 })
                 .toList();
         recommendTeacherEvents.forEach(eventPublisher::publishRecommendTeacherEvent);
@@ -72,7 +77,15 @@ public class AdminManageUseCase {
         eventPublisher.publishRecommendGuideEvent(mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
     }
 
-    public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+  private String createTeacherRecommendToken(ClassMatching classMatching) {
+    Teacher teacher = classMatching.getTeacher();
+    long teacherId = teacher.getTeacherId();
+    ApplicationForm applicationForm = classMatching.getApplicationForm();
+    ClassType wantedSubject = applicationForm.getWantedSubject();
+    return teacherRecommendTokenStorage.storeAndGet(new TeacherRecommend(teacherId, wantedSubject));
+  }
+
+  public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         request.teacherIds().forEach(id -> {
                     Teacher teacher = adminGetService.teacherById(id);
