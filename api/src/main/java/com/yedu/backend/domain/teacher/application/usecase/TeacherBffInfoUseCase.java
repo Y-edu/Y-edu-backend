@@ -56,6 +56,8 @@ public class TeacherBffInfoUseCase {
         Object curriculumInfo = curriculumInfoFuture.join();
 
         TeacherAllInformationResponse.TeacherAllInformationResponseBuilder builder = TeacherAllInformationResponse.builder()
+            .teacherId(teacherId)
+            .matchingId(teacherRecommend.matchingId())
             .profile(commonsInfoResponse.profile())
             .nickName(commonsInfoResponse.nickName())
             .available(districtAndTimeResponse.availables())
@@ -78,6 +80,7 @@ public class TeacherBffInfoUseCase {
         MathCurriculumResponse mathCurriculumResponse
     ) {
         return builder
+            .subject(ClassType.수학)
             .comment(mathResponse.comment())
             .introduce(mathResponse.introduce())
             .teachingHistory(mathResponse.teachingHistory())
@@ -99,6 +102,7 @@ public class TeacherBffInfoUseCase {
         EnglishCurriculumResponse englishCurriculumResponse
     ) {
         return builder
+            .subject(ClassType.영어)
             .comment(englishResponse.comment())
             .introduce(englishResponse.introduce())
             .teachingHistory(englishResponse.teachingHistory())

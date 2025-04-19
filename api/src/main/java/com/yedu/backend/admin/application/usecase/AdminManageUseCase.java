@@ -82,7 +82,7 @@ public class AdminManageUseCase {
     long teacherId = teacher.getTeacherId();
     ApplicationForm applicationForm = classMatching.getApplicationForm();
     ClassType wantedSubject = applicationForm.getWantedSubject();
-    return teacherRecommendTokenStorage.storeAndGet(new TeacherRecommend(teacherId, wantedSubject));
+    return teacherRecommendTokenStorage.storeAndGet(new TeacherRecommend(teacherId, classMatching.getClassMatchingId(), wantedSubject));
   }
 
   public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
