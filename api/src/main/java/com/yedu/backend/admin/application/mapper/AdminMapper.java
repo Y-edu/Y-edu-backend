@@ -11,7 +11,7 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.vo.ClassTime;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherClassInfo;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;

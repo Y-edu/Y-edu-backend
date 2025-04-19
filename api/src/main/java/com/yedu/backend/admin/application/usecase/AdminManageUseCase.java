@@ -8,6 +8,9 @@ import com.yedu.backend.admin.application.dto.req.TeacherVideoRequest;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
+import com.yedu.cache.support.dto.MatchingTimeTableDto;
+import com.yedu.cache.support.storage.KeyStorage;
+import com.yedu.common.type.ClassType;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.backend.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
@@ -37,6 +40,7 @@ public class AdminManageUseCase {
     private final ResponseRateStorage responseRateStorage;
     private final TeacherUpdateService teacherUpdateService;
     private final EventPublisher eventPublisher;
+    private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
 
     public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
         Parents parents = adminGetService.parentsById(parentsId);
@@ -58,13 +62,14 @@ public class AdminManageUseCase {
         adminUpdateService.updateTeacherVideo(teacher, request.video());
     }
 
-    public void recommendTeacher(RecommendTeacherRequest request) { //todo : 알림톡 링크 수정 필요 (토큰 활용)
+    public void recommendTeacher(RecommendTeacherRequest request) {
         List<RecommendTeacherEvent> recommendTeacherEvents = request.classMatchingIds()
                 .stream()
                 .map(id -> {
                     ClassMatching classMatching = adminGetService.classMatchingById(id);
                     adminUpdateService.updateClassMatchingSend(classMatching);
-                    return mapToRecommendTeacherEvent(classMatching);
+                    String token = createMatchingTimeTableToken(classMatching);
+                    return mapToRecommendTeacherEvent(classMatching, token);
                 })
                 .toList();
         recommendTeacherEvents.forEach(eventPublisher::publishRecommendTeacherEvent);
@@ -72,7 +77,15 @@ public class AdminManageUseCase {
         eventPublisher.publishRecommendGuideEvent(mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
     }
 
-    public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+  private String createMatchingTimeTableToken(ClassMatching classMatching) {
+    Teacher teacher = classMatching.getTeacher();
+    long teacherId = teacher.getTeacherId();
+    ApplicationForm applicationForm = classMatching.getApplicationForm();
+    ClassType wantedSubject = applicationForm.getWantedSubject();
+    return matchingTimetableKeyStorage.storeAndGet(new MatchingTimeTableDto(teacherId, classMatching.getClassMatchingId(), wantedSubject));
+  }
+
+  public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
         ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
         request.teacherIds().forEach(id -> {
                     Teacher teacher = adminGetService.teacherById(id);

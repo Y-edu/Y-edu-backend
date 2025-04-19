@@ -9,7 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherAvailable;

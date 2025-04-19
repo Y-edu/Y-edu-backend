@@ -1,6 +1,6 @@
 package com.yedu.backend.domain.parents.domain.entity;
 
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Level;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;

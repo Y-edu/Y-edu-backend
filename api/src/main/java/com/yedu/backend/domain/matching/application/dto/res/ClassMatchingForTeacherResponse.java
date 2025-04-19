@@ -1,7 +1,7 @@
 package com.yedu.backend.domain.matching.application.dto.res;
 
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 
 import java.util.List;

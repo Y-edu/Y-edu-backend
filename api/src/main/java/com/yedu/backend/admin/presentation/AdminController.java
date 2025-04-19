@@ -16,7 +16,7 @@ import com.yedu.backend.admin.application.usecase.AdminAuthUseCase;
 import com.yedu.backend.admin.application.usecase.AdminInfoUseCase;
 import com.yedu.backend.admin.application.usecase.AdminManageUseCase;
 import com.yedu.backend.admin.domain.entity.Admin;
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
+import com.yedu.common.type.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import com.yedu.backend.global.config.security.jwt.dto.JwtResponse;
 import io.swagger.v3.oas.annotations.Operation;
