@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.dto.res.MessageResponse;
 import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

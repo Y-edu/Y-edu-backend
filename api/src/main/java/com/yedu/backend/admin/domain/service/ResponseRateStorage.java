@@ -1,9 +1,8 @@
 package com.yedu.backend.admin.domain.service;
 
+import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import com.yedu.common.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

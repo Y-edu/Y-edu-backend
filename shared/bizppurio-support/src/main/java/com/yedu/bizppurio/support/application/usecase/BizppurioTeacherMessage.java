@@ -3,9 +3,9 @@ package com.yedu.bizppurio.support.application.usecase;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.mapper.BizppurioMapper;
+import com.yedu.cache.support.RedisRepository;
 import com.yedu.common.event.bizppurio.*;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
-import com.yedu.common.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

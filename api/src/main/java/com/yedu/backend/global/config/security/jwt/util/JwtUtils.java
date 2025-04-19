@@ -6,7 +6,7 @@ import com.yedu.backend.global.config.security.jwt.auth.AuthDetailsService;
 import com.yedu.backend.global.config.security.jwt.constant.Role;
 import com.yedu.backend.global.config.security.jwt.constant.Type;
 import com.yedu.backend.global.exception.ApplicationException;
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

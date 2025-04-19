@@ -1,6 +1,6 @@
 package com.yedu.backend.domain.matching.utils;
 
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -18,7 +18,7 @@ import com.yedu.backend.domain.parents.domain.service.ParentsUpdateService;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.backend.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.backend.domain.teacher.domain.aggregate.TeacherWithAvailable;
-import com.yedu.common.redis.RedisRepository;
+import com.yedu.cache.support.RedisRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

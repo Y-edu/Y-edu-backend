@@ -1,4 +1,4 @@
-package com.yedu.common.redis;
+package com.yedu.cache.support;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
