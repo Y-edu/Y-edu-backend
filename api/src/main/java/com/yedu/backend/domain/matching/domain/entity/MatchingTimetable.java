@@ -3,12 +3,11 @@ package com.yedu.backend.domain.matching.domain.entity;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -16,16 +15,16 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MatchingTimetable extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long timetableId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long timetableId;
 
-    @Column(nullable = false)
-    private LocalTime timetableTime;
+  @Column(nullable = false)
+  private LocalTime timetableTime;
 
-    @Enumerated(EnumType.STRING)
-    private Day day;
+  @Enumerated(EnumType.STRING)
+  private Day day;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ClassMatching classMatching;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private ClassMatching classMatching;
 }

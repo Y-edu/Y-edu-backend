@@ -9,8 +9,7 @@ record DiscordWebClientProperties(
     Map<DiscordWebhookType, String> webhooks,
     WebClientProperties webClientProperties,
     Integer retryCount,
-    Integer retryIntervalSeconds
-) {
+    Integer retryIntervalSeconds) {
 
   public String resolveUrl(DiscordWebhookType webhookType) {
     return webhooks.get(webhookType);

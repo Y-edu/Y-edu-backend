@@ -8,27 +8,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AdminUpdateService {
-    public void updateKakaoName(Parents parents, String kakaoName) {
-        parents.updateKakaoName(kakaoName);
-    }
+  public void updateKakaoName(Parents parents, String kakaoName) {
+    parents.updateKakaoName(kakaoName);
+  }
 
-    public void updateProceedStatus(ApplicationForm applicationForm) {
-        applicationForm.updateProceedStatus();
-    }
+  public void updateProceedStatus(ApplicationForm applicationForm) {
+    applicationForm.updateProceedStatus();
+  }
 
-    public void updateTeacherIssue(Teacher teacher, String issue) {
-        teacher.updateIssue(issue);
-    }
+  public void updateTeacherIssue(Teacher teacher, String issue) {
+    teacher.updateIssue(issue);
+  }
 
-    public void updateTeacherVideo(Teacher teacher, String video) {
-        teacher.updateVideo(video);
-    }
+  public void updateTeacherVideo(Teacher teacher, String video) {
+    teacher.updateVideo(video);
+  }
 
-    public void updateClassMatchingSend(ClassMatching classMatching) {
-        classMatching.updateSend();
-    }
+  public void updateClassMatchingSend(ClassMatching classMatching) {
+    classMatching.updateSend();
+  }
 
-    public void updateAlertCount(Teacher teacher) {
-        teacher.updateMessageCount();
-    }
+  public void updateAlertCount(Teacher teacher) {
+    teacher.updateMessageCount();
+  }
 }

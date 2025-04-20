@@ -11,21 +11,24 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ClassMatchingGetService {
-    private final ClassMatchingRepository classMatchingRepository;
+  private final ClassMatchingRepository classMatchingRepository;
 
-    public ClassMatching classMatchingByApplicationFormIdAndTeacherId(String applicationFormId, long teacherId, String phoneNumber) {
-        return classMatchingRepository.findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(applicationFormId, teacherId, phoneNumber)
-                .orElseThrow(() -> new MatchingNotFoundException(
-                        applicationFormId, teacherId, phoneNumber
-        ));
-    }
+  public ClassMatching classMatchingByApplicationFormIdAndTeacherId(
+      String applicationFormId, long teacherId, String phoneNumber) {
+    return classMatchingRepository
+        .findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(
+            applicationFormId, teacherId, phoneNumber)
+        .orElseThrow(
+            () -> new MatchingNotFoundException(applicationFormId, teacherId, phoneNumber));
+  }
 
-    public List<ClassMatching> getByApplicationForm(ApplicationForm applicationForm) {
-        return classMatchingRepository.findByApplicationForm(applicationForm);
-    }
+  public List<ClassMatching> getByApplicationForm(ApplicationForm applicationForm) {
+    return classMatchingRepository.findByApplicationForm(applicationForm);
+  }
 
-    public ClassMatching getById(Long classMatchingId) {
-        return classMatchingRepository.findById(classMatchingId)
-            .orElseThrow(() -> new MatchingNotFoundException(classMatchingId));
-    }
+  public ClassMatching getById(Long classMatchingId) {
+    return classMatchingRepository
+        .findById(classMatchingId)
+        .orElseThrow(() -> new MatchingNotFoundException(classMatchingId));
+  }
 }

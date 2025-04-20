@@ -25,7 +25,8 @@ public class DiscordWebClientTemplate {
   public void sendWebhook(DiscordWebhookType webhookType, DiscordWebhookRequest request) {
     String url = properties.resolveUrl(webhookType);
 
-    discordWebClient.post()
+    discordWebClient
+        .post()
         .uri(url)
         .accept(MediaType.APPLICATION_JSON)
         .contentType(MediaType.APPLICATION_JSON)
@@ -33,18 +34,22 @@ public class DiscordWebClientTemplate {
         .retrieve()
         .bodyToMono(Void.class)
         .doOnSuccess(response -> log.info("Discord 웹훅 전송 성공"))
-        .doOnError(error -> {
-          try {
-            String jsonRequest = objectMapper.writeValueAsString(request);
-            log.error("Discord 웹훅 전송 실패: {} / 요청 경로 : {} /원본 요청: {}", error.getMessage(), url, jsonRequest);
-          } catch (JsonProcessingException e) {
-            log.error("요청 직렬화 실패: {}", e.getMessage(), e);
-          }
-        })
-        .retryWhen(Retry.backoff(properties.retryCount(),
-            Duration.ofSeconds(properties.retryIntervalSeconds())))
+        .doOnError(
+            error -> {
+              try {
+                String jsonRequest = objectMapper.writeValueAsString(request);
+                log.error(
+                    "Discord 웹훅 전송 실패: {} / 요청 경로 : {} /원본 요청: {}",
+                    error.getMessage(),
+                    url,
+                    jsonRequest);
+              } catch (JsonProcessingException e) {
+                log.error("요청 직렬화 실패: {}", e.getMessage(), e);
+              }
+            })
+        .retryWhen(
+            Retry.backoff(
+                properties.retryCount(), Duration.ofSeconds(properties.retryIntervalSeconds())))
         .subscribe();
   }
-
-
 }

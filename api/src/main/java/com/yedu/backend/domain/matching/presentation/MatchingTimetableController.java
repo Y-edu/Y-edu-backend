@@ -16,19 +16,21 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "MATCHING_TIMETABLE Controller", description = "학부모->선생님 프로필 확인 후 수업시간 확정시 사용할 API")
 public class MatchingTimetableController {
-    private final MatchingTimetableUseCase matchingTimeTableUseCase;
+  private final MatchingTimetableUseCase matchingTimeTableUseCase;
 
-    @GetMapping
-    @Operation(summary = "과외 매칭 시간 조회 API")
-    public ResponseEntity<MatchingTimetableRetrieveResponse> retrieveMatchingTimetable(@ParameterObject MatchingTimeTableRetrieveRequest request) {
-        MatchingTimetableRetrieveResponse response = matchingTimeTableUseCase.retrieveMatchingTimetable(request);
-        return ResponseEntity.ok(response);
-    }
+  @GetMapping
+  @Operation(summary = "과외 매칭 시간 조회 API")
+  public ResponseEntity<MatchingTimetableRetrieveResponse> retrieveMatchingTimetable(
+      @ParameterObject MatchingTimeTableRetrieveRequest request) {
+    MatchingTimetableRetrieveResponse response =
+        matchingTimeTableUseCase.retrieveMatchingTimetable(request);
+    return ResponseEntity.ok(response);
+  }
 
-    @PostMapping
-    @Operation(summary = "학부모 과외 시간 설정 API")
-    public ResponseEntity<Void> saveMatchingTimetable(@RequestBody MatchingTimeTableRequest request) {
-        matchingTimeTableUseCase.matchingTimetable(request);
-        return ResponseEntity.noContent().build();
-    }
+  @PostMapping
+  @Operation(summary = "학부모 과외 시간 설정 API")
+  public ResponseEntity<Void> saveMatchingTimetable(@RequestBody MatchingTimeTableRequest request) {
+    matchingTimeTableUseCase.matchingTimetable(request);
+    return ResponseEntity.noContent().build();
+  }
 }

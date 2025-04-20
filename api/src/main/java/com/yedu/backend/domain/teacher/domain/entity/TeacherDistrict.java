@@ -14,12 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeacherDistrict extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long districtId;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private District district;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Teacher teacher;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long districtId;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private District district;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Teacher teacher;
 }

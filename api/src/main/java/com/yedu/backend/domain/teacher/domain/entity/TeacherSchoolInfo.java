@@ -13,16 +13,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @Embeddable
 public class TeacherSchoolInfo {
-    //대학교 정보
-    @Column(nullable = false)
-    private String university;
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean etc = false;
-    @Column(nullable = false)
-    private String major;
-    //고등학교 정보
-    @Column(nullable = false)
-    private String highSchool;
-    private String highSchoolType;
+  // 대학교 정보
+  @Column(nullable = false)
+  private String university;
+
+  @Column(nullable = false)
+  @Builder.Default
+  private boolean etc = false;
+
+  @Column(nullable = false)
+  private String major;
+
+  // 고등학교 정보
+  @Column(nullable = false)
+  private String highSchool;
+
+  private String highSchoolType;
 }

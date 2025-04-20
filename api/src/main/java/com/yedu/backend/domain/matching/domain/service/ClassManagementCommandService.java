@@ -18,65 +18,66 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClassManagementCommandService {
 
-    private final ClassManagementRepository classManagementRepository;
+  private final ClassManagementRepository classManagementRepository;
 
-    private final ClassMatchingGetService classMatchingGetService;
+  private final ClassMatchingGetService classMatchingGetService;
 
+  public ClassManagement schedule(ClassScheduleMatchingRequest request) {
+    ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
+    classMatching.startSchedule();
 
-    public ClassManagement schedule(ClassScheduleMatchingRequest request){
-        ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
-        classMatching.startSchedule();
-
-        return classManagementRepository
-            .findByClassMatching_ClassMatchingId(request.classMatchingId())
-            .orElseGet(() -> {
-                ClassManagement newClassManagement = ClassManagement.builder()
-                    .classMatching(classMatching)
-                    .build();
-                return classManagementRepository.save(newClassManagement);
+    return classManagementRepository
+        .findByClassMatching_ClassMatchingId(request.classMatchingId())
+        .orElseGet(
+            () -> {
+              ClassManagement newClassManagement =
+                  ClassManagement.builder().classMatching(classMatching).build();
+              return classManagementRepository.save(newClassManagement);
             });
-    }
+  }
 
-    public ClassMatching delete(ClassScheduleRefuseRequest request, Long id) {
-        ClassManagement classManagement = queryById(id);
+  public ClassMatching delete(ClassScheduleRefuseRequest request, Long id) {
+    ClassManagement classManagement = queryById(id);
 
-        classManagement.refuse(request.refuseReason());
+    classManagement.refuse(request.refuseReason());
 
-        classManagementRepository.delete(classManagement);
+    classManagementRepository.delete(classManagement);
 
-        return classManagement.getClassMatching().initializeProxy();
-    }
+    return classManagement.getClassMatching().initializeProxy();
+  }
 
-    public ClassManagement confirm(ClassScheduleConfirmRequest request, Long id) {
-        ClassManagement classManagement = findClassManagementWithSchedule(request, id);
+  public ClassManagement confirm(ClassScheduleConfirmRequest request, Long id) {
+    ClassManagement classManagement = findClassManagementWithSchedule(request, id);
 
-        classManagement.confirm(
-            request.textBook(),
-            request.firstDay().date(),
-            new ClassTime(request.firstDay().start())
-        );
-        return classManagement;
-    }
+    classManagement.confirm(
+        request.textBook(), request.firstDay().date(), new ClassTime(request.firstDay().start()));
+    return classManagement;
+  }
 
-    public void completeRemind(ClassManagement classManagement) {
-        classManagement.completeRemind();
-    }
+  public void completeRemind(ClassManagement classManagement) {
+    classManagement.completeRemind();
+  }
 
-    private ClassManagement findClassManagementWithSchedule(ClassScheduleConfirmRequest request, Long id) {
-        ClassManagement classManagement = queryById(id);
+  private ClassManagement findClassManagementWithSchedule(
+      ClassScheduleConfirmRequest request, Long id) {
+    ClassManagement classManagement = queryById(id);
 
-        request.schedules().stream().map(schedule-> ClassSchedule.builder()
-                .classManagement(classManagement)
-                .day(schedule.day())
-                .classTime(new ClassTime(schedule.start(), schedule.classMinute()))
-                .build())
-            .forEach(classManagement::addSchedule);
+    request.schedules().stream()
+        .map(
+            schedule ->
+                ClassSchedule.builder()
+                    .classManagement(classManagement)
+                    .day(schedule.day())
+                    .classTime(new ClassTime(schedule.start(), schedule.classMinute()))
+                    .build())
+        .forEach(classManagement::addSchedule);
 
-        return classManagement;
-    }
+    return classManagement;
+  }
 
-    private ClassManagement queryById(Long id){
-        return classManagementRepository.findById(id)
-            .orElseThrow(()-> new ClassManagementNotFoundException("일치하는 매칭 관리 정보를 찾을 수 없습니다"));
-    }
+  private ClassManagement queryById(Long id) {
+    return classManagementRepository
+        .findById(id)
+        .orElseThrow(() -> new ClassManagementNotFoundException("일치하는 매칭 관리 정보를 찾을 수 없습니다"));
+  }
 }

@@ -27,6 +27,4 @@ public record TeacherAllInformationResponse(
     String teachingStyle2,
     String teachingStyleInfo2,
     String teachingStyle,
-    String video
-) {
-}
+    String video) {}

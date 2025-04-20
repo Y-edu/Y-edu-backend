@@ -12,13 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Settlement {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long settlementId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Parents parents;
-    private String receipt;
-    private String bank;
-    private String accountNumber;
-    private String accountName;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long settlementId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Parents parents;
+
+  private String receipt;
+  private String bank;
+  private String accountNumber;
+  private String accountName;
 }

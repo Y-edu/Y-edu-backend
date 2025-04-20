@@ -11,35 +11,35 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 public class DiscordEventListener {
-    private final DiscordWebhookUseCase discordWebhookUseCase;
+  private final DiscordWebhookUseCase discordWebhookUseCase;
 
-    @EventListener
-    @Async
-    public void handleAlarmTalkErrorMessage(AlarmTalkErrorMessageEvent event) {
-        discordWebhookUseCase.sendAlarmTalkTokenError(event);
-    }
+  @EventListener
+  @Async
+  public void handleAlarmTalkErrorMessage(AlarmTalkErrorMessageEvent event) {
+    discordWebhookUseCase.sendAlarmTalkTokenError(event);
+  }
 
-    @EventListener
-    @Async
-    public void handleAlarmTalkErrorInfo(AlarmTalkErrorInfoEvent event) {
-        discordWebhookUseCase.sendAlarmTalkError(event);
-    }
+  @EventListener
+  @Async
+  public void handleAlarmTalkErrorInfo(AlarmTalkErrorInfoEvent event) {
+    discordWebhookUseCase.sendAlarmTalkError(event);
+  }
 
-    @EventListener
-    @Async
-    public void handleAlarmTalkErrorWithFirst(AlarmTalkErrorWithFirstEvent event) {
-        discordWebhookUseCase.sendAlarmTalkErrorWithFirst(event);
-    }
+  @EventListener
+  @Async
+  public void handleAlarmTalkErrorWithFirst(AlarmTalkErrorWithFirstEvent event) {
+    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(event);
+  }
 
-    @EventListener
-    @Async
-    public void handleScheduleCancel(ScheduleCancelEvent event) {
-        discordWebhookUseCase.sendScheduleCancel(event);
-    }
+  @EventListener
+  @Async
+  public void handleScheduleCancel(ScheduleCancelEvent event) {
+    discordWebhookUseCase.sendScheduleCancel(event);
+  }
 
-    @TransactionalEventListener
-    @Async
-    public void handleTeacherRegister(TeacherRegisterEvent event) {
-        discordWebhookUseCase.sendTeacherRegister(event);
-    }
+  @TransactionalEventListener
+  @Async
+  public void handleTeacherRegister(TeacherRegisterEvent event) {
+    discordWebhookUseCase.sendTeacherRegister(event);
+  }
 }

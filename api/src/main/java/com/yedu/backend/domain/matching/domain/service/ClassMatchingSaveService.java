@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ClassMatchingSaveService {
-    private final ClassMatchingRepository classMatchingRepository;
+  private final ClassMatchingRepository classMatchingRepository;
 
-    public void save(ClassMatching classMatching) {
-        classMatchingRepository.save(classMatching);
-    }
+  public void save(ClassMatching classMatching) {
+    classMatchingRepository.save(classMatching);
+  }
 }

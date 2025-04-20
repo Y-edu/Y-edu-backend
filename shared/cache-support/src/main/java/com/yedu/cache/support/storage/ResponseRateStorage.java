@@ -15,13 +15,14 @@ public class ResponseRateStorage {
 
   private final RedisRepository redisRepository;
 
-  public void cache(Long teacherId){
+  public void cache(Long teacherId) {
     String key = buildKey(teacherId);
 
-    redisRepository.setValues(key, LocalDateTime.now().toString(), Duration.ofHours(RESPONSE_BEFORE));
+    redisRepository.setValues(
+        key, LocalDateTime.now().toString(), Duration.ofHours(RESPONSE_BEFORE));
   }
 
-  public boolean has(Long teacherId){
+  public boolean has(Long teacherId) {
     String key = buildKey(teacherId);
 
     return redisRepository.getValues(key).isPresent();
@@ -30,5 +31,4 @@ public class ResponseRateStorage {
   private String buildKey(Long teacherId) {
     return RATE_STORAGE_KEY.formatted(teacherId);
   }
-
 }

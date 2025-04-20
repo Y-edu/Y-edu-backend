@@ -24,17 +24,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassSchedule extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long classScheduleId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long classScheduleId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_management_id")
-    private ClassManagement classManagement;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "class_management_id")
+  private ClassManagement classManagement;
 
-    @Enumerated(EnumType.STRING)
-    private Day day;
+  @Enumerated(EnumType.STRING)
+  private Day day;
 
-    @Embedded
-    private ClassTime classTime;
+  @Embedded private ClassTime classTime;
 }

@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ClassMatchingUpdateService {
-    public void updateRefuse(ClassMatching classMatching, ClassMatchingRefuseRequest request) {
-        classMatching.updateRefuse(request.refuseReason());
-    }
+  public void updateRefuse(ClassMatching classMatching, ClassMatchingRefuseRequest request) {
+    classMatching.updateRefuse(request.refuseReason());
+  }
 
-    public void updateAccept(ClassMatching classMatching) {
-        classMatching.updateAccept();
-    }
+  public void updateAccept(ClassMatching classMatching) {
+    classMatching.updateAccept();
+  }
 }

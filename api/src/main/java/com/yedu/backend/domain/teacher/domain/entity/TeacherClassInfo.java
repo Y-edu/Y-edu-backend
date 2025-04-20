@@ -16,24 +16,32 @@ import lombok.NoArgsConstructor;
 @Builder
 @Embeddable
 public class TeacherClassInfo {
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String introduce; //소개
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TeachingStyle teachingStyle1;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TeachingStyle teachingStyle2;
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String teachingStyleInfo1;
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String teachingStyleInfo2;
-    @Column(columnDefinition = "TEXT")
-    private String recommendStudent;
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String comment; //하고싶은 말
-    @Column(nullable = false)
-    private boolean englishPossible;
-    @Column(nullable = false)
-    private boolean mathPossible;
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String introduce; // 소개
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private TeachingStyle teachingStyle1;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private TeachingStyle teachingStyle2;
+
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String teachingStyleInfo1;
+
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String teachingStyleInfo2;
+
+  @Column(columnDefinition = "TEXT")
+  private String recommendStudent;
+
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String comment; // 하고싶은 말
+
+  @Column(nullable = false)
+  private boolean englishPossible;
+
+  @Column(nullable = false)
+  private boolean mathPossible;
 }

@@ -21,20 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "PARENTS Controller")
 public class ParentsController {
-    private final ParentsManageUseCase parentsManageUseCase;
+  private final ParentsManageUseCase parentsManageUseCase;
 
-    @PostMapping("/save/application")
-    @Operation(summary = "Tally 제출 - 학부모 신청건 API")
-    public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
-        parentsManageUseCase.saveParentsAndApplication(request);
-        return ResponseEntity.ok().build();
-    }
+  @PostMapping("/save/application")
+  @Operation(summary = "Tally 제출 - 학부모 신청건 API")
+  public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
+    parentsManageUseCase.saveParentsAndApplication(request);
+    return ResponseEntity.ok().build();
+  }
 
-    @GetMapping("/timetable")
-    @Operation(summary = "과외의 타임테이블 조회")
-    public ResponseEntity<ApplicationFormTimeTableResponse> retrieveTimeTable(@Valid @ParameterObject ApplicationFormTimeTableRequest request){
-        ApplicationFormTimeTableResponse response = parentsManageUseCase.retrieveTimeTable(request);
+  @GetMapping("/timetable")
+  @Operation(summary = "과외의 타임테이블 조회")
+  public ResponseEntity<ApplicationFormTimeTableResponse> retrieveTimeTable(
+      @Valid @ParameterObject ApplicationFormTimeTableRequest request) {
+    ApplicationFormTimeTableResponse response = parentsManageUseCase.retrieveTimeTable(request);
 
-        return ResponseEntity.ok().body(response);
-    }
+    return ResponseEntity.ok().body(response);
+  }
 }

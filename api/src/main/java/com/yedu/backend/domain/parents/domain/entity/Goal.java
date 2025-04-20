@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Goal {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long goalId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ApplicationForm applicationForm;
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String classGoal;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long goalId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  private ApplicationForm applicationForm;
+
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String classGoal;
 }

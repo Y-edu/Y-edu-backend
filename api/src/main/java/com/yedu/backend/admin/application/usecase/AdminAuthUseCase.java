@@ -16,24 +16,24 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class AdminAuthUseCase {
-    private final JwtUseCase jwtUseCase;
-    private final EncryptorUtils encryptorUtils;
-    private final AdminGetService adminGetService;
+  private final JwtUseCase jwtUseCase;
+  private final EncryptorUtils encryptorUtils;
+  private final AdminGetService adminGetService;
 
-    public JwtResponse loginAdmin(LoginRequest request, HttpServletResponse response) {
-        Admin admin = adminGetService.adminByLoginId(request.id());
-        if (!encryptorUtils.checkBCryptData(request.password(), admin.getPassword()))
-            throw new IllegalArgumentException();
-        return jwtUseCase.signIn(admin, response);
-    }
+  public JwtResponse loginAdmin(LoginRequest request, HttpServletResponse response) {
+    Admin admin = adminGetService.adminByLoginId(request.id());
+    if (!encryptorUtils.checkBCryptData(request.password(), admin.getPassword()))
+      throw new IllegalArgumentException();
+    return jwtUseCase.signIn(admin, response);
+  }
 
-    public void logout(Admin admin) {
-        if (admin == null)
-            throw new IllegalArgumentException();
-        jwtUseCase.logout(admin);
-    }
+  public void logout(Admin admin) {
+    if (admin == null) throw new IllegalArgumentException();
+    jwtUseCase.logout(admin);
+  }
 
-    public JwtResponse regenerate(Admin admin, HttpServletRequest request, HttpServletResponse response) {
-        return jwtUseCase.regenerateToken(admin, request, response);
-    }
+  public JwtResponse regenerate(
+      Admin admin, HttpServletRequest request, HttpServletResponse response) {
+    return jwtUseCase.regenerateToken(admin, request, response);
+  }
 }

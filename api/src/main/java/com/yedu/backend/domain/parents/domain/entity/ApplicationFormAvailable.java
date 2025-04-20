@@ -22,18 +22,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplicationFormAvailable extends BaseEntity {
 
-    @Id
-    @Column(name = "available_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @Column(name = "available_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Day day;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Day day;
 
-    @Column(nullable = false)
-    private LocalTime availableTime;
+  @Column(nullable = false)
+  private LocalTime availableTime;
 
-    @Column(nullable = false, name = "application_form_application_form_id")
-    private String applicationFormId;
+  @Column(nullable = false, name = "application_form_application_form_id")
+  private String applicationFormId;
 }

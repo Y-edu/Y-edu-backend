@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AdminSaveService {
-    private final ClassMatchingRepository classMatchingRepository;
+  private final ClassMatchingRepository classMatchingRepository;
 
-    public void saveClassMatching(ClassMatching classMatching) {
-        classMatchingRepository.save(classMatching);
-    }
+  public void saveClassMatching(ClassMatching classMatching) {
+    classMatchingRepository.save(classMatching);
+  }
 }

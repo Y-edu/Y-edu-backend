@@ -14,35 +14,43 @@ import org.springframework.util.CollectionUtils;
 @UtilityClass
 public class ApplicationFormAvailableMapper {
 
-    public static ApplicationFormTimeTableResponse map(List<ApplicationFormAvailable> applicationFormAvailables) {
-        if (CollectionUtils.isEmpty(applicationFormAvailables)) {
-            return ApplicationFormTimeTableResponse.empty();
-        }
-        Map<Day, List<LocalTime>> groupedByDay = applicationFormAvailables.stream()
-            .collect(Collectors.groupingBy(
-                ApplicationFormAvailable::getDay,
-                Collectors.mapping(ApplicationFormAvailable::getAvailableTime, Collectors.toList())
-            ));
+  public static ApplicationFormTimeTableResponse map(
+      List<ApplicationFormAvailable> applicationFormAvailables) {
+    if (CollectionUtils.isEmpty(applicationFormAvailables)) {
+      return ApplicationFormTimeTableResponse.empty();
+    }
+    Map<Day, List<LocalTime>> groupedByDay =
+        applicationFormAvailables.stream()
+            .collect(
+                Collectors.groupingBy(
+                    ApplicationFormAvailable::getDay,
+                    Collectors.mapping(
+                        ApplicationFormAvailable::getAvailableTime, Collectors.toList())));
 
-        List<DayTime> times = groupedByDay.entrySet().stream()
+    List<DayTime> times =
+        groupedByDay.entrySet().stream()
             .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
             .toList();
 
-        return ApplicationFormTimeTableResponse.builder()
-            .applicationFormId(applicationFormAvailables.get(0).getApplicationFormId())
-            .dayTimes(times)
-            .build();
-    }
+    return ApplicationFormTimeTableResponse.builder()
+        .applicationFormId(applicationFormAvailables.get(0).getApplicationFormId())
+        .dayTimes(times)
+        .build();
+  }
 
-    public static List<ApplicationFormAvailable> map(List<DayTime> dayTimes, String applicationFormId) {
-        return dayTimes.stream()
-            .flatMap(dayTime -> dayTime.getTimes().stream()
-                .map(time -> ApplicationFormAvailable.builder()
-                    .applicationFormId(applicationFormId)
-                    .day(dayTime.getDay())
-                    .availableTime(time)
-                    .build()
-                )
-            ).toList();
-    }
+  public static List<ApplicationFormAvailable> map(
+      List<DayTime> dayTimes, String applicationFormId) {
+    return dayTimes.stream()
+        .flatMap(
+            dayTime ->
+                dayTime.getTimes().stream()
+                    .map(
+                        time ->
+                            ApplicationFormAvailable.builder()
+                                .applicationFormId(applicationFormId)
+                                .day(dayTime.getDay())
+                                .availableTime(time)
+                                .build()))
+        .toList();
+  }
 }

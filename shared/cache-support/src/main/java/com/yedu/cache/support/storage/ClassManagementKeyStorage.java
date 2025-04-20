@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClassManagementKeyStorage extends AbstractKeyStorage<Long> {
 
-    public ClassManagementKeyStorage(RedisRepository redisRepository, ObjectMapper objectMapper) {
-        super("class-management:%s", Duration.ofDays(30), redisRepository, objectMapper, Long.class);
-    }
+  public ClassManagementKeyStorage(RedisRepository redisRepository, ObjectMapper objectMapper) {
+    super("class-management:%s", Duration.ofDays(30), redisRepository, objectMapper, Long.class);
+  }
 }

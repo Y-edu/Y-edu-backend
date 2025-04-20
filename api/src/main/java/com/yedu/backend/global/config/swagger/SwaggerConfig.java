@@ -13,30 +13,30 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class SwaggerConfig {
-    @Bean
-    public GroupedOpenApi chatOpenApi() {
-        String[] paths = {"/**"};
+  @Bean
+  public GroupedOpenApi chatOpenApi() {
+    String[] paths = {"/**"};
 
-        return GroupedOpenApi.builder()
-                .group("Y-EDU API v1")
-                .pathsToMatch(paths)
-                .build();
-    }
+    return GroupedOpenApi.builder().group("Y-EDU API v1").pathsToMatch(paths).build();
+  }
 
-    @Bean
-    public OpenAPI openApi() {
-        String jwt = "JWT";
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("JWT");
-        Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()
-                .name(jwt)
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-        );
+  @Bean
+  public OpenAPI openApi() {
+    String jwt = "JWT";
+    SecurityRequirement securityRequirement = new SecurityRequirement().addList("JWT");
+    Components components =
+        new Components()
+            .addSecuritySchemes(
+                jwt,
+                new SecurityScheme()
+                    .name(jwt)
+                    .type(SecurityScheme.Type.HTTP)
+                    .scheme("bearer")
+                    .bearerFormat("JWT"));
 
-        return new OpenAPI()
-                .addServersItem(new Server().url("/"))
-                .addSecurityItem(securityRequirement)
-                .components(components);
-    }
+    return new OpenAPI()
+        .addServersItem(new Server().url("/"))
+        .addSecurityItem(securityRequirement)
+        .components(components);
+  }
 }
