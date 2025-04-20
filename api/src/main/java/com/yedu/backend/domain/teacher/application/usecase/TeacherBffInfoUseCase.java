@@ -63,6 +63,7 @@ public class TeacherBffInfoUseCase {
 
     TeacherAllInformationResponse.TeacherAllInformationResponseBuilder builder =
         TeacherAllInformationResponse.builder()
+            .matchingId(matchingTimeTableDto.matchingId())
             .profile(commonsInfoResponse.profile())
             .nickName(commonsInfoResponse.nickName())
             .available(districtAndTimeResponse.availables())
