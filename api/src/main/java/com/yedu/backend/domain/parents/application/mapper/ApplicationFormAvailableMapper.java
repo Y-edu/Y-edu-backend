@@ -5,8 +5,10 @@ import com.yedu.backend.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.springframework.util.CollectionUtils;
@@ -16,25 +18,23 @@ public class ApplicationFormAvailableMapper {
 
   public static ApplicationFormTimeTableResponse map(
       List<ApplicationFormAvailable> applicationFormAvailables) {
+
     if (CollectionUtils.isEmpty(applicationFormAvailables)) {
       return ApplicationFormTimeTableResponse.empty();
     }
-    Map<Day, List<LocalTime>> groupedByDay =
+
+    Map<Day, List<LocalTime>> sortedGroupedByDay =
         applicationFormAvailables.stream()
             .collect(
                 Collectors.groupingBy(
                     ApplicationFormAvailable::getDay,
+                    () -> new TreeMap<>(Comparator.comparingInt(Day::getDayNum)),
                     Collectors.mapping(
                         ApplicationFormAvailable::getAvailableTime, Collectors.toList())));
 
-    List<DayTime> times =
-        groupedByDay.entrySet().stream()
-            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
-            .toList();
-
     return ApplicationFormTimeTableResponse.builder()
         .applicationFormId(applicationFormAvailables.get(0).getApplicationFormId())
-        .dayTimes(times)
+        .availables(sortedGroupedByDay)
         .build();
   }
 
