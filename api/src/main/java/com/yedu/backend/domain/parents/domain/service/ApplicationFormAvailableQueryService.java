@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ApplicationFormAvailableQueryService {
 
-    private final ApplicationFormAvailableRepository applicationFormAvailableRepository;
+  private final ApplicationFormAvailableRepository applicationFormAvailableRepository;
 
-    public List<ApplicationFormAvailable> query(String applicationFormId) {
-        return applicationFormAvailableRepository.findAllByApplicationFormId(applicationFormId);
-    }
+  public List<ApplicationFormAvailable> query(String applicationFormId) {
+    return applicationFormAvailableRepository.findAllByApplicationFormId(applicationFormId);
+  }
 }

@@ -5,13 +5,9 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record ApplicationFormTimeTableResponse(
-    String applicationFormId,
-    List<DayTime> dayTimes
-) {
+public record ApplicationFormTimeTableResponse(String applicationFormId, List<DayTime> dayTimes) {
 
   public static ApplicationFormTimeTableResponse empty() {
     return ApplicationFormTimeTableResponse.builder().build();
   }
-
 }

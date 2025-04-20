@@ -17,30 +17,15 @@ public record ClassScheduleRetrieveResponse(
     Long classScheduleManagementId,
     String textBook,
     List<Schedule> schedules,
-    FirstDay firstDay
-) {
+    FirstDay firstDay) {
 
   public record Schedule(
-      Day day,
-      @Schema(example = "13:00")
-      LocalTime start,
-      Integer classMinute
-  ) {
+      Day day, @Schema(example = "13:00") LocalTime start, Integer classMinute) {}
 
-  }
-
-  public record FirstDay(
-      LocalDate date,
-      @Schema(example = "12:00")
-      LocalTime start
-  ) {
-
-  }
+  public record FirstDay(LocalDate date, @Schema(example = "12:00") LocalTime start) {}
 
   public static ClassScheduleRetrieveResponse empty() {
-    return ClassScheduleRetrieveResponse.builder()
-        .exist(false)
-        .build();
+    return ClassScheduleRetrieveResponse.builder().exist(false).build();
   }
 
   public static ClassScheduleRetrieveResponse of(ClassManagement classManagement) {
@@ -51,16 +36,19 @@ public record ClassScheduleRetrieveResponse(
         .classMatchingId(classManagement.getClassMatching().getClassMatchingId())
         .classScheduleManagementId(classManagement.getClassManagementId())
         .textBook(classManagement.getTextbook())
-        .schedules(classManagement.getSchedules().stream()
-            .map(
-            schedule->{
-              ClassTime classTime = schedule.getClassTime();
-              return new Schedule(schedule.getDay(), classTime.getStart(), classTime.getClassMinute());
-            })
-            .toList()
-        )
-        .firstDay(firstDayClassTime != null ?
-            new FirstDay(classManagement.getFirstDay(), firstDayClassTime.getStart()) : null)
+        .schedules(
+            classManagement.getSchedules().stream()
+                .map(
+                    schedule -> {
+                      ClassTime classTime = schedule.getClassTime();
+                      return new Schedule(
+                          schedule.getDay(), classTime.getStart(), classTime.getClassMinute());
+                    })
+                .toList())
+        .firstDay(
+            firstDayClassTime != null
+                ? new FirstDay(classManagement.getFirstDay(), firstDayClassTime.getStart())
+                : null)
         .build();
   }
 }

@@ -9,13 +9,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class AuthDetailsService implements UserDetailsService {
-    private final AdminRepository adminRepository;
+  private final AdminRepository adminRepository;
 
-    @Override
-    public AuthDetails loadUserByUsername(String id) {
-        Admin admin = adminRepository
-                .findById(Long.parseLong(id))
-                .orElseThrow();
-        return new AuthDetails(admin);
-    }
+  @Override
+  public AuthDetails loadUserByUsername(String id) {
+    Admin admin = adminRepository.findById(Long.parseLong(id)).orElseThrow();
+    return new AuthDetails(admin);
+  }
 }

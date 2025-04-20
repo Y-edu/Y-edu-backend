@@ -8,29 +8,14 @@ import java.util.List;
 
 public record ClassScheduleConfirmRequest(
     String classScheduleManagementId,
-    @Schema(example = "수학의 정석", description = "교재")
-    String textBook,
+    @Schema(example = "수학의 정석", description = "교재") String textBook,
     List<Schedule> schedules,
-    FirstDay firstDay
-) {
+    FirstDay firstDay) {
 
   public record Schedule(
       Day day,
-      @Schema(example = "13:00")
-      LocalTime start,
-      @Schema(example = "50", description = "수업시간")
-      Integer classMinute
-  ){
+      @Schema(example = "13:00") LocalTime start,
+      @Schema(example = "50", description = "수업시간") Integer classMinute) {}
 
-  }
-
-  public record FirstDay(
-      LocalDate date,
-      @Schema(example = "12:00")
-      LocalTime start
-  ){
-
-  }
-
-
+  public record FirstDay(LocalDate date, @Schema(example = "12:00") LocalTime start) {}
 }

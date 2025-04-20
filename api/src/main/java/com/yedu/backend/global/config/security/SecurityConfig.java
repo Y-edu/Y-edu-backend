@@ -25,60 +25,63 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] PASS = {"/resource/**", "/css/**", "/js/**", "/img/**", "/lib/**"};
-    @Value("${aesBytesEncryptor.secret}")
-    private String secretKey;
-    @Value("${aesBytesEncryptor.salt}")
-    private String salt;
-    private final JwtUtils jwtProvider;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+  private static final String[] PASS = {"/resource/**", "/css/**", "/js/**", "/img/**", "/lib/**"};
 
-    @Bean
-    public AesBytesEncryptor aesBytesEncryptor() {
-        return new AesBytesEncryptor(secretKey, salt);
-    }
+  @Value("${aesBytesEncryptor.secret}")
+  private String secretKey;
 
-    @Bean
-    protected SecurityFilterChain config(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(corsConfigurer ->
-                        corsConfigurer.configurationSource(source())
-                )
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
-        http
-                .formLogin(AbstractHttpConfigurer::disable)
-                .logout(logout -> logout.disable());
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/login").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
-                        .anyRequest().permitAll()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
-                .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+  @Value("${aesBytesEncryptor.salt}")
+  private String salt;
 
-        return http.build();
-    }
+  private final JwtUtils jwtProvider;
+  private final CustomAccessDeniedHandler accessDeniedHandler;
+  private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Bean
-    public CorsConfigurationSource source() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("RefreshToken");
-        configuration.addAllowedOriginPattern("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
+  @Bean
+  public AesBytesEncryptor aesBytesEncryptor() {
+    return new AesBytesEncryptor(secretKey, salt);
+  }
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+  @Bean
+  protected SecurityFilterChain config(HttpSecurity http) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .cors(corsConfigurer -> corsConfigurer.configurationSource(source()))
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+    http.formLogin(AbstractHttpConfigurer::disable).logout(logout -> logout.disable());
+    http.authorizeHttpRequests(
+            authorize ->
+                authorize
+                    .requestMatchers("/admin/login")
+                    .permitAll()
+                    .requestMatchers("/admin/**")
+                    .hasAuthority(Role.ADMIN.name())
+                    .anyRequest()
+                    .permitAll())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            exceptions ->
+                exceptions
+                    .authenticationEntryPoint(authenticationEntryPoint)
+                    .accessDeniedHandler(accessDeniedHandler))
+        .addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+  }
+
+  @Bean
+  public CorsConfigurationSource source() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addExposedHeader("Authorization");
+    configuration.addExposedHeader("RefreshToken");
+    configuration.addAllowedOriginPattern("*");
+    configuration.addAllowedHeader("*");
+    configuration.addAllowedMethod("*");
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 }

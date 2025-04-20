@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApplicationFormAvailableCommandService {
 
-    private final ApplicationFormAvailableRepository applicationFormAvailableRepository;
+  private final ApplicationFormAvailableRepository applicationFormAvailableRepository;
 
-    public void saveAll(List<ApplicationFormAvailable> applicationFormAvailables) {
-        applicationFormAvailableRepository.saveAll(applicationFormAvailables);
-    }
+  public void saveAll(List<ApplicationFormAvailable> applicationFormAvailables) {
+    applicationFormAvailableRepository.saveAll(applicationFormAvailables);
+  }
 }

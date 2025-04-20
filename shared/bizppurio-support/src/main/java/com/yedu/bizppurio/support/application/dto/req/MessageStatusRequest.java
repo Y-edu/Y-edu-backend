@@ -9,6 +9,4 @@ public record MessageStatusRequest(
     String UNIXTIME,
     String RESULT,
     String RETRY_FLAG,
-    String REFKEY
-) {
-}
+    String REFKEY) {}

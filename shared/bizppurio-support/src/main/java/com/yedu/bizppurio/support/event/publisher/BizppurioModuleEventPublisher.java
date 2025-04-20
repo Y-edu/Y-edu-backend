@@ -10,17 +10,17 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BizppurioModuleEventPublisher {
-    private final ApplicationEventPublisher applicationEventPublisher;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
-    public void publishAlarmTalkErrorWithFirstEvent(AlarmTalkErrorWithFirstEvent event) {
-        applicationEventPublisher.publishEvent(event);
-    }
+  public void publishAlarmTalkErrorWithFirstEvent(AlarmTalkErrorWithFirstEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 
-    public void publishAlarmTalkErrorMessageEvent(AlarmTalkErrorMessageEvent event) {
-        applicationEventPublisher.publishEvent(event);
-    }
+  public void publishAlarmTalkErrorMessageEvent(AlarmTalkErrorMessageEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 
-    public void publishAlarmTalkErrorInfoEvent(AlarmTalkErrorInfoEvent event) {
-        applicationEventPublisher.publishEvent(event);
-    }
+  public void publishAlarmTalkErrorInfoEvent(AlarmTalkErrorInfoEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 }

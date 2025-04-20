@@ -12,21 +12,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TeacherEnglish {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long englishId;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Teacher teacher;
-    @Column(columnDefinition = "TEXT")
-    private String appealPoint;
-    @Column(columnDefinition = "TEXT")
-    private String teachingExperience;
-    @Column(nullable = false)
-    private int teachingHistory;
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String teachingStyle;
-    @Column(columnDefinition = "TEXT")
-    private String managementStyle;
-    @Column(columnDefinition = "TEXT")
-    private String foreignExperience;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long englishId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Teacher teacher;
+
+  @Column(columnDefinition = "TEXT")
+  private String appealPoint;
+
+  @Column(columnDefinition = "TEXT")
+  private String teachingExperience;
+
+  @Column(nullable = false)
+  private int teachingHistory;
+
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String teachingStyle;
+
+  @Column(columnDefinition = "TEXT")
+  private String managementStyle;
+
+  @Column(columnDefinition = "TEXT")
+  private String foreignExperience;
 }

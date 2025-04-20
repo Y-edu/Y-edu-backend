@@ -26,42 +26,44 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassManagement extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long classManagementId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long classManagementId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_matching_id")
-    private ClassMatching classMatching;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "class_matching_id")
+  private ClassMatching classMatching;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "classManagement")
-    private List<ClassSchedule> schedules = new ArrayList<>();
+  @OneToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      mappedBy = "classManagement")
+  private List<ClassSchedule> schedules = new ArrayList<>();
 
-    private String textbook;
+  private String textbook;
 
-    private LocalDate firstDay;
+  private LocalDate firstDay;
 
-    @Embedded
-    private ClassTime classTime;
+  @Embedded private ClassTime classTime;
 
-    private boolean remind;
+  private boolean remind;
 
-    public void refuse(String reason) {
-        classMatching.refuseSchedule(reason);
-    }
+  public void refuse(String reason) {
+    classMatching.refuseSchedule(reason);
+  }
 
-    public void addSchedule(ClassSchedule schedule) {
-        schedules.add(schedule);
-    }
+  public void addSchedule(ClassSchedule schedule) {
+    schedules.add(schedule);
+  }
 
-    public void confirm(String textbook, LocalDate firstDay, ClassTime classTime) {
-        this.textbook = textbook;
-        this.firstDay = firstDay;
-        this.classTime = classTime;
-        this.classMatching.confirmSchedule();
-    }
+  public void confirm(String textbook, LocalDate firstDay, ClassTime classTime) {
+    this.textbook = textbook;
+    this.firstDay = firstDay;
+    this.classTime = classTime;
+    this.classMatching.confirmSchedule();
+  }
 
-    public void completeRemind() {
-        this.remind = true;
-    }
+  public void completeRemind() {
+    this.remind = true;
+  }
 }

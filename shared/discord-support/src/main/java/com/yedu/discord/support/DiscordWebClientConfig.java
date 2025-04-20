@@ -27,13 +27,12 @@ class DiscordWebClientConfig {
             .doOnConnected(
                 conn ->
                     conn.addHandlerLast(
-                            new ReadTimeoutHandler(webClientProperties.readTimeOut(), TimeUnit.SECONDS))
+                            new ReadTimeoutHandler(
+                                webClientProperties.readTimeOut(), TimeUnit.SECONDS))
                         .addHandlerLast(
-                            new WriteTimeoutHandler(webClientProperties.writeTimeOut(), TimeUnit.SECONDS)));
+                            new WriteTimeoutHandler(
+                                webClientProperties.writeTimeOut(), TimeUnit.SECONDS)));
 
-    return WebClient.builder()
-        .clientConnector(new ReactorClientHttpConnector(httpClient))
-        .build();
+    return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
   }
-
 }

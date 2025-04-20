@@ -7,29 +7,29 @@ import com.yedu.backend.domain.parents.domain.repository.ApplicationFormReposito
 import com.yedu.backend.domain.parents.domain.repository.GoalRepository;
 import com.yedu.backend.domain.parents.domain.repository.ParentsRepository;
 import com.yedu.backend.global.exception.parents.ApplicationFormNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ParentsGetService {
-    private final ParentsRepository parentsRepository;
-    private final ApplicationFormRepository applicationFormRepository;
-    private final GoalRepository goalRepository;
+  private final ParentsRepository parentsRepository;
+  private final ApplicationFormRepository applicationFormRepository;
+  private final GoalRepository goalRepository;
 
-    public Optional<Parents> optionalParentsByPhoneNumber(String phoneNumber) {
-        return parentsRepository.findByPhoneNumber(phoneNumber);
-    }
+  public Optional<Parents> optionalParentsByPhoneNumber(String phoneNumber) {
+    return parentsRepository.findByPhoneNumber(phoneNumber);
+  }
 
-    public ApplicationForm applicationFormByFormId(String applicationFormId) {
-        return applicationFormRepository.findById(applicationFormId)
-                .orElseThrow(() -> new ApplicationFormNotFoundException(applicationFormId));
-    }
+  public ApplicationForm applicationFormByFormId(String applicationFormId) {
+    return applicationFormRepository
+        .findById(applicationFormId)
+        .orElseThrow(() -> new ApplicationFormNotFoundException(applicationFormId));
+  }
 
-    public List<Goal> goalsByApplicationForm(ApplicationForm applicationForm) {
-        return goalRepository.findAllByApplicationForm(applicationForm);
-    }
+  public List<Goal> goalsByApplicationForm(ApplicationForm applicationForm) {
+    return goalRepository.findAllByApplicationForm(applicationForm);
+  }
 }
