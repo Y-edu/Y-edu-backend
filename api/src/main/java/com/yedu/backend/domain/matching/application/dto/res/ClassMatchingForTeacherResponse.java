@@ -2,6 +2,7 @@ package com.yedu.backend.domain.matching.application.dto.res;
 
 import com.yedu.backend.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import com.yedu.common.type.ClassType;
 import java.util.List;
 
@@ -17,5 +18,5 @@ public record ClassMatchingForTeacherResponse(
     String dong,
     List<String> goals,
     String favoriteStyle,
-    String favoriteTime,
+    List<DayTime> dayTimes,
     MatchingStatus matchStatus) {}
