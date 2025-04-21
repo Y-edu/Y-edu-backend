@@ -18,6 +18,5 @@ public record ApplicationFormRequest(
     String classTime,
     String district,
     String dong,
-    String wantTime,
     String source,
     List<DayTime> dayTimes) {}
