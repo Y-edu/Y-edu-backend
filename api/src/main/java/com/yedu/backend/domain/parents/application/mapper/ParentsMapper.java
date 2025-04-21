@@ -37,7 +37,6 @@ public class ParentsMapper {
         .wantedSubject(request.wantedSubject())
         .favoriteStyle(request.favoriteStyle())
         .favoriteGender(request.favoriteGender())
-        .wantTime(request.wantTime())
         .classCount(request.classCount())
         .classTime(request.classTime())
         .source(request.source())

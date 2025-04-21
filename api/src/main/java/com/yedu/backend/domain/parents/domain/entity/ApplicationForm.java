@@ -61,7 +61,7 @@ public class ApplicationForm extends BaseEntity {
   private String favoriteDirection; // 수업 방향성
 
   @Column(nullable = false, columnDefinition = "TEXT")
-  private String wantTime; // 수업 날짜
+  private String wantTime; // 원하는 시간 없어짐
 
   @Column(nullable = false)
   private String classCount; // 몇회 (1,2,3)
