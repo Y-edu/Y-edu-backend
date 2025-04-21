@@ -30,15 +30,18 @@ public class ClassMatchingInfoUseCase {
   public ClassMatchingForTeacherResponse applicationFormToTeacher(
       String applicationFormId, long teacherId, String phoneNumber) {
     ApplicationForm applicationForm = parentsGetService.applicationFormByFormId(applicationFormId);
-    List<DayTime> dayTimes = new ArrayList<>(availableQueryService.query(applicationFormId).stream()
-            .collect(Collectors.groupingBy(
-                    ApplicationFormAvailable::getDay,
-                    Collectors.mapping(ApplicationFormAvailable::getAvailableTime, Collectors.toList())
-            ))
-            .entrySet()
-            .stream()
-            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
-            .toList());
+    List<DayTime> dayTimes =
+        new ArrayList<>(
+            availableQueryService.query(applicationFormId).stream()
+                .collect(
+                    Collectors.groupingBy(
+                        ApplicationFormAvailable::getDay,
+                        Collectors.mapping(
+                            ApplicationFormAvailable::getAvailableTime, Collectors.toList())))
+                .entrySet()
+                .stream()
+                .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
+                .toList());
     dayTimes.sort(comparing(dayTime -> dayTime.getDay().getDayNum()));
 
     List<String> goals =

@@ -13,20 +13,23 @@ public class ClassMatchingMapper {
   }
 
   public static ClassMatchingForTeacherResponse mapToApplicationFormToTeacherResponse(
-          ClassMatching classMatching, ApplicationForm applicationForm, List<String> goals, List<DayTime> dayTimes) {
+      ClassMatching classMatching,
+      ApplicationForm applicationForm,
+      List<String> goals,
+      List<DayTime> dayTimes) {
     return new ClassMatchingForTeacherResponse(
-            applicationForm.getApplicationFormId(),
-            applicationForm.getWantedSubject(),
-            applicationForm.getAge(),
-            applicationForm.getClassCount(),
-            applicationForm.getClassTime(),
-            (int) (applicationForm.getPay() * (5.0 / 6.0)),
-            applicationForm.getOnline(),
-            applicationForm.getDistrict().getDescription(),
-            applicationForm.getDong(),
-            goals,
-            applicationForm.getFavoriteStyle(),
-            dayTimes,
-            classMatching.getMatchStatus());
+        applicationForm.getApplicationFormId(),
+        applicationForm.getWantedSubject(),
+        applicationForm.getAge(),
+        applicationForm.getClassCount(),
+        applicationForm.getClassTime(),
+        (int) (applicationForm.getPay() * (5.0 / 6.0)),
+        applicationForm.getOnline(),
+        applicationForm.getDistrict().getDescription(),
+        applicationForm.getDong(),
+        goals,
+        applicationForm.getFavoriteStyle(),
+        dayTimes,
+        classMatching.getMatchStatus());
   }
 }
