@@ -60,7 +60,7 @@ public class ApplicationForm extends BaseEntity {
   @Column(columnDefinition = "TEXT")
   private String favoriteDirection; // 수업 방향성
 
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(columnDefinition = "TEXT")
   private String wantTime; // 원하는 시간 없어짐
 
   @Column(nullable = false)
