@@ -114,6 +114,7 @@ public class DiscordWebhookUseCase {
                     + "\n"
                     + "- phoneNumber: "
                     + event.phoneNumber()
+                    + "\n"
                     + "- token: "
                     + event.token()
                     + "\n"));
