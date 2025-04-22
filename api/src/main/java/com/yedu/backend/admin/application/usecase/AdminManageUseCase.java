@@ -7,6 +7,8 @@ import com.yedu.backend.admin.application.dto.req.ProposalTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherVideoRequest;
+import com.yedu.backend.admin.application.dto.res.ProposalTeacherResponse;
+import com.yedu.backend.admin.application.dto.res.ProposalTeacherResponse.TokenResponse;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
@@ -18,8 +20,10 @@ import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.type.ClassType;
 import java.util.List;
@@ -40,6 +44,7 @@ public class AdminManageUseCase {
   private final TeacherUpdateService teacherUpdateService;
   private final EventPublisher eventPublisher;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
     Parents parents = adminGetService.parentsById(parentsId);
@@ -87,21 +92,39 @@ public class AdminManageUseCase {
         new MatchingTimeTableDto(teacherId, classMatching.getClassMatchingId(), wantedSubject));
   }
 
-  public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+  public ProposalTeacherResponse proposalTeacher(
+      String applicationFormId, ProposalTeacherRequest request) {
     ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-    request
-        .teacherIds()
-        .forEach(
-            id -> {
-              Teacher teacher = adminGetService.teacherById(id);
-              teacherUpdateService.plusRequestCount(teacher);
-              responseRateStorage.cache(teacher.getTeacherId());
 
-              ClassMatching classMatching =
-                  ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
-              adminSaveService.saveClassMatching(classMatching);
-              adminUpdateService.updateAlertCount(teacher);
-              eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
-            });
+    List<TokenResponse> responses =
+        request.teacherIds().stream()
+            .map(teacherId -> handleOneTeacher(teacherId, applicationFormId, applicationForm))
+            .toList();
+
+    return new ProposalTeacherResponse(responses);
+  }
+
+  private TokenResponse handleOneTeacher(
+      Long teacherId, String applicationFormId, ApplicationForm applicationForm) {
+    Teacher teacher = adminGetService.teacherById(teacherId);
+    teacherUpdateService.plusRequestCount(teacher);
+    responseRateStorage.cache(teacher.getTeacherId());
+
+    ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+    adminSaveService.saveClassMatching(classMatching);
+    adminUpdateService.updateAlertCount(teacher);
+
+    String token =
+        teacherNotifyApplicationFormKeyStorage.storeAndGet(
+            new TeacherNotifyApplicationFormDto(
+                classMatching.getClassMatchingId(), applicationFormId));
+
+    eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching, token));
+
+    return new TokenResponse(
+        teacher.getTeacherId(),
+        applicationFormId,
+        teacher.getTeacherInfo().getPhoneNumber(),
+        token);
   }
 }

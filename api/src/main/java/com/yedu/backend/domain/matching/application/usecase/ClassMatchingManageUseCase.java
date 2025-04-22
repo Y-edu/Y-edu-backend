@@ -13,7 +13,9 @@ import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.backend.global.exception.matching.MatchingStatusException;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.ResponseRateStorage;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class ClassMatchingManageUseCase {
   private final ResponseRateStorage responseRateStorage;
   private final TeacherUpdateService teacherUpdateService;
   private final EventPublisher eventPublisher;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   public List<ClassMatching> saveAllClassMatching(
       List<Teacher> teachers, ApplicationForm applicationForm) {
@@ -48,14 +51,10 @@ public class ClassMatchingManageUseCase {
     return classMatchings;
   }
 
-  public void refuseClassMatching(
-      String applicationFormId,
-      long teacherId,
-      String phoneNumber,
-      ClassMatchingRefuseRequest request) {
-    ClassMatching classMatching =
-        classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(
-            applicationFormId, teacherId, phoneNumber);
+  public void refuseClassMatching(String token, ClassMatchingRefuseRequest request) {
+
+    TeacherNotifyApplicationFormDto dto = teacherNotifyApplicationFormKeyStorage.get(token);
+    ClassMatching classMatching = classMatchingGetService.getById(dto.matchingId());
     if (!classMatching.isWaiting())
       throw new MatchingStatusException(classMatching.getClassMatchingId());
     classMatchingUpdateService.updateRefuse(classMatching, request);
@@ -63,7 +62,7 @@ public class ClassMatchingManageUseCase {
     String refuseReason = request.refuseReason();
     sendBizppurioMessage(teacher, refuseReason);
 
-    plusResponseCount(teacherId, teacher);
+    plusResponseCount(teacher.getTeacherId(), teacher);
   }
 
   private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
@@ -82,10 +81,10 @@ public class ClassMatchingManageUseCase {
     eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
   }
 
-  public void acceptClassMatching(String applicationFormId, long teacherId, String phoneNumber) {
-    ClassMatching classMatching =
-        classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(
-            applicationFormId, teacherId, phoneNumber);
+  public void acceptClassMatching(String token) {
+    TeacherNotifyApplicationFormDto dto = teacherNotifyApplicationFormKeyStorage.get(token);
+    ClassMatching classMatching = classMatchingGetService.getById(dto.matchingId());
+
     if (!classMatching.isWaiting())
       throw new MatchingStatusException(classMatching.getClassMatchingId());
     classMatchingUpdateService.updateAccept(classMatching);
@@ -93,7 +92,8 @@ public class ClassMatchingManageUseCase {
     Teacher teacher = classMatching.getTeacher();
     teacherUpdateService.clearRefuseCount(teacher);
     eventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
-    plusResponseCount(teacherId, teacher);
+
+    plusResponseCount(teacher.getTeacherId(), teacher);
   }
 
   private void plusResponseCount(long teacherId, Teacher teacher) {

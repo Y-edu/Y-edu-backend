@@ -22,6 +22,8 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.config.s3.S3UploadService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class TeacherManageUseCase {
   private final TeacherDeleteService teacherDeleteService;
   private final S3UploadService s3UploadService;
   private final EventPublisher eventPublisher;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   public void saveTeacher(TeacherInfoFormRequest request) {
     Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -111,12 +114,20 @@ public class TeacherManageUseCase {
         mapToTeacherRegisterEvent(teacher, teacherDistricts));
   }
 
-  public void notifyClass(List<ClassMatching> classMatchings) {
+  public void notifyClass(List<ClassMatching> classMatchings, String applicationFormId) {
     classMatchings.forEach(
         classMatching -> {
           Teacher teacher = classMatching.getTeacher();
           teacherUpdateService.updateAlertCount(teacher);
-          eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+
+          TeacherNotifyApplicationFormDto teacherNotifyApplicationFormDto =
+              new TeacherNotifyApplicationFormDto(
+                  classMatching.getClassMatchingId(), applicationFormId);
+          String token =
+              teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
+
+          eventPublisher.publishNotifyClassInfoEvent(
+              mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
 
