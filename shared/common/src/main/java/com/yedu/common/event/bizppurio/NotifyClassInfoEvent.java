@@ -8,4 +8,5 @@ public record NotifyClassInfoEvent(
     String district,
     String dong,
     long teacherId,
-    String phoneNumber) {}
+    String phoneNumber,
+    String token) {}

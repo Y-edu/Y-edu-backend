@@ -66,7 +66,8 @@ public class ParentsManageUseCase {
         classMatchingManageUseCase.saveAllClassMatching(
             teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables),
             applicationForm); // 매칭 저장
-    teacherManageUseCase.notifyClass(classMatchings); // 선생님한테 알림톡 전송
+    teacherManageUseCase.notifyClass(
+        classMatchings, applicationForm.getApplicationFormId()); // 선생님한테 알림톡 전송
   }
 
   public ApplicationFormTimeTableResponse retrieveTimeTable(

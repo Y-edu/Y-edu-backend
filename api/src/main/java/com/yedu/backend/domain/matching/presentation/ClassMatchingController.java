@@ -18,16 +18,13 @@ public class ClassMatchingController {
   private final ClassMatchingInfoUseCase matchingInfoUseCase;
   private final ClassMatchingManageUseCase matchingManageUseCase;
 
-  @GetMapping("/application/{applicationFormId}/{teacherId}/{phoneNumber}")
+  @GetMapping("/application")
   @Operation(
       summary = "과외 공지 선생님 알림톡 - 과외 신청 및 보류 페이지 조회 API",
       description = "선생님에게 보여지는 과외 신청 및 보유 페이지 조회 API")
-  public ResponseEntity<ClassMatchingForTeacherResponse> applicationToTeacher(
-      @PathVariable String applicationFormId,
-      @PathVariable long teacherId,
-      @PathVariable String phoneNumber) {
+  public ResponseEntity<ClassMatchingForTeacherResponse> applicationToTeacher(String token) {
     ClassMatchingForTeacherResponse classMatchingForTeacherResponse =
-        matchingInfoUseCase.applicationFormToTeacher(applicationFormId, teacherId, phoneNumber);
+        matchingInfoUseCase.applicationFormToTeacher(token);
     return ResponseEntity.ok(classMatchingForTeacherResponse);
   }
 

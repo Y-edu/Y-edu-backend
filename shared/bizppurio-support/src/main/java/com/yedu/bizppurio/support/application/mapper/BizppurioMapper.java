@@ -228,13 +228,7 @@ public class BizppurioMapper {
               + "\n"
               + "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
     }
-    String classUrl =
-        "https://www.yedu-tutor.com/teacher/"
-            + notifyClassInfoEvent.teacherId()
-            + "/"
-            + notifyClassInfoEvent.applicationFormId()
-            + "/"
-            + notifyClassInfoEvent.phoneNumber();
+    String classUrl = "https://www.yedu-tutor.com/teacher/" + notifyClassInfoEvent.token();
     CommonButton webButton = new WebButton("과외 정보 확인하기", WEB_LINK, classUrl, classUrl);
     Message messageBody =
         new ButtonMessage(message, yeduMatchingKey, notifyClass, new CommonButton[] {webButton});

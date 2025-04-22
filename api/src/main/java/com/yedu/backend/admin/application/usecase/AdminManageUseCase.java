@@ -18,8 +18,10 @@ import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.type.ClassType;
 import java.util.List;
@@ -40,6 +42,7 @@ public class AdminManageUseCase {
   private final TeacherUpdateService teacherUpdateService;
   private final EventPublisher eventPublisher;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
     Parents parents = adminGetService.parentsById(parentsId);
@@ -101,7 +104,15 @@ public class AdminManageUseCase {
                   ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
               adminSaveService.saveClassMatching(classMatching);
               adminUpdateService.updateAlertCount(teacher);
-              eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+              TeacherNotifyApplicationFormDto teacherNotifyApplicationFormDto =
+                  new TeacherNotifyApplicationFormDto(
+                      classMatching.getClassMatchingId(), applicationFormId);
+              String token =
+                  teacherNotifyApplicationFormKeyStorage.storeAndGet(
+                      teacherNotifyApplicationFormDto);
+
+              eventPublisher.publishNotifyClassInfoEvent(
+                  mapToNotifyClassInfoEvent(classMatching, token));
             });
   }
 }

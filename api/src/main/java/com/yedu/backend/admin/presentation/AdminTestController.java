@@ -35,6 +35,8 @@ import com.yedu.backend.domain.teacher.domain.repository.TeacherRepository;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalTime;
@@ -67,6 +69,7 @@ public class AdminTestController {
   private final TeacherRepository teacherRepository;
   private final ClassMatchingGetService classMatchingGetService;
   private final EventPublisher eventPublisher;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   @PostMapping("/test/teacher/signup/{phoneNumber}")
   @Operation(summary = "선생님 간편 가입 - 전화번호를 넣어주세요 (간편가입이라 내용은 기대하지 마세요)")
@@ -190,7 +193,14 @@ public class AdminTestController {
           ClassMatching newClassMatching =
               ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
           ClassMatching classMatching = classMatchingRepository.save(newClassMatching);
-          eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching));
+          TeacherNotifyApplicationFormDto teacherNotifyApplicationFormDto =
+              new TeacherNotifyApplicationFormDto(
+                  classMatching.getClassMatchingId(), applicationFormId);
+          String token =
+              teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
+
+          eventPublisher.publishNotifyClassInfoEvent(
+              mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
 
