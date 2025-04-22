@@ -28,30 +28,27 @@ public class ClassMatchingController {
     return ResponseEntity.ok(classMatchingForTeacherResponse);
   }
 
-  @PutMapping("/application/refuse/{applicationFormId}/{teacherId}/{phoneNumber}")
+  @PutMapping("/application/refuse")
   @Operation(summary = "과외 공지 선생님 알림톡 - 과외 거절 API")
-  public ResponseEntity refuseApplication(
-      @PathVariable String applicationFormId,
-      @PathVariable long teacherId,
-      @PathVariable String phoneNumber,
-      @RequestBody ClassMatchingRefuseRequest request) {
-    matchingManageUseCase.refuseClassMatching(applicationFormId, teacherId, phoneNumber, request);
-    return ResponseEntity.ok().build();
+  public ResponseEntity<Void> refuseApplication(
+      String token, @RequestBody ClassMatchingRefuseRequest request) {
+    matchingManageUseCase.refuseClassMatching(token, request);
+
+    return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/application/accept/{applicationFormId}/{teacherId}/{phoneNumber}")
+  @PutMapping("/application/accept")
   @Operation(summary = "과외 공지 선생님 알림톡 - 과외 수락 API")
-  public ResponseEntity acceptApplication(
-      @PathVariable String applicationFormId,
-      @PathVariable long teacherId,
-      @PathVariable String phoneNumber) {
-    matchingManageUseCase.acceptClassMatching(applicationFormId, teacherId, phoneNumber);
-    return ResponseEntity.ok().build();
+  public ResponseEntity<Void> acceptApplication(String token) {
+    matchingManageUseCase.acceptClassMatching(token);
+
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/remind")
-  public ResponseEntity matchingRemind() {
+  public ResponseEntity<Void> matchingRemind() {
     matchingManageUseCase.remindClassMatching();
-    return ResponseEntity.ok().build();
+
+    return ResponseEntity.noContent().build();
   }
 }
