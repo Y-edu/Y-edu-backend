@@ -5,7 +5,7 @@ public enum MatchingStatus {
   대기,
   수락,
   전송,
-  입금확인,
+  입금단계,
   매칭,
   최종매칭,
   과외결렬
