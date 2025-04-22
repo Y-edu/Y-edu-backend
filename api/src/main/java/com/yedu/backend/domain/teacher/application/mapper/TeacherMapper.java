@@ -1,5 +1,6 @@
 package com.yedu.backend.domain.teacher.application.mapper;
 
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
 import com.yedu.backend.domain.teacher.application.dto.res.DistrictAndTimeResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.EnglishCurriculumResponse;
@@ -86,6 +87,22 @@ public class TeacherMapper {
         .day(Day.byInt(day))
         .availableTime(LocalTime.parse(time))
         .build();
+  }
+
+  public static List<TeacherAvailable> mapToTeacherAvailable(
+      Teacher teacher, List<DayTime> dayTimes) {
+    return dayTimes.stream()
+        .flatMap(
+            dayTime ->
+                dayTime.getTimes().stream()
+                    .map(
+                        time ->
+                            TeacherAvailable.builder()
+                                .teacher(teacher)
+                                .day(dayTime.getDay())
+                                .availableTime(time)
+                                .build()))
+        .toList();
   }
 
   public static TeacherEnglish mapToTeacherEnglish(
