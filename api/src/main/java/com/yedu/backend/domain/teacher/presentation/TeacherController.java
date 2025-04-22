@@ -2,6 +2,7 @@ package com.yedu.backend.domain.teacher.presentation;
 
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -106,22 +107,33 @@ public class TeacherController {
 
   @PutMapping("/info/active/talk")
   @Operation(summary = "선생님 수업 정보 수정 - 선생님 알림톡 수신 여부 수정 true/false")
-  public ResponseEntity changeAlarmTalk(@RequestBody AlarmTalkChangeRequest request) {
+  public ResponseEntity<Void> changeAlarmTalk(@RequestBody AlarmTalkChangeRequest request) {
     manageUseCase.changeAlarmTalkStatus(request);
-    return ResponseEntity.ok().build();
+
+    return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/info/district")
   @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경")
-  public ResponseEntity changeDistrict(@RequestBody DistrictChangeRequest request) {
+  public ResponseEntity<Void> changeDistrict(@RequestBody DistrictChangeRequest request) {
     manageUseCase.changeDistrict(request);
-    return ResponseEntity.ok().build();
+
+    return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/info/available")
-  @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경")
-  public ResponseEntity changeAvailable(@RequestBody AvailableChangeRequest request) {
+  @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 시간 변경")
+  public ResponseEntity<Void> changeAvailable(@RequestBody AvailableChangeRequest request) {
     manageUseCase.changeAvailable(request);
-    return ResponseEntity.ok().build();
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/token/info/available")
+  @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경 (알림톡 토큰 사용하여 변경)")
+  public ResponseEntity<Void> changeAvailable(@RequestBody AvailableChangeTokenRequest request) {
+    manageUseCase.changeAvailableByToken(request);
+
+    return ResponseEntity.noContent().build();
   }
 }

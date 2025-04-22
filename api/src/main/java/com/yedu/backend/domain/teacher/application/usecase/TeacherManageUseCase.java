@@ -5,8 +5,10 @@ import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
 import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -45,6 +47,7 @@ public class TeacherManageUseCase {
   private final S3UploadService s3UploadService;
   private final EventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
+  private final ClassMatchingGetService classMatchingGetService;
 
   public void saveTeacher(TeacherInfoFormRequest request) {
     Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -148,6 +151,15 @@ public class TeacherManageUseCase {
     Teacher teacher = teacherGetService.byNameAndPhoneNumber(request.name(), request.phoneNumber());
     teacherDeleteService.availableByTeacher(teacher);
     List<TeacherAvailable> availables = getTeacherAvailables(request.available(), teacher);
+    teacherSaveService.saveAvailable(availables);
+  }
+
+  public void changeAvailableByToken(AvailableChangeTokenRequest request) {
+    Long matchingId = teacherNotifyApplicationFormKeyStorage.get(request.token()).matchingId();
+    Teacher teacher = classMatchingGetService.getById(matchingId).getTeacher();
+
+    teacherDeleteService.availableByTeacher(teacher);
+    List<TeacherAvailable> availables = mapToTeacherAvailable(teacher, request.dayTimes());
     teacherSaveService.saveAvailable(availables);
   }
 
