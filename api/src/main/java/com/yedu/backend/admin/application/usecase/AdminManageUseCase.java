@@ -7,6 +7,8 @@ import com.yedu.backend.admin.application.dto.req.ProposalTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.RecommendTeacherRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherIssueRequest;
 import com.yedu.backend.admin.application.dto.req.TeacherVideoRequest;
+import com.yedu.backend.admin.application.dto.res.ProposalTeacherResponse;
+import com.yedu.backend.admin.application.dto.res.ProposalTeacherResponse.TokenResponse;
 import com.yedu.backend.admin.domain.service.AdminGetService;
 import com.yedu.backend.admin.domain.service.AdminSaveService;
 import com.yedu.backend.admin.domain.service.AdminUpdateService;
@@ -90,29 +92,39 @@ public class AdminManageUseCase {
         new MatchingTimeTableDto(teacherId, classMatching.getClassMatchingId(), wantedSubject));
   }
 
-  public void proposalTeacher(String applicationFormId, ProposalTeacherRequest request) {
+  public ProposalTeacherResponse proposalTeacher(
+      String applicationFormId, ProposalTeacherRequest request) {
     ApplicationForm applicationForm = adminGetService.applicationFormById(applicationFormId);
-    request
-        .teacherIds()
-        .forEach(
-            id -> {
-              Teacher teacher = adminGetService.teacherById(id);
-              teacherUpdateService.plusRequestCount(teacher);
-              responseRateStorage.cache(teacher.getTeacherId());
 
-              ClassMatching classMatching =
-                  ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
-              adminSaveService.saveClassMatching(classMatching);
-              adminUpdateService.updateAlertCount(teacher);
-              TeacherNotifyApplicationFormDto teacherNotifyApplicationFormDto =
-                  new TeacherNotifyApplicationFormDto(
-                      classMatching.getClassMatchingId(), applicationFormId);
-              String token =
-                  teacherNotifyApplicationFormKeyStorage.storeAndGet(
-                      teacherNotifyApplicationFormDto);
+    List<TokenResponse> responses =
+        request.teacherIds().stream()
+            .map(teacherId -> handleOneTeacher(teacherId, applicationFormId, applicationForm))
+            .toList();
 
-              eventPublisher.publishNotifyClassInfoEvent(
-                  mapToNotifyClassInfoEvent(classMatching, token));
-            });
+    return new ProposalTeacherResponse(responses);
+  }
+
+  private TokenResponse handleOneTeacher(
+      Long teacherId, String applicationFormId, ApplicationForm applicationForm) {
+    Teacher teacher = adminGetService.teacherById(teacherId);
+    teacherUpdateService.plusRequestCount(teacher);
+    responseRateStorage.cache(teacher.getTeacherId());
+
+    ClassMatching classMatching = ClassMatchingMapper.mapToClassMatching(teacher, applicationForm);
+    adminSaveService.saveClassMatching(classMatching);
+    adminUpdateService.updateAlertCount(teacher);
+
+    String token =
+        teacherNotifyApplicationFormKeyStorage.storeAndGet(
+            new TeacherNotifyApplicationFormDto(
+                classMatching.getClassMatchingId(), applicationFormId));
+
+    eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching, token));
+
+    return new TokenResponse(
+        teacher.getTeacherId(),
+        applicationFormId,
+        teacher.getTeacherInfo().getPhoneNumber(),
+        token);
   }
 }
