@@ -12,6 +12,7 @@ import com.yedu.backend.admin.application.dto.res.AllApplicationResponse;
 import com.yedu.backend.admin.application.dto.res.AllFilteringTeacher;
 import com.yedu.backend.admin.application.dto.res.ClassDetailsResponse;
 import com.yedu.backend.admin.application.dto.res.CommonParentsResponse;
+import com.yedu.backend.admin.application.dto.res.ProposalTeacherResponse;
 import com.yedu.backend.admin.application.usecase.AdminAuthUseCase;
 import com.yedu.backend.admin.application.usecase.AdminInfoUseCase;
 import com.yedu.backend.admin.application.usecase.AdminManageUseCase;
@@ -129,10 +130,12 @@ public class AdminController {
   @Operation(
       summary = "신청서 상세조회 - 선생님 검색시 선생님에게 과외 제안 알림톡 전송",
       description = "선생님에게 과외 제안 알림톡 전송 API")
-  public ResponseEntity proposalTeacher(
+  public ResponseEntity<ProposalTeacherResponse> proposalTeacher(
       @PathVariable String applicationFormId, @RequestBody ProposalTeacherRequest request) {
-    adminManageUseCase.proposalTeacher(applicationFormId, request);
-    return ResponseEntity.ok().build();
+    ProposalTeacherResponse response =
+        adminManageUseCase.proposalTeacher(applicationFormId, request);
+
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/login")

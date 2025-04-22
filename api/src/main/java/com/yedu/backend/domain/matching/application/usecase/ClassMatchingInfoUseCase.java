@@ -12,6 +12,8 @@ import com.yedu.backend.domain.parents.domain.entity.Goal;
 import com.yedu.backend.domain.parents.domain.service.ApplicationFormAvailableQueryService;
 import com.yedu.backend.domain.parents.domain.service.ParentsGetService;
 import com.yedu.backend.domain.parents.domain.vo.DayTime;
+import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,13 +28,15 @@ public class ClassMatchingInfoUseCase {
   private final ClassMatchingGetService classMatchingGetService;
   private final ApplicationFormAvailableQueryService availableQueryService;
   private final ParentsGetService parentsGetService;
+  private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
-  public ClassMatchingForTeacherResponse applicationFormToTeacher(
-      String applicationFormId, long teacherId, String phoneNumber) {
-    ApplicationForm applicationForm = parentsGetService.applicationFormByFormId(applicationFormId);
+  public ClassMatchingForTeacherResponse applicationFormToTeacher(String token) {
+    TeacherNotifyApplicationFormDto dto = teacherNotifyApplicationFormKeyStorage.get(token);
+    ApplicationForm applicationForm =
+        parentsGetService.applicationFormByFormId(dto.applicationFormId());
     List<DayTime> dayTimes =
         new ArrayList<>(
-            availableQueryService.query(applicationFormId).stream()
+            availableQueryService.query(dto.applicationFormId()).stream()
                 .collect(
                     Collectors.groupingBy(
                         ApplicationFormAvailable::getDay,
@@ -49,9 +53,7 @@ public class ClassMatchingInfoUseCase {
             .map(Goal::getClassGoal)
             .toList();
 
-    ClassMatching classMatching =
-        classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(
-            applicationFormId, teacherId, phoneNumber);
+    ClassMatching classMatching = classMatchingGetService.getById(dto.matchingId());
 
     return mapToApplicationFormToTeacherResponse(classMatching, applicationForm, goals, dayTimes);
   }

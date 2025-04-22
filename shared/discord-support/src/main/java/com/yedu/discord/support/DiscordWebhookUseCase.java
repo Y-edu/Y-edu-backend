@@ -2,6 +2,7 @@ package com.yedu.discord.support;
 
 import static com.yedu.discord.support.DiscordMapper.*;
 
+import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
@@ -98,5 +99,27 @@ public class DiscordWebhookUseCase {
 
   private String currentTime() {
     return LocalDateTime.now().format(dateTimeFormatter);
+  }
+
+  public void sendNotifyClassInfoEvent(NotifyClassInfoEvent event) {
+    List<Field> fields =
+        List.of(
+            mapToField(
+                "발송 정보",
+                "- teacherId : "
+                    + event.teacherId()
+                    + "\n"
+                    + "- applicationFormId: "
+                    + event.applicationFormId()
+                    + "\n"
+                    + "- phoneNumber: "
+                    + event.phoneNumber()
+                    + "\n"
+                    + "- token: "
+                    + event.token()
+                    + "\n"));
+
+    DiscordWebhookRequest request = mapToDiscordWithInformation("과외 공지 알림톡 발송 완료", fields);
+    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
   }
 }
