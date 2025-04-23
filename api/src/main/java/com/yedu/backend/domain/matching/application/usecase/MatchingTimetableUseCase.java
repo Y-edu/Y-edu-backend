@@ -3,12 +3,16 @@ package com.yedu.backend.domain.matching.application.usecase;
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRequest;
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRetrieveRequest;
 import com.yedu.backend.domain.matching.application.dto.res.MatchingTimetableRetrieveResponse;
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.backend.domain.matching.domain.service.MatchingTimetableCommandService;
 import com.yedu.backend.domain.matching.domain.service.MatchingTimetableQueryService;
+import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
+import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
 import com.yedu.cache.support.storage.KeyStorage;
+import com.yedu.common.event.bizppurio.PayNotificationEvent;
 import java.time.LocalTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,7 @@ public class MatchingTimetableUseCase {
   private final MatchingTimetableQueryService matchingTimetableQueryService;
   private final MatchingTimetableCommandService matchingTimetableCommandService;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
+  private final EventPublisher eventPublisher;
 
   public MatchingTimetableRetrieveResponse retrieveMatchingTimetable(
       MatchingTimeTableRetrieveRequest request) {
@@ -46,8 +51,16 @@ public class MatchingTimetableUseCase {
   public void matchingTimetable(MatchingTimeTableRequest request) {
     MatchingTimeTableDto matchingTimeTableDto =
         matchingTimetableKeyStorage.get(request.classMatchingToken());
-    matchingTimetableCommandService.matchingTimetable(
+    ClassMatching classMatching = matchingTimetableCommandService.matchingTimetable(
         matchingTimeTableDto.matchingId(), request.dayTimes());
-    // todo : 입금 안내 알림톡 전송
+
+    ApplicationForm applicationForm = classMatching.getApplicationForm();
+    PayNotificationEvent event = new PayNotificationEvent(
+        applicationForm.getParents().getPhoneNumber(),
+        classMatching.getTeacher().getTeacherInfo().getNickName(),
+        applicationForm.getPay()
+    );
+
+    eventPublisher.publishPayNotificationEvent(event);
   }
 }
