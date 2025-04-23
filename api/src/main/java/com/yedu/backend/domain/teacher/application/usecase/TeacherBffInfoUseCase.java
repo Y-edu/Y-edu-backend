@@ -1,5 +1,7 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
+import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.teacher.application.dto.res.DistrictAndTimeResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.EnglishCurriculumResponse;
 import com.yedu.backend.domain.teacher.application.dto.res.MathCurriculumResponse;
@@ -25,11 +27,14 @@ public class TeacherBffInfoUseCase {
   private final TeacherInfoUseCase teacherInfoUseCase;
 
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
+  private final ClassMatchingGetService classMatchingGetService;
 
   public TeacherAllInformationResponse retrieveAllInformation(String token) {
     MatchingTimeTableDto matchingTimeTableDto = matchingTimetableKeyStorage.get(token);
     Long teacherId = matchingTimeTableDto.teacherId();
     ClassType classType = matchingTimeTableDto.classType();
+    ClassMatching classMatching =
+        classMatchingGetService.getById(matchingTimeTableDto.matchingId());
 
     CompletableFuture<TeacherCommonsInfoResponse> commonsFuture =
         CompletableFuture.supplyAsync(() -> teacherInfoUseCase.teacherCommonsInfo(teacherId));
@@ -66,6 +71,8 @@ public class TeacherBffInfoUseCase {
             .matchingId(matchingTimeTableDto.matchingId())
             .profile(commonsInfoResponse.profile())
             .nickName(commonsInfoResponse.nickName())
+            .classCount(classMatching.getApplicationForm().getClassCount())
+            .classTime(classMatching.getApplicationForm().getClassTime())
             .available(districtAndTimeResponse.availables())
             .districts(districtAndTimeResponse.districts());
 
