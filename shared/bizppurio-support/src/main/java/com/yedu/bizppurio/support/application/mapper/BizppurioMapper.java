@@ -99,6 +99,9 @@ public class BizppurioMapper {
   @Value("${bizppurio.yedu_offical_template.introduce_write_finish_talk}")
   private String introduceWriteFinishTalk;
 
+  @Value("${bizppurio.yedu_offical_template.pay_notification}")
+  private String payNotification;
+
   @Value("${bizppurio.url.apply_agree}")
   private String applyAgreeUrl;
 
@@ -673,7 +676,7 @@ public class BizppurioMapper {
         .replace("#{name}", event.nickName())
         .replace("#{pay}", String.valueOf(event.pay() / 10_000));
 
-    Message messageBody = new TextMessage(message, yeduTutorKey, introduceWriteFinishTalk);
+    Message messageBody = new TextMessage(message, yeduTutorKey, payNotification);
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
