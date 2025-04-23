@@ -26,5 +26,6 @@ public class MatchingTimetable extends BaseEntity {
   private Day day;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "class_matching_id")
   private ClassMatching classMatching;
 }

@@ -392,29 +392,27 @@ public class BizppurioMapper {
   public CommonRequest mapToRecommendTeacher(RecommendTeacherEvent recommendTeacherEvent) {
     String title = "추천 : " + recommendTeacherEvent.teacherNickName() + " 선생님";
     String message =
-        ("신청해주신 "
-            + recommendTeacherEvent.district()
-            + " 과외 매칭을 위한 선생님을 안내드립니다.\n"
-            + "\n"
-            + "☀\uFE0F"
-            + recommendTeacherEvent.teacherNickName()
-            + "☀\uFE0F을  아이의 "
-            + recommendTeacherEvent.classType()
-            + "을 책임지고 지도해줄 선생님으로 추천드려요! \n"
-            + "\n"
-            + "Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. \uD83D\uDE00\n"
-            + "\n"
-            + "아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 선생님을 카카오 채팅으로 말씀해주세요");
+        """
+            꼼꼼히 살펴보고 추천드려요
+            추천 : #{name} 선생님
+            신청해주신 #{district} 과외 매칭을 위한 선생님을 안내드립니다.
+
+            ☀️#{name}☀️을 아이의 #{subject}을 책임지고 지도해줄 선생님으로 추천드려요!
+
+            Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. 😀
+
+            아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 경우 버튼을 눌러 제출해주세요
+
+         """
+            .strip()
+            .replace("#{name}", recommendTeacherEvent.teacherNickName())
+            .replace("#{district}", recommendTeacherEvent.district())
+            .replace("#{subject}", recommendTeacherEvent.classType());
     String teacherUrl = "https://www.yedu-tutor.com/teacher/" + recommendTeacherEvent.token();
     CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, teacherUrl, teacherUrl);
-    CommonButton simpleButton = new SimpleButton("이 선생님과 수업할래요", MESSAGE);
     Message messageBody =
         new EmphasizeButtonMessage(
-            message,
-            title,
-            yeduOfficialKey,
-            recommendTeacher,
-            new CommonButton[] {webButton, simpleButton});
+            message, title, yeduOfficialKey, recommendTeacher, new CommonButton[] {webButton});
     return createCommonRequest(messageBody, recommendTeacherEvent.parentsPhoneNumber());
   }
 
