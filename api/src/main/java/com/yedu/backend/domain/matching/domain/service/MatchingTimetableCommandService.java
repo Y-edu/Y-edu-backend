@@ -19,7 +19,7 @@ public class MatchingTimetableCommandService {
   private final MatchingTimetableRepository matchingTimetableRepository;
   private final ClassMatchingRepository classMatchingRepository;
 
-  public void matchingTimetable(long classMatchingId, List<DayTime> dayTimes) {
+  public ClassMatching matchingTimetable(long classMatchingId, List<DayTime> dayTimes) {
     if (matchingTimetableRepository.existsByClassMatching_ClassMatchingId(classMatchingId))
       throw new MatchingTimetableAlreadyException(classMatchingId);
     ClassMatching classMatching =
@@ -40,5 +40,7 @@ public class MatchingTimetableCommandService {
                                 .day(dayTime.getDay())
                                 .timetableTime(time)
                                 .build())));
+
+    return classMatching;
   }
 }

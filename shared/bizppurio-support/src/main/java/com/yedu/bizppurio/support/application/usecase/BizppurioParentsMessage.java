@@ -59,4 +59,9 @@ public class BizppurioParentsMessage {
     bizppurioSend.sendMessageWithExceptionHandling(
         () -> bizppurioMapper.mapToParentsClassInfo(parentsClassInfoEvent));
   }
+
+  public void payNotification(PayNotificationEvent event) {
+    bizppurioSend.sendMessageWithExceptionHandling(
+        () -> bizppurioMapper.mapToPayNotification(event));
+  }
 }
