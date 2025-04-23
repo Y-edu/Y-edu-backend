@@ -113,10 +113,10 @@ public class DiscordWebhookUseCase {
                     + "- applicationFormId: "
                     + event.applicationFormId()
                     + "\n"
-                    + "- phoneNumber: "
+                    + "- 선생님 핸드폰번호: "
                     + event.phoneNumber()
                     + "\n"
-                    + "- token: "
+                    + "- token: \n"
                     + event.token()
                     + "\n"));
 
@@ -138,7 +138,7 @@ public class DiscordWebhookUseCase {
                     + "- 학부모 핸드폰번호: "
                     + event.parentsPhoneNumber()
                     + "\n"
-                    + "- token: "
+                    + "- token: \n"
                     + event.token()
                     + "\n"));
 
