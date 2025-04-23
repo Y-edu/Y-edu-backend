@@ -13,6 +13,8 @@ public record TeacherAllInformationResponse(
     ClassType subject,
     String profile,
     String nickName,
+    String classCount,
+    String classTime,
     List<String> districts,
     Map<Day, List<LocalTime>> available,
     String comment,
