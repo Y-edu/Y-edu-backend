@@ -51,15 +51,16 @@ public class MatchingTimetableUseCase {
   public void matchingTimetable(MatchingTimeTableRequest request) {
     MatchingTimeTableDto matchingTimeTableDto =
         matchingTimetableKeyStorage.get(request.classMatchingToken());
-    ClassMatching classMatching = matchingTimetableCommandService.matchingTimetable(
-        matchingTimeTableDto.matchingId(), request.dayTimes());
+    ClassMatching classMatching =
+        matchingTimetableCommandService.matchingTimetable(
+            matchingTimeTableDto.matchingId(), request.dayTimes());
 
     ApplicationForm applicationForm = classMatching.getApplicationForm();
-    PayNotificationEvent event = new PayNotificationEvent(
-        applicationForm.getParents().getPhoneNumber(),
-        classMatching.getTeacher().getTeacherInfo().getNickName(),
-        applicationForm.getPay()
-    );
+    PayNotificationEvent event =
+        new PayNotificationEvent(
+            applicationForm.getParents().getPhoneNumber(),
+            classMatching.getTeacher().getTeacherInfo().getNickName(),
+            applicationForm.getPay());
 
     eventPublisher.publishPayNotificationEvent(event);
   }
