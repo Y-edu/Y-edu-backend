@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.matching.presentation;
 
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRequest;
+import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRetrieveByTokenRequest;
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRetrieveRequest;
 import com.yedu.backend.domain.matching.application.dto.res.MatchingTimetableRetrieveResponse;
 import com.yedu.backend.domain.matching.application.usecase.MatchingTimetableUseCase;
@@ -24,6 +25,15 @@ public class MatchingTimetableController {
       @ParameterObject MatchingTimeTableRetrieveRequest request) {
     MatchingTimetableRetrieveResponse response =
         matchingTimeTableUseCase.retrieveMatchingTimetable(request);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/token")
+  @Operation(summary = "과외 매칭 시간 조회 API - 토큰 기반")
+  public ResponseEntity<MatchingTimetableRetrieveResponse> retrieveMatchingTimetable(
+          @ParameterObject MatchingTimeTableRetrieveByTokenRequest request) {
+    MatchingTimetableRetrieveResponse response =
+            matchingTimeTableUseCase.retrieveMatchingTimetable(request);
     return ResponseEntity.ok(response);
   }
 
