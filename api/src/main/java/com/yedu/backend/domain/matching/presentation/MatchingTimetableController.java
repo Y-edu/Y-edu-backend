@@ -28,8 +28,8 @@ public class MatchingTimetableController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping
-  @Operation(summary = "과외 매칭 시간 조회 API")
+  @GetMapping("/token")
+  @Operation(summary = "과외 매칭 시간 조회 API - 토큰 기반")
   public ResponseEntity<MatchingTimetableRetrieveResponse> retrieveMatchingTimetable(
           @ParameterObject MatchingTimeTableRetrieveByTokenRequest request) {
     MatchingTimetableRetrieveResponse response =
