@@ -1,6 +1,7 @@
 package com.yedu.backend.domain.matching.application.usecase;
 
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRequest;
+import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRetrieveByTokenRequest;
 import com.yedu.backend.domain.matching.application.dto.req.MatchingTimeTableRetrieveRequest;
 import com.yedu.backend.domain.matching.application.dto.res.MatchingTimetableRetrieveResponse;
 import com.yedu.backend.domain.matching.domain.entity.MatchingTimetable;
@@ -25,6 +26,16 @@ public class MatchingTimetableUseCase {
       MatchingTimeTableRetrieveRequest request) {
     List<MatchingTimetable> timetables =
         matchingTimetableQueryService.query(request.classMatchingId());
+    SortedMap<Day, List<LocalTime>> sortedTimetable = getDayListSortedMap(timetables);
+    return new MatchingTimetableRetrieveResponse(sortedTimetable);
+  }
+
+  public MatchingTimetableRetrieveResponse retrieveMatchingTimetable(
+          MatchingTimeTableRetrieveByTokenRequest request) {
+    MatchingTimeTableDto matchingTimeTableDto =
+            matchingTimetableKeyStorage.get(request.classMatchingToken());
+    List<MatchingTimetable> timetables =
+            matchingTimetableQueryService.query(matchingTimeTableDto.matchingId());
     SortedMap<Day, List<LocalTime>> sortedTimetable = getDayListSortedMap(timetables);
     return new MatchingTimetableRetrieveResponse(sortedTimetable);
   }
