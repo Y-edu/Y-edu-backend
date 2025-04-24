@@ -31,9 +31,9 @@ public class MatchingTimetableController {
   @GetMapping("/token")
   @Operation(summary = "과외 매칭 시간 조회 API - 토큰 기반")
   public ResponseEntity<MatchingTimetableRetrieveResponse> retrieveMatchingTimetable(
-          @ParameterObject MatchingTimeTableRetrieveByTokenRequest request) {
+      @ParameterObject MatchingTimeTableRetrieveByTokenRequest request) {
     MatchingTimetableRetrieveResponse response =
-            matchingTimeTableUseCase.retrieveMatchingTimetable(request);
+        matchingTimeTableUseCase.retrieveMatchingTimetable(request);
     return ResponseEntity.ok(response);
   }
 
