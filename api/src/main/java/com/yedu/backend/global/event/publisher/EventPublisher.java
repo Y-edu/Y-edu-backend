@@ -79,4 +79,8 @@ public class EventPublisher {
   public void publishTeacherRegisterEvent(TeacherRegisterEvent event) {
     applicationEventPublisher.publishEvent(event);
   }
+
+  public void publishPayNotificationEvent(PayNotificationEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 }

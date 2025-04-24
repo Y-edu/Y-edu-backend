@@ -99,6 +99,9 @@ public class BizppurioMapper {
   @Value("${bizppurio.yedu_offical_template.introduce_write_finish_talk}")
   private String introduceWriteFinishTalk;
 
+  @Value("${bizppurio.yedu_offical_template.pay_notification}")
+  private String payNotification;
+
   @Value("${bizppurio.url.apply_agree}")
   private String applyAgreeUrl;
 
@@ -653,6 +656,28 @@ public class BizppurioMapper {
             + "0을 실제 숫자로 채워주세요. 2회차는 진행 후, 1회차 내용 아래에 추가하여 보내주시면 됩니다.");
     Message messageBody = new TextMessage(message, yeduTutorKey, introduceWriteFinishTalk);
     return createCommonRequest(messageBody, introduceWriteFinishTalkEvent.phoneNumber());
+  }
+
+  public CommonRequest mapToPayNotification(PayNotificationEvent event) {
+    String message = """
+        어머님 안녕하세요 😊 \s
+        #{name} 선생님과 매칭이 완료되어수업료 안내드립니다.
+        
+        💶 수업료: #{pay}만원 \s
+        🌟 입금계좌: 신한 110-149-528751조현숙 (YEdu) \s
+        👦🏻 입금자명: 어머님 전화번호 뒷자리4자리로 기입 부탁드립니다
+        
+        입금이 확인되면 선생님께서 구체적인수업 일정 관련해 연락드릴 예정입니다.
+        
+         문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.
+        감사합니다!
+        
+        """.strip()
+        .replace("#{name}", event.nickName())
+        .replace("#{pay}", String.valueOf(event.pay() / 10_000));
+
+    Message messageBody = new TextMessage(message, yeduTutorKey, payNotification);
+    return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
   private CommonRequest createCommonRequest(Message messageBody, String phoneNumber) {
