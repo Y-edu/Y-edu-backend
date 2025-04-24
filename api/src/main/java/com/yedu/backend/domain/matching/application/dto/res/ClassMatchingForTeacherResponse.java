@@ -18,5 +18,6 @@ public record ClassMatchingForTeacherResponse(
     String dong,
     List<String> goals,
     String favoriteStyle,
-    List<DayTime> dayTimes,
+    List<DayTime> parentDayTimes,
+    List<DayTime> teacherDayTimes,
     MatchingStatus matchStatus) {}

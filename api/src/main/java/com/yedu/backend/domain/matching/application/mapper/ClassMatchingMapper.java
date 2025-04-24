@@ -16,7 +16,8 @@ public class ClassMatchingMapper {
       ClassMatching classMatching,
       ApplicationForm applicationForm,
       List<String> goals,
-      List<DayTime> dayTimes) {
+      List<DayTime> parentDayTimes,
+      List<DayTime> teacherDayTimes) {
     return new ClassMatchingForTeacherResponse(
         applicationForm.getApplicationFormId(),
         applicationForm.getWantedSubject(),
@@ -29,7 +30,8 @@ public class ClassMatchingMapper {
         applicationForm.getDong(),
         goals,
         applicationForm.getFavoriteStyle(),
-        dayTimes,
+        parentDayTimes,
+        teacherDayTimes,
         classMatching.getMatchStatus());
   }
 }
