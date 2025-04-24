@@ -680,7 +680,7 @@ public class BizppurioMapper {
             .replace("#{name}", event.nickName())
             .replace("#{pay}", String.valueOf(event.pay() / 10_000));
 
-    Message messageBody = new TextMessage(message, yeduTutorKey, payNotification);
+    Message messageBody = new TextMessage(message, yeduOfficialKey, payNotification);
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
