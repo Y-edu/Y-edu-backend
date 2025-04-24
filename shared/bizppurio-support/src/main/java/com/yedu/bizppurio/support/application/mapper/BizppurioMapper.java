@@ -659,22 +659,24 @@ public class BizppurioMapper {
   }
 
   public CommonRequest mapToPayNotification(PayNotificationEvent event) {
-    String message = """
+    String message =
+        """
         어머님 안녕하세요 😊 \s
         #{name} 선생님과 매칭이 완료되어수업료 안내드립니다.
-        
+
         💶 수업료: #{pay}만원 \s
         🌟 입금계좌: 신한 110-149-528751조현숙 (YEdu) \s
         👦🏻 입금자명: 어머님 전화번호 뒷자리4자리로 기입 부탁드립니다
-        
+
         입금이 확인되면 선생님께서 구체적인수업 일정 관련해 연락드릴 예정입니다.
-        
+
          문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.
         감사합니다!
-        
-        """.strip()
-        .replace("#{name}", event.nickName())
-        .replace("#{pay}", String.valueOf(event.pay() / 10_000));
+
+        """
+            .strip()
+            .replace("#{name}", event.nickName())
+            .replace("#{pay}", String.valueOf(event.pay() / 10_000));
 
     Message messageBody = new TextMessage(message, yeduTutorKey, payNotification);
     return createCommonRequest(messageBody, event.parentPhoneNumber());
