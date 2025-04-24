@@ -36,11 +36,11 @@ public class MatchingTimetableUseCase {
   }
 
   public MatchingTimetableRetrieveResponse retrieveMatchingTimetable(
-          MatchingTimeTableRetrieveByTokenRequest request) {
+      MatchingTimeTableRetrieveByTokenRequest request) {
     MatchingTimeTableDto matchingTimeTableDto =
-            matchingTimetableKeyStorage.get(request.classMatchingToken());
+        matchingTimetableKeyStorage.get(request.classMatchingToken());
     List<MatchingTimetable> timetables =
-            matchingTimetableQueryService.query(matchingTimeTableDto.matchingId());
+        matchingTimetableQueryService.query(matchingTimeTableDto.matchingId());
     SortedMap<Day, List<LocalTime>> sortedTimetable = getDayListSortedMap(timetables);
     return new MatchingTimetableRetrieveResponse(sortedTimetable);
   }
