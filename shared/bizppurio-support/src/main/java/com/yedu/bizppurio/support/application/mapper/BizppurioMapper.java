@@ -405,13 +405,16 @@ public class BizppurioMapper {
             Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. 😀
 
             아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 경우 버튼을 눌러 제출해주세요
-
          """
             .strip()
             .replace("#{name}", recommendTeacherEvent.teacherNickName())
             .replace("#{district}", recommendTeacherEvent.district())
             .replace("#{subject}", recommendTeacherEvent.classType());
-    String teacherUrl = "https://www.yedu-tutor.com/teacher/" + recommendTeacherEvent.token();
+    String teacherUrl =
+        "https://www.yedu-tutor.com/teacher/recommend/#{token}?subject=#{subject}"
+            .replace("#{token}", recommendTeacherEvent.token())
+            .replace("#{subject}", recommendTeacherEvent.classType());
+
     CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, teacherUrl, teacherUrl);
     Message messageBody =
         new EmphasizeButtonMessage(
@@ -661,18 +664,17 @@ public class BizppurioMapper {
   public CommonRequest mapToPayNotification(PayNotificationEvent event) {
     String message =
         """
-        어머님 안녕하세요 😊 \s
+        어머님 안녕하세요 😊
         #{name} 선생님과 매칭이 완료되어수업료 안내드립니다.
 
-        💶 수업료: #{pay}만원 \s
-        🌟 입금계좌: 신한 110-149-528751조현숙 (YEdu) \s
+        💶 수업료: #{pay}만원
+        🌟 입금계좌: 신한 110-149-528751조현숙 (YEdu)
         👦🏻 입금자명: 어머님 전화번호 뒷자리4자리로 기입 부탁드립니다
 
         입금이 확인되면 선생님께서 구체적인수업 일정 관련해 연락드릴 예정입니다.
 
-         문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.
+        문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.
         감사합니다!
-
         """
             .strip()
             .replace("#{name}", event.nickName())
