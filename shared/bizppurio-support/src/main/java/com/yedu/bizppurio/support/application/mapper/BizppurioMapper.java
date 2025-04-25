@@ -615,7 +615,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     CommonButton webButton =
         new WebButton(
-            "수업 정보 확인",
+            "상담 결과 전달",
             WEB_LINK,
             "https://yedu-tutor.com/result/" + teacherExchangeEvent.classManagementToken(),
             "https://xyedu-tutor.com/result/" + teacherExchangeEvent.classManagementToken());
