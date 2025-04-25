@@ -1,19 +1,22 @@
 package com.yedu.backend.global.event.mapper;
 
 import static com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.*;
+import static java.util.Comparator.comparing;
 
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.entity.ClassSchedule;
+import com.yedu.backend.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.backend.domain.parents.domain.entity.Parents;
+import com.yedu.backend.domain.parents.domain.vo.DayTime;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.common.event.bizppurio.*;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsExchangeEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BizppurioEventMapper {
   public static RecommendTeacherEvent mapToRecommendTeacherEvent(
@@ -141,17 +144,35 @@ public class BizppurioEventMapper {
   }
 
   public static TeacherExchangeEvent mapToTeacherExchangeEvent(
-      String classManagementToken, String classNotifyToken, ClassManagement classManagement) {
+      String classManagementToken,
+      String classNotifyToken,
+      ClassManagement classManagement,
+      List<MatchingTimetable> timetables) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     ApplicationForm applicationForm = classMatching.getApplicationForm();
     Parents parents = applicationForm.getParents();
 
+    List<DayTime> dayTimes =
+        timetables.stream()
+            .collect(
+                Collectors.groupingBy(
+                    MatchingTimetable::getDay,
+                    Collectors.mapping(MatchingTimetable::getTimetableTime, Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
+            .sorted(comparing(dayTime -> dayTime.getDay().getDayNum()))
+            .toList();
+
     return new TeacherExchangeEvent(
         applicationForm.getApplicationFormId(),
         applicationForm.getClassCount(),
         applicationForm.getClassTime(),
-        new ArrayList<>(),
+        // todo dayTime 공통모듈로 이동하고 vo 재사용해도될듯
+        dayTimes.stream()
+            .map(it -> new TeacherExchangeEvent.DayTime(it.getDay().toString(), it.getTimes()))
+            .toList(),
         applicationForm.getAge(),
         applicationForm.getDistrict().getDescription(),
         applicationForm.getPay(),

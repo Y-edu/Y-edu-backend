@@ -546,6 +546,12 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
   }
 
   public CommonRequest mapToTeacherNotifyClassInfo(TeacherExchangeEvent teacherExchangeEvent) {
+    String classCountWithUnit = teacherExchangeEvent.classCount();
+    String classCount = classCountWithUnit.replaceAll("[^0-9]", "");
+
+    String timeWithUnit = teacherExchangeEvent.time();
+    String time = timeWithUnit.replaceAll("[^0-9]", "");
+
     String message =
         """
 🎉 과외 매칭 성사를 축하드립니다!
@@ -561,10 +567,11 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 자세한 수업 정보는
 아래의 버튼을 눌러 확인해주세요
        """
+            // todo 주 coutn,time값 바로 넣을수잇도록 템플릿 수정
             .strip()
             .replace("#{applicationFormId}", teacherExchangeEvent.applicationFormId())
-            .replace("#{count}", teacherExchangeEvent.classCount())
-            .replace("#{time}", teacherExchangeEvent.time())
+            .replace("#{count}", classCount)
+            .replace("#{time}", time)
             .replace(
                 "#{dayTimes}",
                 teacherExchangeEvent.dayTimes().stream()
@@ -575,10 +582,10 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
                                 + dayTime.times().stream()
                                     .map(LocalTime::toString)
                                     .collect(Collectors.joining(", ")))
-                    .collect(Collectors.joining("\n"))
-                    .replace("#{age}", teacherExchangeEvent.age())
-                    .replace("#{district}", teacherExchangeEvent.district())
-                    .replace("#{pay}", String.valueOf(teacherExchangeEvent.money())));
+                    .collect(Collectors.joining("\n")))
+            .replace("#{age}", teacherExchangeEvent.age())
+            .replace("#{district}", teacherExchangeEvent.district())
+            .replace("#{pay}", String.valueOf(teacherExchangeEvent.money()));
 
     CommonButton webButton =
         new WebButton(

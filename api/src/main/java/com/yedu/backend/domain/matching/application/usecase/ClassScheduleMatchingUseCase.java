@@ -10,11 +10,15 @@ import com.yedu.backend.domain.matching.application.dto.req.ClassScheduleRetriev
 import com.yedu.backend.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.backend.domain.matching.domain.entity.ClassManagement;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
+import com.yedu.backend.domain.matching.domain.service.MatchingTimetableQueryService;
+import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,16 +37,21 @@ public class ClassScheduleMatchingUseCase {
   private final EventPublisher eventPublisher;
 
   private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
+  private final TeacherGetService teacherGetService;
+  private final MatchingTimetableQueryService matchingTimetableQueryService;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
     ClassManagement classManagement = managementCommandService.schedule(request);
     String classManagementToken =
         classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+    List<MatchingTimetable> timetables =
+        matchingTimetableQueryService.query(classManagement.getClassMatching().getClassMatchingId());
 
     eventPublisher.publishMatchingEvent(
         mapToMatchingParentsEvent(classManagement),
-        mapToTeacherExchangeEvent(classManagementToken, classNotifyToken, classManagement));
+        mapToTeacherExchangeEvent(
+            classManagementToken, classNotifyToken, classManagement, timetables));
 
     return classManagementToken;
   }

@@ -155,6 +155,7 @@ public class DiscordWebhookUseCase {
                 "발송 정보",
                 "- applicationFormId : "
                     + event.applicationFormId()
+                    + "\n"
                     + "- 선생님 핸드폰번호 : "
                     + event.teacherPhoneNumber()
                     + "\n"
@@ -176,6 +177,7 @@ public class DiscordWebhookUseCase {
                 "발송 정보",
                 "- 선생님 이름 : "
                     + event.name()
+                    + "\n"
                     + "- 선생님 핸드폰번호 : "
                     + event.teacherPhoneNumber()
                     + "\n"
