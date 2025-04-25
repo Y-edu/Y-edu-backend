@@ -46,7 +46,8 @@ public class ClassScheduleMatchingUseCase {
     String classManagementToken =
         classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
     List<MatchingTimetable> timetables =
-        matchingTimetableQueryService.query(classManagement.getClassMatching().getClassMatchingId());
+        matchingTimetableQueryService.query(
+            classManagement.getClassMatching().getClassMatchingId());
 
     eventPublisher.publishMatchingEvent(
         mapToMatchingParentsEvent(classManagement),
