@@ -161,6 +161,7 @@ public class DiscordWebhookUseCase {
                     + "\n"
                     + "- 수업 정보 확인 token: \n"
                     + event.classNotifyToken()
+                    + "\n"
                     + "- 상담 결과 저장하기 token: \n"
                     + event.classManagementToken()
                     + "\n"));
