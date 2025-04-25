@@ -16,4 +16,6 @@ public interface TeacherDslRepository {
       List<ClassMatching> classMatchings, TeacherSearchRequest request);
 
   List<Teacher> getRemindTeacher();
+
+  List<Teacher> getEmptyAvailableTimeTeacher();
 }

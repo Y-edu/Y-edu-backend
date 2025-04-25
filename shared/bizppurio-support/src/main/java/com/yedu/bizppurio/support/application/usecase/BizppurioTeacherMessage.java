@@ -7,6 +7,7 @@ import com.yedu.cache.support.RedisRepository;
 import com.yedu.common.event.bizppurio.*;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -66,8 +67,17 @@ public class BizppurioTeacherMessage {
   }
 
   public void teacherExchange(TeacherExchangeEvent teacherExchangeEvent) {
-    bizppurioSend.sendMessageWithExceptionHandling(
-        () -> bizppurioMapper.mapToTeacherExchangePhoneNumber(teacherExchangeEvent));
+    CompletableFuture<Void> notifyClassInfoFuture =
+        CompletableFuture.runAsync(
+            () ->
+                bizppurioSend.sendMessageWithExceptionHandling(
+                    () -> bizppurioMapper.mapToTeacherNotifyClassInfo(teacherExchangeEvent)));
+    CompletableFuture<Void> notifyScheduleFuture =
+        CompletableFuture.runAsync(
+            () ->
+                bizppurioSend.sendMessageWithExceptionHandling(
+                    () -> bizppurioMapper.mapToTeacherSchedule(teacherExchangeEvent)));
+    CompletableFuture.allOf(notifyClassInfoFuture, notifyScheduleFuture).join();
   }
 
   public void teacherClassRemind(TeacherClassRemindEvent teacherExchangeEvent) {
@@ -93,5 +103,10 @@ public class BizppurioTeacherMessage {
       IntroduceWriteFinishTalkEvent introduceWriteFinishTalkEvent) {
     bizppurioSend.sendMessageWithExceptionHandling(
         () -> bizppurioMapper.mapToIntroduceWriteFinishTalk(introduceWriteFinishTalkEvent));
+  }
+
+  public void teacherAvailableTimeUpdateRequest(TeacherAvailableTimeUpdateRequestEvent event) {
+    bizppurioSend.sendMessageWithExceptionHandling(
+        () -> bizppurioMapper.mapToTeacherAvailableTimeUpdateRequest(event));
   }
 }

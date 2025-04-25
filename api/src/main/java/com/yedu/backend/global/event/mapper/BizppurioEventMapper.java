@@ -12,6 +12,7 @@ import com.yedu.backend.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.common.event.bizppurio.*;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsExchangeEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BizppurioEventMapper {
@@ -140,21 +141,24 @@ public class BizppurioEventMapper {
   }
 
   public static TeacherExchangeEvent mapToTeacherExchangeEvent(
-      String key, ClassManagement classManagement) {
+      String classManagementToken, String classNotifyToken, ClassManagement classManagement) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     ApplicationForm applicationForm = classMatching.getApplicationForm();
     Parents parents = applicationForm.getParents();
+
     return new TeacherExchangeEvent(
         applicationForm.getApplicationFormId(),
         applicationForm.getClassCount(),
         applicationForm.getClassTime(),
+        new ArrayList<>(),
         applicationForm.getAge(),
         applicationForm.getDistrict().getDescription(),
         applicationForm.getPay(),
         parents.getPhoneNumber(),
         teacher.getTeacherInfo().getPhoneNumber(),
-        key);
+        classNotifyToken,
+        classManagementToken);
   }
 
   public static MatchingParentsEvent mapToMatchingParentsEvent(ClassManagement classManagement) {

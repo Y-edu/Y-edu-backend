@@ -254,4 +254,14 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
             teacher.remind.isFalse())
         .fetch();
   }
+
+  @Override
+  public List<Teacher> getEmptyAvailableTimeTeacher() {
+    return queryFactory
+        .selectFrom(teacher)
+        .leftJoin(teacherAvailable)
+        .on(teacherAvailable.teacher.eq(teacher))
+        .where(teacher.status.eq(TeacherStatus.활동중), teacherAvailable.isNull())
+        .fetch();
+  }
 }
