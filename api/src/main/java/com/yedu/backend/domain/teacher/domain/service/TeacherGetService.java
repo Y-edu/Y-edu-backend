@@ -92,4 +92,8 @@ public class TeacherGetService {
   public List<Teacher> remindTeachers() {
     return teacherRepository.getRemindTeacher();
   }
+
+  public List<Teacher> emptyAvailableTime() {
+    return teacherRepository.getEmptyAvailableTimeTeacher();
+  }
 }

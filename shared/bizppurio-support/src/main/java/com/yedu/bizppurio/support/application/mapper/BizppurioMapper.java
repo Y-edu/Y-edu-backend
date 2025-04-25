@@ -9,6 +9,7 @@ import com.yedu.bizppurio.support.application.dto.req.ContentRequest;
 import com.yedu.bizppurio.support.application.dto.req.content.*;
 import com.yedu.common.event.bizppurio.*;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
@@ -84,8 +85,14 @@ public class BizppurioMapper {
   @Value("${bizppurio.yedu_offical_template.parents_class_info}")
   private String parentsClassInfo;
 
-  @Value("${bizppurio.yedu_offical_template.teacher_exchnage}")
-  private String teacherExchange;
+  @Value("${bizppurio.yedu_offical_template.teacher_class_notify_info}")
+  private String teacherClassNotifyInfo;
+
+  @Value("${bizppurio.yedu_offical_template.teacher_schedule}")
+  private String teacherSchedule;
+
+  @Value("${bizppurio.yedu_offical_template.teacher_setting}")
+  private String teacherSetting;
 
   @Value("${bizppurio.yedu_offical_template.teacher_class_remind}")
   private String teacherClassRemind;
@@ -231,7 +238,7 @@ public class BizppurioMapper {
               + "\n"
               + "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
     }
-    String classUrl = "https://www.yedu-tutor.com/teacher/" + notifyClassInfoEvent.token();
+    String classUrl = "https://www.yedu-tutor.com/teacher/notify/" + notifyClassInfoEvent.token();
     CommonButton webButton = new WebButton("과외 정보 확인하기", WEB_LINK, classUrl, classUrl);
     Message messageBody =
         new ButtonMessage(message, yeduMatchingKey, notifyClass, new CommonButton[] {webButton});
@@ -393,18 +400,20 @@ public class BizppurioMapper {
   }
 
   public CommonRequest mapToRecommendTeacher(RecommendTeacherEvent recommendTeacherEvent) {
-    String title = "추천 : " + recommendTeacherEvent.teacherNickName() + " 선생님";
+    String title =
+        "추천 : #{name} 선생님".strip().replace("#{name}", recommendTeacherEvent.teacherNickName());
+
     String message =
         """
-            꼼꼼히 살펴보고 추천드려요
-            추천 : #{name} 선생님
-            신청해주신 #{district} 과외 매칭을 위한 선생님을 안내드립니다.
+꼼꼼히 살펴보고 추천드려요
+추천 : #{name} 선생님
+신청해주신 #{district} 과외 매칭을 위한 선생님을 안내드립니다.
 
-            ☀️#{name}☀️을 아이의 #{subject}을 책임지고 지도해줄 선생님으로 추천드려요!
+☀️#{name}☀️을 아이의 #{subject}을 책임지고 지도해줄 선생님으로 추천드려요!
 
-            Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. 😀
+Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 선생님이에요. 😀
 
-            아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 경우 버튼을 눌러 제출해주세요
+아래 버튼을 눌러 '상세프로필'을 천천히 살펴보시고 매칭 희망하시는 경우 버튼을 눌러 제출해주세요
          """
             .strip()
             .replace("#{name}", recommendTeacherEvent.teacherNickName())
@@ -538,50 +547,110 @@ public class BizppurioMapper {
     return createCommonRequest(messageBody, parentsClassInfoEvent.parentsPhoneNumber());
   }
 
-  public CommonRequest mapToTeacherExchangePhoneNumber(TeacherExchangeEvent teacherExchangeEvent) {
+  public CommonRequest mapToTeacherNotifyClassInfo(TeacherExchangeEvent teacherExchangeEvent) {
     String message =
-        ("\uD83C\uDF89 과외 매칭을 축하드립니다!\n"
-            + "\n"
-            + teacherExchangeEvent.applicationFormId()
-            + "\n"
-            + "✅ 수업 시수 : "
-            + teacherExchangeEvent.classCount()
-            + " "
-            + teacherExchangeEvent.time()
-            + "\n"
-            + "✅ 아이 나이 : "
-            + teacherExchangeEvent.age()
-            + "\n"
-            + "✅ 장소 : "
-            + teacherExchangeEvent.district()
-            + "\n"
-            + "\n"
-            + "학부모님 연락처 : "
-            + teacherExchangeEvent.parentsPhoneNumber()
-            + "\n"
-            + "\n"
-            + "아래 철차에 따라 학부모님께 연락 부탁드려요!\n"
-            + "\n"
-            + "1\uFE0F⃣ 바로 학부모님께 문자를 통해 선생님 소개 후, 전화상담 시간을 잡아주세요.\n"
-            + "\n"
-            + "2\uFE0F⃣ 24시간 내로 전화상담을 진행해주세요.\n"
-            + "전화 상담 시, 수업 방향성/ 수업 교재/ 첫수업일 / 정규 수업 요일, 일시 를 확정해주세요.\n"
-            + "\n"
-            + "3\uFE0F⃣ 전화상담 결과 공유\n"
-            + "전화 상담 내용을 기록하는 링크를 미리 보내드릴게요.\n"
-            + "전화 상담 후, 링크로 들어가 상담 결과를 작성 후 제출해주세요. \uD83D\uDE4F\n"
-            + "\n"
-            + "☝\uD83C\uDFFB상담 결과 공유가 완료되지 않으면 보수 지급이 지연될 수 있습니다!");
+        """
+🎉 과외 매칭 성사를 축하드립니다!
+
+#{applicationFormId}
+✅ 수업 시수 : 주 #{count}회 #{time}분
+✅ 정규 수업 요일, 일시
+#{dayTimes}
+✅ 아이 나이 : #{age}
+✅ 장소 : #{district}
+✅ 보수 : #{pay}원
+
+자세한 수업 정보는
+아래의 버튼을 눌러 확인해주세요
+       """
+            .strip()
+            .replace("#{applicationFormId}", teacherExchangeEvent.applicationFormId())
+            .replace("#{count}", teacherExchangeEvent.classCount())
+            .replace("#{time}", teacherExchangeEvent.time())
+            .replace(
+                "#{dayTimes}",
+                teacherExchangeEvent.dayTimes().stream()
+                    .map(
+                        dayTime ->
+                            dayTime.day()
+                                + " "
+                                + dayTime.times().stream()
+                                    .map(LocalTime::toString)
+                                    .collect(Collectors.joining(", ")))
+                    .collect(Collectors.joining("\n"))
+                    .replace("#{age}", teacherExchangeEvent.age())
+                    .replace("#{district}", teacherExchangeEvent.district())
+                    .replace("#{pay}", String.valueOf(teacherExchangeEvent.money())));
+
     CommonButton webButton =
         new WebButton(
-            "전화상담 결과 공유하기",
+            "수업 정보 확인",
             WEB_LINK,
-            resultShareFormUrl + teacherExchangeEvent.managementId(),
-            resultShareFormUrl + teacherExchangeEvent.managementId());
+            "https://www.yedu-tutor.com/teacher/match-success/"
+                + teacherExchangeEvent.classNotifyToken(),
+            "https://www.yedu-tutor.com/teacher/match-success/"
+                + teacherExchangeEvent.classNotifyToken());
     Message messageBody =
         new ButtonMessage(
-            message, yeduMatchingKey, teacherExchange, new CommonButton[] {webButton});
+            message, yeduMatchingKey, teacherClassNotifyInfo, new CommonButton[] {webButton});
     return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
+  }
+
+  public CommonRequest mapToTeacherSchedule(TeacherExchangeEvent teacherExchangeEvent) {
+    String message =
+        """
+📌 학부모님 연락처 : #{phoneNumer}
+바로 학부모님께 문자를 통해 선생님을소개한 후, 전화상담 시간을 잡아주세요
+
+📌 24시간 내로 전화상담을 진행하며아래 내용을 확정해주세요
+🌟 수업 방향성
+🌟 수업 교재
+🌟 첫 수업 날짜
+🌟 정규 수업 요일, 일시
+🌟 교재명
+
+📌 전화 후 반드시!
+아래 버튼을 눌러 확정된 상담 결과를전달해주세요
+       """
+            .strip()
+            .replace("#{phoneNumer}", teacherExchangeEvent.parentsPhoneNumber());
+
+    CommonButton webButton =
+        new WebButton(
+            "수업 정보 확인",
+            WEB_LINK,
+            "https://yedu-tutor.com/result/" + teacherExchangeEvent.classManagementToken(),
+            "https://xyedu-tutor.com/result/" + teacherExchangeEvent.classManagementToken());
+    Message messageBody =
+        new ButtonMessage(
+            message, yeduMatchingKey, teacherSchedule, new CommonButton[] {webButton});
+    return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
+  }
+
+  public CommonRequest mapToTeacherAvailableTimeUpdateRequest(
+      TeacherAvailableTimeUpdateRequestEvent event) {
+    String message =
+        """
+📣 #{닉네임} 선생님, 수업 가능시간을 알려주세요.
+
+앞으로 Y-Edu에서 수업 가능 시간을 고려하여 과외 공지를 전달드리려 해요.
+
+이전 활동성 조사에 답변 주셨던 분들을 대상으로, 수업 가능 시간 설정을 요청드리고 있습니다.
+
+미 설정 시, 과외 공지 전달에 지장이 있을 수 있으니, 꼭 빠르게 아래 링크로 설정해 주세요 🙂
+       """
+            .strip()
+            .replace("#{닉네임}", event.name());
+
+    CommonButton webButton =
+        new WebButton(
+            "수업 가능시간 설정하기",
+            WEB_LINK,
+            "https://yedu-tutor.com/teachersetting/time?token=" + event.token(),
+            "https://yedu-tutor.com/teachersetting/time?token=" + event.token());
+    Message messageBody =
+        new ButtonMessage(message, yeduOfficialKey, teacherSetting, new CommonButton[] {webButton});
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
   public CommonRequest mapToTeacherClassRemind(TeacherClassRemindEvent teacherClassRemindEvent) {

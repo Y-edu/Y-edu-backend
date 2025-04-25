@@ -2,6 +2,7 @@ package com.yedu.discord.support.listener;
 
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
+import com.yedu.common.event.bizppurio.TeacherExchangeEvent;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,12 @@ public class DiscordEventListener {
   @Async
   public void handleRecommendTeacherEvent(RecommendTeacherEvent event) {
     discordWebhookUseCase.sendRecommendTeacherEvent(event);
+  }
+
+  @EventListener
+  @Async
+  public void handleScheduleEvent(TeacherExchangeEvent event) {
+    discordWebhookUseCase.sendTeacherExchangeEvent(event);
   }
 
   @EventListener
