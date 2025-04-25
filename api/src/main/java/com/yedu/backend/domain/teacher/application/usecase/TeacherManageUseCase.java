@@ -25,7 +25,9 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.config.s3.S3UploadService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.MatchingIdApplicationNotifyKeyStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
+import com.yedu.cache.support.storage.UpdateAvailableTimeKeyStorage;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,8 @@ public class TeacherManageUseCase {
   private final EventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final ClassMatchingGetService classMatchingGetService;
+  private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
+  private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
 
   public void saveTeacher(TeacherInfoFormRequest request) {
     Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -128,6 +132,7 @@ public class TeacherManageUseCase {
                   classMatching.getClassMatchingId(), applicationFormId);
           String token =
               teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
+          matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
           eventPublisher.publishNotifyClassInfoEvent(
               mapToNotifyClassInfoEvent(classMatching, token));
@@ -155,6 +160,15 @@ public class TeacherManageUseCase {
   }
 
   public void changeAvailableByToken(AvailableChangeTokenRequest request) {
+    Long teacherId = updateAvailableTimeKeyStorage.get(request.token());
+    if (teacherId != null) {
+      Teacher teacher = teacherGetService.byId(teacherId);
+      teacherDeleteService.availableByTeacher(teacher);
+      List<TeacherAvailable> availables = mapToTeacherAvailable(teacher, request.dayTimes());
+      teacherSaveService.saveAvailable(availables);
+      return;
+    }
+
     Long matchingId = teacherNotifyApplicationFormKeyStorage.get(request.token()).matchingId();
     Teacher teacher = classMatchingGetService.getById(matchingId).getTeacher();
 

@@ -83,4 +83,9 @@ public class EventPublisher {
   public void publishPayNotificationEvent(PayNotificationEvent event) {
     applicationEventPublisher.publishEvent(event);
   }
+
+  public void publishTeacherAvailableTimeUpdateRequestEvent(
+      TeacherAvailableTimeUpdateRequestEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 }

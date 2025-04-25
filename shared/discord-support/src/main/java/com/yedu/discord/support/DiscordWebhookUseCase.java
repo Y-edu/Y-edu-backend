@@ -4,6 +4,7 @@ import static com.yedu.discord.support.DiscordMapper.*;
 
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
+import com.yedu.common.event.bizppurio.TeacherExchangeEvent;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
@@ -143,6 +144,26 @@ public class DiscordWebhookUseCase {
                     + "\n"));
 
     DiscordWebhookRequest request = mapToDiscordWithInformation("선생님 추천 알림톡 발송 완료", fields);
+    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
+  }
+
+  public void sendTeacherExchangeEvent(TeacherExchangeEvent event) {
+    List<Field> fields =
+        List.of(
+            mapToField(
+                "발송 정보",
+                "- applicationFormId : "
+                    + event.applicationFormId()
+                    + "- 선생님 핸드폰번호 : "
+                    + event.teacherPhoneNumber()
+                    + "\n"
+                    + "- 수업 정보 확인 token: \n"
+                    + event.classNotifyToken()
+                    + "- 상담 결과 저장하기 token: \n"
+                    + event.classManagementToken()
+                    + "\n"));
+
+    DiscordWebhookRequest request = mapToDiscordWithInformation("선생님 매칭 완료 알림톡 발송 완료", fields);
     webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
   }
 }

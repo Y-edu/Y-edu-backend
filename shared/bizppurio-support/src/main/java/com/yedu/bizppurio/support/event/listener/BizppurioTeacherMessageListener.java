@@ -84,4 +84,11 @@ public class BizppurioTeacherMessageListener {
   public void handleMatchingConfirmTeacher(MatchingConfirmTeacherEvent event) {
     bizppurioTeacherMessage.matchingConfirmTeacher(event);
   }
+
+  @EventListener
+  @Async
+  public void handleTeacherAvailableTimeUpdateRequest(
+      TeacherAvailableTimeUpdateRequestEvent event) {
+    bizppurioTeacherMessage.teacherAvailableTimeUpdateRequest(event);
+  }
 }

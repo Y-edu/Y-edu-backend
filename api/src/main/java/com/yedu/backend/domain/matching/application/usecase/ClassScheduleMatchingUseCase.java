@@ -13,7 +13,8 @@ import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.backend.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
-import com.yedu.cache.support.storage.AbstractKeyStorage;
+import com.yedu.cache.support.storage.KeyStorage;
+import com.yedu.cache.support.storage.TokenStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,18 +28,23 @@ public class ClassScheduleMatchingUseCase {
 
   private final ClassManagementQueryService managementQueryService;
 
-  private final AbstractKeyStorage<Long> classManagementKeyStorage;
+  private final KeyStorage<Long> classManagementKeyStorage;
 
   private final EventPublisher eventPublisher;
 
+  private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
+
   public String schedule(ClassScheduleMatchingRequest request) {
+    String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
     ClassManagement classManagement = managementCommandService.schedule(request);
-    String key = classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+    String classManagementToken =
+        classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
 
     eventPublisher.publishMatchingEvent(
         mapToMatchingParentsEvent(classManagement),
-        mapToTeacherExchangeEvent(key, classManagement));
-    return key;
+        mapToTeacherExchangeEvent(classManagementToken, classNotifyToken, classManagement));
+
+    return classManagementToken;
   }
 
   public void refuse(ClassScheduleRefuseRequest request) {

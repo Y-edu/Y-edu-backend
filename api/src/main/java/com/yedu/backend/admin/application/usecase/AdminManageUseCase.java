@@ -22,6 +22,7 @@ import com.yedu.backend.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.KeyStorage;
+import com.yedu.cache.support.storage.MatchingIdApplicationNotifyKeyStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
@@ -45,6 +46,7 @@ public class AdminManageUseCase {
   private final EventPublisher eventPublisher;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
+  private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
 
   public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
     Parents parents = adminGetService.parentsById(parentsId);
@@ -118,6 +120,7 @@ public class AdminManageUseCase {
         teacherNotifyApplicationFormKeyStorage.storeAndGet(
             new TeacherNotifyApplicationFormDto(
                 classMatching.getClassMatchingId(), applicationFormId));
+    matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
     eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching, token));
 
