@@ -405,8 +405,6 @@ public class BizppurioMapper {
 
     String message =
         """
-꼼꼼히 살펴보고 추천드려요
-추천 : #{name} 선생님
 신청해주신 #{district} 과외 매칭을 위한 선생님을 안내드립니다.
 
 ☀️#{name}☀️을 아이의 #{subject}을 책임지고 지도해줄 선생님으로 추천드려요!
