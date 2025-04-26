@@ -585,7 +585,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
                     .collect(Collectors.joining("\n")))
             .replace("#{age}", teacherExchangeEvent.age())
             .replace("#{district}", teacherExchangeEvent.district())
-            .replace("#{pay}", String.valueOf(teacherExchangeEvent.money()));
+            .replace("#{pay}", String.valueOf((int) (teacherExchangeEvent.money() * (5.0 / 6.0))));
 
     CommonButton webButton =
         new WebButton(
