@@ -10,6 +10,7 @@ import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
 import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 public class BizppurioSend {
 
+  private static final String PHONE_REGEX = "^010\\d{8}$";
+
   private final BizppurioAuth bizppurioAuth;
   private final ObjectMapper objectMapper;
   private final WebClient webClient;
@@ -33,6 +36,12 @@ public class BizppurioSend {
 
   protected String sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
     CommonRequest commonRequest = messageSupplier.get();
+
+    if (Pattern.matches(PHONE_REGEX, commonRequest.to())) {
+      log.error("알림톡 발송 실패, 전화번호 오류 : {} / commonRequest : {}", commonRequest.to(), commonRequest);
+      throw new IllegalArgumentException();
+    }
+
     String accessToken = bizppurioAuth.getAuth();
     String request;
     try {
