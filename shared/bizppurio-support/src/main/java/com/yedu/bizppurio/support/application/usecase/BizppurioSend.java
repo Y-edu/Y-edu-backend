@@ -37,7 +37,7 @@ public class BizppurioSend {
   protected String sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
     CommonRequest commonRequest = messageSupplier.get();
 
-    if (Pattern.matches(PHONE_REGEX, commonRequest.to())) {
+    if (!Pattern.matches(PHONE_REGEX, commonRequest.to())) {
       log.error("알림톡 발송 실패, 전화번호 오류 : {} / commonRequest : {}", commonRequest.to(), commonRequest);
       throw new IllegalArgumentException();
     }
