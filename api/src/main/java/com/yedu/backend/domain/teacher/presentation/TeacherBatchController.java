@@ -17,7 +17,7 @@ public class TeacherBatchController {
 
   private final TeacherBatchUseCase teacherBatchUseCase;
 
-  @PostMapping("/sync/request/availability-time")
+//  @PostMapping("/sync/request/availability-time")
   @Operation(summary = "선생님 가능 시간 갱신 요청 알림톡")
   public ResponseEntity<Void> remindAvailableTime() {
     teacherBatchUseCase.remindAvailableTime();
