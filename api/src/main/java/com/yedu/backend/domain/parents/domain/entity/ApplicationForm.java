@@ -1,11 +1,11 @@
 package com.yedu.backend.domain.parents.domain.entity;
 
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Level;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.global.entity.BaseEntity;
+import com.yedu.common.type.ClassType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,14 @@
 package com.yedu.backend.domain.teacher.application.usecase;
 
+import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
+import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
+import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
+
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
+import com.yedu.backend.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -18,6 +24,9 @@ import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.backend.global.config.s3.S3UploadService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.cache.support.storage.UpdateAvailableTimeKeyStorage;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,24 +34,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.yedu.backend.domain.teacher.application.mapper.TeacherMapper.*;
-import static com.yedu.backend.global.event.mapper.BizppurioEventMapper.*;
-import static com.yedu.backend.global.event.mapper.DiscordEventMapper.*;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class TeacherManageUseCase {
-    private final TeacherSaveService teacherSaveService;
-    private final TeacherGetService teacherGetService;
-    private final TeacherUpdateService teacherUpdateService;
-    private final TeacherDeleteService teacherDeleteService;
-    private final S3UploadService s3UploadService;
-    private final EventPublisher eventPublisher;
+  private final TeacherSaveService teacherSaveService;
+  private final TeacherGetService teacherGetService;
+  private final TeacherUpdateService teacherUpdateService;
+  private final TeacherDeleteService teacherDeleteService;
+  private final S3UploadService s3UploadService;
+  private final EventPublisher eventPublisher;
+  private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
 
     public void saveTeacher(TeacherInfoFormRequest request) {
         Teacher teacher = mapToTeacher(request); // 기본 선생님 정보
@@ -139,14 +142,26 @@ public class TeacherManageUseCase {
         teacherSaveService.saveAvailable(availables);
     }
 
-    @Scheduled(cron = "0 0 20 * * *")
-    public void remindAlarm() {
-        log.info("리마인드 알림톡 전송 시작");
-        teacherGetService.remindTeachers()
-                .forEach(teacher -> {
-                    log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
-                    teacherUpdateService.updateRemind(teacher);
-                    eventPublisher.publishPhotoHurryEvent(mapToPhotoHurryEvent(teacher));
-                });
+  public void changeAvailableByToken(AvailableChangeTokenRequest request) {
+    Long teacherId = updateAvailableTimeKeyStorage.get(request.token());
+    if (teacherId != null) {
+      Teacher teacher = teacherGetService.byId(teacherId);
+      teacherDeleteService.availableByTeacher(teacher);
+      List<TeacherAvailable> availables = mapToTeacherAvailable(teacher, request.dayTimes());
+      teacherSaveService.saveAvailable(availables);
     }
+  }
+
+  @Scheduled(cron = "0 0 20 * * *")
+  public void remindAlarm() {
+    log.info("리마인드 알림톡 전송 시작");
+    teacherGetService
+        .remindTeachers()
+        .forEach(
+            teacher -> {
+              log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
+              teacherUpdateService.updateRemind(teacher);
+              eventPublisher.publishPhotoHurryEvent(mapToPhotoHurryEvent(teacher));
+            });
+  }
 }

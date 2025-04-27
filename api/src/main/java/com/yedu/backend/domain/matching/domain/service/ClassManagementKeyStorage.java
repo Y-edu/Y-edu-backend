@@ -1,11 +1,10 @@
 package com.yedu.backend.domain.matching.domain.service;
 
+import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import com.yedu.common.redis.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

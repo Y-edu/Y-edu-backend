@@ -1,9 +1,9 @@
 package com.yedu.backend.domain.parents.application.dto.req;
 
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.parents.domain.entity.constant.Online;
 
+import com.yedu.common.type.ClassType;
 import java.util.List;
 
 public record ApplicationFormRequest(

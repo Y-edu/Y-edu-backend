@@ -58,6 +58,8 @@ public class BizppurioMapper {
     private String recommendTeacher;
     @Value("${bizppurio.yedu_offical_template.notify_calling}")
     private String notifyCalling;
+    @Value("${bizppurio.yedu_offical_template.teacher_setting}")
+    private String teacherSetting;
     @Value("${bizppurio.yedu_offical_template.parents_exchange}")
     private String parentsExchange;
     @Value("${bizppurio.yedu_offical_template.parents_class_notice}")
@@ -476,4 +478,32 @@ public class BizppurioMapper {
         ContentRequest contentRequest = new ContentRequest(messageBody);
         return new CommonRequest(id, "at", number , phoneNumber, contentRequest, refKey);
     }
+
+
+    public CommonRequest mapToTeacherAvailableTimeUpdateRequest(
+        TeacherAvailableTimeUpdateRequestEvent event) {
+        String message =
+            """
+    📣 #{닉네임} 선생님, 수업 가능시간을 알려주세요.
+    
+    앞으로 Y-Edu에서 수업 가능 시간을 고려하여 과외 공지를 전달드리려 해요.
+    
+    이전 활동성 조사에 답변 주셨던 분들을 대상으로, 수업 가능 시간 설정을 요청드리고 있습니다.
+    
+    미 설정 시, 과외 공지 전달에 지장이 있을 수 있으니, 꼭 빠르게 아래 링크로 설정해 주세요 🙂
+           """
+                .strip()
+                .replace("#{닉네임}", event.name());
+
+        CommonButton webButton =
+            new WebButton(
+                "수업 가능시간 설정하기",
+                WEB_LINK,
+                "https://yedu-tutor.com/teachersetting/time?token=" + event.token(),
+                "https://yedu-tutor.com/teachersetting/time?token=" + event.token());
+        Message messageBody =
+            new ButtonMessage(message, yeduOfficialKey, teacherSetting, new CommonButton[] {webButton});
+        return createCommonRequest(messageBody, event.teacherPhoneNumber());
+    }
+
 }

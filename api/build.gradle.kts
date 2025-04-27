@@ -2,7 +2,10 @@
 dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:bizppurio-support"))
+    implementation(project(":shared:cache-support"))
+    implementation(project(":shared:discord-support"))
 
+    implementation ("org.springframework.boot:spring-boot-starter-validation")
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation ("org.springframework.boot:spring-boot-starter-data-redis")
     implementation ("org.springframework.boot:spring-boot-starter-security")

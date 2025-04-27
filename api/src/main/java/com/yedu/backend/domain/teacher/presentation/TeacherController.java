@@ -2,6 +2,7 @@ package com.yedu.backend.domain.teacher.presentation;
 
 import com.yedu.backend.domain.teacher.application.dto.req.AlarmTalkChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeRequest;
+import com.yedu.backend.domain.teacher.application.dto.req.AvailableChangeTokenRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.DistrictChangeRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherContractRequest;
 import com.yedu.backend.domain.teacher.application.dto.req.TeacherInfoFormRequest;
@@ -119,5 +120,13 @@ public class TeacherController {
     public ResponseEntity changeAvailable(@RequestBody AvailableChangeRequest request) {
         manageUseCase.changeAvailable(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/token/info/available")
+    @Operation(summary = "선생님 수업 정보 수정 - 선생님 가능 지역 변경 (알림톡 토큰 사용하여 변경)")
+    public ResponseEntity<Void> changeAvailable(@RequestBody AvailableChangeTokenRequest request) {
+        manageUseCase.changeAvailableByToken(request);
+
+        return ResponseEntity.noContent().build();
     }
 }

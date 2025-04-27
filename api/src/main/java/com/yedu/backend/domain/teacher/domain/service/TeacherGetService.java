@@ -18,10 +18,9 @@ import com.yedu.backend.global.exception.teacher.TeacherLoginFailException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByIdException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByNameAndNickNameException;
 import com.yedu.backend.global.exception.teacher.TeacherNotFoundByPhoneNumberException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -82,4 +81,7 @@ public class TeacherGetService {
         return teacherRepository.getRemindTeacher();
     }
 
+  public List<Teacher> emptyAvailableTime() {
+    return teacherRepository.getEmptyAvailableTimeTeacher();
+  }
 }

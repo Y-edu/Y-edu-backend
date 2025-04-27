@@ -1,13 +1,12 @@
-package com.yedu.common.redis;
+package com.yedu.cache.support;
 
+import java.time.Duration;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
-
-import java.time.Duration;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

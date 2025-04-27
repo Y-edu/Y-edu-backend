@@ -1,9 +1,9 @@
 package com.yedu.backend.admin.application.dto.res;
 
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
 
+import com.yedu.common.type.ClassType;
 import java.util.List;
 
 public record AllFilteringTeacher(

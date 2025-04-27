@@ -1,5 +1,10 @@
 package com.yedu.backend.domain.teacher.domain.repository;
 
+import static com.querydsl.core.types.dsl.Expressions.TRUE;
+import static com.yedu.backend.domain.teacher.domain.entity.QTeacher.teacher;
+import static com.yedu.backend.domain.teacher.domain.entity.QTeacherAvailable.teacherAvailable;
+import static com.yedu.backend.domain.teacher.domain.entity.QTeacherDistrict.teacherDistrict;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -8,27 +13,22 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.backend.admin.application.dto.req.TeacherSearchRequest;
 import com.yedu.backend.domain.matching.domain.entity.ClassMatching;
 import com.yedu.backend.domain.parents.domain.entity.ApplicationForm;
-import com.yedu.backend.domain.parents.domain.entity.constant.ClassType;
 import com.yedu.backend.domain.parents.domain.entity.constant.Gender;
 import com.yedu.backend.domain.teacher.domain.entity.Teacher;
 import com.yedu.backend.domain.teacher.domain.entity.constant.District;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherGender;
 import com.yedu.backend.domain.teacher.domain.entity.constant.TeacherStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
+import com.yedu.common.type.ClassType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-
-import static com.querydsl.core.types.dsl.Expressions.TRUE;
-import static com.yedu.backend.domain.teacher.domain.entity.QTeacher.teacher;
-import static com.yedu.backend.domain.teacher.domain.entity.QTeacherDistrict.teacherDistrict;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class TeacherDslRepositoryImpl implements TeacherDslRepository {
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
     @Override
     public List<Teacher> findAllMatchingApplicationForm(ApplicationForm applicationForm) {
@@ -218,12 +218,24 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .asc(); // 오름차순 정렬
     }
 
-    @Override
-    public List<Teacher> getRemindTeacher() {
-        return queryFactory.selectFrom(teacher)
-                .where(teacher.status.eq(TeacherStatus.등록폼작성완료),
-                        teacher.createdAt.before(LocalDate.now().atStartOfDay().minusDays(1L)),
-                        teacher.remind.isFalse())
-                .fetch();
-    }
+  @Override
+  public List<Teacher> getRemindTeacher() {
+    return queryFactory
+        .selectFrom(teacher)
+        .where(
+            teacher.status.eq(TeacherStatus.등록폼작성완료),
+            teacher.createdAt.before(LocalDate.now().atStartOfDay().minusDays(1L)),
+            teacher.remind.isFalse())
+        .fetch();
+  }
+
+  @Override
+  public List<Teacher> getEmptyAvailableTimeTeacher() {
+    return queryFactory
+        .selectFrom(teacher)
+        .leftJoin(teacherAvailable)
+        .on(teacherAvailable.teacher.eq(teacher))
+        .where(teacher.status.eq(TeacherStatus.활동중), teacherAvailable.isNull())
+        .fetch();
+  }
 }
