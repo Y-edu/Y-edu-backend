@@ -32,6 +32,8 @@ import com.yedu.backend.domain.teacher.domain.repository.TeacherRepository;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.backend.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.backend.global.event.publisher.EventPublisher;
+import com.yedu.cache.support.storage.UpdateAvailableTimeKeyStorage;
+import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +69,7 @@ public class AdminTestController {
     private final TeacherMathRepository teacherMathRepository;
     private final TeacherRepository teacherRepository;
     private final ClassMatchingGetService classMatchingGetService;
-    private final EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
 
     @PostMapping("/test/teacher/signup/{phoneNumber}")
     @Operation(summary = "선생님 간편 가입 - 전화번호를 넣어주세요 (간편가입이라 내용은 기대하지 마세요)")
@@ -187,5 +189,16 @@ public class AdminTestController {
     public void refuseCase(@PathVariable String phoneNumber) {
         Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
         eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
+    }
+
+    @PostMapping("/test/teacher/{phoneNumber}")
+    @Operation(summary = "선생님의 전화번호로 가능시간 갱신 요청 알림톡 발송")
+    public void sendAvailableAlarm(@PathVariable String phoneNumber) {
+        Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
+        TeacherInfo teacherInfo = teacher.getTeacherInfo();
+        String token = updateAvailableTimeKeyStorage.storeAndGet(teacher.getTeacherId());
+        TeacherAvailableTimeUpdateRequestEvent event =
+            new TeacherAvailableTimeUpdateRequestEvent(teacherInfo.getNickName(), token, phoneNumber);
+        eventPublisher.publishTeacherAvailableTimeUpdateRequestEvent(event);
     }
 }
