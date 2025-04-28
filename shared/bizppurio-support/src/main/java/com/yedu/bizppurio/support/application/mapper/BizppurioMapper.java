@@ -653,12 +653,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     String url = "https://" + landingUrl + "/teachersetting/time?token=" + event.token();
 
-    CommonButton webButton =
-        new WebButton(
-            "수업 가능시간 설정하기",
-            WEB_LINK,
-            url,
-            url);
+    CommonButton webButton = new WebButton("수업 가능시간 설정하기", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(message, yeduOfficialKey, teacherSetting, new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
