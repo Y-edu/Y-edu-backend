@@ -22,6 +22,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BizppurioMapper {
+
+  @Value("${landing.url}")
+  private String landingUrl;
+
   @Value("${bizppurio.id}")
   private String id;
 
@@ -647,12 +651,14 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .strip()
             .replace("#{닉네임}", event.name());
 
+    String url = "https://" + landingUrl + "/teachersetting/time?token=" + event.token();
+
     CommonButton webButton =
         new WebButton(
             "수업 가능시간 설정하기",
             WEB_LINK,
-            "https://yedu-tutor.com/teachersetting/time?token=" + event.token(),
-            "https://yedu-tutor.com/teachersetting/time?token=" + event.token());
+            url,
+            url);
     Message messageBody =
         new ButtonMessage(message, yeduOfficialKey, teacherSetting, new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
