@@ -6,7 +6,6 @@ server:
 spring:
   config:
     import: optional:application-local.yml
-
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -42,6 +41,43 @@ cloud:
       auto: false
     stack:
       auto: false
+
+bizppurio:
+  token: 'https://api.bizppurio.com/v1/token'
+  message: 'https://api.bizppurio.com/v3/message'
+  yedu_apply_template:
+    agree: bizp_2025022410400114555103928
+    photo_hurry: bizp_2025020511005224487095577
+    photo_submit: bizp_2025022410365784552487332
+  yedu_matching_template:
+    notify_class: bizp_2025042823440544482981452
+    accept_case: bizp_2025020522265092092681184
+    refuse_case: bizp_2025020522104292092487279
+    refuse_case_now: bizp_2025031216154647794533661
+    refuse_case_district: bizp_2025031216144547794841124
+    matching_channel: bizp_2025022410452884552252565
+  yedu_offical_template:
+    recommend_guide: bizp_2025020611533792092427877
+    recommend_teacher: bizp_2025042823340844482117873
+    notify_calling: bizp_2025020512374424487954938
+    parents_exchange: bizp_2025040422403825399870684
+    parents_class_notice: bizp_2025040422415400717451722
+    parents_class_info: bizp_2025040422464800717675248
+    teacher_class_remind: bizp_2025040501073700717769661
+    class_guide: bizp_2025040501113425399074394
+    introduce_finish_talk: bizp_2025040523400000717272288
+    introduce_write_finish_talk: bizp_2025040523425900717346483
+    pay_notification: bizp_2025042123530467772350700
+    teacher_setting: bizp_2025042610513494076819576
+    teacher_schedule: bizp_2025042823360644482249131
+    teacher_class_notify_info: bizp_2025042823474694076276726
+  url:
+    apply_agree: 'https://forms.gle/QASXrzktUCiSxUkc6'
+    photo_submit: 'https://forms.gle/5AkKyQoj3MYqu5mA8'
+    photo_hurry: 'https://forms.gle/ihfhPSy3Fn8fdjmK7'
+    refuse_change_form: 'https://yedu-tutor.com/teachersetting/login'
+    result_share_form: 'https://yedu-tutor.com/result/'
+    class_guide: 'https://2ly.link/2639z'
 
 discord:
   retry-count: 2
