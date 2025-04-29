@@ -242,7 +242,7 @@ public class BizppurioMapper {
               + "\n"
               + "\uD83E\uDD1E\uD83C\uDFFB신청 시, 철회는 불가합니다! 반드시 수업 시간과 장소를 확인 후 가능한 수업을 신청해주세요");
     }
-    String url = "https://"+ landingUrl +  "/teacher/notify/" + notifyClassInfoEvent.token();
+    String url = "https://" + landingUrl + "/teacher/notify/" + notifyClassInfoEvent.token();
     CommonButton webButton = new WebButton("과외 정보 확인하기", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(message, yeduMatchingKey, notifyClass, new CommonButton[] {webButton});
@@ -422,9 +422,11 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .replace("#{district}", recommendTeacherEvent.district())
             .replace("#{subject}", recommendTeacherEvent.classType());
     String url =
-        "https://"+ landingUrl + "/teacher/recommend/#{token}?subject=#{subject}"
-            .replace("#{token}", recommendTeacherEvent.token())
-            .replace("#{subject}", recommendTeacherEvent.classType());
+        "https://"
+            + landingUrl
+            + "/teacher/recommend/#{token}?subject=#{subject}"
+                .replace("#{token}", recommendTeacherEvent.token())
+                .replace("#{subject}", recommendTeacherEvent.classType());
 
     CommonButton webButton = new WebButton("선생님 프로필 확인하기", WEB_LINK, url, url);
     Message messageBody =
@@ -567,7 +569,9 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
        """
             .strip()
             .replace("#{applicationFormId}", teacherExchangeEvent.applicationFormId())
-            .replace("#{classCount}", teacherExchangeEvent.classCount() + " " + teacherExchangeEvent.time())
+            .replace(
+                "#{classCount}",
+                teacherExchangeEvent.classCount() + " " + teacherExchangeEvent.time())
             .replace(
                 "#{dayTimes}",
                 teacherExchangeEvent.dayTimes().stream()
@@ -583,13 +587,9 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .replace("#{district}", teacherExchangeEvent.district())
             .replace("#{pay}", String.valueOf((int) (teacherExchangeEvent.money() * (5.0 / 6.0))));
 
-    String url = "https://" + landingUrl + "/teacher/notify/" + teacherExchangeEvent.classNotifyToken();
-    CommonButton webButton =
-        new WebButton(
-            "수업 정보 확인",
-            WEB_LINK,
-            url,
-            url);
+    String url =
+        "https://" + landingUrl + "/teacher/notify/" + teacherExchangeEvent.classNotifyToken();
+    CommonButton webButton = new WebButton("수업 정보 확인", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(
             message, yeduMatchingKey, teacherClassNotifyInfo, new CommonButton[] {webButton});
@@ -615,13 +615,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .strip()
             .replace("#{phoneNumer}", teacherExchangeEvent.parentsPhoneNumber());
 
-    String url = "https://"+ landingUrl +  "/result/" + teacherExchangeEvent.classManagementToken();
-    CommonButton webButton =
-        new WebButton(
-            "상담 결과 전달",
-            WEB_LINK,
-            url,
-            url);
+    String url = "https://" + landingUrl + "/result/" + teacherExchangeEvent.classManagementToken();
+    CommonButton webButton = new WebButton("상담 결과 전달", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(
             message, yeduMatchingKey, teacherSchedule, new CommonButton[] {webButton});
@@ -645,12 +640,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     String url = "https://" + landingUrl + "/teachersetting/time?token=" + event.token();
 
-    CommonButton webButton =
-        new WebButton(
-            "수업 가능시간 설정하기",
-            WEB_LINK,
-            url,
-            url);
+    CommonButton webButton = new WebButton("수업 가능시간 설정하기", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(message, yeduOfficialKey, teacherSetting, new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
