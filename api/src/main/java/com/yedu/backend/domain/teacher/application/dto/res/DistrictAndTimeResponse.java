@@ -6,4 +6,5 @@ import java.util.List;
 import java.util.Map;
 
 public record DistrictAndTimeResponse(
-    List<String> districts, Map<Day, List<LocalTime>> availables) {}
+    List<String> districts,
+    Map<Day, List<LocalTime>> available) {}

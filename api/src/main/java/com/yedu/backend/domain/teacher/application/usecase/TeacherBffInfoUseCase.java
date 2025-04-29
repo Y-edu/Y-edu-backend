@@ -73,7 +73,7 @@ public class TeacherBffInfoUseCase {
             .nickName(commonsInfoResponse.nickName())
             .classCount(classMatching.getApplicationForm().getClassCount())
             .classTime(classMatching.getApplicationForm().getClassTime())
-            .available(districtAndTimeResponse.availables())
+            .available(districtAndTimeResponse.available())
             .districts(districtAndTimeResponse.districts());
 
     if (classType.equals(ClassType.수학)) {
