@@ -37,12 +37,15 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
   @Override
   public Map<Teacher, List<TeacherAvailable>> findAllMatchingApplicationForm(
       ApplicationForm applicationForm) {
-    // 지역, 성별, 과목
     return getTeachers(applicationForm).stream()
         .collect(
             Collectors.groupingBy(
                 tuple -> tuple.get(teacher),
-                Collectors.mapping(tuple -> tuple.get(teacherAvailable), Collectors.toList())));
+                Collectors.mapping(
+                    tuple -> tuple.get(teacherAvailable),
+                    Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        list -> list.stream().filter(Objects::nonNull).toList()))));
   }
 
   private List<Tuple> getTeachers(ApplicationForm applicationForm) {
