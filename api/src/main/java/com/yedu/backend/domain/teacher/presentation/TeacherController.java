@@ -136,4 +136,12 @@ public class TeacherController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/token/info/available")
+  @Operation(summary = "선생님 수업 정보 조회 (알림톡 토큰 조회)")
+  public ResponseEntity<DistrictAndTimeResponse> retrieveAvailable(String token) {
+    DistrictAndTimeResponse districtAndTimeResponse = infoUseCase.retrieveAvailableByToken(token);
+
+    return ResponseEntity.ok(districtAndTimeResponse);
+  }
 }

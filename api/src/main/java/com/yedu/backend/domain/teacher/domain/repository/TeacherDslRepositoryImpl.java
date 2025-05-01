@@ -54,7 +54,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
         .select(teacher, teacherAvailable)
         .from(teacher)
         .distinct()
-        .innerJoin(teacherAvailable)
+        .leftJoin(teacherAvailable)
         .fetchJoin()
         .on(teacher.eq(teacherAvailable.teacher))
         .leftJoin(teacherDistrict)
