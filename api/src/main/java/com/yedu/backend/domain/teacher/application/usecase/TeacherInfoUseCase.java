@@ -18,6 +18,7 @@ import com.yedu.backend.domain.teacher.domain.entity.TeacherEnglish;
 import com.yedu.backend.domain.teacher.domain.entity.TeacherMath;
 import com.yedu.backend.domain.teacher.domain.entity.constant.Day;
 import com.yedu.backend.domain.teacher.domain.service.TeacherGetService;
+import com.yedu.cache.support.storage.KeyStorage;
 import java.time.LocalTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class TeacherInfoUseCase {
   private final TeacherGetService teacherGetService;
+  private final KeyStorage<Long> updateAvailableTimeKeyStorage;
 
   public TeacherCommonsInfoResponse teacherCommonsInfo(long teacherId) {
     Teacher teacher = teacherGetService.byId(teacherId);
@@ -102,5 +104,14 @@ public class TeacherInfoUseCase {
 
   public TeacherWithAvailable allApplicationFormTeacher(ApplicationForm applicationForm) {
     return teacherGetService.applicationFormTeachers(applicationForm);
+  }
+
+  public DistrictAndTimeResponse retrieveAvailableByToken(String token) {
+    Long teacherId = updateAvailableTimeKeyStorage.get(token);
+    Teacher teacher = teacherGetService.byId(teacherId);
+    List<String> districts = getDistricts(teacher);
+    SortedMap<Day, List<LocalTime>> availableTimes = getDayListSortedMap(teacher);
+
+    return mapToDistrictAndTimeResponse(districts, availableTimes);
   }
 }

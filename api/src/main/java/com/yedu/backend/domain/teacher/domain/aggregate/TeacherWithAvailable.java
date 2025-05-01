@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 @Getter
 @RequiredArgsConstructor
@@ -27,8 +28,13 @@ public class TeacherWithAvailable {
     return teachers.entrySet().stream()
         .filter(
             entry -> {
+              // 가능시간이없는 선생님들도 발송처리
+              List<TeacherAvailable> availables = entry.getValue();
+              if (CollectionUtils.isEmpty(availables)) {
+                return true;
+              }
               int matchCount =
-                  entry.getValue().stream()
+                  availables.stream()
                       .filter(
                           teacherAvailable ->
                               formAvailables.stream().anyMatch(teacherAvailable::isSameTo))
