@@ -34,10 +34,10 @@ jobs:
 
     - name: Create application.yml
       run: |
-        cat <<EOL > ./api/src/main/resources/application-dev.yml
-        ${{ secrets.APPLICATION_DEV }}
-        EOL
-        
+        echo "${{ secrets.APPLICATION_PROD }}" > ./api/src/main/resources/application-prod.yml
+        echo "${{ secrets.APPLICATION_DEV }}" > ./api/src/main/resources/application-dev.yml
+    
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       working-directory: ${{ env.working-directory }}
