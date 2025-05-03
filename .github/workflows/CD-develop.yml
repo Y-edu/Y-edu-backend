@@ -54,5 +54,10 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           envs: GITHUB_SHA
           script: |
-            docker login ghcr.io -u "y-edu" -p '${{secrets.GITHUB_TOKEN}}'
+            docker login ghcr.io -u "y-edu" -p '${{secrets.DEPLOY_TOKEN}}'
             docker pull ghcr.io/y-edu/api:1.0.0
+            docker rm -f api-1.0.0
+            docker run -d \
+              --name api-1.0.0 \
+              -e "SPRING_PROFILES_ACTIVE=dev" \
+              -p "9191:8080"
