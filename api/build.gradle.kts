@@ -1,3 +1,28 @@
+version = "1.0.0"
+
+jib {
+    val repositoryUsername = property("githubRepositoryId") as String
+    val repositoryToken = property("githubRepositoryToken") as String
+
+    from {
+        image = "amazoncorretto:17"
+    }
+    to {
+        image = "ghcr.io/$repositoryUsername/${project.name}:${project.version}"
+        tags = setOf("latest")
+        auth {
+            username = repositoryUsername
+            password = repositoryToken
+        }
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        jvmFlags = listOf("-XX:+UseContainerSupport",
+            "-Dfile.encoding=UTF-8"
+        )
+    }
+}
+
 
 dependencies {
     implementation(project(":shared:common"))

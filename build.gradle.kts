@@ -4,6 +4,7 @@ plugins {
 	id("com.diffplug.spotless") version "7.0.3"
 	id ("org.springframework.boot") version "3.4.2"
 	id ("io.spring.dependency-management") version "1.1.7"
+	id("com.google.cloud.tools.jib") version "3.4.4"
 }
 
 
@@ -17,6 +18,7 @@ allprojects {
 	apply(plugin = "com.diffplug.spotless")
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "io.spring.dependency-management")
+	apply(plugin = "com.google.cloud.tools.jib")
 	java {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(17)
