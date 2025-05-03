@@ -55,3 +55,4 @@ jobs:
           envs: GITHUB_SHA
           script: |
             docker login ghcr.io -u "y-edu" -p '${{secrets.GITHUB_TOKEN}}'
+            docker pull ghcr.io/y-edu/api:latest

@@ -9,7 +9,6 @@ jib {
     }
     to {
         image = "ghcr.io/$repositoryUsername/${project.name}:${project.version}"
-        tags = setOf("latest")
         auth {
             username = repositoryUsername
             password = repositoryToken
