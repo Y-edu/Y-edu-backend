@@ -1,8 +1,9 @@
 version = "1.0.0"
 
 jib {
-    val repositoryUsername = property("githubRepositoryId") as String
-    val repositoryToken = property("githubRepositoryToken") as String
+    val repositoryUsername = "y-edu"
+    val repositoryToken = System.getenv("DEPLOY_TOKEN")
+        ?: throw GradleException("Missing GITHUB_REPO_TOKEN env variable")
 
     from {
         image = "amazoncorretto:17"

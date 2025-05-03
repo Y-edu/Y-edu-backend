@@ -45,6 +45,8 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew :api:jib
       working-directory: ${{ env.working-directory }}
+      env:
+        DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
 
     - name: Deploy
       uses: appleboy/ssh-action@master
