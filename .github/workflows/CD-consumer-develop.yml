@@ -70,4 +70,5 @@ jobs:
             -e "SPRING_PROFILES_ACTIVE=dev" \
             -e "TZ=Asia/Seoul" \
             --restart always \
+            --network yedu-network \
             ghcr.io/y-edu/consumer:1.0.0
