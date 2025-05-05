@@ -5,13 +5,15 @@ import static com.yedu.bizppurio.support.event.mapper.DiscordEventMapper.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.constant.BizppurioResponseCode;
-import com.yedu.bizppurio.support.application.dto.req.MessageStatusRequest;
-import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
+import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
+import com.yedu.bizppurio.support.application.mapper.BizppurioMapper;
 import com.yedu.cache.support.RedisRepository;
+import com.yedu.common.dto.MessageStatusRequest;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,9 +26,9 @@ public class BizppurioCheckStep {
   private static final String CLASS_NOTICE = "CLASS_NOTICE";
   private final RedisRepository redisRepository;
   private final ObjectMapper objectMapper;
-  private final BizppurioTeacherMessage teacherMessage;
-  private final BizppurioParentsMessage parentsMessage;
-  private final BizppurioModuleEventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
+  private final BizppurioMapper bizppurioMapper;
+  private final BizppurioApiTemplate bizppurioApiTemplate;
 
   public void checkByWebHook(MessageStatusRequest request) {
     if (request.RESULT().equals(SUCCESS)) {
@@ -45,9 +47,8 @@ public class BizppurioCheckStep {
       switch (type) {
         case WRITE_FIN_TALK -> {
           try {
-            IntroduceWriteFinishTalkEvent event =
-                objectMapper.readValue(value, IntroduceWriteFinishTalkEvent.class);
-            teacherMessage.introduceWriteFinishTalk(event);
+            IntroduceWriteFinishTalkEvent event = objectMapper.readValue(value, IntroduceWriteFinishTalkEvent.class);
+            CommonRequest commonRequest = bizppurioMapper.mapToIntroduceWriteFinishTalk(event);bizppurioApiTemplate.send(commonRequest);
           } catch (JsonProcessingException e) {
             log.error("objectMapper 예외 발생");
             throw new RuntimeException(e);
@@ -57,7 +58,8 @@ public class BizppurioCheckStep {
           try {
             ParentsClassNoticeEvent event =
                 objectMapper.readValue(value, ParentsClassNoticeEvent.class);
-            parentsMessage.parentsClassNotice(event);
+            CommonRequest commonRequest = bizppurioMapper.mapToParentsClassNotice(event);
+            bizppurioApiTemplate.send(commonRequest);
           } catch (JsonProcessingException e) {
             log.error("objectMapper 예외 발생");
             throw new RuntimeException(e);
@@ -81,7 +83,7 @@ public class BizppurioCheckStep {
         request.REFKEY(),
         code,
         errorMessage);
-    eventPublisher.publishAlarmTalkErrorInfoEvent(
+    eventPublisher.publishEvent(
         mapToAlarmTalkErrorInfoEvent(request.PHONE(), message, String.valueOf(code), errorMessage));
   }
 }

@@ -1,14 +1,21 @@
-name: Java CD with Gradle
+name: Java CI with Gradle
 
 on:
-  push:
-    branches: [ "main" ]
+  paths:
+    - .github/workflows/CD-consumer-develop.yml
+    - .github/workflows/CI-consumer-develop.yml
+    - "consumer/**"
+    - "shared/**"
+    - "build.gradle.kts"
+  pull_request:
+    branches: [ "develop" ]
 
 permissions:
   contents: read
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
     env :
       working-directory: ./
@@ -30,29 +37,21 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
       - name: Create application.yml
         run: |
-          echo "${{ secrets.APPLICATION_PROD }}" > ./api/src/main/resources/application-prod.yml
-          echo "${{ secrets.APPLICATION_DEV }}" > ./api/src/main/resources/application-dev.yml
+          echo "${{ secrets.CONSUMER_APPLICATION_PROD }}" > ./consumer/src/main/resources/application-prod.yml
+          echo "${{ secrets.CONSUMER_APPLICATION_DEV }}" > ./consumer/src/main/resources/application-dev.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ${{ env.working-directory }}
 
       - name: Build with Gradle
-        run: ./gradlew :api:jib
+        run: ./gradlew build
         working-directory: ${{ env.working-directory }}
-        env:
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
 
-      - name: Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_SERVER_HOST_PROD }}
-          username: ${{ secrets.EC2_SERVER_USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY_PROD }}
-          envs: GITHUB_SHA
-          script: |
-            chmod +x /home/ec2-user/config/deploy.sh
-            /home/ec2-user/config/deploy.sh
+      - name: Cleanup Gradle Cache
+        if: ${{ always() }}
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties

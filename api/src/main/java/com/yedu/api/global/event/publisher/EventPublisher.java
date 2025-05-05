@@ -88,4 +88,8 @@ public class EventPublisher {
       TeacherAvailableTimeUpdateRequestEvent event) {
     applicationEventPublisher.publishEvent(event);
   }
+
+  public void publishWebHookEvent(BizppurioWebHookEvent event) {
+    applicationEventPublisher.publishEvent(event);
+  }
 }

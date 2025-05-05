@@ -2,6 +2,12 @@ name: Java CD with Gradle
 
 on:
   push:
+    paths:
+      - .github/workflows/CD-consumer-develop.yml
+      - .github/workflows/CI-consumer-develop.yml
+      - "consumer/**"
+      - "shared/**"
+      - "build.gradle.kts"
     branches: [ "develop" ]
 
 permissions:
@@ -33,16 +39,16 @@ jobs:
 
     - name: Create application.yml
       run: |
-        echo "${{ secrets.APPLICATION_PROD }}" > ./api/src/main/resources/application-prod.yml
-        echo "${{ secrets.APPLICATION_DEV }}" > ./api/src/main/resources/application-dev.yml
-    
+        echo "${{ secrets.CONSUMER_APPLICATION_DEV }}" > ./consumer/src/main/resources/application-dev.yml
+        echo "${{ secrets.CONSUMER_APPLICATION_PROD }}" > ./consumer/src/main/resources/application-prod.yml
+        
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       working-directory: ${{ env.working-directory }}
       
     - name: Build with Gradle
-      run: ./gradlew :api:jib
+      run: ./gradlew :consumer:jib
       working-directory: ${{ env.working-directory }}
       env:
         DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
@@ -50,21 +56,16 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-          host: ${{ secrets.EC2_SERVER_HOST }}
-          username: ${{ secrets.EC2_SERVER_USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          envs: GITHUB_SHA
+          host: ${{ secrets.INFRABIRD_SERVER_HOST }}
+          username: ${{ secrets.INFRABIRD_SERVER_USERNAME }}
+          key: ${{ secrets.INFRABIRD_PRIVATE_KEY }}
           script: |
             docker login ghcr.io -u "y-edu" -p '${{secrets.DEPLOY_TOKEN}}'
-            docker pull ghcr.io/y-edu/api:1.0.0
-            docker rm -f yedu_develop
+            docker pull ghcr.io/y-edu/consumer:1.0.0
+            docker rm -f yedu_develop_consumer
             docker run -d \
-            --name yedu_develop \
+            --name yedu_develop_consumer \
             -e "SPRING_PROFILES_ACTIVE=dev" \
             -e "TZ=Asia/Seoul" \
-            -p 9191:8080 \
-            -v "/logs-yedu:/app/logs" \
-            -v "/was-logs-yedu:/app/was-logs" \
             --restart always \
-            --network yedu-network \
-            ghcr.io/y-edu/api:1.0.0
+            ghcr.io/y-edu/consumer:1.0.0

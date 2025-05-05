@@ -50,6 +50,9 @@ subprojects {
 		testImplementation ("org.springframework.boot:spring-boot-starter-test")
 		compileOnly("org.projectlombok:lombok")
 		annotationProcessor( "org.projectlombok:lombok")
+		if ( System.getProperty("os.name").startsWith("Mac")) {
+			implementation("io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64")
+		}
 	}
 }
 

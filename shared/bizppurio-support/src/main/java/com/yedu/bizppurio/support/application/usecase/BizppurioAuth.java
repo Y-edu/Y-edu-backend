@@ -8,7 +8,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.yedu.bizppurio.support.application.dto.res.BizppurioTokenResponse;
-import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
 import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Base64Util;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,7 +28,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class BizppurioAuth {
   private final WebClient webClient;
   private final RedisRepository redisRepository;
-  private final BizppurioModuleEventPublisher bizppurioModuleEventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Value("${bizppurio.token}")
   private String bizzppurioToken;
@@ -57,8 +57,7 @@ public class BizppurioAuth {
       log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
       return tokenResponse.accesstoken();
     } catch (Exception ex) {
-      bizppurioModuleEventPublisher.publishAlarmTalkErrorMessageEvent(
-          mapToAlarmTalkErrorMessageEvent(ex.getMessage()));
+      eventPublisher.publishEvent(mapToAlarmTalkErrorMessageEvent(ex.getMessage()));
       log.error("비즈뿌리오 토큰 발급중 예외 발생");
       return "ERROR";
     }

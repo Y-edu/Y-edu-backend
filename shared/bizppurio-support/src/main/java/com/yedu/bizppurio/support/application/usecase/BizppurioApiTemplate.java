@@ -6,14 +6,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.dto.res.MessageResponse;
-import com.yedu.bizppurio.support.event.publisher.BizppurioModuleEventPublisher;
 import com.yedu.cache.support.RedisRepository;
 import java.time.Duration;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,7 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class BizppurioSend {
+public class BizppurioApiTemplate {
 
   private static final String PHONE_REGEX = "^010\\d{8}$";
 
@@ -29,21 +28,20 @@ public class BizppurioSend {
   private final ObjectMapper objectMapper;
   private final WebClient webClient;
   private final RedisRepository redisRepository;
-  private final BizppurioModuleEventPublisher bizppurioModuleEventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Value("${bizppurio.message}")
   private String messageUrl;
 
-  protected String sendMessageWithExceptionHandling(Supplier<CommonRequest> messageSupplier) {
-    CommonRequest commonRequest = messageSupplier.get();
+  public String send(CommonRequest commonRequest) {
 
     if (!Pattern.matches(PHONE_REGEX, commonRequest.to())) {
       log.error("알림톡 발송 실패, 전화번호 오류 : {} / commonRequest : {}", commonRequest.to(), commonRequest);
       throw new IllegalArgumentException();
     }
 
-    String accessToken = bizppurioAuth.getAuth();
     String request;
+    String accessToken = bizppurioAuth.getAuth();
     try {
       request = objectMapper.writeValueAsString(commonRequest);
     } catch (Exception e) {
@@ -76,7 +74,7 @@ public class BizppurioSend {
         .doOnError(
             error -> {
               log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-              bizppurioModuleEventPublisher.publishAlarmTalkErrorWithFirstEvent(
+              eventPublisher.publishEvent(
                   mapToAlarmTalkErrorWithFirstEvent(
                       commonRequest.to(),
                       commonRequest.content().at().getMessage(),

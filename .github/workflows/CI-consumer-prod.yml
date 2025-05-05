@@ -1,6 +1,12 @@
 name: Java CI with Gradle
 
 on:
+  paths:
+    - .github/workflows/CD-consumer-prod.yml
+    - .github/workflows/CI-consumer-prod.yml
+    - "consumer/**"
+    - "shared/**"
+    - "build.gradle.kts"
   pull_request:
     branches: [ "main" ]
 
@@ -13,8 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     env :
       working-directory: ./
-      APPLICATION: ${{ secrets.APPLICATION_PROD}}
-      APPLICATION_TEST: ${{ secrets.APPLICATION_DEV}}
 
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +39,8 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Create application.yml
         run: |
-          echo "${{env.APPLICATION}}" > ./api/src/main/resources/application-prod.yml
-          echo "${{env.APPLICATION_TEST}}" > ./api/src/main/resources/application-dev.yml
+          echo "${{ secrets.CONSUMER_APPLICATION_PROD }}" > ./consumer/src/main/resources/application-prod.yml
+          echo "${{ secrets.CONSUMER_APPLICATION_DEV }}" > ./consumer/src/main/resources/application-dev.yml
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

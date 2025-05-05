@@ -28,7 +28,11 @@ jib {
 
 dependencies {
     implementation(project(":shared:common"))
+    implementation(project(":shared:rabbitmq-support"))
+    implementation(project(":shared:cache-support"))
+    implementation(project(":shared:bizppurio-support"))
 
+    implementation ("com.fasterxml.jackson.core:jackson-databind:2.18.2")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
 }
 

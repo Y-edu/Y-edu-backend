@@ -1,6 +1,0 @@
-spring:
-  rabbitmq:
-    host: infrabird.duckdns.org
-    username: guest
-    password: guest
-    port: 10005
