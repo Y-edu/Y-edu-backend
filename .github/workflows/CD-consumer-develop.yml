@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - .github/workflows/CD-consumer-develop.yml
-      - .github/workflows/CI-consumer-develop.yml
       - "consumer/**"
       - "shared/**"
       - "build.gradle.kts"

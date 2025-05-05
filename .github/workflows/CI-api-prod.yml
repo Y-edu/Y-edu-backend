@@ -2,7 +2,6 @@ name: Java CI with Gradle
 
 on:
   paths:
-    - .github/workflows/CD-api-prod.yml
     - .github/workflows/CI-api-prod.yml
     - "api/**"
     - "shared/**"

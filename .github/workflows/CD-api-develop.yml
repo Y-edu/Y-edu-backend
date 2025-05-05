@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - .github/workflows/CD-api-develop.yml
-      - .github/workflows/CI-api-develop.yml
       - "api/**"
       - "shared/**"
       - "build.gradle.kts"
@@ -39,8 +38,8 @@ jobs:
 
     - name: Create application.yml
       run: |
-        echo "${{ secrets.API_APPLICATION_PROD }}" > ./api/src/main/resources/application-prod.yml
         echo "${{ secrets.API_APPLICATION_DEV }}" > ./api/src/main/resources/application-dev.yml
+        echo "${{ secrets.API_APPLICATION_PROD }}" > ./api/src/main/resources/application-prod.yml
     
 
     - name: Grant execute permission for gradlew
