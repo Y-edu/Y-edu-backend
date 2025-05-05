@@ -50,3 +50,21 @@ jobs:
         working-directory: ${{ env.working-directory }}
         env:
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST_PROD }}
+          username: ${{ secrets.EC2_SERVER_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY_PROD }}
+          script: |
+            docker login ghcr.io -u "y-edu" -p '${{secrets.DEPLOY_TOKEN}}'
+            docker pull ghcr.io/y-edu/consumer:1.0.0
+            docker rm -f yedu_prod_consumer
+            docker run -d \
+            --name yedu_prod_consumer \
+            -e "SPRING_PROFILES_ACTIVE=prod" \
+            -e "TZ=Asia/Seoul" \
+            --restart always \
+            --network yedu-network \
+            ghcr.io/y-edu/consumer:1.0.0
