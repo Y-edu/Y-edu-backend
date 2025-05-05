@@ -3,7 +3,9 @@ version = "1.0.0"
 jib {
     val repositoryUsername = "y-edu"
     val repositoryToken = System.getenv("DEPLOY_TOKEN")
-        ?: throw GradleException("Missing GITHUB_REPO_TOKEN env variable")
+    ?: project.findProperty("DEPLOY_TOKEN") as String?
+    ?: throw GradleException("Missing DEPLOY_TOKEN environment variable or deployToken property in gradle.properties")
+
 
     from {
         image = "amazoncorretto:17"
@@ -43,7 +45,6 @@ dependencies {
     testRuntimeOnly ("org.junit.platform:junit-platform-launcher")
     //test
     testRuntimeOnly ("com.h2database:h2")
-    // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
     implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     //swagger 추가
 
