@@ -23,7 +23,6 @@ import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.api.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.api.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.api.global.config.s3.S3UploadService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.MatchingIdApplicationNotifyKeyStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +47,7 @@ public class TeacherManageUseCase {
   private final TeacherUpdateService teacherUpdateService;
   private final TeacherDeleteService teacherDeleteService;
   private final S3UploadService s3UploadService;
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final ClassMatchingGetService classMatchingGetService;
   private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
@@ -62,7 +62,7 @@ public class TeacherManageUseCase {
     teacherSaveService.saveTeacher(teacher, teacherAvailables, teacherDistricts, english, math);
 
     // 선생님 등록 1 알림톡 전송, 선생님 등록 2 알림톡 전송
-    eventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
+    eventPublisher.publishEvent(mapToPhotoSubmitEvent(teacher));
   }
 
   private TeacherMath getTeacherMath(TeacherInfoFormRequest request, Teacher teacher) {
@@ -108,16 +108,16 @@ public class TeacherManageUseCase {
     Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
     teacherUpdateService.updateProfile(teacher, profileUrl);
     teacherUpdateService.updateFormStep(teacher);
-    eventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
+    eventPublisher.publishEvent(mapToApplyAgreeEvent(teacher));
   }
 
   public void submitContract(TeacherContractRequest request) {
     Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
     List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
     teacherUpdateService.updateActive(teacher);
-    eventPublisher.publishInviteMatchingChannelInfoEvent(
+    eventPublisher.publishEvent(
         mapToInviteMatchingChannelInfoEvent(teacher));
-    eventPublisher.publishTeacherRegisterEvent(
+    eventPublisher.publishEvent(
         mapToTeacherRegisterEvent(teacher, teacherDistricts));
   }
 
@@ -134,7 +134,7 @@ public class TeacherManageUseCase {
               teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
           matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
-          eventPublisher.publishNotifyClassInfoEvent(
+          eventPublisher.publishEvent(
               mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
@@ -186,7 +186,7 @@ public class TeacherManageUseCase {
             teacher -> {
               log.info("teacherId : " + teacher.getTeacherId() + " 리마인드 알림톡 전송");
               teacherUpdateService.updateRemind(teacher);
-              eventPublisher.publishPhotoHurryEvent(mapToPhotoHurryEvent(teacher));
+              eventPublisher.publishEvent(mapToPhotoHurryEvent(teacher));
             });
   }
 }

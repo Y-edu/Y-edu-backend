@@ -3,7 +3,6 @@ package com.yedu.discord.support.listener;
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
-import com.yedu.common.event.bizppurio.TeacherExchangeEvent;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.DiscordWebhookUseCase;
 import lombok.RequiredArgsConstructor;
@@ -33,32 +32,6 @@ public class DiscordEventListener {
   @Async
   public void handleAlarmTalkErrorWithFirst(AlarmTalkErrorWithFirstEvent event) {
     discordWebhookUseCase.sendAlarmTalkErrorWithFirst(event);
-  }
-
-  // todo 시간조율 스프린트 토큰 발송 테스트용
-  @EventListener
-  @Async
-  public void handleNotifyApplicationToTeacherEvent(NotifyClassInfoEvent event) {
-    discordWebhookUseCase.sendNotifyClassInfoEvent(event);
-  }
-
-  @EventListener
-  @Async
-  public void handleRecommendTeacherEvent(RecommendTeacherEvent event) {
-    discordWebhookUseCase.sendRecommendTeacherEvent(event);
-  }
-
-  @EventListener
-  @Async
-  public void handleScheduleEvent(TeacherExchangeEvent event) {
-    discordWebhookUseCase.sendTeacherExchangeEvent(event);
-  }
-
-  @EventListener
-  @Async
-  public void handleAvailableTeacherTimeUpdateRequestEvent(
-      TeacherAvailableTimeUpdateRequestEvent event) {
-    discordWebhookUseCase.sendAvailableTeacherTimeUpdateRequestEvent(event);
   }
 
   @EventListener

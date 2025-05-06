@@ -32,8 +32,12 @@ dependencies {
     implementation(project(":shared:cache-support"))
     implementation(project(":shared:bizppurio-support"))
 
-    implementation ("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation ("org.flywaydb:flyway-mysql")
+    implementation ("org.flywaydb:flyway-core")
+    runtimeOnly ("com.mysql:mysql-connector-j")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation ("com.fasterxml.jackson.core:jackson-databind:2.18.2")
 }
 
 tasks.test {

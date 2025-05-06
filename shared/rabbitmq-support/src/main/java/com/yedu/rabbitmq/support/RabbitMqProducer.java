@@ -19,7 +19,8 @@ import com.yedu.common.event.bizppurio.RecommendGuideEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
-import com.yedu.common.event.bizppurio.TeacherExchangeEvent;
+import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.event.EventListener;
@@ -91,7 +92,13 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
-  public void handle(TeacherExchangeEvent event) {
+  public void handle(TeacherScheduleEvent event) {
+    produceTeacherMessage(event);
+  }
+
+  @EventListener
+  @Async
+  public void handle(TeacherNotifyClassInfoEvent event) {
     produceTeacherMessage(event);
   }
 

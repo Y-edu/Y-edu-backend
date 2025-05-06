@@ -6,11 +6,20 @@ import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.mapper.BizppurioMapper;
 import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
 import com.yedu.cache.support.RedisRepository;
-import com.yedu.common.event.bizppurio.*;
+import com.yedu.common.event.bizppurio.MatchingParentsEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
-import com.yedu.rabbitmq.support.Message;
+import com.yedu.common.event.bizppurio.NotifyCallingEvent;
+import com.yedu.common.event.bizppurio.ParentsClassInfoEvent;
+import com.yedu.common.event.bizppurio.PayNotificationEvent;
+import com.yedu.common.event.bizppurio.RecommendGuideEvent;
+import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
+import com.yedu.consumer.domain.notification.entity.Notification;
+import com.yedu.consumer.domain.notification.repository.NotificationRepository;
+import com.yedu.consumer.domain.notification.type.PushType;
+import com.yedu.consumer.domain.notification.type.ReceiverType;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,75 +29,51 @@ public class ParentMessageConsumer extends AbstractConsumer {
 
   private static final String NEXT = "NEXT";
   private static final String CLASS_NOTICE = "CLASS_NOTICE|";
-  private final BizppurioMapper bizppurioMapper;
-  private final BizppurioApiTemplate bizppurioApiTemplate;
+
+  private final BizppurioMapper mapper;
   private final RedisRepository redisRepository;
 
   public ParentMessageConsumer(ObjectMapper objectMapper,
-      BizppurioMapper bizppurioMapper, BizppurioApiTemplate bizppurioApiTemplate,
-      RedisRepository redisRepository) {
-    super(objectMapper);
-    this.bizppurioMapper = bizppurioMapper;
-    this.bizppurioApiTemplate = bizppurioApiTemplate;
+      BizppurioMapper mapper, BizppurioApiTemplate apiTemplate,
+      RedisRepository redisRepository, NotificationRepository notificationRepository) {
+    super(apiTemplate, notificationRepository, objectMapper);
+    this.mapper = mapper;
     this.redisRepository = redisRepository;
   }
 
+  @Override
+  public Notification beforeConsume(CommonRequest request) {
+    return Notification.builder()
+        .receiverType(ReceiverType.PARENT)
+        .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
+        .receiverPhoneNumber(request.to())
+        .content(request.content().toString())
+        .pushKey(request.refkey())
+        .build();
+  }
+
+
   @PostConstruct
   void init() {
-    handlers.put(NotifyCallingEvent.class, msg -> {
-      NotifyCallingEvent event = convert(msg, NotifyCallingEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToNotifyCalling(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(RecommendTeacherEvent.class, msg -> {
-      RecommendTeacherEvent event = convert(msg, RecommendTeacherEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToRecommendTeacher(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(RecommendGuideEvent.class, msg -> {
-      RecommendGuideEvent event = convert(msg, RecommendGuideEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToRecommendGuid(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingParentsEvent.class, msg -> {
-      MatchingParentsEvent event = convert(msg, MatchingParentsEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToParentsExchangePhoneNumber(
+    registerParser(NotifyCallingEvent.class, mapper::mapToNotifyCalling);
+    registerParser(RecommendTeacherEvent.class, mapper::mapToRecommendTeacher);
+    registerParser(RecommendGuideEvent.class, mapper::mapToRecommendGuid);
+    registerParser(ParentsClassNoticeEvent.class, mapper::mapToParentsClassNotice);
+    registerParser(ParentsClassInfoEvent.class, mapper::mapToParentsClassInfo);
+    registerParser(PayNotificationEvent.class, mapper::mapToPayNotification);
+    parsers.put(MatchingParentsEvent.class, message -> {
+      MatchingParentsEvent event = convert(message, MatchingParentsEvent.class);
+      CommonRequest commonRequest = mapper.mapToParentsExchangePhoneNumber(
           event.parentsExchangeEvent());
-      bizppurioApiTemplate.send(commonRequest);
       try {
-        String value =
-            objectMapper.writeValueAsString(event.parentsClassNoticeEvent());
-        redisRepository.setValues(NEXT + commonRequest.refkey(), CLASS_NOTICE + value, Duration.ofSeconds(5l));
+        String value = objectMapper.writeValueAsString(event.parentsClassNoticeEvent());
+        redisRepository.setValues(NEXT + commonRequest.refkey(), CLASS_NOTICE + value,
+            Duration.ofSeconds(10L));
       } catch (JsonProcessingException e) {
         throw new IllegalArgumentException(e);
       }
-
-    });
-
-    handlers.put(ParentsClassNoticeEvent.class, msg -> {
-      ParentsClassNoticeEvent event = convert(msg, ParentsClassNoticeEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToParentsClassNotice(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(ParentsClassInfoEvent.class, msg -> {
-      ParentsClassInfoEvent event = convert(msg, ParentsClassInfoEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToParentsClassInfo(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(PayNotificationEvent.class, msg -> {
-      PayNotificationEvent event = convert(msg, PayNotificationEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToPayNotification(event);
-      bizppurioApiTemplate.send(commonRequest);
+      return commonRequest;
     });
   }
 
-  @Override
-  void afterConsume(Message message) {
-
-  }
 }

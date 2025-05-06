@@ -10,13 +10,13 @@ import com.yedu.api.domain.matching.domain.service.MatchingTimetableCommandServi
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.common.event.bizppurio.PayNotificationEvent;
 import java.time.LocalTime;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +25,7 @@ public class MatchingTimetableUseCase {
   private final MatchingTimetableQueryService matchingTimetableQueryService;
   private final MatchingTimetableCommandService matchingTimetableCommandService;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
 
   public MatchingTimetableRetrieveResponse retrieveMatchingTimetable(
       MatchingTimeTableRetrieveRequest request) {
@@ -73,6 +73,6 @@ public class MatchingTimetableUseCase {
             classMatching.getTeacher().getTeacherInfo().getNickName(),
             applicationForm.getPay());
 
-    eventPublisher.publishPayNotificationEvent(event);
+    eventPublisher.publishEvent(event);
   }
 }

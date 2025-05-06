@@ -3,7 +3,7 @@ package com.yedu.common.event.bizppurio;
 import java.time.LocalTime;
 import java.util.List;
 
-public record TeacherExchangeEvent(
+public record TeacherScheduleEvent(
     String applicationFormId,
     String classCount,
     String time,

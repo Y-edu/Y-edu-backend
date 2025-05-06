@@ -15,12 +15,12 @@ import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -34,10 +34,10 @@ public class ClassScheduleMatchingUseCase {
 
   private final KeyStorage<Long> classManagementKeyStorage;
 
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
 
   private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
-  private final TeacherGetService teacherGetService;
+
   private final MatchingTimetableQueryService matchingTimetableQueryService;
 
   public String schedule(ClassScheduleMatchingRequest request) {
@@ -49,10 +49,11 @@ public class ClassScheduleMatchingUseCase {
         matchingTimetableQueryService.query(
             classManagement.getClassMatching().getClassMatchingId());
 
-    eventPublisher.publishMatchingEvent(
-        mapToMatchingParentsEvent(classManagement),
-        mapToTeacherExchangeEvent(
+    eventPublisher.publishEvent(mapToMatchingParentsEvent(classManagement));
+    eventPublisher.publishEvent(mapToTeacherNotifyClassInfoEvent(
             classManagementToken, classNotifyToken, classManagement, timetables));
+    eventPublisher.publishEvent(mapToTeacherScheduleEvent(
+        classManagementToken, classNotifyToken, classManagement, timetables));
 
     return classManagementToken;
   }
@@ -62,7 +63,7 @@ public class ClassScheduleMatchingUseCase {
         request.classScheduleManagementId(),
         key -> {
           ClassMatching classMatching = managementCommandService.delete(request, key);
-          eventPublisher.publishScheduleCancelEvent(
+          eventPublisher.publishEvent(
               mapToScheduleCancelEvent(
                   classMatching.getTeacher(),
                   classMatching.getApplicationForm(),
@@ -75,9 +76,8 @@ public class ClassScheduleMatchingUseCase {
         request.classScheduleManagementId(),
         key -> {
           ClassManagement classManagement = managementCommandService.confirm(request, key);
-          eventPublisher.publishMatchingConfirmEvent(
-              mapToParentsClassInfoEvent(classManagement),
-              mapToMatchingConfirmTeacherEvent(classManagement));
+          eventPublisher.publishEvent(mapToParentsClassInfoEvent(classManagement));
+          eventPublisher.publishEvent(mapToMatchingConfirmTeacherEvent(classManagement));
         });
   }
 

@@ -1,5 +1,6 @@
 package com.yedu.consumer.listener;
 
+import com.yedu.consumer.consumer.AbstractConsumer;
 import com.yedu.consumer.consumer.ParentMessageConsumer;
 import com.yedu.consumer.consumer.SystemMessageConsumer;
 import com.yedu.consumer.consumer.TeacherMessageConsumer;
@@ -13,8 +14,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RabbitListenerService {
 
-  private final ParentMessageConsumer parentMessageConsumer;
-  private final TeacherMessageConsumer teacherMessageConsumer;
+  private final AbstractConsumer parentMessageConsumer;
+  private final AbstractConsumer teacherMessageConsumer;
   private final SystemMessageConsumer systemMessageConsumer;
 
   @SneakyThrows

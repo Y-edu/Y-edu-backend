@@ -6,138 +6,101 @@ import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.mapper.BizppurioMapper;
 import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
 import com.yedu.cache.support.RedisRepository;
-import com.yedu.common.event.bizppurio.*;
-import com.yedu.rabbitmq.support.Message;
+import com.yedu.common.event.bizppurio.ApplyAgreeEvent;
+import com.yedu.common.event.bizppurio.InviteMatchingChannelInfoEvent;
+import com.yedu.common.event.bizppurio.MatchingAcceptCaseInfoEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent;
+import com.yedu.common.event.bizppurio.MatchingRefuseCaseDistrictEvent;
+import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
+import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;
+import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.PhotoHurryEvent;
+import com.yedu.common.event.bizppurio.PhotoSubmitEvent;
+import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
+import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
+import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
+import com.yedu.consumer.domain.notification.entity.Notification;
+import com.yedu.consumer.domain.notification.repository.NotificationRepository;
+import com.yedu.consumer.domain.notification.type.PushType;
+import com.yedu.consumer.domain.notification.type.ReceiverType;
+import com.yedu.consumer.domain.notification.type.Status;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class TeacherMessageConsumer extends AbstractConsumer {
+
   private static final String NEXT = "NEXT";
   private static final String WRITE_FIN_TALK = "WRITE_FIN_TALK";
-  private final BizppurioMapper bizppurioMapper;
+
+  private final BizppurioMapper mapper;
   private final BizppurioApiTemplate bizppurioApiTemplate;
   private final RedisRepository redisRepository;
 
   public TeacherMessageConsumer(ObjectMapper objectMapper,
-      BizppurioMapper bizppurioMapper, BizppurioApiTemplate bizppurioApiTemplate,
-      RedisRepository redisRepository) {
-    super(objectMapper);
-    this.bizppurioMapper = bizppurioMapper;
+      BizppurioApiTemplate apiTemplate,
+      NotificationRepository notificationRepository, BizppurioMapper mapper,
+      BizppurioApiTemplate bizppurioApiTemplate, RedisRepository redisRepository) {
+    super(apiTemplate, notificationRepository, objectMapper);
+    this.mapper = mapper;
     this.bizppurioApiTemplate = bizppurioApiTemplate;
     this.redisRepository = redisRepository;
   }
 
+
+  @Override
+  public Notification beforeConsume(CommonRequest request) {
+    return Notification.builder()
+        .receiverType(ReceiverType.TEACHER)
+        .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
+        .receiverPhoneNumber(request.to())
+        .content(request.content().toString())
+        .pushKey(request.refkey())
+        .consumedAt(LocalDateTime.now())
+        .status(Status.IN_PROGRESS)
+        .build();
+  }
+
   @PostConstruct
   void init() {
-    handlers.put(PhotoSubmitEvent.class, msg -> {
-      PhotoSubmitEvent event = convert(msg, PhotoSubmitEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToApplyPhotoSubmit(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
+    registerParser(PhotoSubmitEvent.class, mapper::mapToApplyPhotoSubmit);
+    registerParser(PhotoHurryEvent.class, mapper::mapToPhotoHurry);
+    registerParser(ApplyAgreeEvent.class, mapper::mapToApplyAgree);
+    registerParser(InviteMatchingChannelInfoEvent.class, mapper::mapToMatchingChannel);
+    registerParser(NotifyClassInfoEvent.class, mapper::mapToNotifyClass);
+    registerParser(MatchingAcceptCaseInfoEvent.class, mapper::mapToMatchingAcceptCase);
+    registerParser(MatchingRefuseCaseEvent.class, mapper::mapToRefuseCase);
+    registerParser(MatchingRefuseCaseNowEvent.class, mapper::mapToRefuseCaseNow);
+    registerParser(MatchingRefuseCaseDistrictEvent.class, mapper::mapToRefuseCaseDistrict);
+    registerParser(TeacherClassRemindEvent.class, mapper::mapToTeacherClassRemind);
+    registerParser(TeacherAvailableTimeUpdateRequestEvent.class, mapper::mapToTeacherAvailableTimeUpdateRequest);
+    registerParser(TeacherNotifyClassInfoEvent.class, mapper::mapToTeacherNotifyClassInfo);
+    registerParser(TeacherScheduleEvent.class, mapper::mapToTeacherSchedule);
 
-    handlers.put(PhotoHurryEvent.class, msg -> {
-      PhotoHurryEvent event = convert(msg, PhotoHurryEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToPhotoHurry(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
+    parsers.put(MatchingConfirmTeacherEvent.class, message -> {
+      MatchingConfirmTeacherEvent event = convert(message, MatchingConfirmTeacherEvent.class);
+      CommonRequest classGuideCommonRequest = mapper.mapToClassGuide(event.classGuideEvent());
+      CommonRequest writeFinishTalkCommonRequest = mapper.mapToIntroduceWriteFinishTalk(
+          event.introduceWriteFinishTalkEvent());
+      String refKey = bizppurioApiTemplate.send(classGuideCommonRequest);
+      bizppurioApiTemplate.send(writeFinishTalkCommonRequest);
 
-    handlers.put(ApplyAgreeEvent.class, msg -> {
-      ApplyAgreeEvent event = convert(msg, ApplyAgreeEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToApplyAgree(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(InviteMatchingChannelInfoEvent.class, msg -> {
-      InviteMatchingChannelInfoEvent event = convert(msg, InviteMatchingChannelInfoEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToMatchingChannel(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(NotifyClassInfoEvent.class, msg -> {
-      NotifyClassInfoEvent event = convert(msg, NotifyClassInfoEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToNotifyClass(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingAcceptCaseInfoEvent.class, msg -> {
-      MatchingAcceptCaseInfoEvent event = convert(msg, MatchingAcceptCaseInfoEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToMatchingAcceptCase(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingRefuseCaseEvent.class, msg -> {
-      MatchingRefuseCaseEvent event = convert(msg, MatchingRefuseCaseEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToRefuseCase(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingRefuseCaseNowEvent.class, msg -> {
-      MatchingRefuseCaseNowEvent event = convert(msg, MatchingRefuseCaseNowEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToRefuseCaseNow(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingRefuseCaseDistrictEvent.class, msg -> {
-      MatchingRefuseCaseDistrictEvent event = convert(msg, MatchingRefuseCaseDistrictEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToRefuseCaseDistrict(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(TeacherExchangeEvent.class, msg -> {
-      TeacherExchangeEvent event = convert(msg, TeacherExchangeEvent.class);
-      CommonRequest notifyClassInfoRequeest = bizppurioMapper.mapToTeacherNotifyClassInfo(event);
-      CommonRequest teacherScheduleRequest= bizppurioMapper.mapToTeacherSchedule(event);
-
-      CompletableFuture<Void> notifyClassInfoFuture = CompletableFuture.runAsync(() -> bizppurioApiTemplate.send(notifyClassInfoRequeest));
-      CompletableFuture<Void> notifyScheduleFuture = CompletableFuture.runAsync(() -> bizppurioApiTemplate.send(teacherScheduleRequest));
-
-      CompletableFuture.allOf(notifyClassInfoFuture, notifyScheduleFuture).join();
-    });
-
-    handlers.put(TeacherClassRemindEvent.class, msg -> {
-      TeacherClassRemindEvent event = convert(msg, TeacherClassRemindEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToTeacherClassRemind(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingConfirmTeacherEvent.class, msg -> {
-      MatchingConfirmTeacherEvent event = convert(msg, MatchingConfirmTeacherEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToClassGuide(event.classGuideEvent());
-      String refKey = bizppurioApiTemplate.send(commonRequest);
-
-      commonRequest = bizppurioMapper.mapToIntroduceFinishTalk(
-          event.introduceFinishTalkEvent());
+      CommonRequest introduceFinishTalkCommonRequest = mapper.mapToIntroduceFinishTalk(event.introduceFinishTalkEvent());
       try {
         String value = objectMapper.writeValueAsString(event.introduceWriteFinishTalkEvent());
-        redisRepository.setValues(NEXT + refKey, WRITE_FIN_TALK + value, Duration.ofSeconds(5l));
+        redisRepository.setValues(NEXT + refKey, WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
       } catch (JsonProcessingException e) {
         throw new IllegalArgumentException(e);
       }
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent.class, msg -> {
-      MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent event =
-          convert(msg, MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToIntroduceWriteFinishTalk(event);
-      bizppurioApiTemplate.send(commonRequest);
-    });
-
-    handlers.put(TeacherAvailableTimeUpdateRequestEvent.class, msg -> {
-      TeacherAvailableTimeUpdateRequestEvent event =
-          convert(msg, TeacherAvailableTimeUpdateRequestEvent.class);
-      CommonRequest commonRequest = bizppurioMapper.mapToTeacherAvailableTimeUpdateRequest(event);
-      bizppurioApiTemplate.send(commonRequest);
+      return introduceFinishTalkCommonRequest;
     });
   }
 
-  @Override
-  void afterConsume(Message message) {
-
-  }
 }
+
+

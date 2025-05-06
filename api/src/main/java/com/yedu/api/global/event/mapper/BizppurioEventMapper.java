@@ -1,6 +1,5 @@
 package com.yedu.api.global.event.mapper;
 
-import static com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.*;
 import static java.util.Comparator.comparing;
 
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
@@ -13,6 +12,9 @@ import com.yedu.api.domain.parents.domain.vo.DayTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.common.event.bizppurio.*;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.ClassGuideEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceFinishTalkEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsExchangeEvent;
 import java.util.List;
@@ -143,7 +145,7 @@ public class BizppurioEventMapper {
         classManagement.getClassManagementId());
   }
 
-  public static TeacherExchangeEvent mapToTeacherExchangeEvent(
+  public static TeacherScheduleEvent mapToTeacherScheduleEvent(
       String classManagementToken,
       String classNotifyToken,
       ClassManagement classManagement,
@@ -165,13 +167,52 @@ public class BizppurioEventMapper {
             .sorted(comparing(dayTime -> dayTime.getDay().getDayNum()))
             .toList();
 
-    return new TeacherExchangeEvent(
+    return new TeacherScheduleEvent(
         applicationForm.getApplicationFormId(),
         applicationForm.getClassCount(),
         applicationForm.getClassTime(),
         // todo dayTime 공통모듈로 이동하고 vo 재사용해도될듯
         dayTimes.stream()
-            .map(it -> new TeacherExchangeEvent.DayTime(it.getDay().toString(), it.getTimes()))
+            .map(it -> new TeacherScheduleEvent.DayTime(it.getDay().toString(), it.getTimes()))
+            .toList(),
+        applicationForm.getAge(),
+        applicationForm.getDistrict().getDescription(),
+        applicationForm.getPay(),
+        parents.getPhoneNumber(),
+        teacher.getTeacherInfo().getPhoneNumber(),
+        classNotifyToken,
+        classManagementToken);
+  }
+
+  public static TeacherNotifyClassInfoEvent mapToTeacherNotifyClassInfoEvent(
+      String classManagementToken,
+      String classNotifyToken,
+      ClassManagement classManagement,
+      List<MatchingTimetable> timetables) {
+    ClassMatching classMatching = classManagement.getClassMatching();
+    Teacher teacher = classMatching.getTeacher();
+    ApplicationForm applicationForm = classMatching.getApplicationForm();
+    Parents parents = applicationForm.getParents();
+
+    List<DayTime> dayTimes =
+        timetables.stream()
+            .collect(
+                Collectors.groupingBy(
+                    MatchingTimetable::getDay,
+                    Collectors.mapping(MatchingTimetable::getTimetableTime, Collectors.toList())))
+            .entrySet()
+            .stream()
+            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
+            .sorted(comparing(dayTime -> dayTime.getDay().getDayNum()))
+            .toList();
+
+    return new TeacherNotifyClassInfoEvent(
+        applicationForm.getApplicationFormId(),
+        applicationForm.getClassCount(),
+        applicationForm.getClassTime(),
+        // todo dayTime 공통모듈로 이동하고 vo 재사용해도될듯
+        dayTimes.stream()
+            .map(it -> new TeacherNotifyClassInfoEvent.DayTime(it.getDay().toString(), it.getTimes()))
             .toList(),
         applicationForm.getAge(),
         applicationForm.getDistrict().getDescription(),
@@ -199,13 +240,6 @@ public class BizppurioEventMapper {
         parents.getPhoneNumber());
   }
 
-  private static ParentsClassNoticeEvent mapToParentsClassNoticeEvent(
-      ClassManagement classManagement) {
-    ApplicationForm applicationForm = classManagement.getClassMatching().getApplicationForm();
-    Parents parents = applicationForm.getParents();
-    return new ParentsClassNoticeEvent(parents.getPhoneNumber());
-  }
-
   public static MatchingConfirmTeacherEvent mapToMatchingConfirmTeacherEvent(
       ClassManagement classManagement) {
     ClassGuideEvent classGuideEvent = mapToClassGuideEvent(classManagement);
@@ -216,19 +250,26 @@ public class BizppurioEventMapper {
         classGuideEvent, introduceFinishTalkEvent, introduceWriteFinishTalkEvent);
   }
 
-  private static ClassGuideEvent mapToClassGuideEvent(ClassManagement classManagement) {
+  private static ParentsClassNoticeEvent mapToParentsClassNoticeEvent(
+      ClassManagement classManagement) {
+    ApplicationForm applicationForm = classManagement.getClassMatching().getApplicationForm();
+    Parents parents = applicationForm.getParents();
+    return new ParentsClassNoticeEvent(parents.getPhoneNumber());
+  }
+
+  public static ClassGuideEvent mapToClassGuideEvent(ClassManagement classManagement) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     return new ClassGuideEvent(teacher.getTeacherInfo().getPhoneNumber());
   }
 
-  private static IntroduceFinishTalkEvent mapToFinishTalkEvent(ClassManagement classManagement) {
+  public static IntroduceFinishTalkEvent mapToFinishTalkEvent(ClassManagement classManagement) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     return new IntroduceFinishTalkEvent(teacher.getTeacherInfo().getPhoneNumber());
   }
 
-  private static IntroduceWriteFinishTalkEvent mapToWriteFinishTalkEvent(
+  public static IntroduceWriteFinishTalkEvent mapToWriteFinishTalkEvent(
       ClassManagement classManagement) {
     ApplicationForm applicationForm = classManagement.getClassMatching().getApplicationForm();
     List<ClassSchedule> schedules = classManagement.getSchedules();

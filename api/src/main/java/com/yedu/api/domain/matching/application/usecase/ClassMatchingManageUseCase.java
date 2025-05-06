@@ -15,7 +15,6 @@ import com.yedu.api.domain.matching.domain.service.ClassMatchingUpdateService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherUpdateService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.api.global.exception.matching.MatchingStatusException;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.ResponseRateStorage;
@@ -23,6 +22,7 @@ import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class ClassMatchingManageUseCase {
   private final ClassManagementCommandService classManagementCommandService;
   private final ResponseRateStorage responseRateStorage;
   private final TeacherUpdateService teacherUpdateService;
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
 
   public List<ClassMatching> saveAllClassMatching(
@@ -72,17 +72,17 @@ public class ClassMatchingManageUseCase {
   private void sendBizppurioMessage(Teacher teacher, String refuseReason) {
     if (refuseReason.equals(UNABLE_NOW.getReason())) {
       teacherUpdateService.plusRefuseCount(teacher);
-      eventPublisher.publishMatchingRefuseCaseNowEvent(mapToMatchingRefuseCaseNowEvent(teacher));
+      eventPublisher.publishEvent(mapToMatchingRefuseCaseNowEvent(teacher));
       return;
     }
     if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
       teacherUpdateService.plusRefuseCount(teacher);
-      eventPublisher.publishMatchingRefuseCaseDistrictEvent(
+      eventPublisher.publishEvent(
           mapToMatchingRefuseCaseDistrictEvent(teacher));
       return;
     }
     teacherUpdateService.clearRefuseCount(teacher);
-    eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
+    eventPublisher.publishEvent(mapToMatchingRefuseCaseEvent(teacher));
   }
 
   public void acceptClassMatching(String token) {
@@ -95,7 +95,7 @@ public class ClassMatchingManageUseCase {
 
     Teacher teacher = classMatching.getTeacher();
     teacherUpdateService.clearRefuseCount(teacher);
-    eventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+    eventPublisher.publishEvent(mapToMatchingAcceptCaseEvent(classMatching));
 
     plusResponseCount(teacher.getTeacherId(), teacher);
   }
@@ -115,7 +115,7 @@ public class ClassMatchingManageUseCase {
               classManagementCommandService.completeRemind(classManagement);
               return mapToTeacherClassRemindEvent(classManagement);
             })
-        .forEach(eventPublisher::publishTeacherClassRemindEvent);
+        .forEach(eventPublisher::publishEvent);
   }
 
   private boolean checkTime() {

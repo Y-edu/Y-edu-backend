@@ -1,11 +1,11 @@
 package com.yedu.api.domain.teacher.application.usecase;
 
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ public class TeacherBatchUseCase {
 
   private final TeacherGetService teacherGetService;
 
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
 
   private final KeyStorage<Long> updateAvailableTimeKeyStorage;
 
@@ -29,6 +29,6 @@ public class TeacherBatchUseCase {
                     teacher.getTeacherInfo().getNickName(),
                     updateAvailableTimeKeyStorage.storeAndGet(teacher.getTeacherId()),
                     teacher.getTeacherInfo().getPhoneNumber()))
-        .forEach(eventPublisher::publishTeacherAvailableTimeUpdateRequestEvent);
+        .forEach(eventPublisher::publishEvent);
   }
 }

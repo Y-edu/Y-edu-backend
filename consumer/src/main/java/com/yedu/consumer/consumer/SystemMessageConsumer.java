@@ -2,31 +2,34 @@ package com.yedu.consumer.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.usecase.BizppurioCheckStep;
+import com.yedu.common.dto.MessageStatusRequest;
 import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.rabbitmq.support.Message;
-import jakarta.annotation.PostConstruct;
+import java.util.function.Consumer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
-public class SystemMessageConsumer extends AbstractConsumer {
+public class SystemMessageConsumer implements Consumer<Message> {
 
   private final BizppurioCheckStep bizppurioCheckStep;
 
-  public SystemMessageConsumer(ObjectMapper objectMapper, BizppurioCheckStep bizppurioCheckStep) {
-    super(objectMapper);
-    this.bizppurioCheckStep = bizppurioCheckStep;
-  }
+  private final ObjectMapper objectMapper;
 
-  @PostConstruct
-  void init() {
-    handlers.put(BizppurioWebHookEvent.class, msg -> {
-      BizppurioWebHookEvent event = convert(msg, BizppurioWebHookEvent.class);
-      bizppurioCheckStep.checkByWebHook(event.request());
-    });
+  public SystemMessageConsumer(ObjectMapper objectMapper, BizppurioCheckStep bizppurioCheckStep) {
+    this.bizppurioCheckStep = bizppurioCheckStep;
+    this.objectMapper = objectMapper;
   }
 
   @Override
-  void afterConsume(Message message) {
+  public void accept(Message message) {
+    BizppurioWebHookEvent bizppurioWebHookEvent = objectMapper.convertValue(message.data(),
+        BizppurioWebHookEvent.class);
 
+    MessageStatusRequest request = bizppurioWebHookEvent.request();
+
+    log.info("webhook 메시지 처리 : {}", request);
+    bizppurioCheckStep.checkByWebHook(request);
   }
 }

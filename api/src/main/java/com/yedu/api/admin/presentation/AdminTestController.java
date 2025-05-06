@@ -34,7 +34,6 @@ import com.yedu.api.domain.teacher.domain.repository.TeacherMathRepository;
 import com.yedu.api.domain.teacher.domain.repository.TeacherRepository;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.api.domain.teacher.domain.service.TeacherSaveService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.MatchingIdApplicationNotifyKeyStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
@@ -46,6 +45,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,7 +71,7 @@ public class AdminTestController {
   private final TeacherMathRepository teacherMathRepository;
   private final TeacherRepository teacherRepository;
   private final ClassMatchingGetService classMatchingGetService;
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
   private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
@@ -159,21 +159,21 @@ public class AdminTestController {
   @Operation(summary = "구글폼 프로필 작성시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 가입은 이미 선생님으로 했어야 합니다!")
   public void finProfile(@PathVariable String phoneNumber) {
     Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-    eventPublisher.publishPhotoSubmitEvent(mapToPhotoSubmitEvent(teacher));
+    eventPublisher.publishEvent(mapToPhotoSubmitEvent(teacher));
   }
 
   @PostMapping("/test/teacher/photo/{phoneNumber}")
   @Operation(summary = "구글폼 사진 및 영상 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
   public void finPhoto(@PathVariable String phoneNumber) {
     Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-    eventPublisher.publishApplyAgreeEvent(mapToApplyAgreeEvent(teacher));
+    eventPublisher.publishEvent(mapToApplyAgreeEvent(teacher));
   }
 
   @PostMapping("/test/teacher/agree/{phoneNumber}")
   @Operation(summary = "계약서 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
   public void finApplyAgree(@PathVariable String phoneNumber) {
     Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-    eventPublisher.publishInviteMatchingChannelInfoEvent(
+    eventPublisher.publishEvent(
         mapToInviteMatchingChannelInfoEvent(teacher));
   }
 
@@ -206,7 +206,7 @@ public class AdminTestController {
               teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
           matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
-          eventPublisher.publishNotifyClassInfoEvent(
+          eventPublisher.publishEvent(
               mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
@@ -222,7 +222,7 @@ public class AdminTestController {
     ClassMatching classMatching =
         classMatchingGetService.classMatchingByApplicationFormIdAndTeacherId(
             applicationFormId, teacher.getTeacherId(), phoneNumber);
-    eventPublisher.publishMatchingAcceptCaseInfoEvent(mapToMatchingAcceptCaseEvent(classMatching));
+    eventPublisher.publishEvent(mapToMatchingAcceptCaseEvent(classMatching));
   }
 
   @PostMapping("/test/teacher/refuse/{phoneNumber}")
@@ -231,7 +231,7 @@ public class AdminTestController {
           "선생님이 수업 거절시 받는 알림톡 - 관리자 페이지 확인 후 신청건ID(EX. 온라인11a)와 받을 사람의 전화번호를 적어주세요! 단, 이미 선생님으로 가입은 했어야 합니다!")
   public void refuseCase(@PathVariable String phoneNumber) {
     Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-    eventPublisher.publishMatchingRefuseCaseEvent(mapToMatchingRefuseCaseEvent(teacher));
+    eventPublisher.publishEvent(mapToMatchingRefuseCaseEvent(teacher));
   }
 
   @PostMapping("/test/teacher/{phoneNumber}")
@@ -242,6 +242,6 @@ public class AdminTestController {
     String token = updateAvailableTimeKeyStorage.storeAndGet(teacher.getTeacherId());
     TeacherAvailableTimeUpdateRequestEvent event =
         new TeacherAvailableTimeUpdateRequestEvent(teacherInfo.getNickName(), token, phoneNumber);
-    eventPublisher.publishTeacherAvailableTimeUpdateRequestEvent(event);
+    eventPublisher.publishEvent(event);
   }
 }

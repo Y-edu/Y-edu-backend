@@ -5,7 +5,6 @@ import static com.yedu.discord.support.DiscordMapper.*;
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
-import com.yedu.common.event.bizppurio.TeacherExchangeEvent;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
@@ -104,90 +103,4 @@ public class DiscordWebhookUseCase {
     return LocalDateTime.now().format(dateTimeFormatter);
   }
 
-  public void sendNotifyClassInfoEvent(NotifyClassInfoEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField(
-                "발송 정보",
-                "- teacherId : "
-                    + event.teacherId()
-                    + "\n"
-                    + "- applicationFormId: "
-                    + event.applicationFormId()
-                    + "\n"
-                    + "- 선생님 핸드폰번호: "
-                    + event.phoneNumber()
-                    + "\n"
-                    + "- token: \n"
-                    + event.token()
-                    + "\n"));
-
-    DiscordWebhookRequest request = mapToDiscordWithInformation("과외 공지 알림톡 발송 완료", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
-  }
-
-  public void sendRecommendTeacherEvent(RecommendTeacherEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField(
-                "발송 정보",
-                "- teacherId : "
-                    + event.teacherId()
-                    + "\n"
-                    + "- 과목: "
-                    + event.classType()
-                    + "\n"
-                    + "- 학부모 핸드폰번호: "
-                    + event.parentsPhoneNumber()
-                    + "\n"
-                    + "- token: \n"
-                    + event.token()
-                    + "\n"));
-
-    DiscordWebhookRequest request = mapToDiscordWithInformation("선생님 추천 알림톡 발송 완료", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
-  }
-
-  public void sendTeacherExchangeEvent(TeacherExchangeEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField(
-                "발송 정보",
-                "- applicationFormId : "
-                    + event.applicationFormId()
-                    + "\n"
-                    + "- 선생님 핸드폰번호 : "
-                    + event.teacherPhoneNumber()
-                    + "\n"
-                    + "- 수업 정보 확인 token: \n"
-                    + event.classNotifyToken()
-                    + "\n"
-                    + "- 상담 결과 저장하기 token: \n"
-                    + event.classManagementToken()
-                    + "\n"));
-
-    DiscordWebhookRequest request = mapToDiscordWithInformation("선생님 매칭 완료 알림톡 발송 완료", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
-  }
-
-  public void sendAvailableTeacherTimeUpdateRequestEvent(
-      TeacherAvailableTimeUpdateRequestEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField(
-                "발송 정보",
-                "- 선생님 이름 : "
-                    + event.name()
-                    + "\n"
-                    + "- 선생님 핸드폰번호 : "
-                    + event.teacherPhoneNumber()
-                    + "\n"
-                    + "- token: \n"
-                    + event.token()
-                    + "\n"));
-
-    DiscordWebhookRequest request =
-        mapToDiscordWithInformation("선생님 가능 시간 갱신 요청 알림톡 발송 완료", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.NOTIFY_APPLICATION_FORM_TO_TEACHER, request);
-  }
 }

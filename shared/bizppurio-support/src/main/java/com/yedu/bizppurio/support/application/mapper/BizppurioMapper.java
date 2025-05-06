@@ -1,6 +1,5 @@
 package com.yedu.bizppurio.support.application.mapper;
 
-import static com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.*;
 import static com.yedu.common.event.bizppurio.MatchingParentsEvent.*;
 import static com.yedu.common.event.bizppurio.ParentsClassInfoEvent.*;
 
@@ -8,6 +7,9 @@ import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.dto.req.ContentRequest;
 import com.yedu.bizppurio.support.application.dto.req.content.*;
 import com.yedu.common.event.bizppurio.*;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.ClassGuideEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceFinishTalkEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -551,7 +553,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, parentsClassInfoEvent.parentsPhoneNumber());
   }
 
-  public CommonRequest mapToTeacherNotifyClassInfo(TeacherExchangeEvent teacherExchangeEvent) {
+  public CommonRequest mapToTeacherNotifyClassInfo(TeacherNotifyClassInfoEvent teacherExchangeEvent) {
     String message =
         """
 🎉 과외 매칭 성사를 축하드립니다!
@@ -596,7 +598,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
   }
 
-  public CommonRequest mapToTeacherSchedule(TeacherExchangeEvent teacherExchangeEvent) {
+  public CommonRequest mapToTeacherSchedule(TeacherScheduleEvent teacherExchangeEvent) {
     String message =
         """
 📌 학부모님 연락처 : #{phoneNumer}

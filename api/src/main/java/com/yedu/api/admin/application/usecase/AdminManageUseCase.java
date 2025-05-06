@@ -18,7 +18,6 @@ import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherUpdateService;
-import com.yedu.api.global.event.publisher.EventPublisher;
 import com.yedu.cache.support.dto.MatchingTimeTableDto;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.KeyStorage;
@@ -30,6 +29,7 @@ import com.yedu.common.type.ClassType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +43,7 @@ public class AdminManageUseCase {
   private final AdminSaveService adminSaveService;
   private final ResponseRateStorage responseRateStorage;
   private final TeacherUpdateService teacherUpdateService;
-  private final EventPublisher eventPublisher;
+  private final ApplicationEventPublisher eventPublisher;
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
@@ -79,9 +79,9 @@ public class AdminManageUseCase {
                   return mapToRecommendTeacherEvent(classMatching, token);
                 })
             .toList();
-    recommendTeacherEvents.forEach(eventPublisher::publishRecommendTeacherEvent);
+    recommendTeacherEvents.forEach(eventPublisher::publishEvent);
     RecommendTeacherEvent recommendTeacherEvent = recommendTeacherEvents.get(0);
-    eventPublisher.publishRecommendGuideEvent(
+    eventPublisher.publishEvent(
         mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
   }
 
@@ -122,7 +122,7 @@ public class AdminManageUseCase {
                 classMatching.getClassMatchingId(), applicationFormId));
     matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
-    eventPublisher.publishNotifyClassInfoEvent(mapToNotifyClassInfoEvent(classMatching, token));
+    eventPublisher.publishEvent(mapToNotifyClassInfoEvent(classMatching, token));
 
     return new TokenResponse(
         teacher.getTeacherId(),
