@@ -31,7 +31,7 @@ public abstract class AbstractConsumer implements Consumer<Message> {
   @Transactional
   @Override
   public void accept(Message message) {
-    CommonRequest commonRequest = parsers.get(message.getClass()).apply(message);
+    CommonRequest commonRequest = parsers.get(message.type()).apply(message);
     Notification notification = beforeConsume(commonRequest);
     notificationRepository.save(notification);
 
