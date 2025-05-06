@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <property name="LOGS_ABSOLUTE_PATH" value="./logs"/>
+  <property name="LOGS_ABSOLUTE_PATH" value="./logs/api"/>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <layout class="ch.qos.logback.classic.PatternLayout">
@@ -10,7 +10,7 @@
 
   <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-    <file>./logs/yedu_info.log</file>
+    <file>./logs/api/yedu_info.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>INFO</level> <!-- 레벨 설정 -->
       <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 저장 -->
@@ -31,7 +31,7 @@
 
   <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-    <file>./logs/yedu_warn.log</file>
+    <file>./logs/api/yedu_warn.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>WARN</level>
       <onMatch>ACCEPT</onMatch>
@@ -52,7 +52,7 @@
 
   <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-    <file>./logs/yedu_error.log</file>
+    <file>./logs/api/yedu_error.log</file>
     <filter class="ch.qos.logback.classic.filter.LevelFilter">
       <level>ERROR</level>
       <onMatch>ACCEPT</onMatch>
@@ -63,7 +63,7 @@
       <immediateFlush>true</immediateFlush>  <!-- 추가 -->
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>./was-logs/yedu_error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <fileNamePattern>./was-logs/api/yedu_error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <maxFileSize>50MB</maxFileSize>
       </timeBasedFileNamingAndTriggeringPolicy>
