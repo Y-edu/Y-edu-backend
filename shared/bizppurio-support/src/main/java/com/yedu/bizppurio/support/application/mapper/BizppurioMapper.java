@@ -553,7 +553,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, parentsClassInfoEvent.parentsPhoneNumber());
   }
 
-  public CommonRequest mapToTeacherNotifyClassInfo(TeacherNotifyClassInfoEvent teacherExchangeEvent) {
+  public CommonRequest mapToTeacherNotifyClassInfo(
+      TeacherNotifyClassInfoEvent teacherExchangeEvent) {
     String message =
         """
 🎉 과외 매칭 성사를 축하드립니다!

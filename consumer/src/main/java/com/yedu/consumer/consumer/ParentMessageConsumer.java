@@ -19,7 +19,6 @@ import com.yedu.consumer.domain.notification.type.PushType;
 import com.yedu.consumer.domain.notification.type.ReceiverType;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
-import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -33,9 +32,12 @@ public class ParentMessageConsumer extends AbstractConsumer {
   private final BizppurioMapper mapper;
   private final RedisRepository redisRepository;
 
-  public ParentMessageConsumer(ObjectMapper objectMapper,
-      BizppurioMapper mapper, BizppurioApiTemplate apiTemplate,
-      RedisRepository redisRepository, NotificationRepository notificationRepository) {
+  public ParentMessageConsumer(
+      ObjectMapper objectMapper,
+      BizppurioMapper mapper,
+      BizppurioApiTemplate apiTemplate,
+      RedisRepository redisRepository,
+      NotificationRepository notificationRepository) {
     super(apiTemplate, notificationRepository, objectMapper);
     this.mapper = mapper;
     this.redisRepository = redisRepository;
@@ -52,7 +54,6 @@ public class ParentMessageConsumer extends AbstractConsumer {
         .build();
   }
 
-
   @PostConstruct
   void init() {
     registerParser(NotifyCallingEvent.class, mapper::mapToNotifyCalling);
@@ -61,19 +62,20 @@ public class ParentMessageConsumer extends AbstractConsumer {
     registerParser(ParentsClassNoticeEvent.class, mapper::mapToParentsClassNotice);
     registerParser(ParentsClassInfoEvent.class, mapper::mapToParentsClassInfo);
     registerParser(PayNotificationEvent.class, mapper::mapToPayNotification);
-    parsers.put(MatchingParentsEvent.class, message -> {
-      MatchingParentsEvent event = convert(message, MatchingParentsEvent.class);
-      CommonRequest commonRequest = mapper.mapToParentsExchangePhoneNumber(
-          event.parentsExchangeEvent());
-      try {
-        String value = objectMapper.writeValueAsString(event.parentsClassNoticeEvent());
-        redisRepository.setValues(NEXT + commonRequest.refkey(), CLASS_NOTICE + value,
-            Duration.ofSeconds(10L));
-      } catch (JsonProcessingException e) {
-        throw new IllegalArgumentException(e);
-      }
-      return commonRequest;
-    });
+    parsers.put(
+        MatchingParentsEvent.class,
+        message -> {
+          MatchingParentsEvent event = convert(message, MatchingParentsEvent.class);
+          CommonRequest commonRequest =
+              mapper.mapToParentsExchangePhoneNumber(event.parentsExchangeEvent());
+          try {
+            String value = objectMapper.writeValueAsString(event.parentsClassNoticeEvent());
+            redisRepository.setValues(
+                NEXT + commonRequest.refkey(), CLASS_NOTICE + value, Duration.ofSeconds(10L));
+          } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+          }
+          return commonRequest;
+        });
   }
-
 }

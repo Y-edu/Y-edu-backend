@@ -1,9 +1,7 @@
 package com.yedu.consumer.listener;
 
 import com.yedu.consumer.consumer.AbstractConsumer;
-import com.yedu.consumer.consumer.ParentMessageConsumer;
 import com.yedu.consumer.consumer.SystemMessageConsumer;
-import com.yedu.consumer.consumer.TeacherMessageConsumer;
 import com.yedu.rabbitmq.support.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

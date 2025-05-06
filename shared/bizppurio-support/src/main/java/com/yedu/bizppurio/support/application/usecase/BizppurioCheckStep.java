@@ -47,8 +47,10 @@ public class BizppurioCheckStep {
       switch (type) {
         case WRITE_FIN_TALK -> {
           try {
-            IntroduceWriteFinishTalkEvent event = objectMapper.readValue(value, IntroduceWriteFinishTalkEvent.class);
-            CommonRequest commonRequest = bizppurioMapper.mapToIntroduceWriteFinishTalk(event);bizppurioApiTemplate.send(commonRequest);
+            IntroduceWriteFinishTalkEvent event =
+                objectMapper.readValue(value, IntroduceWriteFinishTalkEvent.class);
+            CommonRequest commonRequest = bizppurioMapper.mapToIntroduceWriteFinishTalk(event);
+            bizppurioApiTemplate.send(commonRequest);
           } catch (JsonProcessingException e) {
             log.error("objectMapper 예외 발생");
             throw new RuntimeException(e);

@@ -77,8 +77,7 @@ public class ClassMatchingManageUseCase {
     }
     if (refuseReason.equals(UNABLE_DISTRICT.getReason())) {
       teacherUpdateService.plusRefuseCount(teacher);
-      eventPublisher.publishEvent(
-          mapToMatchingRefuseCaseDistrictEvent(teacher));
+      eventPublisher.publishEvent(mapToMatchingRefuseCaseDistrictEvent(teacher));
       return;
     }
     teacherUpdateService.clearRefuseCount(teacher);

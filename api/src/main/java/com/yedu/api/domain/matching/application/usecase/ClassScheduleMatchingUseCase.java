@@ -14,7 +14,6 @@ import com.yedu.api.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
-import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import java.util.List;
@@ -50,10 +49,12 @@ public class ClassScheduleMatchingUseCase {
             classManagement.getClassMatching().getClassMatchingId());
 
     eventPublisher.publishEvent(mapToMatchingParentsEvent(classManagement));
-    eventPublisher.publishEvent(mapToTeacherNotifyClassInfoEvent(
+    eventPublisher.publishEvent(
+        mapToTeacherNotifyClassInfoEvent(
             classManagementToken, classNotifyToken, classManagement, timetables));
-    eventPublisher.publishEvent(mapToTeacherScheduleEvent(
-        classManagementToken, classNotifyToken, classManagement, timetables));
+    eventPublisher.publishEvent(
+        mapToTeacherScheduleEvent(
+            classManagementToken, classNotifyToken, classManagement, timetables));
 
     return classManagementToken;
   }

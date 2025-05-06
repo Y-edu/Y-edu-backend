@@ -42,16 +42,18 @@ public class TeacherMessageConsumer extends AbstractConsumer {
   private final BizppurioApiTemplate bizppurioApiTemplate;
   private final RedisRepository redisRepository;
 
-  public TeacherMessageConsumer(ObjectMapper objectMapper,
+  public TeacherMessageConsumer(
+      ObjectMapper objectMapper,
       BizppurioApiTemplate apiTemplate,
-      NotificationRepository notificationRepository, BizppurioMapper mapper,
-      BizppurioApiTemplate bizppurioApiTemplate, RedisRepository redisRepository) {
+      NotificationRepository notificationRepository,
+      BizppurioMapper mapper,
+      BizppurioApiTemplate bizppurioApiTemplate,
+      RedisRepository redisRepository) {
     super(apiTemplate, notificationRepository, objectMapper);
     this.mapper = mapper;
     this.bizppurioApiTemplate = bizppurioApiTemplate;
     this.redisRepository = redisRepository;
   }
-
 
   @Override
   public Notification beforeConsume(CommonRequest request) {
@@ -78,29 +80,32 @@ public class TeacherMessageConsumer extends AbstractConsumer {
     registerParser(MatchingRefuseCaseNowEvent.class, mapper::mapToRefuseCaseNow);
     registerParser(MatchingRefuseCaseDistrictEvent.class, mapper::mapToRefuseCaseDistrict);
     registerParser(TeacherClassRemindEvent.class, mapper::mapToTeacherClassRemind);
-    registerParser(TeacherAvailableTimeUpdateRequestEvent.class, mapper::mapToTeacherAvailableTimeUpdateRequest);
+    registerParser(
+        TeacherAvailableTimeUpdateRequestEvent.class,
+        mapper::mapToTeacherAvailableTimeUpdateRequest);
     registerParser(TeacherNotifyClassInfoEvent.class, mapper::mapToTeacherNotifyClassInfo);
     registerParser(TeacherScheduleEvent.class, mapper::mapToTeacherSchedule);
 
-    parsers.put(MatchingConfirmTeacherEvent.class, message -> {
-      MatchingConfirmTeacherEvent event = convert(message, MatchingConfirmTeacherEvent.class);
-      CommonRequest classGuideCommonRequest = mapper.mapToClassGuide(event.classGuideEvent());
-      CommonRequest writeFinishTalkCommonRequest = mapper.mapToIntroduceWriteFinishTalk(
-          event.introduceWriteFinishTalkEvent());
-      String refKey = bizppurioApiTemplate.send(classGuideCommonRequest);
-      bizppurioApiTemplate.send(writeFinishTalkCommonRequest);
+    parsers.put(
+        MatchingConfirmTeacherEvent.class,
+        message -> {
+          MatchingConfirmTeacherEvent event = convert(message, MatchingConfirmTeacherEvent.class);
+          CommonRequest classGuideCommonRequest = mapper.mapToClassGuide(event.classGuideEvent());
+          CommonRequest writeFinishTalkCommonRequest =
+              mapper.mapToIntroduceWriteFinishTalk(event.introduceWriteFinishTalkEvent());
+          String refKey = bizppurioApiTemplate.send(classGuideCommonRequest);
+          bizppurioApiTemplate.send(writeFinishTalkCommonRequest);
 
-      CommonRequest introduceFinishTalkCommonRequest = mapper.mapToIntroduceFinishTalk(event.introduceFinishTalkEvent());
-      try {
-        String value = objectMapper.writeValueAsString(event.introduceWriteFinishTalkEvent());
-        redisRepository.setValues(NEXT + refKey, WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
-      } catch (JsonProcessingException e) {
-        throw new IllegalArgumentException(e);
-      }
-      return introduceFinishTalkCommonRequest;
-    });
+          CommonRequest introduceFinishTalkCommonRequest =
+              mapper.mapToIntroduceFinishTalk(event.introduceFinishTalkEvent());
+          try {
+            String value = objectMapper.writeValueAsString(event.introduceWriteFinishTalkEvent());
+            redisRepository.setValues(
+                NEXT + refKey, WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
+          } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+          }
+          return introduceFinishTalkCommonRequest;
+        });
   }
-
 }
-
-

@@ -42,18 +42,18 @@ public abstract class AbstractConsumer implements Consumer<Message> {
       notification.fail();
       log.error("메시지 처리 중 예외 발생 - 타입: {}, 오류: {}", message.type(), e.getMessage(), e);
     }
-
   }
 
   protected <T> T convert(Message message, Class<T> clazz) {
     return objectMapper.convertValue(message.data(), clazz);
   }
 
-  protected  <T> void registerParser(Class<T> clazz, Function<T, CommonRequest> mapperFunc) {
-    parsers.put(clazz, msg -> {
-      T convert = convert(msg, clazz);
-      return mapperFunc.apply(convert);
-    });
+  protected <T> void registerParser(Class<T> clazz, Function<T, CommonRequest> mapperFunc) {
+    parsers.put(
+        clazz,
+        msg -> {
+          T convert = convert(msg, clazz);
+          return mapperFunc.apply(convert);
+        });
   }
-
 }

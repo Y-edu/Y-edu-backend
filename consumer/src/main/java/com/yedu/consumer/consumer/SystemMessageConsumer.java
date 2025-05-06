@@ -24,8 +24,8 @@ public class SystemMessageConsumer implements Consumer<Message> {
 
   @Override
   public void accept(Message message) {
-    BizppurioWebHookEvent bizppurioWebHookEvent = objectMapper.convertValue(message.data(),
-        BizppurioWebHookEvent.class);
+    BizppurioWebHookEvent bizppurioWebHookEvent =
+        objectMapper.convertValue(message.data(), BizppurioWebHookEvent.class);
 
     MessageStatusRequest request = bizppurioWebHookEvent.request();
 

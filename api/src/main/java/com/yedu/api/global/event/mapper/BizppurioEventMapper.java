@@ -212,7 +212,9 @@ public class BizppurioEventMapper {
         applicationForm.getClassTime(),
         // todo dayTime 공통모듈로 이동하고 vo 재사용해도될듯
         dayTimes.stream()
-            .map(it -> new TeacherNotifyClassInfoEvent.DayTime(it.getDay().toString(), it.getTimes()))
+            .map(
+                it ->
+                    new TeacherNotifyClassInfoEvent.DayTime(it.getDay().toString(), it.getTimes()))
             .toList(),
         applicationForm.getAge(),
         applicationForm.getDistrict().getDescription(),

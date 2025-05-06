@@ -115,10 +115,8 @@ public class TeacherManageUseCase {
     Teacher teacher = teacherGetService.byPhoneNumber(request.phoneNumber());
     List<TeacherDistrict> teacherDistricts = teacherGetService.districtsByTeacher(teacher);
     teacherUpdateService.updateActive(teacher);
-    eventPublisher.publishEvent(
-        mapToInviteMatchingChannelInfoEvent(teacher));
-    eventPublisher.publishEvent(
-        mapToTeacherRegisterEvent(teacher, teacherDistricts));
+    eventPublisher.publishEvent(mapToInviteMatchingChannelInfoEvent(teacher));
+    eventPublisher.publishEvent(mapToTeacherRegisterEvent(teacher, teacherDistricts));
   }
 
   public void notifyClass(List<ClassMatching> classMatchings, String applicationFormId) {
@@ -134,8 +132,7 @@ public class TeacherManageUseCase {
               teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
           matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
-          eventPublisher.publishEvent(
-              mapToNotifyClassInfoEvent(classMatching, token));
+          eventPublisher.publishEvent(mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
 

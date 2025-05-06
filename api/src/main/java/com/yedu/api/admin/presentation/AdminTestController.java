@@ -173,8 +173,7 @@ public class AdminTestController {
   @Operation(summary = "계약서 제출시 받는 알림톡 - 받을 사람의 전화번호를 적어주세요! 단, 이미 이미 선생님으로 가입은 했어야 합니다!")
   public void finApplyAgree(@PathVariable String phoneNumber) {
     Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
-    eventPublisher.publishEvent(
-        mapToInviteMatchingChannelInfoEvent(teacher));
+    eventPublisher.publishEvent(mapToInviteMatchingChannelInfoEvent(teacher));
   }
 
   @PostMapping("/test/teacher/recommend/{applicationFormId}/{phoneNumber}")
@@ -206,8 +205,7 @@ public class AdminTestController {
               teacherNotifyApplicationFormKeyStorage.storeAndGet(teacherNotifyApplicationFormDto);
           matchingIdApplicationNotifyKeyStorage.store(classMatching.getClassMatchingId(), token);
 
-          eventPublisher.publishEvent(
-              mapToNotifyClassInfoEvent(classMatching, token));
+          eventPublisher.publishEvent(mapToNotifyClassInfoEvent(classMatching, token));
         });
   }
 
