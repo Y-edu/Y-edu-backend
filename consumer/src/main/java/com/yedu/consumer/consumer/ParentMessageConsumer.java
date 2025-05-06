@@ -50,7 +50,7 @@ public class ParentMessageConsumer extends AbstractConsumer {
         .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
         .receiverPhoneNumber(request.to())
         .content(request.content().toString())
-        .pushKey(request.refkey())
+        .clientKey(request.refkey())
         .build();
   }
 

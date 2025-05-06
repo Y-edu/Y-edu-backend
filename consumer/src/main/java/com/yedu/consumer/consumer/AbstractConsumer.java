@@ -2,6 +2,7 @@ package com.yedu.consumer.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
+import com.yedu.bizppurio.support.application.dto.res.MessageResponse;
 import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
 import com.yedu.consumer.domain.notification.entity.Notification;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
@@ -36,8 +37,8 @@ public abstract class AbstractConsumer implements Consumer<Message> {
     notificationRepository.save(notification);
 
     try {
-      apiTemplate.send(commonRequest);
-      notification.success();
+      MessageResponse response = apiTemplate.send(commonRequest);
+      notification.success(response.messagekey());
     } catch (Exception e) {
       notification.fail();
       log.error("메시지 처리 중 예외 발생 - 타입: {}, 오류: {}", message.type(), e.getMessage(), e);

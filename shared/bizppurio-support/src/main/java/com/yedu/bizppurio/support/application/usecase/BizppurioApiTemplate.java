@@ -33,7 +33,7 @@ public class BizppurioApiTemplate {
   @Value("${bizppurio.message}")
   private String messageUrl;
 
-  public String send(CommonRequest commonRequest) {
+  public MessageResponse send(CommonRequest commonRequest) {
 
     if (!Pattern.matches(PHONE_REGEX, commonRequest.to())) {
       log.error("알림톡 발송 실패, 전화번호 오류 : {} / commonRequest : {}", commonRequest.to(), commonRequest);
@@ -52,7 +52,7 @@ public class BizppurioApiTemplate {
     String refkey = commonRequest.refkey();
     String message = commonRequest.content().at().getMessage();
     redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
-    webClient
+    return webClient
         .post()
         .uri(messageUrl)
         .headers(h -> h.setContentType(APPLICATION_JSON))
@@ -80,7 +80,6 @@ public class BizppurioApiTemplate {
                       commonRequest.content().at().getMessage(),
                       error.getMessage()));
             })
-        .subscribe();
-    return refkey;
+        .block();
   }
 }

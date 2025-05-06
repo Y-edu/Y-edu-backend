@@ -62,7 +62,7 @@ public class TeacherMessageConsumer extends AbstractConsumer {
         .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
         .receiverPhoneNumber(request.to())
         .content(request.content().toString())
-        .pushKey(request.refkey())
+        .clientKey(request.refkey())
         .consumedAt(LocalDateTime.now())
         .status(Status.IN_PROGRESS)
         .build();
@@ -93,7 +93,7 @@ public class TeacherMessageConsumer extends AbstractConsumer {
           CommonRequest classGuideCommonRequest = mapper.mapToClassGuide(event.classGuideEvent());
           CommonRequest writeFinishTalkCommonRequest =
               mapper.mapToIntroduceWriteFinishTalk(event.introduceWriteFinishTalkEvent());
-          String refKey = bizppurioApiTemplate.send(classGuideCommonRequest);
+          bizppurioApiTemplate.send(classGuideCommonRequest);
           bizppurioApiTemplate.send(writeFinishTalkCommonRequest);
 
           CommonRequest introduceFinishTalkCommonRequest =
@@ -101,7 +101,7 @@ public class TeacherMessageConsumer extends AbstractConsumer {
           try {
             String value = objectMapper.writeValueAsString(event.introduceWriteFinishTalkEvent());
             redisRepository.setValues(
-                NEXT + refKey, WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
+                NEXT + classGuideCommonRequest.refkey(), WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
           } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
           }
