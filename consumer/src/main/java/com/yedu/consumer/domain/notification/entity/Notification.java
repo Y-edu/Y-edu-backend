@@ -43,6 +43,8 @@ public class Notification {
 
   private LocalDateTime consumedAt;
 
+  private LocalDateTime deliveredAt; // 사용자 수신 시간
+
   public void success(String serverKey) {
     this.serverKey = serverKey;
     this.status = Status.SUCCESS;
@@ -54,5 +56,6 @@ public class Notification {
 
   public void delivered() {
     this.status = Status.DELIVERED;
+    this.deliveredAt = LocalDateTime.now();
   }
 }
