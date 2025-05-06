@@ -65,6 +65,8 @@ jobs:
             --name yedu_prod_consumer \
             -e "SPRING_PROFILES_ACTIVE=prod" \
             -e "TZ=Asia/Seoul" \
+            -v "./logs/consumer:/app/logs" \
+            -v "./was-logs/consumer:/app/was-logs" \
             --restart always \
             --network yedu-network \
             ghcr.io/y-edu/consumer:1.0.0
