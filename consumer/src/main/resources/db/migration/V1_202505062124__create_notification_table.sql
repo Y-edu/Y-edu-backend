@@ -7,7 +7,7 @@ create table push.notification (
       receiver_phone_number varchar(255),
       push_type enum ('BIZPURRIO_KAKAO_ALARMTALK'),
       receiver_type enum ('PARENT','TEACHER'),
-      status enum ('IN_PROGRESS','FAIL','SUCCESS','DELIVERED'),
+      status enum ('IN_PROGRESS','FAIL','SUCCESS','DELIVERY_SUCCESS','DELIVERY_FAIL'),
       primary key (id)
 );
 

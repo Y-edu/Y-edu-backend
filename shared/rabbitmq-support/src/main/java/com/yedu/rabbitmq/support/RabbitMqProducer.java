@@ -5,7 +5,9 @@ import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.common.event.bizppurio.InviteMatchingChannelInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingAcceptCaseInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingParentsEvent;
+import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseDistrictEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;
@@ -122,6 +124,12 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
+  public void handle(IntroduceWriteFinishTalkEvent event) {
+    produceTeacherMessage(event);
+  }
+
+  @EventListener
+  @Async
   public void handle(NotifyCallingEvent event) {
     produceParentMessage(event);
   }
@@ -153,6 +161,12 @@ public class RabbitMqProducer {
   @EventListener
   @Async
   public void handle(PayNotificationEvent event) {
+    produceParentMessage(event);
+  }
+
+  @EventListener
+  @Async
+  public void handle(ParentsClassNoticeEvent event) {
     produceParentMessage(event);
   }
 

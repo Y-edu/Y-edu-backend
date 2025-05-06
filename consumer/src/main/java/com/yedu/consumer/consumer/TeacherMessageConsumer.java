@@ -10,6 +10,7 @@ import com.yedu.common.event.bizppurio.ApplyAgreeEvent;
 import com.yedu.common.event.bizppurio.InviteMatchingChannelInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingAcceptCaseInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent;
+import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseDistrictEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;
@@ -85,23 +86,23 @@ public class TeacherMessageConsumer extends AbstractConsumer {
         mapper::mapToTeacherAvailableTimeUpdateRequest);
     registerParser(TeacherNotifyClassInfoEvent.class, mapper::mapToTeacherNotifyClassInfo);
     registerParser(TeacherScheduleEvent.class, mapper::mapToTeacherSchedule);
+    registerParser(IntroduceWriteFinishTalkEvent.class, mapper::mapToIntroduceWriteFinishTalk);
 
     parsers.put(
         MatchingConfirmTeacherEvent.class,
         message -> {
           MatchingConfirmTeacherEvent event = convert(message, MatchingConfirmTeacherEvent.class);
           CommonRequest classGuideCommonRequest = mapper.mapToClassGuide(event.classGuideEvent());
-          CommonRequest writeFinishTalkCommonRequest =
-              mapper.mapToIntroduceWriteFinishTalk(event.introduceWriteFinishTalkEvent());
           bizppurioApiTemplate.send(classGuideCommonRequest);
-          bizppurioApiTemplate.send(writeFinishTalkCommonRequest);
 
           CommonRequest introduceFinishTalkCommonRequest =
               mapper.mapToIntroduceFinishTalk(event.introduceFinishTalkEvent());
           try {
             String value = objectMapper.writeValueAsString(event.introduceWriteFinishTalkEvent());
             redisRepository.setValues(
-                NEXT + classGuideCommonRequest.refkey(), WRITE_FIN_TALK + value, Duration.ofSeconds(10L));
+                NEXT + classGuideCommonRequest.refkey(),
+                WRITE_FIN_TALK + value,
+                Duration.ofSeconds(10L));
           } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
           }

@@ -4,5 +4,6 @@ public enum Status {
   SUCCESS,
   IN_PROGRESS,
   FAIL,
-  DELIVERED
+  DELIVERY_SUCCESS,
+  DELIVERY_FAIL,
 }

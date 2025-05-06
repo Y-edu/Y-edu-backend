@@ -54,8 +54,13 @@ public class Notification {
     this.status = Status.FAIL;
   }
 
-  public void delivered() {
-    this.status = Status.DELIVERED;
+  public void successDelivery() {
+    this.status = Status.DELIVERY_SUCCESS;
+    this.deliveredAt = LocalDateTime.now();
+  }
+
+  public void failDelivery() {
+    this.status = Status.DELIVERY_FAIL;
     this.deliveredAt = LocalDateTime.now();
   }
 }

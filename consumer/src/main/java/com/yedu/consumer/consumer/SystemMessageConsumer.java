@@ -7,6 +7,7 @@ import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.consumer.domain.notification.entity.Notification;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.rabbitmq.support.Message;
+import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,12 @@ public class SystemMessageConsumer implements Consumer<Message> {
   private final BizppurioCheckStep bizppurioCheckStep;
 
   private final ObjectMapper objectMapper;
+
   private final NotificationRepository notificationRepository;
 
-  public SystemMessageConsumer(ObjectMapper objectMapper, BizppurioCheckStep bizppurioCheckStep,
+  public SystemMessageConsumer(
+      ObjectMapper objectMapper,
+      BizppurioCheckStep bizppurioCheckStep,
       NotificationRepository notificationRepository) {
     this.bizppurioCheckStep = bizppurioCheckStep;
     this.objectMapper = objectMapper;
@@ -35,10 +39,18 @@ public class SystemMessageConsumer implements Consumer<Message> {
         objectMapper.convertValue(message.data(), BizppurioWebHookEvent.class);
     MessageStatusRequest request = bizppurioWebHookEvent.request();
 
-    notificationRepository.findByServerKeyAndClientKey(request.CMSGID(), request.REFKEY())
-        .ifPresent(Notification::delivered);
+    updateNotificationStatus(request);
 
-    log.info("webhook 메시지 처리 : {}", request);
     bizppurioCheckStep.checkByWebHook(request);
+  }
+
+  private void updateNotificationStatus(MessageStatusRequest request) {
+    Optional<Notification> notification =
+        notificationRepository.findByServerKeyAndClientKey(request.CMSGID(), request.REFKEY());
+    if (bizppurioCheckStep.isSuccess(request)) {
+      notification.ifPresent(Notification::successDelivery);
+      return;
+    }
+    notification.ifPresent(Notification::failDelivery);
   }
 }
