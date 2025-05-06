@@ -1,11 +1,6 @@
 name: Java CI with Gradle
 
 on:
-  paths:
-    - .github/workflows/CI-api-develop.yml
-    - "api/**"
-    - "shared/**"
-    - "build.gradle.kts"
   pull_request:
     branches: [ "develop" ]
 

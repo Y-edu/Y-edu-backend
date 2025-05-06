@@ -2,12 +2,14 @@ name: Java CD with Gradle
 
 on:
   push:
+    branches:
+      - main
     paths:
       - .github/workflows/CD-consumer-prod.yml
       - "consumer/**"
       - "shared/**"
       - "build.gradle.kts"
-    branches: [ "main" ]
+
 
 permissions:
   contents: read
