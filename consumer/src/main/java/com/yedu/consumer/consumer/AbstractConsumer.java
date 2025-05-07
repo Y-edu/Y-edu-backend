@@ -9,15 +9,22 @@ import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.rabbitmq.support.Message;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractConsumer implements Consumer<Message> {
+
+  @Value("${message.enable}")
+  private Boolean enable;
+
+  private final Set<String> testerPhoneNumbers = Set.of("01059367332");
 
   protected final Map<Class<?>, Function<Message, CommonRequest>> parsers = new HashMap<>();
 
@@ -34,8 +41,12 @@ public abstract class AbstractConsumer implements Consumer<Message> {
   public void accept(Message message) {
     CommonRequest commonRequest = parsers.get(message.type()).apply(message);
     Notification notification = beforeConsume(commonRequest);
-    notificationRepository.save(notification);
 
+    if (!enable && !testerPhoneNumbers.contains(notification.getReceiverPhoneNumber())) {
+       throw new IllegalStateException("메시지 처리가 비활성화되어 있습니다.");
+    }
+
+    notificationRepository.save(notification);
     try {
       MessageResponse response = apiTemplate.send(commonRequest);
       notification.success(response.messagekey());

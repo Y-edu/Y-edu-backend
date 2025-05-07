@@ -55,3 +55,6 @@ bizppurio:
     refuse_change_form: 'https://yedu-tutor.com/teachersetting/login'
     result_share_form: 'https://yedu-tutor.com/result/'
     class_guide: 'https://2ly.link/2639z'
+
+message:
+  enable: false
