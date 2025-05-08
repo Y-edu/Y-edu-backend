@@ -147,40 +147,15 @@ public class BizppurioEventMapper {
 
   public static TeacherScheduleEvent mapToTeacherScheduleEvent(
       String classManagementToken,
-      String classNotifyToken,
-      ClassManagement classManagement,
-      List<MatchingTimetable> timetables) {
+      ClassManagement classManagement) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     ApplicationForm applicationForm = classMatching.getApplicationForm();
     Parents parents = applicationForm.getParents();
 
-    List<DayTime> dayTimes =
-        timetables.stream()
-            .collect(
-                Collectors.groupingBy(
-                    MatchingTimetable::getDay,
-                    Collectors.mapping(MatchingTimetable::getTimetableTime, Collectors.toList())))
-            .entrySet()
-            .stream()
-            .map(entry -> new DayTime(entry.getKey(), entry.getValue()))
-            .sorted(comparing(dayTime -> dayTime.getDay().getDayNum()))
-            .toList();
-
     return new TeacherScheduleEvent(
-        applicationForm.getApplicationFormId(),
-        applicationForm.getClassCount(),
-        applicationForm.getClassTime(),
-        // todo dayTime 공통모듈로 이동하고 vo 재사용해도될듯
-        dayTimes.stream()
-            .map(it -> new TeacherScheduleEvent.DayTime(it.getDay().toString(), it.getTimes()))
-            .toList(),
-        applicationForm.getAge(),
-        applicationForm.getDistrict().getDescription(),
-        applicationForm.getPay(),
         parents.getPhoneNumber(),
         teacher.getTeacherInfo().getPhoneNumber(),
-        classNotifyToken,
         classManagementToken);
   }
 

@@ -524,7 +524,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
   }
 
   public CommonRequest mapToTeacherNotifyClassInfo(
-      TeacherNotifyClassInfoEvent teacherExchangeEvent) {
+      TeacherNotifyClassInfoEvent notifyClassInfoEvent) {
     String message =
         """
 🎉 과외 매칭 성사를 축하드립니다!
@@ -541,13 +541,13 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 아래의 버튼을 눌러 확인해주세요
        """
             .strip()
-            .replace("#{applicationFormId}", teacherExchangeEvent.applicationFormId())
+            .replace("#{applicationFormId}", notifyClassInfoEvent.applicationFormId())
             .replace(
                 "#{classCount}",
-                teacherExchangeEvent.classCount() + " " + teacherExchangeEvent.time())
+                notifyClassInfoEvent.classCount() + " " + notifyClassInfoEvent.time())
             .replace(
                 "#{dayTimes}",
-                teacherExchangeEvent.dayTimes().stream()
+                notifyClassInfoEvent.dayTimes().stream()
                     .map(
                         dayTime ->
                             dayTime.day()
@@ -556,15 +556,15 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
                                     .map(LocalTime::toString)
                                     .collect(Collectors.joining(", ")))
                     .collect(Collectors.joining("\n")))
-            .replace("#{age}", teacherExchangeEvent.age())
-            .replace("#{district}", teacherExchangeEvent.district())
-            .replace("#{pay}", String.valueOf((int) (teacherExchangeEvent.money() * (5.0 / 6.0))));
+            .replace("#{age}", notifyClassInfoEvent.age())
+            .replace("#{district}", notifyClassInfoEvent.district())
+            .replace("#{pay}", String.valueOf((int) (notifyClassInfoEvent.money() * (5.0 / 6.0))));
 
     String url =
         "https://"
             + properties.landingUrl()
             + "/teacher/notify/"
-            + teacherExchangeEvent.classNotifyToken();
+            + notifyClassInfoEvent.classNotifyToken();
     CommonButton webButton = new WebButton("수업 정보 확인", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(
@@ -572,10 +572,10 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             properties.yeduMatching(),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_CLASS_NOTIFY_INFO.getCode(),
             new CommonButton[] {webButton});
-    return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
+    return createCommonRequest(messageBody, notifyClassInfoEvent.teacherPhoneNumber());
   }
 
-  public CommonRequest mapToTeacherSchedule(TeacherScheduleEvent teacherExchangeEvent) {
+  public CommonRequest mapToTeacherSchedule(TeacherScheduleEvent scheduleEvent) {
     String message =
         """
 📌 학부모님 연락처 : #{phoneNumer}
@@ -592,13 +592,13 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 아래 버튼을 눌러 확정된 상담 결과를전달해주세요
        """
             .strip()
-            .replace("#{phoneNumer}", teacherExchangeEvent.parentsPhoneNumber());
+            .replace("#{phoneNumer}", scheduleEvent.parentsPhoneNumber());
 
     String url =
         "https://"
             + properties.landingUrl()
             + "/result/"
-            + teacherExchangeEvent.classManagementToken();
+            + scheduleEvent.classManagementToken();
     CommonButton webButton = new WebButton("상담 결과 전달", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(
@@ -606,7 +606,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             properties.yeduMatching(),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_SCHEDULE.getCode(),
             new CommonButton[] {webButton});
-    return createCommonRequest(messageBody, teacherExchangeEvent.teacherPhoneNumber());
+    return createCommonRequest(messageBody, scheduleEvent.teacherPhoneNumber());
   }
 
   public CommonRequest mapToTeacherAvailableTimeUpdateRequest(

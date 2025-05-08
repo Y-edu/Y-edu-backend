@@ -54,7 +54,7 @@ public class ClassScheduleMatchingUseCase {
             classManagementToken, classNotifyToken, classManagement, timetables));
     eventPublisher.publishEvent(
         mapToTeacherScheduleEvent(
-            classManagementToken, classNotifyToken, classManagement, timetables));
+            classManagementToken, classManagement));
 
     return classManagementToken;
   }

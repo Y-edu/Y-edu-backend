@@ -28,7 +28,6 @@ public class BizppurioApiTemplate {
   private final ObjectMapper objectMapper;
   private final WebClient webClient;
   private final RedisRepository redisRepository;
-  private final ApplicationEventPublisher eventPublisher;
 
   @Value("${bizppurio.message}")
   private String messageUrl;
@@ -74,11 +73,6 @@ public class BizppurioApiTemplate {
         .doOnError(
             error -> {
               log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-              eventPublisher.publishEvent(
-                  mapToAlarmTalkErrorWithFirstEvent(
-                      commonRequest.to(),
-                      commonRequest.content().at().getMessage(),
-                      error.getMessage()));
             })
         .block();
   }
