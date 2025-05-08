@@ -49,7 +49,8 @@ public class ParentMessageConsumer extends AbstractConsumer {
         .receiverType(ReceiverType.PARENT)
         .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
         .receiverPhoneNumber(request.to())
-        .content(request.content().toString())
+        .content(request.content().at().getMessage())
+        .templateCode(request.content().at().getTemplateCode())
         .clientKey(request.refkey())
         .build();
   }

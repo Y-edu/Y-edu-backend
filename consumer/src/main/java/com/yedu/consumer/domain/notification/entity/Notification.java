@@ -39,6 +39,8 @@ public class Notification {
 
   private String content;
 
+  private String templateCode;
+
   private String clientKey; // API 클라이언트 생성키
 
   private String serverKey; // API 서버 생성키

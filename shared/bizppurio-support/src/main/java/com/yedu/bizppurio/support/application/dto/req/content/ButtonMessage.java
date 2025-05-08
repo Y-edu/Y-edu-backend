@@ -7,4 +7,9 @@ public record ButtonMessage(
   public String getMessage() {
     return message;
   }
+
+  @Override
+  public String getTemplateCode() {
+    return templatecode;
+  }
 }
