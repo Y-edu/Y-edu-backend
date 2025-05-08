@@ -52,9 +52,7 @@ public class ClassScheduleMatchingUseCase {
     eventPublisher.publishEvent(
         mapToTeacherNotifyClassInfoEvent(
             classManagementToken, classNotifyToken, classManagement, timetables));
-    eventPublisher.publishEvent(
-        mapToTeacherScheduleEvent(
-            classManagementToken, classManagement));
+    eventPublisher.publishEvent(mapToTeacherScheduleEvent(classManagementToken, classManagement));
 
     return classManagementToken;
   }

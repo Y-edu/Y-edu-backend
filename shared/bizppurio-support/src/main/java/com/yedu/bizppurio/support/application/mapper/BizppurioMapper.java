@@ -595,10 +595,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .replace("#{phoneNumer}", scheduleEvent.parentsPhoneNumber());
 
     String url =
-        "https://"
-            + properties.landingUrl()
-            + "/result/"
-            + scheduleEvent.classManagementToken();
+        "https://" + properties.landingUrl() + "/result/" + scheduleEvent.classManagementToken();
     CommonButton webButton = new WebButton("상담 결과 전달", WEB_LINK, url, url);
     Message messageBody =
         new ButtonMessage(

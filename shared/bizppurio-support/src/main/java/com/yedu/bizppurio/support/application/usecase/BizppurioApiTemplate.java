@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -70,8 +69,7 @@ public class BizppurioApiTemplate {
         .bodyToMono(MessageResponse.class)
         .doOnSubscribe(subscription -> log.info("알림톡 요청 시작"))
         .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
-        .doOnError(
-            error -> log.error("알림톡 초기 요청 실패 : {}", error.getMessage()))
+        .doOnError(error -> log.error("알림톡 초기 요청 실패 : {}", error.getMessage()))
         .block();
   }
 }
