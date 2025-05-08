@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile("dev")
+@Profile("test")
 @Component
 @RequiredArgsConstructor
 public class TemplateValidator {
@@ -36,7 +36,11 @@ public class TemplateValidator {
   private final BizppurioApiTemplate apiTemplate;
 
   private static final String TESTER_PHONE_NUMBER = "01059367332";
-  
+
+  /***
+   * 알림톡 연동 validator
+   * 템플릿 불일치 문제로 알림톡 발송 실패 방지
+   */
   @PostConstruct
   void validate(){
     apiTemplate.send(mapper.mapToClassGuide(new ClassGuideEvent(TESTER_PHONE_NUMBER)));
