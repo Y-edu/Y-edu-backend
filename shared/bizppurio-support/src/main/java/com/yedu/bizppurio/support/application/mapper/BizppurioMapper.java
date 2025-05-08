@@ -631,7 +631,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduOfficial(),
+            properties.yeduMatching(),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_SETTING.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
