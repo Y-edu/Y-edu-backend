@@ -70,7 +70,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduApply(),
+            properties.getKey(BizpurrioTemplate.YEDU_APPLY_AGREE),
             BizpurrioTemplate.YEDU_APPLY_AGREE.getCode(),
             new CommonButton[] {webLinkButton});
     return createCommonRequest(messageBody, applyAgreeEvent.phoneNumber());
@@ -97,7 +97,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduApply(),
+            properties.getKey(BizpurrioTemplate.YEDU_APPLY_PHOTO_SUBMIT),
             BizpurrioTemplate.YEDU_APPLY_PHOTO_SUBMIT.getCode(),
             new CommonButton[] {webLinkButton});
     return createCommonRequest(messageBody, photoSubmitEvent.phoneNumber());
@@ -117,7 +117,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduApply(),
+            properties.getKey(BizpurrioTemplate.YEDU_APPLY_PHOTO_HURRY),
             BizpurrioTemplate.YEDU_APPLY_PHOTO_HURRY.getCode(),
             new CommonButton[] {webLinkButton});
     return createCommonRequest(messageBody, photoHurryEvent.phoneNumber());
@@ -176,7 +176,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_NOTIFY_CLASS),
             BizpurrioTemplate.YEDU_MATCHING_NOTIFY_CLASS.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, notifyClassInfoEvent.phoneNumber());
@@ -225,7 +225,7 @@ public class BizppurioMapper {
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_ACCEPT_CASE),
             BizpurrioTemplate.YEDU_MATCHING_ACCEPT_CASE.getCode());
     return createCommonRequest(messageBody, matchingAcceptCaseInfoEvent.phoneNumber());
   }
@@ -246,7 +246,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE),
             BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE.getCode(),
             new CommonButton[] {simpleButton});
     return createCommonRequest(messageBody, matchingRefuseCaseEvent.phoneNumber());
@@ -269,7 +269,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE_NOW),
             BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE_NOW.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, matchingRefuseCaseEvent.phoneNumber());
@@ -293,7 +293,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE_DISTRICT),
             BizpurrioTemplate.YEDU_MATCHING_REFUSE_CASE_DISTRICT.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, matchingRefuseCaseEvent.phoneNumber());
@@ -328,7 +328,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_CHANNEL),
             BizpurrioTemplate.YEDU_MATCHING_CHANNEL.getCode(),
             new CommonButton[] {simpleButton});
     return createCommonRequest(messageBody, inviteMatchingChannelInfo.phoneNumber());
@@ -349,7 +349,7 @@ public class BizppurioMapper {
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_RECOMMEND_GUIDE),
             BizpurrioTemplate.YEDU_OFFICIAL_RECOMMEND_GUIDE.getCode(),
             new CommonButton[] {simpleButton});
     return createCommonRequest(messageBody, recommendGuideEvent.phoneNumber());
@@ -385,7 +385,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
         new EmphasizeButtonMessage(
             message,
             title,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_RECOMMEND_TEACHER),
             BizpurrioTemplate.YEDU_OFFICIAL_RECOMMEND_TEACHER.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, recommendTeacherEvent.parentsPhoneNumber());
@@ -403,7 +403,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_NOTIFY_CALLING),
             BizpurrioTemplate.YEDU_OFFICIAL_NOTIFY_CALLING.getCode());
     return createCommonRequest(messageBody, notifyCallingEvent.phoneNumber());
   }
@@ -431,7 +431,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_EXCHANGE),
             BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_EXCHANGE.getCode());
     return createCommonRequest(messageBody, parentsExchangeEvent.parentsPhoneNumber());
   }
@@ -452,7 +452,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_NOTICE),
             BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_NOTICE.getCode());
     return createCommonRequest(messageBody, parentsClassNoticeEvent.phoneNumber());
   }
@@ -518,7 +518,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_INFO),
             BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_INFO.getCode());
     return createCommonRequest(messageBody, parentsClassInfoEvent.parentsPhoneNumber());
   }
@@ -569,7 +569,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_CLASS_NOTIFY_INFO),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_CLASS_NOTIFY_INFO.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, notifyClassInfoEvent.teacherPhoneNumber());
@@ -603,7 +603,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_SCHEDULE),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_SCHEDULE.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, scheduleEvent.teacherPhoneNumber());
@@ -631,7 +631,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_SETTING),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_SETTING.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
@@ -657,7 +657,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_CLASS_REMIND),
             BizpurrioTemplate.YEDU_MATCHING_TEACHER_CLASS_REMIND.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, teacherClassRemindEvent.phoneNumber());
@@ -674,7 +674,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.yeduMatching(),
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_CLASS_GUIDE),
             BizpurrioTemplate.YEDU_MATCHING_CLASS_GUIDE.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, classGuideEvent.phoneNumber());
@@ -697,7 +697,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduTutor(),
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_FINISH_TALK),
             BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_FINISH_TALK.getCode());
     return createCommonRequest(messageBody, introduceFinishTalkEvent.phoneNumber());
   }
@@ -724,7 +724,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduTutor(),
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_WRITE_FINISH_TALK),
             BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_WRITE_FINISH_TALK.getCode());
     return createCommonRequest(messageBody, introduceWriteFinishTalkEvent.phoneNumber());
   }
@@ -751,7 +751,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.yeduOfficial(),
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION),
             BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION.getCode());
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }

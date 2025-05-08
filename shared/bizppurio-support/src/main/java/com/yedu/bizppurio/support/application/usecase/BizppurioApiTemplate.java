@@ -71,9 +71,7 @@ public class BizppurioApiTemplate {
         .doOnSubscribe(subscription -> log.info("알림톡 요청 시작"))
         .doOnSuccess(response -> log.info("알림톡 초기 요청 성공"))
         .doOnError(
-            error -> {
-              log.error("알림톡 초기 요청 실패 : {}", error.getMessage());
-            })
+            error -> log.error("알림톡 초기 요청 실패 : {}", error.getMessage()))
         .block();
   }
 }
