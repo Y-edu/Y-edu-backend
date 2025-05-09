@@ -31,6 +31,7 @@ dependencies {
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:cache-support"))
     implementation(project(":shared:bizppurio-support"))
+    implementation(project(":shared:discord-support"))
 
     implementation ("org.flywaydb:flyway-mysql")
     implementation ("org.flywaydb:flyway-core")

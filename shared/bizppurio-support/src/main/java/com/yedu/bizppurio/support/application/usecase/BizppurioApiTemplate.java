@@ -1,6 +1,5 @@
 package com.yedu.bizppurio.support.application.usecase;
 
-import static com.yedu.bizppurio.support.event.mapper.DiscordEventMapper.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +56,6 @@ public class BizppurioApiTemplate {
         .headers(h -> h.setBearerAuth(accessToken))
         .bodyValue(request)
         .retrieve()
-        // 200이 아닐 경우 예외 발생
         .onStatus(
             HttpStatusCode::isError,
             response ->

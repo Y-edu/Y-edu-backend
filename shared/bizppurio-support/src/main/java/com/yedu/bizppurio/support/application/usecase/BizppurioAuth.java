@@ -1,6 +1,5 @@
 package com.yedu.bizppurio.support.application.usecase;
 
-import static com.yedu.bizppurio.support.event.mapper.DiscordEventMapper.*;
 import static java.time.Duration.between;
 import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.parse;
@@ -57,7 +56,6 @@ public class BizppurioAuth {
       log.info("비즈뿌리오 토큰 {}에 만료", expiredAt);
       return tokenResponse.accesstoken();
     } catch (Exception ex) {
-      eventPublisher.publishEvent(mapToAlarmTalkErrorMessageEvent(ex.getMessage()));
       log.error("비즈뿌리오 토큰 발급중 예외 발생");
       return "ERROR";
     }

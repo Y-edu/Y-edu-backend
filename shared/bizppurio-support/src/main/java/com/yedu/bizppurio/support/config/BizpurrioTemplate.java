@@ -1,5 +1,6 @@
 package com.yedu.bizppurio.support.config;
 
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -66,10 +67,21 @@ public enum BizpurrioTemplate {
 
   private final Profile senderProfile;
 
+  public static BizpurrioTemplate of(String code){
+    return Arrays.stream(values())
+        .filter(it-> it.code.equals(code))
+        .findFirst()
+        .get();
+  }
+
+  @RequiredArgsConstructor
+  @Getter
   public enum Profile {
-    YEDU_TUTOR,
-    YEDU_APPLY,
-    YEDU_MATCHING,
-    YEDU_OFFICIAL
+    YEDU_TUTOR("Y-Edu 선생님 지원"),
+    YEDU_APPLY("Y-Edu 선생님 등록"),
+    YEDU_MATCHING("Y-Edu 매칭 알림톡"),
+    YEDU_OFFICIAL("Y-Edu");
+
+    private final String decs;
   }
 }

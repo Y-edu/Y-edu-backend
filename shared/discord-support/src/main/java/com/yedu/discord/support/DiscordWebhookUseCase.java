@@ -21,54 +21,13 @@ public class DiscordWebhookUseCase {
   private final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
 
-  public void sendAlarmTalkTokenError(AlarmTalkErrorMessageEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField("에러 메시지 및 코드", event.errorMessage()),
-            mapToField(
-                "비즈뿌리오 코드 참고",
-                "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft"));
-    DiscordWebhookRequest request =
-        mapToDiscordWithServerAlarm("비즈뿌리오 토큰 발급 실패", "비즈뿌리오 토큰 발급에 실패하였습니다", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.SERVER_ALARM, request);
-  }
-
-  public void sendAlarmTalkError(AlarmTalkErrorInfoEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField("핸드폰번호", event.phoneNumber()),
-            mapToField("알림톡 내용", event.content()),
-            mapToField("에러 코드", event.code()),
-            mapToField("에러 메시지", event.message()),
-            mapToField(
-                "비즈뿌리오 코드 참고",
-                "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft"));
-    DiscordWebhookRequest request =
-        mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.SERVER_ALARM, request);
-  }
-
-  public void sendAlarmTalkErrorWithFirst(AlarmTalkErrorWithFirstEvent event) {
-    List<Field> fields =
-        List.of(
-            mapToField("핸드폰번호", event.phoneNumber()),
-            mapToField("알림톡 내용", event.content()),
-            mapToField("에러 코드 및 코드", event.code()),
-            mapToField(
-                "비즈뿌리오 코드 참고",
-                "https://biztech.gitbook.io/webapi/status-code/api\nhttps://biztech.gitbook.io/webapi/status-code/at-ai-ft"));
-    DiscordWebhookRequest request =
-        mapToDiscordWithServerAlarm("알림톡 발송 실패", "알림톡 발송에 실패하였습니다.", fields);
-    webhookClient.sendWebhook(DiscordWebhookType.SERVER_ALARM, request);
-  }
-
   public void sendScheduleCancel(ScheduleCancelEvent event) {
     List<Field> fields =
         List.of(
             mapToField("✅ 선생님 이름", event.teacherName()),
             mapToField("✅ 학부모 이름", event.parentsName()),
             mapToField("✅ 매칭 취소 사유", event.refuseReason()),
-            mapToField("✅ 매칭 취소 일시", currentTime()));
+            mapToField("✅ 매칭 취소 일시", format(LocalDateTime.now())));
     DiscordWebhookRequest request = mapToDiscordWithInformation("⚠️ 매칭이 취소되었어요 ⚠️", fields);
     webhookClient.sendWebhook(DiscordWebhookType.SCHEDULE_CANCEL, request);
   }
@@ -76,7 +35,7 @@ public class DiscordWebhookUseCase {
   public void sendTeacherRegister(TeacherRegisterEvent event) {
     List<Field> fields =
         List.of(
-            mapToField("⏰ " + currentTime(), ""),
+            mapToField("⏰ " + format(LocalDateTime.now()), ""),
             mapToField(
                 "선생님 정보",
                 "✅ 이름 : "
@@ -96,7 +55,25 @@ public class DiscordWebhookUseCase {
     webhookClient.sendWebhook(DiscordWebhookType.TEACHER_REGISTER, request);
   }
 
-  private String currentTime() {
-    return LocalDateTime.now().format(dateTimeFormatter);
+  public void sendNotificationDeliverySuccess(NotificationDeliverySuccessEvent event) {
+    List<Field> fields =
+        List.of(
+            mapToField("✅ 발송 채널", event.senderProfileDesc()),
+            mapToField("✅ 발송된 템플릿", event.templateDescription()),
+            mapToField("✅ 알림톡 내용", event.content()),
+            mapToField("✅ 수신 대상", event.receiverTypeDesc()),
+            mapToField("✅ 수신자 핸드폰 번호", event.receiverPhoneNumber()),
+            mapToField("✅ 수신 일시", format(event.deliveredAt()))
+        );
+    DiscordWebhookRequest request =
+        mapToDiscordWithInformation("알림톡 발송 성공", fields);
+    webhookClient.sendWebhook(DiscordWebhookType.NOTIFICATION_ALARM, request);
+
   }
+
+  private String format(LocalDateTime time) {
+    return time.format(dateTimeFormatter);
+  }
+
+
 }

@@ -15,20 +15,8 @@ public class DiscordEventListener {
 
   @EventListener
   @Async
-  public void handleAlarmTalkErrorMessage(AlarmTalkErrorMessageEvent event) {
-    discordWebhookUseCase.sendAlarmTalkTokenError(event);
-  }
-
-  @EventListener
-  @Async
-  public void handleAlarmTalkErrorInfo(AlarmTalkErrorInfoEvent event) {
-    discordWebhookUseCase.sendAlarmTalkError(event);
-  }
-
-  @EventListener
-  @Async
-  public void handleAlarmTalkErrorWithFirst(AlarmTalkErrorWithFirstEvent event) {
-    discordWebhookUseCase.sendAlarmTalkErrorWithFirst(event);
+  public void handleScheduleCancel(NotificationDeliverySuccessEvent event) {
+    discordWebhookUseCase.sendNotificationDeliverySuccess(event);
   }
 
   @EventListener
