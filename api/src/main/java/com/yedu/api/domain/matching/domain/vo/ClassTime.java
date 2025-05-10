@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.With;
 
 @Embeddable
 @NoArgsConstructor
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ClassTime {
 
-  private LocalTime start;
+  @With private LocalTime start;
 
   private Integer classMinute;
 

@@ -8,11 +8,13 @@ import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
-import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -71,34 +73,26 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.noContent().build();
   }
 
-
   @GetMapping("/schedules")
-  @Operation(
-      summary = "과외 정규 일정 조회 API",
-      description = "토큰으로 과외 일정을 조회합니다"
-  )
-  public ResponseEntity<RetrieveScheduleResponse> retrieveSchedule(String token){
+  @Operation(summary = "과외 정규 일정 조회 API", description = "토큰으로 과외 일정을 조회합니다")
+  public ResponseEntity<RetrieveScheduleResponse> retrieveSchedule(String token) {
     RetrieveScheduleResponse response = scheduleMatchingUseCase.retrieveSchedule(token);
 
     return ResponseEntity.ok(response);
   }
 
   @PostMapping("/schedules")
-  @Operation(
-      summary = "과외 정규 일정 설정 API",
-      description = "요일별 스케줄 정보를 받아, 과외 일정들을 자동으로 생성합니다."
-  )
-  public ResponseEntity<SessionResponse> createSchedule(@RequestBody CreateScheduleRequest request){
+  @Operation(summary = "과외 정규 일정 설정 API")
+  public ResponseEntity<SessionResponse> createSchedule(
+      @RequestBody CreateScheduleRequest request) {
     SessionResponse response = scheduleMatchingUseCase.create(request);
 
     return ResponseEntity.ok(response);
   }
 
   @GetMapping("/sessions")
-  @Operation(
-      summary = "과외 실제 일정 조회 API"
-  )
-  public ResponseEntity<SessionResponse> retrieveSession(String token){
+  @Operation(summary = "과외 실제 일정 조회 API")
+  public ResponseEntity<SessionResponse> retrieveSession(String token) {
     SessionResponse response = scheduleMatchingUseCase.retrieveSession(token);
 
     return ResponseEntity.ok(response);
@@ -107,8 +101,7 @@ public class ClassMatchingScheduleController {
   @PatchMapping("/sessions/{sessionId}/cancel")
   @Operation(summary = "수업 휴강 처리 API")
   public ResponseEntity<Void> cancelSession(
-      @PathVariable Long sessionId,
-      @RequestParam String cancelReason) {
+      @PathVariable Long sessionId, @RequestParam String cancelReason) {
 
     scheduleMatchingUseCase.cancelSession(sessionId, cancelReason);
 
@@ -117,27 +110,28 @@ public class ClassMatchingScheduleController {
 
   @PatchMapping("/sessions/{sessionId}/revert-cancel")
   @Operation(summary = "수업 휴강 취소 API")
-  public ResponseEntity<Void> revertCancelSession(
-      @PathVariable Long sessionId) {
+  public ResponseEntity<Void> revertCancelSession(@PathVariable Long sessionId) {
 
     scheduleMatchingUseCase.revertCancelSession(sessionId);
 
     return ResponseEntity.noContent().build();
   }
 
-
   @PatchMapping("/sessions/{sessionId}/complete")
   @Operation(summary = "수업 완료 API")
   public ResponseEntity<Void> completeSession(
-      @PathVariable Long sessionId,
-      @RequestBody CompleteSessionRequest completeSessionRequest
-  ) {
+      @PathVariable Long sessionId, @RequestBody CompleteSessionRequest completeSessionRequest) {
     scheduleMatchingUseCase.completeSession(sessionId, completeSessionRequest);
 
     return ResponseEntity.noContent().build();
   }
 
+  @PatchMapping("/sessions/{sessionId}/change")
+  @Operation(summary = "수업 일자 변경 API")
+  public ResponseEntity<Void> changeSessionDate(
+      @PathVariable Long sessionId, LocalDate sessionDate, LocalTime start) {
+    scheduleMatchingUseCase.changeSessionDate(sessionId, sessionDate, start);
 
-
-
+    return ResponseEntity.noContent().build();
+  }
 }

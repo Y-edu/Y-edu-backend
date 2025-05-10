@@ -11,14 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * 실제 수업 정보 기록
- */
+/** 실제 수업 정보 기록 */
 @Entity
 @Getter
 @Builder
@@ -47,21 +46,20 @@ public class ClassSession extends BaseEntity {
 
   @Embedded private ClassTime classTime;
 
-
-  public boolean isUpcoming(){
+  public boolean isUpcoming() {
     return (!cancel && cancelReason == null) && !completed;
   }
 
   public void cancel(String cancelReason) {
-    if (cancel){
+    if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
     }
     cancel = true;
     this.cancelReason = cancelReason;
   }
 
-  public void revertCancel(ClassSession session) {
-    if (!cancel){
+  public void revertCancel() {
+    if (!cancel) {
       throw new IllegalStateException("취소되지 않은 일정입니다");
     }
     cancel = false;
@@ -69,11 +67,16 @@ public class ClassSession extends BaseEntity {
   }
 
   public void complete(String understanding, Integer homeworkPercentage) {
-    if (completed){
+    if (completed) {
       throw new IllegalStateException("이미 완료된 일정이니다");
     }
     completed = true;
     this.homeworkPercentage = homeworkPercentage;
     this.understanding = understanding;
+  }
+
+  public void changeDate(LocalDate sessionDate, LocalTime start) {
+    this.sessionDate = sessionDate;
+    this.classTime = this.classTime.withStart(start);
   }
 }

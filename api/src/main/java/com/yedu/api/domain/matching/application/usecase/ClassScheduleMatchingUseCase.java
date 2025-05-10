@@ -10,8 +10,8 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveReq
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
-import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
@@ -26,6 +26,7 @@ import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.ClassSessionKeyStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -120,18 +121,19 @@ public class ClassScheduleMatchingUseCase {
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
     Long matchingId = classSessionKeyStorage.get(token);
-    ClassManagement classManagement = classManagementQueryService.query(matchingId)
-        .orElse(null);
+    ClassManagement classManagement = classManagementQueryService.query(matchingId).orElse(null);
 
     if (classManagement == null) {
       return RetrieveScheduleResponse.empty();
     }
 
-    Map<Day, List<LocalTime>> schedules = classManagement.getSchedules().stream()
-        .collect(Collectors.groupingBy(
-            ClassSchedule::getDay,
-            Collectors.mapping(schedule -> schedule.getClassTime().getStart(), Collectors.toList())
-        ));
+    Map<Day, List<LocalTime>> schedules =
+        classManagement.getSchedules().stream()
+            .collect(
+                Collectors.groupingBy(
+                    ClassSchedule::getDay,
+                    Collectors.mapping(
+                        schedule -> schedule.getClassTime().getStart(), Collectors.toList())));
 
     return new RetrieveScheduleResponse(schedules);
   }
@@ -141,6 +143,10 @@ public class ClassScheduleMatchingUseCase {
     ClassMatching matching = classMatchingGetService.getById(matchingId);
 
     return classSessionQueryService.query(matching);
+  }
+
+  public void changeSessionDate(Long sessionId, LocalDate sessionDate, LocalTime start) {
+    classSessionCommandService.change(sessionId, sessionDate, start);
   }
 
   public void cancelSession(Long sessionId, String cancelReason) {
