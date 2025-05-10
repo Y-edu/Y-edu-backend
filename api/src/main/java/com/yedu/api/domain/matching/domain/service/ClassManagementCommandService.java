@@ -3,9 +3,11 @@ package com.yedu.api.domain.matching.domain.service;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
+import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.exception.matching.ClassManagementNotFoundException;
@@ -79,5 +81,29 @@ public class ClassManagementCommandService {
     return classManagementRepository
         .findById(id)
         .orElseThrow(() -> new ClassManagementNotFoundException("일치하는 매칭 관리 정보를 찾을 수 없습니다"));
+  }
+
+  public ClassManagement create(CreateScheduleRequest request, ClassMatching classMatching) {
+    ClassManagement classManagement = classManagementRepository.findByClassMatching_ClassMatchingId(
+            request.classMatchingId())
+        .orElseGet(() ->
+            {
+              ClassManagement newClassManagement = ClassManagement.builder().classMatching(classMatching)
+                  .build();
+              return classManagementRepository.save(newClassManagement);
+            }
+        );
+
+    classManagement.resetSchedule();
+
+    request.schedules().stream().map( it->
+        ClassSchedule.builder()
+            .classManagement(classManagement)
+            .classTime(new ClassTime(it.start(), it.classMinute()))
+            .day(it.day())
+            .build())
+        .forEach(classManagement::addSchedule);
+
+    return classManagement;
   }
 }

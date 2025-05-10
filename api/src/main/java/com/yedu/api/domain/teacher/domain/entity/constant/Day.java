@@ -1,5 +1,6 @@
 package com.yedu.api.domain.teacher.domain.entity.constant;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,4 +24,10 @@ public enum Day {
         .findFirst()
         .orElseThrow(() -> new IllegalArgumentException("Invalid day number: " + day));
   }
+
+  public static Day byDate(LocalDate date) {
+    int dayOfWeek = date.getDayOfWeek().getValue();
+    return Day.byInt(dayOfWeek - 1);
+  }
+
 }

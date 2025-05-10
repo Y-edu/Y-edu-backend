@@ -4,8 +4,10 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequ
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
+import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
+import com.yedu.api.domain.matching.application.dto.res.CreateScheduleResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,14 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/matching/schedule")
 @RequiredArgsConstructor
 @Tag(name = "CLASS_MATCHING_SCHEDULE Controller", description = "매칭 후반부 자동화 스프린트에 사용될 API")
 public class ClassMatchingScheduleController {
 
   private final ClassScheduleMatchingUseCase scheduleMatchingUseCase;
 
-  @GetMapping
+  @GetMapping("/matching/schedule")
   @Operation(
       summary = "상담 결과 조회 API",
       description =
@@ -40,7 +41,7 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping
+  @PostMapping("/matching/schedule")
   @Operation(summary = "상담 신청 API")
   public ResponseEntity<ClassScheduleMatchingResponse> requestScheduleMatch(
       @RequestBody ClassScheduleMatchingRequest request) {
@@ -49,7 +50,7 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.ok(new ClassScheduleMatchingResponse(key));
   }
 
-  @DeleteMapping
+  @DeleteMapping("/matching/schedule")
   @Operation(summary = "상담 후 미진행 API")
   public ResponseEntity<Void> refuseScheduleMatch(@RequestBody ClassScheduleRefuseRequest request) {
     scheduleMatchingUseCase.refuse(request);
@@ -57,7 +58,7 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping
+  @PutMapping("/matching/schedule")
   @Operation(summary = "상담 후 진행 API")
   public ResponseEntity<Void> confirmScheduleMatch(
       @RequestBody ClassScheduleConfirmRequest request) {
@@ -65,4 +66,13 @@ public class ClassMatchingScheduleController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @PostMapping("/schedule")
+  @Operation(summary = "과외 일정 설정 API")
+  public ResponseEntity<CreateScheduleResponse> createSchedule(@RequestBody CreateScheduleRequest request){
+    CreateScheduleResponse response = scheduleMatchingUseCase.create(request);
+
+    return ResponseEntity.ok(response);
+  }
+
 }

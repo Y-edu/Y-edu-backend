@@ -36,7 +36,8 @@ public class ClassManagement extends BaseEntity {
 
   @OneToMany(
       fetch = FetchType.LAZY,
-      cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+      cascade = {CascadeType.ALL},
+      orphanRemoval = true,
       mappedBy = "classManagement")
   private List<ClassSchedule> schedules = new ArrayList<>();
 
@@ -65,5 +66,9 @@ public class ClassManagement extends BaseEntity {
 
   public void completeRemind() {
     this.remind = true;
+  }
+
+  public void resetSchedule() {
+    this.schedules.clear();
   }
 }

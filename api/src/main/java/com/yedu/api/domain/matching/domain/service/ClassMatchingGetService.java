@@ -1,11 +1,14 @@
 package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.MatchingNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,5 +33,9 @@ public class ClassMatchingGetService {
     return classMatchingRepository
         .findById(classMatchingId)
         .orElseThrow(() -> new MatchingNotFoundException(classMatchingId));
+  }
+
+  public List<ClassMatching> getMatched(Teacher teacher) {
+    return classMatchingRepository.findByTeacherAndMatchStatus(teacher, MatchingStatus.최종매칭);
   }
 }

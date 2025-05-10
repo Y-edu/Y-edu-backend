@@ -7,19 +7,26 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequ
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
+import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
+import com.yedu.api.domain.matching.application.dto.res.CreateScheduleResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
+import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
+import com.yedu.cache.support.storage.ClassSessionKeyStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -38,6 +45,11 @@ public class ClassScheduleMatchingUseCase {
   private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
 
   private final MatchingTimetableQueryService matchingTimetableQueryService;
+  private final ClassSessionKeyStorage classSessionKeyStorage;
+  private final ClassMatchingGetService classMatchingGetService;
+  private final ClassManagementCommandService classManagementCommandService;
+  private final ClassSessionCommandService classSessionCommandService;
+  private final ClassSessionQueryService classSessionQueryService;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
@@ -87,5 +99,15 @@ public class ClassScheduleMatchingUseCase {
         .query(request, id)
         .map(ClassScheduleRetrieveResponse::of)
         .orElse(ClassScheduleRetrieveResponse.empty());
+  }
+
+  public CreateScheduleResponse create(CreateScheduleRequest request) {
+//    Long matchingId = classSessionKeyStorage.get(request.token());
+    ClassMatching matching = classMatchingGetService.getById(request.classMatchingId());
+    ClassManagement classManagement = classManagementCommandService.create(request, matching);
+
+    classSessionCommandService.create(classManagement);
+
+    return classSessionQueryService.query(matching);
   }
 }
