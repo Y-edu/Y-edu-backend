@@ -43,6 +43,10 @@ jobs:
           echo "${{ secrets.CONSUMER_APPLICATION_DEV }}" > ./consumer/src/main/resources/application-dev.yml
           echo "${{ secrets.CONSUMER_APPLICATION_PROD }}" > ./consumer/src/main/resources/application-prod.yml
 
+      - name: Copy logback config file
+        run: |
+          cp ./logback/consumer-logback-spring.xml  ./consumer/src/main/resources/logback-spring.xml
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ${{ env.working-directory }}
