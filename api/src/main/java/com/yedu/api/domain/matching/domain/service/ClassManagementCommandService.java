@@ -85,7 +85,7 @@ public class ClassManagementCommandService {
 
   public ClassManagement create(CreateScheduleRequest request, ClassMatching classMatching) {
     ClassManagement classManagement = classManagementRepository.findByClassMatching_ClassMatchingId(
-            request.classMatchingId())
+            classMatching.getClassMatchingId())
         .orElseGet(() ->
             {
               ClassManagement newClassManagement = ClassManagement.builder().classMatching(classMatching)

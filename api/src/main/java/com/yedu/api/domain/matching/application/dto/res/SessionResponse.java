@@ -1,6 +1,5 @@
 package com.yedu.api.domain.matching.application.dto.res;
 
-import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -10,7 +9,7 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 
-public record CreateScheduleResponse(
+public record SessionResponse(
     Map<String,List<Schedule>> schedules
 ) {
 
@@ -32,8 +31,7 @@ public record CreateScheduleResponse(
   }
 
 
-
-  public static List<CreateScheduleResponse.Schedule> from(List<ClassSession> sessions) {
+  public static List<SessionResponse.Schedule> from(List<ClassSession> sessions) {
     return sessions.stream().map(it-> Schedule
         .builder()
         .classSessionId(it.getClassSessionId())

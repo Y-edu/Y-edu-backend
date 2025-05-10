@@ -35,7 +35,9 @@ public class ClassSession extends BaseEntity {
 
   private LocalDate sessionDate;
 
-  private String understandingAndAttitude;
+  private String understanding;
+
+  private Integer homeworkPercentage;
 
   private boolean cancel;
 
@@ -48,5 +50,30 @@ public class ClassSession extends BaseEntity {
 
   public boolean isUpcoming(){
     return (!cancel && cancelReason == null) && !completed;
+  }
+
+  public void cancel(String cancelReason) {
+    if (cancel){
+      throw new IllegalStateException("이미 취소된 일정입니다");
+    }
+    cancel = true;
+    this.cancelReason = cancelReason;
+  }
+
+  public void revertCancel(ClassSession session) {
+    if (!cancel){
+      throw new IllegalStateException("취소되지 않은 일정입니다");
+    }
+    cancel = false;
+    this.cancelReason = null;
+  }
+
+  public void complete(String understanding, Integer homeworkPercentage) {
+    if (completed){
+      throw new IllegalStateException("이미 완료된 일정이니다");
+    }
+    completed = true;
+    this.homeworkPercentage = homeworkPercentage;
+    this.understanding = understanding;
   }
 }

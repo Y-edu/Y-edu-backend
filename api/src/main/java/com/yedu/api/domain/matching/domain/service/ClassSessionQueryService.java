@@ -1,13 +1,10 @@
 package com.yedu.api.domain.matching.domain.service;
 
-import com.yedu.api.domain.matching.application.dto.res.CreateScheduleResponse;
-import com.yedu.api.domain.matching.application.dto.res.CreateScheduleResponse.Schedule;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
-import com.yedu.api.domain.matching.domain.entity.ClassSession;
-import com.yedu.api.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
-import com.yedu.api.domain.matching.domain.repository.MatchingTimetableRepository;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +25,7 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
 
-  public CreateScheduleResponse query(ClassMatching classMatching){
+  public SessionResponse query(ClassMatching classMatching){
     Teacher teacher = classMatching.getTeacher();
 
     List<ClassMatching> matchedList = classMatchingGetService.getMatched(teacher);
@@ -38,7 +35,7 @@ public class ClassSessionQueryService {
           Optional<ClassManagement> optionalManagement = classManagementQueryService.query(matching.getClassMatchingId());
           return optionalManagement.map(cm -> Map.entry(
               matching.getApplicationForm().getApplicationFormId(),
-              CreateScheduleResponse.from(
+              SessionResponse.from(
                   classSessionRepository.findByClassManagementAndSessionDateAfter(cm, LocalDate.now())
               )
           ));
@@ -47,6 +44,6 @@ public class ClassSessionQueryService {
         .map(Optional::get)
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    return new CreateScheduleResponse(scheduleMap);
+    return new SessionResponse(scheduleMap);
   }
 }

@@ -1,10 +1,12 @@
 package com.yedu.api.domain.matching.domain.service;
 
+import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,4 +65,26 @@ public class ClassSessionCommandService {
         .toList();
   }
 
+  public void cancel(Long sessionId, String cancelReason) {
+    ClassSession session = findSessionById(sessionId);
+
+    session.cancel(cancelReason);
+  }
+
+  public void revertCancel(Long sessionId) {
+    ClassSession session = findSessionById(sessionId);
+
+    session.revertCancel(session);
+  }
+
+  public void complete(Long sessionId, CompleteSessionRequest request) {
+    ClassSession session = findSessionById(sessionId);
+
+    session.complete(request.understanding(), request.homeworkPercentage());
+  }
+
+  private ClassSession findSessionById(Long sessionId) {
+    return classSessionRepository.findById(sessionId)
+        .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 일정입니다"));
+  }
 }
