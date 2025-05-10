@@ -173,13 +173,11 @@ public class ClassScheduleMatchingUseCase {
      classSessionCommandService.complete(sessionId, request);
   }
 
-  public SessionResponse completeSessionByToken(CompleteSessionTokenRequest request) {
+  public void completeSessionByToken(CompleteSessionTokenRequest request) {
     Long sessionId = classSessionKeyStorage.get(request.token());
 
     this.completeSession(
         sessionId,
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
-
-    return retrieveSession(request.token());
   }
 }

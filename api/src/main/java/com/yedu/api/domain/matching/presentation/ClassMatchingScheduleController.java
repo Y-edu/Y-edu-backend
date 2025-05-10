@@ -130,7 +130,7 @@ public class ClassMatchingScheduleController {
 
   @PatchMapping("/token/sessions/complete")
   @Operation(summary = "토큰 기반 수업 완료 API")
-  public ResponseEntity<SessionResponse> completeSessionByToken(
+  public ResponseEntity<Void> completeSessionByToken(
       @RequestBody CompleteSessionTokenRequest completeSessionTokenRequest) {
     scheduleMatchingUseCase.completeSessionByToken(completeSessionTokenRequest);
 
