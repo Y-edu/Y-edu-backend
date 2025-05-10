@@ -68,7 +68,7 @@ public class ClassSession extends BaseEntity {
 
   public void complete(String understanding, Integer homeworkPercentage) {
     if (completed) {
-      throw new IllegalStateException("이미 완료된 일정이니다");
+      throw new IllegalStateException("이미 완료된 일정입니다");
     }
     completed = true;
     this.homeworkPercentage = homeworkPercentage;

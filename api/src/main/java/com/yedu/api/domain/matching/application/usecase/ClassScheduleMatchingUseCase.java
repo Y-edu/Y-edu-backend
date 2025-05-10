@@ -3,6 +3,7 @@ package com.yedu.api.domain.matching.application.usecase;
 import static com.yedu.api.global.event.mapper.BizppurioEventMapper.*;
 import static com.yedu.api.global.event.mapper.DiscordEventMapper.*;
 
+import com.yedu.api.domain.matching.application.dto.req.ChangeSessionDateRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
@@ -23,6 +24,7 @@ import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
+import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
@@ -30,6 +32,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -124,32 +127,38 @@ public class ClassScheduleMatchingUseCase {
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
     Long matchingId = classMatchingKeyStorage.get(token);
-    ClassManagement classManagement = classManagementQueryService.query(matchingId).orElse(null);
+    ClassManagement classManagement = classManagementQueryService.queryWithSchedule(matchingId).orElse(null);
 
     if (classManagement == null) {
       return RetrieveScheduleResponse.empty();
     }
 
-    Map<Day, List<LocalTime>> schedules =
+    Map<Day, List<ClassTime>> schedules =
         classManagement.getSchedules().stream()
             .collect(
                 Collectors.groupingBy(
                     ClassSchedule::getDay,
                     Collectors.mapping(
-                        schedule -> schedule.getClassTime().getStart(), Collectors.toList())));
+                        ClassSchedule::getClassTime, Collectors.toList())));
 
     return new RetrieveScheduleResponse(schedules);
   }
 
   public SessionResponse retrieveSession(String token) {
-    Long matchingId = classMatchingKeyStorage.get(token);
-    ClassMatching matching = classMatchingGetService.getById(matchingId);
+    Long sessionId = classSessionKeyStorage.get(token);
+
+    ClassMatching matching = Optional.ofNullable(sessionId)
+        .map(it -> classMatchingGetService.getBySessionId(it))
+        .orElseGet(() -> {
+          Long matchingId = classMatchingKeyStorage.get(token);
+          return classMatchingGetService.getById(matchingId);
+        });
 
     return classSessionQueryService.query(matching);
   }
 
-  public void changeSessionDate(Long sessionId, LocalDate sessionDate, LocalTime start) {
-    classSessionCommandService.change(sessionId, sessionDate, start);
+  public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
+    classSessionCommandService.change(sessionId, request.sessionDate(), request.start());
   }
 
   public void cancelSession(Long sessionId, String cancelReason) {
@@ -161,14 +170,16 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
-    classSessionCommandService.complete(sessionId, request);
+     classSessionCommandService.complete(sessionId, request);
   }
 
-  public void completeSessionByToken(CompleteSessionTokenRequest request) {
+  public SessionResponse completeSessionByToken(CompleteSessionTokenRequest request) {
     Long sessionId = classSessionKeyStorage.get(request.token());
 
     this.completeSession(
         sessionId,
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
+
+    return retrieveSession(request.token());
   }
 }

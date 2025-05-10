@@ -35,6 +35,8 @@ import com.yedu.api.domain.teacher.domain.repository.TeacherRepository;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.api.domain.teacher.domain.service.TeacherSaveService;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.ClassMatchingKeyStorage;
+import com.yedu.cache.support.storage.ClassSessionKeyStorage;
 import com.yedu.cache.support.storage.MatchingIdApplicationNotifyKeyStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.cache.support.storage.UpdateAvailableTimeKeyStorage;
@@ -75,6 +77,8 @@ public class AdminTestController {
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
   private final UpdateAvailableTimeKeyStorage updateAvailableTimeKeyStorage;
+  private final ClassMatchingKeyStorage classMatchingKeyStorage;
+  private final ClassSessionKeyStorage classSessionKeyStorage;
 
   @PostMapping("/test/teacher/signup/{phoneNumber}")
   @Operation(summary = "선생님 간편 가입 - 전화번호를 넣어주세요 (간편가입이라 내용은 기대하지 마세요)")
@@ -241,5 +245,17 @@ public class AdminTestController {
     TeacherAvailableTimeUpdateRequestEvent event =
         new TeacherAvailableTimeUpdateRequestEvent(teacherInfo.getNickName(), token, phoneNumber);
     eventPublisher.publishEvent(event);
+  }
+
+  @PostMapping("/test/schedule/{matchingId}")
+  @Operation(summary = "날짜 변경/휴강 토큰 발급")
+  public String issueChangeSessionDateToken(@PathVariable Long matchingId) {
+    return classMatchingKeyStorage.storeAndGet(matchingId);
+  }
+
+  @PostMapping("/test/schedule/complete/{sessionId}")
+  @Operation(summary = "과외 완료 토큰 발급")
+  public String issueCompleteSessionToken(@PathVariable Long sessionId) {
+    return classSessionKeyStorage.storeAndGet(sessionId);
   }
 }

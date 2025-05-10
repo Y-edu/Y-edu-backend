@@ -32,6 +32,10 @@ public class ClassManagementQueryService {
     return classManagementRepository.findByClassMatching_ClassMatchingId(classMatchingId);
   }
 
+  public Optional<ClassManagement> queryWithSchedule(Long classMatchingId) {
+    return classManagementRepository.findWithSchedule(classMatchingId);
+  }
+
   public List<ClassManagement> query() {
     return classManagementRepository
         .findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(

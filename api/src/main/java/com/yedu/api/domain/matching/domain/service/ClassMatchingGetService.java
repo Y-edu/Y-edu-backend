@@ -37,4 +37,9 @@ public class ClassMatchingGetService {
   public List<ClassMatching> getMatched(Teacher teacher) {
     return classMatchingRepository.findByTeacherAndMatchStatus(teacher, MatchingStatus.최종매칭);
   }
+
+  public ClassMatching getBySessionId(Long sessionId) {
+    return classMatchingRepository.findBySessionId(sessionId)
+        .orElseThrow(() -> new IllegalArgumentException("매칭 정보를 찾을수가 없습니다"));
+  }
 }

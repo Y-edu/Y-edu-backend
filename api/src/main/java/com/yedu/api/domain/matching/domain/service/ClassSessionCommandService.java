@@ -1,6 +1,7 @@
 package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
+import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;

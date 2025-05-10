@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.presentation;
 
+import com.yedu.api.domain.matching.application.dto.req.ChangeSessionDateRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
@@ -128,8 +129,8 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/token/sessions/complete")
-  @Operation(summary = "수업 완료 API")
-  public ResponseEntity<Void> completeSessionByToken(
+  @Operation(summary = "토큰 기반 수업 완료 API")
+  public ResponseEntity<SessionResponse> completeSessionByToken(
       @RequestBody CompleteSessionTokenRequest completeSessionTokenRequest) {
     scheduleMatchingUseCase.completeSessionByToken(completeSessionTokenRequest);
 
@@ -139,8 +140,9 @@ public class ClassMatchingScheduleController {
   @PatchMapping("/sessions/{sessionId}/change")
   @Operation(summary = "수업 일자 변경 API")
   public ResponseEntity<Void> changeSessionDate(
-      @PathVariable Long sessionId, LocalDate sessionDate, LocalTime start) {
-    scheduleMatchingUseCase.changeSessionDate(sessionId, sessionDate, start);
+      @PathVariable Long sessionId,
+      @RequestBody ChangeSessionDateRequest changeSessionDateRequest) {
+    scheduleMatchingUseCase.changeSessionDate(sessionId, changeSessionDateRequest);
 
     return ResponseEntity.noContent().build();
   }
