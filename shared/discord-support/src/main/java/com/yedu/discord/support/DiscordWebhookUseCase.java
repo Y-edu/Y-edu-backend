@@ -2,6 +2,7 @@ package com.yedu.discord.support;
 
 import static com.yedu.discord.support.DiscordMapper.*;
 
+import com.yedu.common.ApplicationEnvironment;
 import com.yedu.common.event.discord.*;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest;
 import com.yedu.discord.support.dto.req.DiscordWebhookRequest.Field;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DiscordWebhookUseCase {
   private final DiscordWebClientTemplate webhookClient;
+
+  private final ApplicationEnvironment applicationEnvironment;
 
   private final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
@@ -64,7 +67,7 @@ public class DiscordWebhookUseCase {
             mapToField("✅ 수신 대상", event.receiverTypeDesc()),
             mapToField("✅ 수신자 핸드폰 번호", event.receiverPhoneNumber()),
             mapToField("✅ 수신 일시", format(event.deliveredAt())));
-    DiscordWebhookRequest request = mapToDiscordWithInformation("알림톡 발송 성공", fields);
+    DiscordWebhookRequest request = mapToDiscordWithInformation("[%s] 알림톡 발송 성공".formatted(applicationEnvironment.currentProfile()), fields);
     webhookClient.sendWebhook(DiscordWebhookType.NOTIFICATION_ALARM, request);
   }
 
