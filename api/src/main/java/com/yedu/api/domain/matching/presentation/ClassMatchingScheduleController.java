@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "CLASS_MATCHING_SCHEDULE Controller", description = "매칭 후반부 자동화 스프린트에 사용될 API")
+@Tag(name = "CLASS_MATCHING_SCHEDULE Controller", description = "과외 일정 관련 API")
 public class ClassMatchingScheduleController {
 
   private final ClassScheduleMatchingUseCase scheduleMatchingUseCase;
