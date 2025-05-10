@@ -57,7 +57,7 @@ public class SystemMessageConsumer implements Consumer<Message> {
       notification.ifPresent(it -> {
         it.successDelivery();
         NotificationDeliverySuccessEvent event = NotificationMapper.map(it);
-//        applicationEventPublisher.publishEvent(event);
+        applicationEventPublisher.publishEvent(event);
       });
       return;
     }
