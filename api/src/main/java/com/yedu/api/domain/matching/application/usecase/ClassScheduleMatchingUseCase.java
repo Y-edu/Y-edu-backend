@@ -24,7 +24,6 @@ import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
-import com.yedu.cache.support.storage.ClassSessionKeyStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import java.time.LocalDate;
@@ -168,6 +167,8 @@ public class ClassScheduleMatchingUseCase {
   public void completeSessionByToken(CompleteSessionTokenRequest request) {
     Long sessionId = classSessionKeyStorage.get(request.token());
 
-    this.completeSession(sessionId, new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
+    this.completeSession(
+        sessionId,
+        new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
   }
 }
