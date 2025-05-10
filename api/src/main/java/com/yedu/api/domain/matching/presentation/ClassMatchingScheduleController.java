@@ -5,6 +5,7 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingReq
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
+import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
@@ -122,6 +123,15 @@ public class ClassMatchingScheduleController {
   public ResponseEntity<Void> completeSession(
       @PathVariable Long sessionId, @RequestBody CompleteSessionRequest completeSessionRequest) {
     scheduleMatchingUseCase.completeSession(sessionId, completeSessionRequest);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/token/sessions/complete")
+  @Operation(summary = "수업 완료 API")
+  public ResponseEntity<Void> completeSessionByToken(
+      @RequestBody CompleteSessionTokenRequest completeSessionTokenRequest) {
+    scheduleMatchingUseCase.completeSessionByToken(completeSessionTokenRequest);
 
     return ResponseEntity.noContent().build();
   }

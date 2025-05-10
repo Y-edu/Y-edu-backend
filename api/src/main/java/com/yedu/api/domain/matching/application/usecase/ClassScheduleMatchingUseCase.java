@@ -8,6 +8,7 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingReq
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRefuseRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
+import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
@@ -51,8 +52,11 @@ public class ClassScheduleMatchingUseCase {
 
   private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
 
+  private final KeyStorage<Long> classMatchingKeyStorage;
+
+  private final KeyStorage<Long> classSessionKeyStorage;
+
   private final MatchingTimetableQueryService matchingTimetableQueryService;
-  private final ClassSessionKeyStorage classSessionKeyStorage;
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementCommandService classManagementCommandService;
   private final ClassSessionCommandService classSessionCommandService;
@@ -110,7 +114,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse create(CreateScheduleRequest request) {
-    Long matchingId = classSessionKeyStorage.get(request.token());
+    Long matchingId = classMatchingKeyStorage.get(request.token());
     ClassMatching matching = classMatchingGetService.getById(matchingId);
     ClassManagement classManagement = classManagementCommandService.create(request, matching);
 
@@ -120,7 +124,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
-    Long matchingId = classSessionKeyStorage.get(token);
+    Long matchingId = classMatchingKeyStorage.get(token);
     ClassManagement classManagement = classManagementQueryService.query(matchingId).orElse(null);
 
     if (classManagement == null) {
@@ -139,7 +143,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse retrieveSession(String token) {
-    Long matchingId = classSessionKeyStorage.get(token);
+    Long matchingId = classMatchingKeyStorage.get(token);
     ClassMatching matching = classMatchingGetService.getById(matchingId);
 
     return classSessionQueryService.query(matching);
@@ -159,5 +163,11 @@ public class ClassScheduleMatchingUseCase {
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
     classSessionCommandService.complete(sessionId, request);
+  }
+
+  public void completeSessionByToken(CompleteSessionTokenRequest request) {
+    Long sessionId = classSessionKeyStorage.get(request.token());
+
+    this.completeSession(sessionId, new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
   }
 }
