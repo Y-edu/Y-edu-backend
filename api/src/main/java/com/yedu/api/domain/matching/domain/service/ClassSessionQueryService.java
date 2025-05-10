@@ -25,24 +25,28 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
 
-  public SessionResponse query(ClassMatching classMatching){
+  public SessionResponse query(ClassMatching classMatching) {
     Teacher teacher = classMatching.getTeacher();
 
     List<ClassMatching> matchedList = classMatchingGetService.getMatched(teacher);
 
-    Map<String, List<Schedule>> scheduleMap = matchedList.stream()
-        .map(matching -> {
-          Optional<ClassManagement> optionalManagement = classManagementQueryService.query(matching.getClassMatchingId());
-          return optionalManagement.map(cm -> Map.entry(
-              matching.getApplicationForm().getApplicationFormId(),
-              SessionResponse.from(
-                  classSessionRepository.findByClassManagementAndSessionDateAfter(cm, LocalDate.now())
-              )
-          ));
-        })
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    Map<String, List<Schedule>> scheduleMap =
+        matchedList.stream()
+            .map(
+                matching -> {
+                  Optional<ClassManagement> optionalManagement =
+                      classManagementQueryService.query(matching.getClassMatchingId());
+                  return optionalManagement.map(
+                      cm ->
+                          Map.entry(
+                              matching.getApplicationForm().getApplicationFormId(),
+                              SessionResponse.from(
+                                  classSessionRepository.findByClassManagementAndSessionDateAfter(
+                                      cm, LocalDate.now()))));
+                })
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     return new SessionResponse(scheduleMap);
   }

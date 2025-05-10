@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-
 @ConditionalOnProperty(prefix = "message", name = "enable", havingValue = "false")
 @Component
 @RequiredArgsConstructor

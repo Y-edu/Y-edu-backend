@@ -15,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,23 +43,25 @@ public class ClassSchedule extends BaseEntity {
   public boolean contains(ClassSession session) {
     Day day = Day.byDate(session.getSessionDate());
 
-    return session.isUpcoming() &&
-        session.getClassTime().equals(this.classTime) &&
-        day.equals(this.day);
+    return session.isUpcoming()
+        && session.getClassTime().equals(this.classTime)
+        && day.equals(this.day);
   }
 
-  public Collection<ClassSession> generateUpcomingDates(ClassManagement classManagement, LocalDate today, int times) {
+  public Collection<ClassSession> generateUpcomingDates(
+      ClassManagement classManagement, LocalDate today, int times) {
     return Stream.iterate(today, date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .limit(times)
-        .map(date -> ClassSession.builder()
-            .classManagement(classManagement)
-            .sessionDate(date)
-            .classTime(this.classTime)
-            .completed(false)
-            .cancel(false)
-            .build())
+        .map(
+            date ->
+                ClassSession.builder()
+                    .classManagement(classManagement)
+                    .sessionDate(date)
+                    .classTime(this.classTime)
+                    .completed(false)
+                    .cancel(false)
+                    .build())
         .toList();
   }
 }
-

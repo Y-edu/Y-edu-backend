@@ -54,11 +54,12 @@ public class SystemMessageConsumer implements Consumer<Message> {
     Optional<Notification> notification =
         notificationRepository.findByServerKeyAndClientKey(request.CMSGID(), request.REFKEY());
     if (bizppurioCheckStep.isSuccess(request)) {
-      notification.ifPresent(it -> {
-        it.successDelivery();
-        NotificationDeliverySuccessEvent event = NotificationMapper.map(it);
-        applicationEventPublisher.publishEvent(event);
-      });
+      notification.ifPresent(
+          it -> {
+            it.successDelivery();
+            NotificationDeliverySuccessEvent event = NotificationMapper.map(it);
+            applicationEventPublisher.publishEvent(event);
+          });
       return;
     }
     notification.ifPresent(Notification::failDelivery);

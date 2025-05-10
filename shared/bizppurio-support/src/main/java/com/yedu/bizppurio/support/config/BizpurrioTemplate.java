@@ -67,11 +67,8 @@ public enum BizpurrioTemplate {
 
   private final Profile senderProfile;
 
-  public static BizpurrioTemplate of(String code){
-    return Arrays.stream(values())
-        .filter(it-> it.code.equals(code))
-        .findFirst()
-        .get();
+  public static BizpurrioTemplate of(String code) {
+    return Arrays.stream(values()).filter(it -> it.code.equals(code)).findFirst().get();
   }
 
   @RequiredArgsConstructor

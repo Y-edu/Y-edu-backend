@@ -78,22 +78,23 @@ public abstract class AbstractConsumer implements Consumer<Message> {
     String message = request.content().at().getMessage();
     CommonButton[] buttons = request.content().at().getButtons();
 
-    String buttonsContent = Optional.ofNullable(buttons)
-        .stream()
-        .flatMap(Arrays::stream)
-        .map(button -> {
-          String name = button.getButtonName();
-          String link = button.getButtonLink();
+    String buttonsContent =
+        Optional.ofNullable(buttons).stream()
+            .flatMap(Arrays::stream)
+            .map(
+                button -> {
+                  String name = button.getButtonName();
+                  String link = button.getButtonLink();
 
-          StringBuilder builder = new StringBuilder();
-          builder.append("버튼: ").append(name);
-          if (link != null && !link.isBlank()) {
-            builder.append("\n버튼 링크: ").append(link);
-          }
+                  StringBuilder builder = new StringBuilder();
+                  builder.append("버튼: ").append(name);
+                  if (link != null && !link.isBlank()) {
+                    builder.append("\n버튼 링크: ").append(link);
+                  }
 
-          return builder.toString();
-        })
-        .collect(Collectors.joining("\n\n"));
+                  return builder.toString();
+                })
+            .collect(Collectors.joining("\n\n"));
 
     return Stream.of(message, "-------", buttonsContent)
         .filter(s -> s != null && !s.isBlank())

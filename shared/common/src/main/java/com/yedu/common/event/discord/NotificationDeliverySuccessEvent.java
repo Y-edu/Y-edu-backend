@@ -8,5 +8,4 @@ public record NotificationDeliverySuccessEvent(
     String receiverTypeDesc,
     String receiverPhoneNumber,
     String content,
-    LocalDateTime deliveredAt
-) {}
+    LocalDateTime deliveredAt) {}

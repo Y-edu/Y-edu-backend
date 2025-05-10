@@ -5,9 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
-public record RetrieveScheduleResponse(
-    Map<Day, List<LocalTime>> schedules
-) {
+public record RetrieveScheduleResponse(Map<Day, List<LocalTime>> schedules) {
 
   public static RetrieveScheduleResponse empty() {
     return new RetrieveScheduleResponse(Map.of());

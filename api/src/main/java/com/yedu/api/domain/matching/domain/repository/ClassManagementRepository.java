@@ -1,7 +1,6 @@
 package com.yedu.api.domain.matching.domain.repository;
 
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
-import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,5 +16,4 @@ public interface ClassManagementRepository extends JpaRepository<ClassManagement
   List<ClassManagement>
       findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(
           LocalDateTime time, MatchingStatus status);
-
 }

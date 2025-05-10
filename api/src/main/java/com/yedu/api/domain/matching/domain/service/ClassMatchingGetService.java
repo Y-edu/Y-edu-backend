@@ -8,7 +8,6 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.MatchingNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.stereotype.Service;
 
 @Service

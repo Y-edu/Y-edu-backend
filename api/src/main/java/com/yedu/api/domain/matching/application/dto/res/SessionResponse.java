@@ -9,38 +9,29 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 
-public record SessionResponse(
-    Map<String,List<Schedule>> schedules
-) {
+public record SessionResponse(Map<String, List<Schedule>> schedules) {
 
   @Builder(access = AccessLevel.PRIVATE)
   public record Schedule(
       Long classSessionId,
-      @Schema(description = "휴강 여부")
-      boolean cancel,
-      @Schema(description = "휴강 사유")
-      String cancelReason,
-      @Schema(description = "완료 여부")
-      boolean complete,
-      @Schema(description = "과외 일시")
-      LocalDate classDate,
-      @Schema(description = "과외 시간")
-      LocalTime classStart
-  ) {
-
-  }
-
+      @Schema(description = "휴강 여부") boolean cancel,
+      @Schema(description = "휴강 사유") String cancelReason,
+      @Schema(description = "완료 여부") boolean complete,
+      @Schema(description = "과외 일시") LocalDate classDate,
+      @Schema(description = "과외 시간") LocalTime classStart) {}
 
   public static List<SessionResponse.Schedule> from(List<ClassSession> sessions) {
-    return sessions.stream().map(it-> Schedule
-        .builder()
-        .classSessionId(it.getClassSessionId())
-        .cancel(it.isCancel())
-        .cancelReason(it.getCancelReason())
-        .complete(it.isCompleted())
-        .classDate(it.getSessionDate())
-        .classStart(it.getClassTime().getStart())
-        .build()).toList();
+    return sessions.stream()
+        .map(
+            it ->
+                Schedule.builder()
+                    .classSessionId(it.getClassSessionId())
+                    .cancel(it.isCancel())
+                    .cancelReason(it.getCancelReason())
+                    .complete(it.isCompleted())
+                    .classDate(it.getSessionDate())
+                    .classStart(it.getClassTime().getStart())
+                    .build())
+        .toList();
   }
-
 }

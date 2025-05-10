@@ -29,5 +29,4 @@ public enum Day {
     int dayOfWeek = date.getDayOfWeek().getValue();
     return Day.byInt(dayOfWeek - 1);
   }
-
 }

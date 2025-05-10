@@ -38,8 +38,11 @@ public class SwaggerConfig {
                     .scheme("bearer")
                     .bearerFormat("JWT"));
 
-    SpringDocUtils.getConfig().replaceWithSchema(LocalTime.class, new StringSchema()
-        .example(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))));
+    SpringDocUtils.getConfig()
+        .replaceWithSchema(
+            LocalTime.class,
+            new StringSchema()
+                .example(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))));
 
     return new OpenAPI()
         .addServersItem(new Server().url("/"))

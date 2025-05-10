@@ -26,7 +26,6 @@ public class NotificationMapper {
         receiverType.getDesc(),
         receiverPhoneNumber,
         content,
-        deliveredAt
-    );
+        deliveredAt);
   }
 }
