@@ -7,7 +7,6 @@ import java.util.Map;
 
 public record RetrieveScheduleResponse(Map<Day, List<ClassTime>> schedules) {
 
-
   public static RetrieveScheduleResponse empty() {
     return new RetrieveScheduleResponse(Map.of());
   }

@@ -13,14 +13,14 @@ import org.springframework.data.jpa.repository.Query;
 public interface ClassMatchingRepository
     extends JpaRepository<ClassMatching, Long>, ClassMatchingDslRepository {
 
-  @Query("""
+  @Query(
+      """
     SELECT cm FROM ClassSession cs
     JOIN cs.classManagement cg
     JOIN cg.classMatching cm
     WHERE cs.classSessionId = :sessionId
 """)
   Optional<ClassMatching> findBySessionId(@Param("sessionId") Long sessionId);
-
 
   Optional<ClassMatching>
       findByApplicationForm_ApplicationFormIdAndTeacher_TeacherIdAndTeacher_TeacherInfo_PhoneNumber(
@@ -29,7 +29,6 @@ public interface ClassMatchingRepository
   List<ClassMatching> findByApplicationForm(ApplicationForm applicationForm);
 
   List<ClassMatching> findByTeacherAndMatchStatus(Teacher teacher, MatchingStatus matchStatus);
-
 
   void deleteAllByApplicationForm_Parents_PhoneNumber(String phoneNumber);
 

@@ -39,7 +39,8 @@ public class ClassMatchingGetService {
   }
 
   public ClassMatching getBySessionId(Long sessionId) {
-    return classMatchingRepository.findBySessionId(sessionId)
+    return classMatchingRepository
+        .findBySessionId(sessionId)
         .orElseThrow(() -> new IllegalArgumentException("매칭 정보를 찾을수가 없습니다"));
   }
 }

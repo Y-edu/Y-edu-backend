@@ -28,8 +28,6 @@ import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -127,7 +125,8 @@ public class ClassScheduleMatchingUseCase {
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
     Long matchingId = classMatchingKeyStorage.get(token);
-    ClassManagement classManagement = classManagementQueryService.queryWithSchedule(matchingId).orElse(null);
+    ClassManagement classManagement =
+        classManagementQueryService.queryWithSchedule(matchingId).orElse(null);
 
     if (classManagement == null) {
       return RetrieveScheduleResponse.empty();
@@ -138,8 +137,7 @@ public class ClassScheduleMatchingUseCase {
             .collect(
                 Collectors.groupingBy(
                     ClassSchedule::getDay,
-                    Collectors.mapping(
-                        ClassSchedule::getClassTime, Collectors.toList())));
+                    Collectors.mapping(ClassSchedule::getClassTime, Collectors.toList())));
 
     return new RetrieveScheduleResponse(schedules);
   }
@@ -147,12 +145,14 @@ public class ClassScheduleMatchingUseCase {
   public SessionResponse retrieveSession(String token) {
     Long sessionId = classSessionKeyStorage.get(token);
 
-    ClassMatching matching = Optional.ofNullable(sessionId)
-        .map(it -> classMatchingGetService.getBySessionId(it))
-        .orElseGet(() -> {
-          Long matchingId = classMatchingKeyStorage.get(token);
-          return classMatchingGetService.getById(matchingId);
-        });
+    ClassMatching matching =
+        Optional.ofNullable(sessionId)
+            .map(it -> classMatchingGetService.getBySessionId(it))
+            .orElseGet(
+                () -> {
+                  Long matchingId = classMatchingKeyStorage.get(token);
+                  return classMatchingGetService.getById(matchingId);
+                });
 
     return classSessionQueryService.query(matching);
   }
@@ -170,7 +170,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
-     classSessionCommandService.complete(sessionId, request);
+    classSessionCommandService.complete(sessionId, request);
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {

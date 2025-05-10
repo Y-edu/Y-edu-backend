@@ -19,8 +19,7 @@ public interface ClassManagementRepository extends JpaRepository<ClassManagement
       findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(
           LocalDateTime time, MatchingStatus status);
 
-  @Query("SELECT cm FROM ClassManagement cm JOIN FETCH cm.schedules WHERE cm.classMatching.classMatchingId = :classMatchingId")
+  @Query(
+      "SELECT cm FROM ClassManagement cm JOIN FETCH cm.schedules WHERE cm.classMatching.classMatchingId = :classMatchingId")
   Optional<ClassManagement> findWithSchedule(@Param("classMatchingId") Long classMatchingId);
-
-
 }
