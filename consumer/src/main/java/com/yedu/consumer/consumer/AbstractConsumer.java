@@ -2,16 +2,21 @@ package com.yedu.consumer.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
+import com.yedu.bizppurio.support.application.dto.req.content.CommonButton;
 import com.yedu.bizppurio.support.application.dto.res.MessageResponse;
 import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
 import com.yedu.consumer.domain.notification.entity.Notification;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.rabbitmq.support.Message;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,5 +72,31 @@ public abstract class AbstractConsumer implements Consumer<Message> {
           T convert = convert(msg, clazz);
           return mapperFunc.apply(convert);
         });
+  }
+
+  protected String getContent(CommonRequest request) {
+    String message = request.content().at().getMessage();
+    CommonButton[] buttons = request.content().at().getButtons();
+
+    String buttonsContent = Optional.ofNullable(buttons)
+        .stream()
+        .flatMap(Arrays::stream)
+        .map(button -> {
+          String name = button.getButtonName();
+          String link = button.getButtonLink();
+
+          StringBuilder builder = new StringBuilder();
+          builder.append("버튼: ").append(name);
+          if (link != null && !link.isBlank()) {
+            builder.append("\n버튼 링크: ").append(link);
+          }
+
+          return builder.toString();
+        })
+        .collect(Collectors.joining("\n\n"));
+
+    return Stream.of(message, "-------", buttonsContent)
+        .filter(s -> s != null && !s.isBlank())
+        .collect(Collectors.joining("\n"));
   }
 }

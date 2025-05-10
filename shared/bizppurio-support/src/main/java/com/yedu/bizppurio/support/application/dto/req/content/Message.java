@@ -4,4 +4,6 @@ public interface Message {
   String getMessage();
 
   String getTemplateCode();
+
+  CommonButton[] getButtons();
 }

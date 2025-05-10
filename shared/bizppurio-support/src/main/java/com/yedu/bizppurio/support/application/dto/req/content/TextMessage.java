@@ -11,4 +11,9 @@ public record TextMessage(String message, String senderkey, String templatecode)
   public String getTemplateCode() {
     return templatecode;
   }
+
+  @Override
+  public CommonButton[] getButtons() {
+    return null;
+  }
 }

@@ -12,4 +12,9 @@ public record EmphasizeButtonMessage(
   public String getTemplateCode() {
     return templatecode;
   }
+
+  @Override
+  public CommonButton[] getButtons() {
+    return button;
+  }
 }
