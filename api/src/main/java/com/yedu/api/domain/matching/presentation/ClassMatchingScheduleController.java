@@ -13,6 +13,7 @@ import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveRes
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -165,6 +166,18 @@ public class ClassMatchingScheduleController {
       @PathVariable Long sessionId,
       @RequestBody ChangeSessionDateRequest changeSessionDateRequest) {
     scheduleMatchingUseCase.changeSessionDate(sessionId, changeSessionDateRequest);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Hidden
+  @PostMapping("/sessions/alarm/send")
+  @Operation(
+      summary = "시간/날짜 등록된 경우 완료톡 발송",
+      description = "시간/날짜 등록된 사용자에게 완료톡을 발송합니다",
+      tags = {"완료톡 관련 API"})
+  public ResponseEntity<Void> sendCompletionTalkAfterSession() {
+    scheduleMatchingUseCase.sendCompletionTalkAfterSession();
 
     return ResponseEntity.noContent().build();
   }

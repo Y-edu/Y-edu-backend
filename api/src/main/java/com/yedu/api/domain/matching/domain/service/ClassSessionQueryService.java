@@ -5,7 +5,6 @@ import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
-import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -19,19 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ClassSessionQueryService {
-  private final ClassMatchingGetService classMatchingGetService;
 
   private final ClassManagementQueryService classManagementQueryService;
 
   private final ClassSessionRepository classSessionRepository;
 
-  public SessionResponse query(ClassMatching classMatching) {
-    Teacher teacher = classMatching.getTeacher();
-
-    List<ClassMatching> matchedList = classMatchingGetService.getMatched(teacher);
-
+  public SessionResponse query(List<ClassMatching> classMatchings) {
     Map<String, List<Schedule>> scheduleMap =
-        matchedList.stream()
+        classMatchings.stream()
             .map(
                 matching -> {
                   Optional<ClassManagement> optionalManagement =

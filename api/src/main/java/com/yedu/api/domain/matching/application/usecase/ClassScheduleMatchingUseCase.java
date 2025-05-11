@@ -25,6 +25,7 @@ import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
+import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
@@ -116,11 +117,9 @@ public class ClassScheduleMatchingUseCase {
 
   public SessionResponse create(CreateScheduleRequest request) {
     ClassMatching matching = getClassMatchingByToken(request.token());
-    ClassManagement classManagement = classManagementCommandService.create(request, matching);
+    classManagementCommandService.create(request, matching);
 
-    classSessionCommandService.create(classManagement);
-
-    return classSessionQueryService.query(matching);
+    return createSession(matching);
   }
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
@@ -144,16 +143,13 @@ public class ClassScheduleMatchingUseCase {
 
   public SessionResponse retrieveSession(String token) {
     ClassMatching matching = getClassMatchingByToken(token);
-
     ClassManagement classManagement =
         classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
 
     if (classManagement == null) {
       return SessionResponse.empty();
     }
-
-    classSessionCommandService.create(classManagement);
-    return classSessionQueryService.query(matching);
+    return createSession(matching);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
@@ -178,6 +174,21 @@ public class ClassScheduleMatchingUseCase {
     this.completeSession(
         sessionId,
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
+  }
+
+  public void sendCompletionTalkAfterSession() {}
+
+  private SessionResponse createSession(ClassMatching matching) {
+    Teacher teacher = matching.getTeacher();
+    List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
+
+    classMatchings.forEach(
+        cm ->
+            classManagementQueryService
+                .queryWithSchedule(cm.getClassMatchingId())
+                .ifPresent(classSessionCommandService::create));
+
+    return classSessionQueryService.query(classMatchings);
   }
 
   private ClassMatching getClassMatchingByToken(String token) {
