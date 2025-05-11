@@ -76,7 +76,7 @@ public class ClassMatchingScheduleController {
   @GetMapping("/schedules")
   @Operation(
       summary = "과외 정규 일정 조회 API",
-      description = "토큰으로 과외 일정을 조회합니다",
+      description = "토큰으로 과외 일정을 조회합니다. 설정된 과외 시간/날짜가 없는 경우 빈 객체가 응답됩니다",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<RetrieveScheduleResponse> retrieveSchedule(String token) {
     RetrieveScheduleResponse response = scheduleMatchingUseCase.retrieveSchedule(token);

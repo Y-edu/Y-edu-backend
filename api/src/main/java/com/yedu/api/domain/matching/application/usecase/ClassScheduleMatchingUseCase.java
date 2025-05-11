@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 @RequiredArgsConstructor
 @Component
@@ -127,7 +128,7 @@ public class ClassScheduleMatchingUseCase {
     ClassManagement classManagement =
         classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
 
-    if (classManagement == null) {
+    if (classManagement == null || CollectionUtils.isEmpty(classManagement.getSchedules())) {
       return RetrieveScheduleResponse.empty();
     }
 
