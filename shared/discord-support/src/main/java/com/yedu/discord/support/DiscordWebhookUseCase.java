@@ -67,7 +67,9 @@ public class DiscordWebhookUseCase {
             mapToField("✅ 수신 대상", event.receiverTypeDesc()),
             mapToField("✅ 수신자 핸드폰 번호", event.receiverPhoneNumber()),
             mapToField("✅ 수신 일시", format(event.deliveredAt())));
-    DiscordWebhookRequest request = mapToDiscordWithInformation("[%s] 알림톡 발송 성공".formatted(applicationEnvironment.currentProfile()), fields);
+    DiscordWebhookRequest request =
+        mapToDiscordWithInformation(
+            "[%s] 알림톡 발송 성공".formatted(applicationEnvironment.currentProfile()), fields);
     webhookClient.sendWebhook(DiscordWebhookType.NOTIFICATION_ALARM, request);
   }
 

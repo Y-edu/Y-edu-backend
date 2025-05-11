@@ -87,15 +87,15 @@ public class ClassSessionCommandService {
     session.complete(request.understanding(), request.homeworkPercentage());
   }
 
-  private ClassSession findSessionById(Long sessionId) {
-    return classSessionRepository
-        .findById(sessionId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다"));
-  }
-
   public void change(Long sessionId, LocalDate sessionDate, LocalTime start) {
     ClassSession session = findSessionById(sessionId);
 
     session.changeDate(sessionDate, start);
+  }
+
+  private ClassSession findSessionById(Long sessionId) {
+    return classSessionRepository
+        .findById(sessionId)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다"));
   }
 }

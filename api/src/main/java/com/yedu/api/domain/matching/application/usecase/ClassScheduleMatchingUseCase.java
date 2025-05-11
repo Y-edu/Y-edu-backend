@@ -114,8 +114,7 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse create(CreateScheduleRequest request) {
-    Long matchingId = classMatchingKeyStorage.get(request.token());
-    ClassMatching matching = classMatchingGetService.getById(matchingId);
+    ClassMatching matching = getClassMatchingByToken(request.token());
     ClassManagement classManagement = classManagementCommandService.create(request, matching);
 
     classSessionCommandService.create(classManagement);
@@ -124,9 +123,9 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
-    Long matchingId = classMatchingKeyStorage.get(token);
+    ClassMatching matching = getClassMatchingByToken(token);
     ClassManagement classManagement =
-        classManagementQueryService.queryWithSchedule(matchingId).orElse(null);
+        classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
 
     if (classManagement == null) {
       return RetrieveScheduleResponse.empty();
@@ -143,17 +142,16 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse retrieveSession(String token) {
-    Long sessionId = classSessionKeyStorage.get(token);
+    ClassMatching matching = getClassMatchingByToken(token);
 
-    ClassMatching matching =
-        Optional.ofNullable(sessionId)
-            .map(it -> classMatchingGetService.getBySessionId(it))
-            .orElseGet(
-                () -> {
-                  Long matchingId = classMatchingKeyStorage.get(token);
-                  return classMatchingGetService.getById(matchingId);
-                });
+    ClassManagement classManagement =
+        classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
 
+    if (classManagement == null) {
+      return SessionResponse.empty();
+    }
+
+    classSessionCommandService.create(classManagement);
     return classSessionQueryService.query(matching);
   }
 
@@ -179,5 +177,18 @@ public class ClassScheduleMatchingUseCase {
     this.completeSession(
         sessionId,
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
+  }
+
+  private ClassMatching getClassMatchingByToken(String token) {
+    return Optional.ofNullable(classSessionKeyStorage.get(token))
+        .map(classMatchingGetService::getBySessionId)
+        .orElseGet(
+            () -> {
+              Long matchingId = classMatchingKeyStorage.get(token);
+              if (matchingId == null) {
+                throw new IllegalArgumentException("잘못된 토큰값입니다");
+              }
+              return classMatchingGetService.getById(matchingId);
+            });
   }
 }

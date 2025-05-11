@@ -38,4 +38,8 @@ public record SessionResponse(Map<String, List<Schedule>> schedules) {
                     .build())
         .toList();
   }
+
+  public static SessionResponse empty() {
+    return new SessionResponse(Map.of());
+  }
 }

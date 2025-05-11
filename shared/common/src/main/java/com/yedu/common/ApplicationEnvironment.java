@@ -14,8 +14,7 @@ public class ApplicationEnvironment {
 
   private final Environment environment;
 
-  public String currentProfile(){
+  public String currentProfile() {
     return Arrays.asList(environment.getActiveProfiles()).contains("dev") ? DEV : MAIN;
   }
-
 }

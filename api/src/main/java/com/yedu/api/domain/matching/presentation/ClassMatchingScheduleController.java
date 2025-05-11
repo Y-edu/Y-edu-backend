@@ -81,8 +81,8 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/schedules")
-  @Operation(summary = "과외 정규 일정 설정 API")
+  @PutMapping("/schedules")
+  @Operation(summary = "과외 정규 일정 설정 API", description = "토큰으로 과외 일정을 덮어씁니다")
   public ResponseEntity<SessionResponse> createSchedule(
       @RequestBody CreateScheduleRequest request) {
     SessionResponse response = scheduleMatchingUseCase.create(request);
@@ -90,8 +90,8 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/sessions")
-  @Operation(summary = "과외 실제 일정 조회 API")
+  @PostMapping("/sessions")
+  @Operation(summary = "과외 실제 일정 조회 API", description = "설정된 과외 일정이 없다면 생성 후 반환합니다")
   public ResponseEntity<SessionResponse> retrieveSession(String token) {
     SessionResponse response = scheduleMatchingUseCase.retrieveSession(token);
 
@@ -99,7 +99,7 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/sessions/{sessionId}/cancel")
-  @Operation(summary = "수업 휴강 처리 API")
+  @Operation(summary = "수업 휴강 처리 API", description = "sessionId로 과외를 휴강 처리합니다")
   public ResponseEntity<Void> cancelSession(
       @PathVariable Long sessionId, @RequestParam String cancelReason) {
 
@@ -109,7 +109,7 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/sessions/{sessionId}/revert-cancel")
-  @Operation(summary = "수업 휴강 취소 API")
+  @Operation(summary = "수업 휴강 취소 API", description = "sessionId로 과외를 휴강 취소합니다")
   public ResponseEntity<Void> revertCancelSession(@PathVariable Long sessionId) {
 
     scheduleMatchingUseCase.revertCancelSession(sessionId);
@@ -118,7 +118,7 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/sessions/{sessionId}/complete")
-  @Operation(summary = "수업 완료 API")
+  @Operation(summary = "수업 완료 API", description = "sessionId로 과외를 완료 처리합니다")
   public ResponseEntity<Void> completeSession(
       @PathVariable Long sessionId, @RequestBody CompleteSessionRequest completeSessionRequest) {
     scheduleMatchingUseCase.completeSession(sessionId, completeSessionRequest);
@@ -127,7 +127,7 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/token/sessions/complete")
-  @Operation(summary = "토큰 기반 수업 완료 API")
+  @Operation(summary = "토큰 기반 수업 완료 API", description = "토큰으로 과외를 완료 처리합니다")
   public ResponseEntity<Void> completeSessionByToken(
       @RequestBody CompleteSessionTokenRequest completeSessionTokenRequest) {
     scheduleMatchingUseCase.completeSessionByToken(completeSessionTokenRequest);
@@ -136,7 +136,7 @@ public class ClassMatchingScheduleController {
   }
 
   @PatchMapping("/sessions/{sessionId}/change")
-  @Operation(summary = "수업 일자 변경 API")
+  @Operation(summary = "수업 일자 변경 API", description = "sessionId로 과외 수업 일자를 변경합니다")
   public ResponseEntity<Void> changeSessionDate(
       @PathVariable Long sessionId,
       @RequestBody ChangeSessionDateRequest changeSessionDateRequest) {
