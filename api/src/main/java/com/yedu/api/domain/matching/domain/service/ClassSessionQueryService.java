@@ -6,6 +6,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +42,11 @@ public class ClassSessionQueryService {
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                entry -> entry.getValue().stream()
+                    .sorted(Comparator.comparing(SessionResponse.Schedule::classDate)
+                        .thenComparing(SessionResponse.Schedule::classStart))
+                    .toList()));
 
     return new SessionResponse(scheduleMap);
   }
