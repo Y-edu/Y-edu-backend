@@ -52,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -247,15 +248,30 @@ public class AdminTestController {
     eventPublisher.publishEvent(event);
   }
 
-  @PostMapping("/test/schedule/{matchingId}")
-  @Operation(summary = "날짜 변경/휴강 토큰 발급")
-  public String issueChangeSessionDateToken(@PathVariable Long matchingId) {
-    return classMatchingKeyStorage.storeAndGet(matchingId);
+  @PostMapping("/test/schedule")
+  @Operation(summary = "시간/날짜 등록 안된 선생님의 과외 완료,날짜 변경/휴강 토큰 발급",  tags = {"완료톡 관련 API"})
+  public String issueChangeSessionDateToken(
+      @RequestParam String applicationFormId,
+      @RequestParam String teacherPhoneNumber
+      ) {
+    ApplicationForm applicationForm = applicationFormRepository.findById(applicationFormId).orElseThrow(()->{
+      throw new IllegalArgumentException("존재하지 않는 과외 식별자입니다.");
+    });
+
+    List<ClassMatching> matchings = classMatchingGetService.getByApplicationForm(
+        applicationForm);
+
+    for (ClassMatching matching : matchings) {
+      if(matching.getTeacher().getTeacherInfo().getPhoneNumber().equals(teacherPhoneNumber)){
+        return classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
+      }
+    }
+    throw new IllegalArgumentException("매칭에 존재하지 않는 선생님 번호입니다.");
   }
 
-  @PostMapping("/test/schedule/complete/{sessionId}")
-  @Operation(summary = "과외 완료 토큰 발급")
-  public String issueCompleteSessionToken(@PathVariable Long sessionId) {
-    return classSessionKeyStorage.storeAndGet(sessionId);
+  @PostMapping("/test/schedule/complete")
+  @Operation(summary = "시간/날짜 등록되 선생님의 과외 완료 토큰 발급",  tags = {"완료톡 관련 API"})
+  public String issueCompleteSessionToken(@PathVariable Long classSessionId) {
+    return classSessionKeyStorage.storeAndGet(classSessionId);
   }
 }
