@@ -274,9 +274,9 @@ public class AdminTestController {
 
   @PostMapping("/test/schedule/complete")
   @Operation(
-      summary = "시간/날짜 등록되 선생님의 과외 완료 토큰 발급",
+      summary = "시간/날짜 등록된 선생님의 과외 완료 토큰 발급",
       tags = {"완료톡 관련 API"})
-  public String issueCompleteSessionToken(@PathVariable Long classSessionId) {
+  public String issueCompleteSessionToken(@RequestParam Long classSessionId) {
     return classSessionKeyStorage.storeAndGet(classSessionId);
   }
 }
