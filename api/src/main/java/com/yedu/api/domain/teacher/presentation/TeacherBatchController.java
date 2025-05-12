@@ -26,7 +26,7 @@ public class TeacherBatchController {
   }
 
   @PostMapping("/notice/complete-talk-change")
-  @Operation(summary = "완료톡 변경 안내 알림톡 발송")
+  @Operation(summary = "완료톡 변경 안내 알림톡 발송", tags = {"완료톡 관련 API"})
   public ResponseEntity<Void> completeTalkNotice() {
     teacherBatchUseCase.completeTalkNotice();
 
