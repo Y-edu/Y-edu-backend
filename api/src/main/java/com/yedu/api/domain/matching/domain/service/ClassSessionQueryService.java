@@ -35,8 +35,9 @@ public class ClassSessionQueryService {
                           Map.entry(
                               matching.getApplicationForm().getApplicationFormId(),
                               SessionResponse.from(
-                                  classSessionRepository.findByClassManagementAndSessionDateAfter(
-                                      cm, LocalDate.now()))));
+                                  classSessionRepository
+                                      .findByClassManagementAndSessionDateIsGreaterThanEqual(
+                                          cm, LocalDate.now()))));
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)

@@ -9,7 +9,9 @@ import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
+import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.ClassManagementNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ public class ClassManagementCommandService {
   private final ClassManagementRepository classManagementRepository;
 
   private final ClassMatchingGetService classMatchingGetService;
+
+  private final ClassSessionCommandService classSessionCommandService;
 
   public ClassManagement schedule(ClassScheduleMatchingRequest request) {
     ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
@@ -82,7 +86,7 @@ public class ClassManagementCommandService {
         .orElseThrow(() -> new ClassManagementNotFoundException("일치하는 매칭 관리 정보를 찾을 수 없습니다"));
   }
 
-  public ClassManagement create(CreateScheduleRequest request, ClassMatching classMatching) {
+  public List<ClassMatching> create(CreateScheduleRequest request, ClassMatching classMatching) {
     ClassManagement classManagement =
         classManagementRepository
             .findByClassMatching_ClassMatchingId(classMatching.getClassMatchingId())
@@ -105,6 +109,8 @@ public class ClassManagementCommandService {
                     .build())
         .forEach(classManagement::addSchedule);
 
-    return classManagement;
+    Teacher teacher = classMatching.getTeacher();
+
+    return classSessionCommandService.createSessionOf(teacher);
   }
 }

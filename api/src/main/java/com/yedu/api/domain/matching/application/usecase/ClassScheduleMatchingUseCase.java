@@ -117,9 +117,9 @@ public class ClassScheduleMatchingUseCase {
 
   public SessionResponse create(CreateScheduleRequest request) {
     ClassMatching matching = getClassMatchingByToken(request.token());
-    classManagementCommandService.create(request, matching);
+    List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-    return createSession(matching);
+    return classSessionQueryService.query(matchings);
   }
 
   public RetrieveScheduleResponse retrieveSchedule(String token) {
@@ -144,12 +144,16 @@ public class ClassScheduleMatchingUseCase {
   public SessionResponse retrieveSession(String token) {
     ClassMatching matching = getClassMatchingByToken(token);
     ClassManagement classManagement =
-        classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
+        classManagementQueryService.query(matching.getClassMatchingId()).orElse(null);
 
     if (classManagement == null) {
       return SessionResponse.empty();
     }
-    return createSession(matching);
+
+    Teacher teacher = matching.getTeacher();
+    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher);
+
+    return classSessionQueryService.query(matchings);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
@@ -177,19 +181,6 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void sendCompletionTalkAfterSession() {}
-
-  private SessionResponse createSession(ClassMatching matching) {
-    Teacher teacher = matching.getTeacher();
-    List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
-
-    classMatchings.forEach(
-        cm ->
-            classManagementQueryService
-                .queryWithSchedule(cm.getClassMatchingId())
-                .ifPresent(classSessionCommandService::create));
-
-    return classSessionQueryService.query(classMatchings);
-  }
 
   private ClassMatching getClassMatchingByToken(String token) {
     return Optional.ofNullable(classSessionKeyStorage.get(token))
