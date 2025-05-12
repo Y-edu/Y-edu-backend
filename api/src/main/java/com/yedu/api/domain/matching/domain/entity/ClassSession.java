@@ -83,6 +83,6 @@ public class ClassSession extends BaseEntity {
 
   public boolean isFinish(LocalDateTime time) {
     return sessionDate.equals(time.toLocalDate())
-        && this.classTime.finishTime().equals(time.toLocalTime());
+        && this.classTime.finishTime().isBefore(time.toLocalTime());
   }
 }

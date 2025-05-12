@@ -62,7 +62,9 @@ public class TeacherBatchUseCase {
     LocalDateTime now = LocalDateTime.now();
 
     List<ClassSession> sessions =
-        classSessionRepository.findBySessionDate(now.toLocalDate()).stream()
+        classSessionRepository
+            .findBySessionDateAndCancelIsFalseAndCompletedIsFalse(now.toLocalDate())
+            .stream()
             .filter(it -> it.isFinish(now) && !classSessionStorage.has(it.getClassSessionId()))
             .toList();
 

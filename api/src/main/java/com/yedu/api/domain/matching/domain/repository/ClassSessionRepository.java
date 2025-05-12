@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClassSessionRepository extends JpaRepository<ClassSession, Long> {
 
-  List<ClassSession> findBySessionDate(LocalDate sessionDate);
+  List<ClassSession> findBySessionDateAndCancelIsFalseAndCompletedIsFalse(LocalDate sessionDate);
 
   List<ClassSession> findByClassManagementAndSessionDateIsGreaterThanEqual(
       ClassManagement classManagement, LocalDate date);
