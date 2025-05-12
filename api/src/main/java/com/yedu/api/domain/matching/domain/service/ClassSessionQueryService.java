@@ -42,11 +42,15 @@ public class ClassSessionQueryService {
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                entry -> entry.getValue().stream()
-                    .sorted(Comparator.comparing(SessionResponse.Schedule::classDate)
-                        .thenComparing(SessionResponse.Schedule::classStart))
-                    .toList()));
+            .collect(
+                Collectors.toMap(
+                    Map.Entry::getKey,
+                    entry ->
+                        entry.getValue().stream()
+                            .sorted(
+                                Comparator.comparing(SessionResponse.Schedule::classDate)
+                                    .thenComparing(SessionResponse.Schedule::classStart))
+                            .toList()));
 
     return new SessionResponse(scheduleMap);
   }

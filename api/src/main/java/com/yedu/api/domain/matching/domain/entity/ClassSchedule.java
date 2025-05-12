@@ -48,6 +48,14 @@ public class ClassSchedule extends BaseEntity {
         && day.equals(this.day);
   }
 
+  /***
+   * 새로운 과외 일정을 생성합니다.
+   * - 오늘 기준으로 4개치 생성
+   * @param classManagement
+   * @param today
+   * @param times
+   * @return
+   */
   public Collection<ClassSession> generateUpcomingDates(
       ClassManagement classManagement, LocalDate today, int times) {
     return Stream.iterate(today, date -> date.plusDays(1))
