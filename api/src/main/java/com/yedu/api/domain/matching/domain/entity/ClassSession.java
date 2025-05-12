@@ -55,6 +55,9 @@ public class ClassSession extends BaseEntity {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
     }
+    if (completed) {
+      throw new IllegalStateException("완료된 일정입니다");
+    }
     cancel = true;
     this.cancelReason = cancelReason;
   }
@@ -68,6 +71,9 @@ public class ClassSession extends BaseEntity {
   }
 
   public void complete(String understanding, Integer homeworkPercentage) {
+    if (cancel) {
+      throw new IllegalStateException("취소된 일정입니다");
+    }
     if (completed) {
       throw new IllegalStateException("이미 완료된 일정입니다");
     }
@@ -81,7 +87,13 @@ public class ClassSession extends BaseEntity {
     this.classTime = this.classTime.withStart(start);
   }
 
-  public boolean isFinish(LocalDateTime time) {
+  public boolean isFinishAndNotComplete(LocalDateTime time) {
+    if (completed) {
+      return false;
+    }
+    if (cancel) {
+      return false;
+    }
     return sessionDate.equals(time.toLocalDate())
         && this.classTime.finishTime().isBefore(time.toLocalTime());
   }

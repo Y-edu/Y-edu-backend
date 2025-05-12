@@ -61,14 +61,25 @@ public class TeacherBatchUseCase {
         .forEach(eventPublisher::publishEvent);
   }
 
+  public void remind() {
+    sendCompleteTalkEvent(false);
+  }
+
   public void completeTalkToTeacherWithSchedule() {
+    sendCompleteTalkEvent(true);
+  }
+
+  private void sendCompleteTalkEvent(boolean checkCache) {
     LocalDateTime now = LocalDateTime.now();
 
     List<ClassSession> sessions =
         classSessionRepository
             .findBySessionDateAndCancelIsFalseAndCompletedIsFalse(now.toLocalDate())
             .stream()
-            .filter(it -> it.isFinish(now) && !classSessionStorage.has(it.getClassSessionId()))
+            .filter(
+                it ->
+                    it.isFinishAndNotComplete(now)
+                        && (!checkCache || !classSessionStorage.has(it.getClassSessionId())))
             .toList();
 
     sessions.forEach(
@@ -88,6 +99,8 @@ public class TeacherBatchUseCase {
                   it.getSessionDate(),
                   completeToken,
                   changeSessionToken));
+
+          // 캐시 여부에 상관없이 세션을 캐시 처리
           classSessionStorage.cache(it.getClassSessionId());
         });
   }

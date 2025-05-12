@@ -45,6 +45,16 @@ public class TeacherBatchController {
     return ResponseEntity.noContent().build();
   }
 
+  @PostMapping("/request/complete-talk/remind")
+  @Operation(
+      summary = "완료톡 알림톡 리마인드 발송",
+      tags = {"완료톡 관련 API"})
+  public ResponseEntity<Void> remind() {
+    teacherBatchUseCase.remind();
+
+    return ResponseEntity.noContent().build();
+  }
+
   @PostMapping("/request/complete-talk/without-schedule")
   @Operation(
       summary = "시간/날짜 미등록된 경우 완료톡 알림톡 발송",
