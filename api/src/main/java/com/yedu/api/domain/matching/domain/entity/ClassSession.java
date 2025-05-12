@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -78,5 +79,10 @@ public class ClassSession extends BaseEntity {
   public void changeDate(LocalDate sessionDate, LocalTime start) {
     this.sessionDate = sessionDate;
     this.classTime = this.classTime.withStart(start);
+  }
+
+  public boolean isFinish(LocalDateTime time) {
+    return sessionDate.equals(time.toLocalDate())
+        && this.classTime.finishTime().equals(time.toLocalTime());
   }
 }

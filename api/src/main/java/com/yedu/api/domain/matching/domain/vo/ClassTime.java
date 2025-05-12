@@ -22,4 +22,8 @@ public class ClassTime {
   public ClassTime(LocalTime start) {
     this.start = start;
   }
+
+  public LocalTime finishTime() {
+    return start.plusMinutes(classMinute);
+  }
 }
