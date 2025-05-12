@@ -753,6 +753,27 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
+  public CommonRequest mapToTeacherCompleteTalkChangeNoticeEvent(
+      TeacherCompleteTalkChangeNoticeEvent event) {
+
+    String message =
+        """
+매 수업 후 제출했던 완료톡 작성이 변경돼요!
+수업이 끝나면, 자동으로 발송된 카톡
+메세지에서 [과외 완료] 버튼을 눌러 한줄 리뷰를 작성해주세요.
+
+수업 리뷰로 완료톡 작성이 대체되며,
+수업 보수가 다음 달 1일, 일괄정산됩니다!
+    """;
+
+    Message messageBody =
+        new TextMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_NOTICE_COMPLETE_TALK_CHANGE),
+            BizpurrioTemplate.YEDU_MATCHING_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.getCode());
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
   private CommonRequest createCommonRequest(Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
     ContentRequest contentRequest = new ContentRequest(messageBody);

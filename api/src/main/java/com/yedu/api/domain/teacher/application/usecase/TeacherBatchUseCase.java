@@ -3,6 +3,7 @@ package com.yedu.api.domain.teacher.application.usecase;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
+import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -29,6 +30,14 @@ public class TeacherBatchUseCase {
                     teacher.getTeacherInfo().getNickName(),
                     updateAvailableTimeKeyStorage.storeAndGet(teacher.getTeacherId()),
                     teacher.getTeacherInfo().getPhoneNumber()))
+        .forEach(eventPublisher::publishEvent);
+  }
+
+  public void completeTalkNotice() {
+    teacherGetService.activeTeachers().stream()
+        .map(
+            teacher ->
+                new TeacherCompleteTalkChangeNoticeEvent(teacher.getTeacherInfo().getPhoneNumber()))
         .forEach(eventPublisher::publishEvent);
   }
 }

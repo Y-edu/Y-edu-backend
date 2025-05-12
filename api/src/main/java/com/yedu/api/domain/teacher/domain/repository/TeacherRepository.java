@@ -1,6 +1,8 @@
 package com.yedu.api.domain.teacher.domain.repository;
 
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
+import com.yedu.api.domain.teacher.domain.entity.constant.TeacherStatus;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,4 +15,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long>, Teacher
   void deleteAllByTeacherInfo_PhoneNumber(String phoneNumber);
 
   Optional<Teacher> findByTeacherInfo_NameAndTeacherInfo_NickName(String name, String nickName);
+
+  List<Teacher> findTeacherByStatus(TeacherStatus status);
 }

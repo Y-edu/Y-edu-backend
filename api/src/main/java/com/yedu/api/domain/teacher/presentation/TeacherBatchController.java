@@ -24,4 +24,12 @@ public class TeacherBatchController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @PostMapping("/notice/complete-talk-change")
+  @Operation(summary = "완료톡 변경 안내 알림톡 발송")
+  public ResponseEntity<Void> completeTalkNotice() {
+    teacherBatchUseCase.completeTalkNotice();
+
+    return ResponseEntity.noContent().build();
+  }
 }

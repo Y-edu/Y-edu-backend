@@ -45,6 +45,8 @@ public enum BizpurrioTemplate {
       "bizp_2025042823474694076276726", "[선생님 매칭 완료 1] 과외 매칭 성사 결과 안내 v5", Profile.YEDU_MATCHING),
   YEDU_MATCHING_TEACHER_SCHEDULE(
       "bizp_2025042823360644482249131", "[선생님 매칭 완료 1] 전화번호 교환 v3", Profile.YEDU_MATCHING),
+  YEDU_MATCHING_TEACHER_NOTICE_COMPLETE_TALK_CHANGE(
+      "bizp_2025051100495844482830700", "완료톡 변경 안내", Profile.YEDU_MATCHING),
 
   YEDU_OFFICIAL_RECOMMEND_GUIDE(
       "bizp_2025020611533792092427877", "[학부모 상담 신청 5] 추천 후 안내", Profile.YEDU_OFFICIAL),

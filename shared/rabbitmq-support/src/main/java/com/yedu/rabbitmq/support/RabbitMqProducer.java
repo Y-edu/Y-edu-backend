@@ -21,6 +21,7 @@ import com.yedu.common.event.bizppurio.RecommendGuideEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
+import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
 import lombok.RequiredArgsConstructor;
@@ -119,6 +120,12 @@ public class RabbitMqProducer {
   @EventListener
   @Async
   public void handle(TeacherAvailableTimeUpdateRequestEvent event) {
+    produceTeacherMessage(event);
+  }
+
+  @EventListener
+  @Async
+  public void handle(TeacherCompleteTalkChangeNoticeEvent event) {
     produceTeacherMessage(event);
   }
 
