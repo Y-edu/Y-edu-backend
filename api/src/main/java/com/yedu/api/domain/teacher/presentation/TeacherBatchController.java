@@ -35,12 +35,22 @@ public class TeacherBatchController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/request/complete-talk")
+  @PostMapping("/request/complete-talk/with-schedule")
   @Operation(
       summary = "시간/날짜 등록된 경우 완료톡 알림톡 발송",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<Void> completeTalkToTeacherWithSchedule() {
     teacherBatchUseCase.completeTalkToTeacherWithSchedule();
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/request/complete-talk/without-schedule")
+  @Operation(
+      summary = "시간/날짜 미등록된 경우 완료톡 알림톡 발송",
+      tags = {"완료톡 관련 API"})
+  public ResponseEntity<Void> completeTalkToTeacherWithNoSchedule() {
+    teacherBatchUseCase.completeTalkToTeacherWithNoSchedule();
 
     return ResponseEntity.noContent().build();
   }

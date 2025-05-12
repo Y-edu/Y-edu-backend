@@ -3,6 +3,7 @@ package com.yedu.api.domain.teacher.application.usecase;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
+import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
@@ -10,6 +11,7 @@ import com.yedu.cache.support.storage.CacheStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
+import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +40,7 @@ public class TeacherBatchUseCase {
   private final KeyStorage<Long> classMatchingKeyStorage;
 
   private final KeyStorage<Long> classSessionKeyStorage;
+  private final ClassMatchingGetService classMatchingGetService;
 
   public void remindAvailableTime() {
     teacherGetService.emptyAvailableTime().stream()
@@ -87,5 +90,25 @@ public class TeacherBatchUseCase {
                   changeSessionToken));
           classSessionStorage.cache(it.getClassSessionId());
         });
+  }
+
+  public void completeTalkToTeacherWithNoSchedule() {
+    teacherGetService.activeTeachers().stream()
+        .flatMap(
+            teacher -> {
+              List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher);
+              return matchings.stream()
+                  .map(
+                      matching -> {
+                        String token =
+                            classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
+
+                        return new TeacherWithNoScheduleCompleteTalkEvent(
+                            matching.getApplicationForm().getApplicationFormId(),
+                            teacher.getTeacherInfo().getPhoneNumber(),
+                            token);
+                      });
+            })
+        .forEach(eventPublisher::publishEvent);
   }
 }

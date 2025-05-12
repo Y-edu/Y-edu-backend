@@ -816,6 +816,32 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
+  public CommonRequest mapToTeacherWithNoScheduleCompleteTalkEvent(
+      TeacherWithNoScheduleCompleteTalkEvent event) {
+    String message =
+        """
+#{applicationFormId} 과외를마치셨나요?
+
+[과외 완료] 버튼을 눌러 수업 리뷰를남겨주세요. 정산 시 수업 진행 횟수의기준이 되니, 꼭 작성 부탁드려요!
+       """
+            .strip()
+            .replace("#{applicationFormId}", event.applicationFormId());
+
+    String completeSessionUrl =
+        "https://" + properties.landingUrl() + "/teacher/session-complete?token=" + event.token();
+    CommonButton webButton =
+        new WebButton("과외 완료 \uD83D\uDCAC", WEB_LINK, completeSessionUrl, completeSessionUrl);
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(
+                BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK),
+            BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK.getCode(),
+            new CommonButton[] {webButton});
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
   private CommonRequest createCommonRequest(Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
     ContentRequest contentRequest = new ContentRequest(messageBody);
