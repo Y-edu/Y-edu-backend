@@ -47,10 +47,6 @@ public class ClassSession extends BaseEntity {
 
   @Embedded private ClassTime classTime;
 
-  public boolean isUpcoming() {
-    return (!cancel && cancelReason == null) && !completed;
-  }
-
   public void cancel(String cancelReason) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");

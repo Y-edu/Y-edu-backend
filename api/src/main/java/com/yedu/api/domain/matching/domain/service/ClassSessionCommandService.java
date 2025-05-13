@@ -35,14 +35,15 @@ public class ClassSessionCommandService {
 
   private void deleteObsoleteSessions(
       List<ClassSession> existingSessions, List<ClassSchedule> schedules, LocalDate today) {
-    List<ClassSession> sessionsToDelete =
-        existingSessions.stream()
-            .filter(session -> schedules.stream().noneMatch(schedule -> schedule.contains(session)))
-            .toList();
-    existingSessions.removeAll(sessionsToDelete);
-
-    classSessionRepository.deleteAll(sessionsToDelete);
-    classSessionRepository.deleteByCancelIsFalseAndCompletedIsFalseAndSessionDateBefore(today);
+//    List<ClassSession> sessionsToDelete =
+//        existingSessions.stream()
+//            .filter(ClassSession::isNotChanged)
+//            .filter(session -> schedules.stream().noneMatch(schedule->schedule.contains(session)))
+//            .toList();
+//    existingSessions.removeAll(sessionsToDelete);
+//
+//    classSessionRepository.deleteAll(sessionsToDelete);
+//    classSessionRepository.deleteByCancelIsFalseAndCompletedIsFalseAndSessionDateBefore(today);
   }
 
   private Map<LocalDate, ClassSession> mapSessionsByDate(List<ClassSession> sessions) {
@@ -112,7 +113,7 @@ public class ClassSessionCommandService {
     List<ClassSchedule> schedules = classManagement.getSchedules();
 
     List<ClassSession> existingSessions = getExistingSessions(classManagement, today);
-    deleteObsoleteSessions(existingSessions, schedules, today);
+//    deleteObsoleteSessions(existingSessions, schedules, today);
 
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
     List<ClassSession> newSessions =
