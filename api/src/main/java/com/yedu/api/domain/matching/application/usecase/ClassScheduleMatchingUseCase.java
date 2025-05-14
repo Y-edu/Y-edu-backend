@@ -128,7 +128,7 @@ public class ClassScheduleMatchingUseCase {
         classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
 
     if (classManagement == null || CollectionUtils.isEmpty(classManagement.getSchedules())) {
-      return RetrieveScheduleResponse.empty();
+      return RetrieveScheduleResponse.empty(matching.getApplicationForm().getApplicationFormId());
     }
 
     Map<Day, List<ClassTime>> schedules =
@@ -138,7 +138,8 @@ public class ClassScheduleMatchingUseCase {
                     ClassSchedule::getDay,
                     Collectors.mapping(ClassSchedule::getClassTime, Collectors.toList())));
 
-    return new RetrieveScheduleResponse(schedules);
+    return new RetrieveScheduleResponse(
+        matching.getApplicationForm().getApplicationFormId(), schedules);
   }
 
   public SessionResponse retrieveSession(String token) {
