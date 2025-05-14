@@ -16,4 +16,6 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
       ClassManagement classManagement, LocalDate date);
 
   void deleteByCancelIsFalseAndCompletedIsFalseAndSessionDateBefore(LocalDate date);
+
+  void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalse(ClassManagement classManagement);
 }

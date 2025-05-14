@@ -99,6 +99,8 @@ public class ClassManagementCommandService {
 
     classManagement.resetSchedule();
 
+    classSessionCommandService.deleteSession(classManagement);
+
     request.schedules().stream()
         .map(
             it ->

@@ -28,26 +28,6 @@ public class ClassSessionCommandService {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementRepository classManagementRepository;
 
-  private List<ClassSession> getExistingSessions(ClassManagement classManagement, LocalDate today) {
-    return classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
-        classManagement, today);
-  }
-
-  private void deleteObsoleteSessions(
-      List<ClassSession> existingSessions, List<ClassSchedule> schedules, LocalDate today) {
-    //    List<ClassSession> sessionsToDelete =
-    //        existingSessions.stream()
-    //            .filter(ClassSession::isNotChanged)
-    //            .filter(session ->
-    // schedules.stream().noneMatch(schedule->schedule.contains(session)))
-    //            .toList();
-    //    existingSessions.removeAll(sessionsToDelete);
-    //
-    //    classSessionRepository.deleteAll(sessionsToDelete);
-    //
-    // classSessionRepository.deleteByCancelIsFalseAndCompletedIsFalseAndSessionDateBefore(today);
-  }
-
   private Map<LocalDate, ClassSession> mapSessionsByDate(List<ClassSession> sessions) {
     return sessions.stream()
         .collect(
@@ -98,6 +78,11 @@ public class ClassSessionCommandService {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다"));
   }
 
+  public void deleteSession(ClassManagement classManagement) {
+    classSessionRepository.deleteByClassManagementAndCancelIsFalseAndCompletedIsFalse(
+        classManagement);
+  }
+
   public List<ClassMatching> createSessionOf(Teacher teacher) {
     List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
 
@@ -114,8 +99,13 @@ public class ClassSessionCommandService {
     LocalDate today = LocalDate.now();
     List<ClassSchedule> schedules = classManagement.getSchedules();
 
-    List<ClassSession> existingSessions = getExistingSessions(classManagement, today);
-    //    deleteObsoleteSessions(existingSessions, schedules, today);
+    List<ClassSession> existingSessions =
+        classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
+            classManagement, today);
+
+    if (existingSessions.size() > 3) { // 3회이상 과외가 남아있다면 생성안함
+      return;
+    }
 
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
     List<ClassSession> newSessions =
