@@ -57,7 +57,8 @@ public class ClassSessionQueryService {
   }
 
   public LocalDate querySessionDate(Long sessionId) {
-    return classSessionRepository.findById(sessionId)
+    return classSessionRepository
+        .findById(sessionId)
         .map(ClassSession::getSessionDate)
         .orElseThrow();
   }

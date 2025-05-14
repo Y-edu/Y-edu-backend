@@ -188,7 +188,6 @@ public class ClassScheduleMatchingUseCase {
     return classSessionQueryService.querySessionDate(sessionId);
   }
 
-
   private ClassMatching getClassMatchingByToken(String token) {
     return Optional.ofNullable(classSessionKeyStorage.get(token))
         .map(classMatchingGetService::getBySessionId)

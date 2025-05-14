@@ -180,5 +180,4 @@ public class ClassMatchingScheduleController {
 
     return ResponseEntity.noContent().build();
   }
-
 }
