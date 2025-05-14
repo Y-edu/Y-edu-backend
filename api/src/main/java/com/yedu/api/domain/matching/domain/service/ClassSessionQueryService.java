@@ -38,7 +38,7 @@ public class ClassSessionQueryService {
                               SessionResponse.from(
                                   classSessionRepository
                                       .findByClassManagementAndSessionDateIsGreaterThanEqual(
-                                          cm, LocalDate.now()))));
+                                          cm, LocalDate.now().minusDays(30)))));
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)
