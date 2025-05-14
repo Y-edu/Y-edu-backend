@@ -29,6 +29,7 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -181,7 +182,12 @@ public class ClassScheduleMatchingUseCase {
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
   }
 
-  public void sendCompletionTalkAfterSession() {}
+  public LocalDate retrieveSessionDateByToken(String token) {
+    Long sessionId = classSessionKeyStorage.get(token);
+
+    return classSessionQueryService.querySessionDate(sessionId);
+  }
+
 
   private ClassMatching getClassMatchingByToken(String token) {
     return Optional.ofNullable(classSessionKeyStorage.get(token))

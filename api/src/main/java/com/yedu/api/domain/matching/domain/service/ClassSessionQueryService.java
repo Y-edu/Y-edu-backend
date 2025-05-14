@@ -4,6 +4,7 @@ import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -53,5 +54,11 @@ public class ClassSessionQueryService {
                             .toList()));
 
     return new SessionResponse(scheduleMap);
+  }
+
+  public LocalDate querySessionDate(Long sessionId) {
+    return classSessionRepository.findById(sessionId)
+        .map(ClassSession::getSessionDate)
+        .orElseThrow();
   }
 }

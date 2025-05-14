@@ -13,9 +13,9 @@ import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveRes
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -157,6 +157,17 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.noContent().build();
   }
 
+  @GetMapping("/token/sessions")
+  @Operation(
+      summary = "토큰 기반 수업 일시 조회 API",
+      description = "토큰으로 수업 일시를 조회합니다",
+      tags = {"완료톡 관련 API"})
+  public ResponseEntity<LocalDate> retrieveSessionDateByToken(String token) {
+    LocalDate sessionDate = scheduleMatchingUseCase.retrieveSessionDateByToken(token);
+
+    return ResponseEntity.ok(sessionDate);
+  }
+
   @PatchMapping("/sessions/{sessionId}/change")
   @Operation(
       summary = "수업 일자 변경 API",
@@ -170,15 +181,4 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.noContent().build();
   }
 
-  @Hidden
-  @PostMapping("/sessions/alarm/send")
-  @Operation(
-      summary = "시간/날짜 등록된 경우 완료톡 발송",
-      description = "시간/날짜 등록된 사용자에게 완료톡을 발송합니다",
-      tags = {"완료톡 관련 API"})
-  public ResponseEntity<Void> sendCompletionTalkAfterSession() {
-    scheduleMatchingUseCase.sendCompletionTalkAfterSession();
-
-    return ResponseEntity.noContent().build();
-  }
 }
