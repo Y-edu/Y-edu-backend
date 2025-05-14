@@ -43,8 +43,7 @@ public class ClassSchedule extends BaseEntity {
   public boolean contains(ClassSession session) {
     Day day = Day.byDate(session.getSessionDate());
 
-    return session.getClassTime().equals(this.classTime)
-        && day.equals(this.day);
+    return session.getClassTime().equals(this.classTime) && day.equals(this.day);
   }
 
   /***
