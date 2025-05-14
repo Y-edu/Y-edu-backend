@@ -55,6 +55,9 @@ public class ClassManagement extends BaseEntity {
   }
 
   public void addSchedule(ClassSchedule schedule) {
+    if (schedules == null) {
+      schedules = new ArrayList<>();
+    }
     schedules.add(schedule);
   }
 
