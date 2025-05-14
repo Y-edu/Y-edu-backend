@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 @Getter
@@ -69,6 +70,9 @@ public class ClassManagement extends BaseEntity {
   }
 
   public void resetSchedule() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return;
+    }
     this.schedules.clear();
   }
 }
