@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public record RetrieveScheduleResponse(
-    String applicationFormId, Map<Day, List<ClassTime>> schedules) {
+    String applicationFormId,
+    Long classMatchingId,
+    boolean send,
+    Map<Day, List<ClassTime>> schedules) {
 
-  public static RetrieveScheduleResponse empty(String applicationFormId) {
-    return new RetrieveScheduleResponse(applicationFormId, Map.of());
+  public static RetrieveScheduleResponse empty(
+      String applicationFormId, Long classMatchingId, boolean send) {
+    return new RetrieveScheduleResponse(applicationFormId, classMatchingId, send, Map.of());
   }
 }

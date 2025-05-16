@@ -117,19 +117,37 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse create(CreateScheduleRequest request) {
+    if (request.classMatchingId() != null) {
+      ClassMatching matching = classMatchingGetService.getById(request.classMatchingId());
+      List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
+
+      return classSessionQueryService.query(matchings);
+    }
     ClassMatching matching = getClassMatchingByToken(request.token());
     List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
     return classSessionQueryService.query(matchings);
   }
 
-  public RetrieveScheduleResponse retrieveSchedule(String token) {
-    ClassMatching matching = getClassMatchingByToken(token);
+  public List<RetrieveScheduleResponse> retrieveSchedules(String token) {
+    ClassMatching selectedMatching = getClassMatchingByToken(token);
+
+    return classMatchingGetService.getMatched(selectedMatching.getTeacher()).stream()
+        .map(it -> retrieveSchedule(it, selectedMatching))
+        .toList();
+  }
+
+  private RetrieveScheduleResponse retrieveSchedule(
+      ClassMatching matching, ClassMatching selectedMatching) {
+    boolean send = selectedMatching.getClassMatchingId() == matching.getClassMatchingId();
+
     ClassManagement classManagement =
         classManagementQueryService.queryWithSchedule(matching.getClassMatchingId()).orElse(null);
-
     if (classManagement == null || CollectionUtils.isEmpty(classManagement.getSchedules())) {
-      return RetrieveScheduleResponse.empty(matching.getApplicationForm().getApplicationFormId());
+      return RetrieveScheduleResponse.empty(
+          matching.getApplicationForm().getApplicationFormId(),
+          matching.getClassMatchingId(),
+          send);
     }
 
     Map<Day, List<ClassTime>> schedules =
@@ -140,7 +158,10 @@ public class ClassScheduleMatchingUseCase {
                     Collectors.mapping(ClassSchedule::getClassTime, Collectors.toList())));
 
     return new RetrieveScheduleResponse(
-        matching.getApplicationForm().getApplicationFormId(), schedules);
+        matching.getApplicationForm().getApplicationFormId(),
+        matching.getClassMatchingId(),
+        send,
+        schedules);
   }
 
   public SessionResponse retrieveSession(String token) {

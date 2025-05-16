@@ -16,6 +16,7 @@ import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUse
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -79,8 +80,8 @@ public class ClassMatchingScheduleController {
       summary = "과외 정규 일정 조회 API",
       description = "토큰으로 과외 일정을 조회합니다. 설정된 과외 시간/날짜가 없는 경우 빈 객체가 응답됩니다",
       tags = {"완료톡 관련 API"})
-  public ResponseEntity<RetrieveScheduleResponse> retrieveSchedule(String token) {
-    RetrieveScheduleResponse response = scheduleMatchingUseCase.retrieveSchedule(token);
+  public ResponseEntity<List<RetrieveScheduleResponse>> retrieveSchedule(String token) {
+    List<RetrieveScheduleResponse> response = scheduleMatchingUseCase.retrieveSchedules(token);
 
     return ResponseEntity.ok(response);
   }
