@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 public class ClassMatchingKeyStorage extends AbstractKeyStorage<Long> {
 
   public ClassMatchingKeyStorage(RedisRepository redisRepository, ObjectMapper objectMapper) {
-    super("class-matching-id:%s", Duration.ofDays(30), redisRepository, objectMapper, Long.class);
+    super("class-matching-id:%s", Duration.ofDays(40), redisRepository, objectMapper, Long.class);
   }
 }

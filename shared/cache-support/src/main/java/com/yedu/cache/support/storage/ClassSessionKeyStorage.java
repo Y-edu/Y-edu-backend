@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 public class ClassSessionKeyStorage extends AbstractKeyStorage<Long> {
 
   public ClassSessionKeyStorage(RedisRepository redisRepository, ObjectMapper objectMapper) {
-    super("class-session:%s", Duration.ofDays(30), redisRepository, objectMapper, Long.class);
+    super("class-session:%s", Duration.ofDays(40), redisRepository, objectMapper, Long.class);
   }
 }
