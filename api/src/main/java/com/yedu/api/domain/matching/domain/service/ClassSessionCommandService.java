@@ -102,7 +102,7 @@ public class ClassSessionCommandService {
         classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
             classManagement, today);
 
-    long upComingSessions = existingSessions.stream().filter(it -> !it.isCompleted() || !it.isCancel())
+    long upComingSessions = existingSessions.stream().filter(it -> !it.isCompleted() && !it.isCancel())
         .count();
 
     if (upComingSessions >= 3) { // 3회이상 과외가 남아있다면 생성안함
