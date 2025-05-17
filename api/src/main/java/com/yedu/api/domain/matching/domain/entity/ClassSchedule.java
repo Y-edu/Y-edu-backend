@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,14 +52,14 @@ public class ClassSchedule extends BaseEntity {
    * - 오늘 기준으로 4개치 생성
    * @param classManagement
    * @param today
-   * @param times
    * @return
    */
   public Collection<ClassSession> generateUpcomingDates(
-      ClassManagement classManagement, LocalDate today, int times) {
+      ClassManagement classManagement, LocalDate today, Map<LocalDate, ClassSession> existingSessionMap) {
     return Stream.iterate(today, date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
-        .limit(times)
+        .filter(it-> !existingSessionMap.containsKey(it))
+        .limit(4)
         .map(
             date ->
                 ClassSession.builder()

@@ -43,17 +43,7 @@ public class ClassSessionCommandService {
       Map<LocalDate, ClassSession> existingSessionMap,
       LocalDate today) {
     return schedules.stream()
-        .flatMap(schedule -> schedule.generateUpcomingDates(classManagement, today, 4).stream())
-        .filter(it->
-            !existingSessionMap.containsKey(it)
-//            session -> {
-//              ClassSession exist = existingSessionMap.get(session.getSessionDate());
-//              if (exist == null) {
-//                return true;
-//              }
-//              return !exist.getClassTime().getStart().equals(session.getClassTime().getStart());
-//            }
-            )
+        .flatMap(schedule -> schedule.generateUpcomingDates(classManagement, today, existingSessionMap).stream())
         .toList();
   }
 
