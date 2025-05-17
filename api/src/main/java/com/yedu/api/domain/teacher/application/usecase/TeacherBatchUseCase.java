@@ -18,6 +18,7 @@ import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -135,6 +136,13 @@ public class TeacherBatchUseCase {
               return matchings.stream()
                   .map(
                       matching -> {
+                        Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(
+                            matching.getClassMatchingId());
+
+                        if (management.isPresent() && management.get().hasSchedule()) {
+                          return null;
+                        }
+
                         String token =
                             classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
@@ -144,6 +152,7 @@ public class TeacherBatchUseCase {
                             token);
                       });
             })
+        .filter(Objects::nonNull)
         .forEach(eventPublisher::publishEvent);
   }
 }
