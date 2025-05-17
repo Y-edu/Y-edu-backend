@@ -5,6 +5,7 @@ plugins {
 	id ("org.springframework.boot") version "3.4.2"
 	id ("io.spring.dependency-management") version "1.1.7"
 	id("com.google.cloud.tools.jib") version "3.4.4"
+	id("org.openapi.generator") version "7.13.0"
 }
 
 
@@ -19,6 +20,7 @@ allprojects {
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "io.spring.dependency-management")
 	apply(plugin = "com.google.cloud.tools.jib")
+	apply(plugin = "org.openapi.generator")
 	java {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(17)
@@ -54,6 +56,7 @@ subprojects {
 			implementation("io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64")
 		}
 	}
+
 }
 
 

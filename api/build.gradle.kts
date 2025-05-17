@@ -1,5 +1,30 @@
 version = "1.0.0"
 
+
+openApiGenerate {
+    generatorName.set("typescript-fetch")
+    inputSpec.set("$projectDir/openapi.json")
+    outputDir.set("$projectDir/generated-sources/typescript")
+    apiPackage.set("api")
+    modelPackage.set("model")
+    configOptions.set(
+        mapOf(
+            "supportsES6" to "true",
+            "npmName" to "my-typescript-client",
+            "withInterfaces" to "true"
+        )
+    )
+}
+
+tasks.register<Exec>("downloadOpenApiSpec") {
+    commandLine("curl", "-o", "openapi.json", "http://localhost:8080/v3/api-docs")
+}
+
+tasks.register("generateTypeScriptClient") {
+    dependsOn("downloadOpenApiSpec", "openApiGenerate")
+}
+
+
 jib {
     val repositoryUsername = "y-edu"
     val repositoryToken = System.getenv("DEPLOY_TOKEN")

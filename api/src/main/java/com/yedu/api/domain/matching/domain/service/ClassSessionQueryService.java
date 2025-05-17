@@ -38,8 +38,8 @@ public class ClassSessionQueryService {
                               matching.getApplicationForm().getApplicationFormId(),
                               SessionResponse.from(
                                   classSessionRepository
-                                      .findByClassManagementAndSessionDateIsGreaterThanEqual(
-                                          cm, LocalDate.now().minusDays(30)))));
+                                      .findByClassManagementAndSessionDateIsAfter(
+                                          cm, LocalDate.now().minusDays(31)))));
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)

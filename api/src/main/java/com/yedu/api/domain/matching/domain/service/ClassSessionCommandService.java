@@ -107,7 +107,7 @@ public class ClassSessionCommandService {
     List<ClassSchedule> schedules = classManagement.getSchedules();
 
     List<ClassSession> existingSessions =
-        classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
+        classSessionRepository.findByClassManagementAndSessionDateIsAfter(
             classManagement, today);
 
     if (existingSessions.size() > 3) { // 3회이상 과외가 남아있다면 생성안함
