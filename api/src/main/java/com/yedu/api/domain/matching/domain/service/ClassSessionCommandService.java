@@ -44,14 +44,16 @@ public class ClassSessionCommandService {
       LocalDate today) {
     return schedules.stream()
         .flatMap(schedule -> schedule.generateUpcomingDates(classManagement, today, 4).stream())
-        .filter(
-            session -> {
-              ClassSession exist = existingSessionMap.get(session.getSessionDate());
-              if (exist == null) {
-                return true;
-              }
-              return !exist.getClassTime().getStart().equals(session.getClassTime().getStart());
-            })
+        .filter(it->
+            !existingSessionMap.containsKey(it)
+//            session -> {
+//              ClassSession exist = existingSessionMap.get(session.getSessionDate());
+//              if (exist == null) {
+//                return true;
+//              }
+//              return !exist.getClassTime().getStart().equals(session.getClassTime().getStart());
+//            }
+            )
         .toList();
   }
 
@@ -107,7 +109,7 @@ public class ClassSessionCommandService {
     List<ClassSchedule> schedules = classManagement.getSchedules();
 
     List<ClassSession> existingSessions =
-        classSessionRepository.findByClassManagementAndSessionDateIsAfter(
+        classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
             classManagement, today);
 
     if (existingSessions.size() > 3) { // 3회이상 과외가 남아있다면 생성안함

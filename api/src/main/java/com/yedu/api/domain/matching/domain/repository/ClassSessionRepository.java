@@ -12,7 +12,7 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 
   List<ClassSession> findBySessionDateAndCancelIsFalseAndCompletedIsFalse(LocalDate sessionDate);
 
-  List<ClassSession> findByClassManagementAndSessionDateIsAfter(
+  List<ClassSession> findByClassManagementAndSessionDateIsGreaterThanEqual(
       ClassManagement classManagement, LocalDate date);
 
   void deleteByCancelIsFalseAndCompletedIsFalseAndSessionDateBefore(LocalDate date);
