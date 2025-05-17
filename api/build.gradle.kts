@@ -1,3 +1,6 @@
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.type.TypeReference
+
 version = "1.0.0"
 
 
@@ -10,20 +13,9 @@ openApiGenerate {
     configOptions.set(
         mapOf(
             "supportsES6" to "true",
-            "npmName" to "my-typescript-client",
+            "npmName" to "y-edu-client",
             "withInterfaces" to "true",
-            "enumVars" to "original", // enum 값을 문자열 그대로 사용 (기본값은 대문자 변환)
-            "modelPropertyNaming" to "camelCase", // 모델 속성 이름을 camelCase로 변경 (기본값은 원본 이름)
-            "apiPackage" to "api", // API 클래스가 생성될 패키지 (현재 설정 유지)
-            "modelPackage" to "model", // 모델 클래스가 생성될 패키지 (현재 설정 유지)
-            "prependFormOrBodyParameters" to "true", // POST, PUT 등의 body 파라미터를 함수 파라미터 목록의 처음에 위치
-            "generateModelConstructors" to "true", // 모델 클래스에 생성자 추가
-            "useSingleRequestParameter" to "true", // API 함수의 파라미터를 하나의 객체로 묶어서 생성 (선택 사항)
-            "ensureUniqueParameterNames" to "true", // 파라미터 이름이 충돌하지 않도록 보장
-            "parameterNaming" to "camelCase", // API 함수 파라미터 이름을 camelCase로 변경
-            "sortParamsByRequiredFlag" to "true", // 필수 파라미터를 먼저 정렬
-            "sortModelPropertiesByName" to "true", // 모델 속성을 이름순으로 정렬
-            "sortOperationsByPath" to "true" // API operations를 경로별로 정렬
+            "stringEnums" to "true",
         )
     )
 }
