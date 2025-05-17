@@ -1,9 +1,12 @@
 package com.yedu.api.domain.teacher.application.usecase;
 
+import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
+import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
@@ -15,6 +18,7 @@ import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,6 +45,8 @@ public class TeacherBatchUseCase {
 
   private final KeyStorage<Long> classSessionKeyStorage;
   private final ClassMatchingGetService classMatchingGetService;
+  private final ClassManagementQueryService classManagementQueryService;
+  private final ClassSessionCommandService classSessionCommandService;
 
   public void remindAvailableTime() {
     teacherGetService.emptyAvailableTime().stream()
@@ -70,8 +76,24 @@ public class TeacherBatchUseCase {
   }
 
   private void sendCompleteTalkEvent(boolean checkCache) {
-    LocalDateTime now = LocalDateTime.now();
+    teacherGetService
+        .activeTeachers()
+        .forEach(
+            teacher -> {
+              List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher);
+              matchings.stream()
+                  .map(
+                      matching ->
+                          classManagementQueryService.queryWithSchedule(
+                              matching.getClassMatchingId()))
+                  .filter(Optional::isPresent)
+                  .map(Optional::get)
+                  .filter(ClassManagement::hasSchedule)
+                  .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
+                  .forEach(classSessionCommandService::createSingleSessions);
+            });
 
+    LocalDateTime now = LocalDateTime.now();
     List<ClassSession> sessions =
         classSessionRepository
             .findBySessionDateAndCancelIsFalseAndCompletedIsFalse(now.toLocalDate())

@@ -102,7 +102,7 @@ public class ClassSessionCommandService {
     return classMatchings;
   }
 
-  private void createSingleSessions(ClassManagement classManagement) {
+  public void createSingleSessions(ClassManagement classManagement) {
     LocalDate today = LocalDate.now();
     List<ClassSchedule> schedules = classManagement.getSchedules();
 

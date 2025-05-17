@@ -78,4 +78,8 @@ public class ClassManagement extends BaseEntity {
     }
     this.schedules.clear();
   }
+
+  public boolean hasSchedule() {
+    return !CollectionUtils.isEmpty(schedules);
+  }
 }
