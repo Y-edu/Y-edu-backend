@@ -41,8 +41,8 @@ public class ClassSessionQueryService {
                               SessionResponse.from(
                                   classSessionRepository.findByClassManagementAndSessionDateBetween(
                                       cm,
-                                      now.with(TemporalAdjusters.firstDayOfMonth()),  // 이번 달의 첫 번째 날
-                                      now.with(TemporalAdjusters.lastDayOfMonth())    // 이번 달의 마지막 날
+                                      now.with(TemporalAdjusters.firstDayOfMonth()),
+                                      now.with(TemporalAdjusters.lastDayOfMonth())
                                   ))));
                 })
             .filter(Optional::isPresent)

@@ -49,17 +49,15 @@ public class ClassSchedule extends BaseEntity {
 
   /***
    * 새로운 과외 일정을 생성합니다.
-   * - 오늘 기준으로 4개치 생성
-   * @param classManagement
-   * @param today
-   * @return
    */
   public Collection<ClassSession> generateUpcomingDates(
       ClassManagement classManagement, LocalDate today, Map<LocalDate, ClassSession> existingSessionMap) {
+    LocalDate endOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+
     return Stream.iterate(today, date -> date.plusDays(1))
+        .filter(date -> !date.isAfter(endOfMonth))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it-> !existingSessionMap.containsKey(it))
-        .limit(4)
         .map(
             date ->
                 ClassSession.builder()
