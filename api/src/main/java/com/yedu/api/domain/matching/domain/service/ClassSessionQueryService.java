@@ -7,6 +7,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ClassSessionQueryService {
   private final ClassSessionRepository classSessionRepository;
 
   public SessionResponse query(List<ClassMatching> classMatchings) {
+    LocalDate now = LocalDate.now();
     Map<String, List<Schedule>> scheduleMap =
         classMatchings.stream()
             .map(
@@ -37,9 +39,11 @@ public class ClassSessionQueryService {
                           Map.entry(
                               matching.getApplicationForm().getApplicationFormId(),
                               SessionResponse.from(
-                                  classSessionRepository
-                                      .findByClassManagementAndSessionDateIsGreaterThanEqual(
-                                          cm, LocalDate.now().minusDays(30)))));
+                                  classSessionRepository.findByClassManagementAndSessionDateBetween(
+                                      cm,
+                                      now.with(TemporalAdjusters.firstDayOfMonth()),  // 이번 달의 첫 번째 날
+                                      now.with(TemporalAdjusters.lastDayOfMonth())    // 이번 달의 마지막 날
+                                  ))));
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)
