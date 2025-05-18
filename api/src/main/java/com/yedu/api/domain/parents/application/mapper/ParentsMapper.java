@@ -48,6 +48,7 @@ public class ParentsMapper {
     if (time.equals("50분")) return 50;
     if (time.equals("60분")) return 60;
     if (time.equals("75분")) return 75;
+    if (time.equals("90분")) return 90;
     if (time.equals("100분")) return 100;
     if (time.equals("120분")) return 120;
     if (time.equals("150분")) return 150;
