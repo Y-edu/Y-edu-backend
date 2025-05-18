@@ -43,7 +43,9 @@ public class ClassSessionCommandService {
       Map<LocalDate, ClassSession> existingSessionMap,
       LocalDate today) {
     return schedules.stream()
-        .flatMap(schedule -> schedule.generateUpcomingDates(classManagement, today, existingSessionMap).stream())
+        .flatMap(
+            schedule ->
+                schedule.generateUpcomingDates(classManagement, today, existingSessionMap).stream())
         .toList();
   }
 
@@ -82,19 +84,19 @@ public class ClassSessionCommandService {
         classManagement);
   }
 
-  public List<ClassMatching> createSessionOf(Teacher teacher) {
+  public List<ClassMatching> createSessionOf(Teacher teacher, boolean forceCreate) {
     List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
 
     classMatchings.forEach(
         cm ->
             classManagementRepository
                 .findWithSchedule(cm.getClassMatchingId())
-                .ifPresent(this::createSingleSessions));
+                .ifPresent(it -> this.createSingleSessions(it, forceCreate)));
 
     return classMatchings;
   }
 
-  public void createSingleSessions(ClassManagement classManagement) {
+  public void createSingleSessions(ClassManagement classManagement, boolean forceCreate) {
     LocalDate today = LocalDate.now();
     List<ClassSchedule> schedules = classManagement.getSchedules();
 
@@ -102,7 +104,21 @@ public class ClassSessionCommandService {
         classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
             classManagement, today);
 
+    if (!forceCreate) {
+      boolean hasExistingSessionInThisMonth =
+          existingSessions.stream()
+              .anyMatch(
+                  it ->
+                      it.getSessionDate().getMonth().equals(today.getMonth())
+                          && !it.isCompleted()
+                          && !it.isCancel());
+
+      if (hasExistingSessionInThisMonth) {
+        return;
+      }
+    }
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
+
     List<ClassSession> newSessions =
         generateNewSessions(schedules, classManagement, existingSessionMap, today);
     classSessionRepository.saveAll(newSessions);

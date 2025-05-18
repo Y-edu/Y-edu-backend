@@ -48,15 +48,17 @@ public class ClassSchedule extends BaseEntity {
   }
 
   /***
-   * 새로운 과외 일정을 생성합니다.
+   * 이번달에 해당되는 새로운 과외 일정을 생성합니다.
    */
   public Collection<ClassSession> generateUpcomingDates(
-      ClassManagement classManagement, LocalDate today, Map<LocalDate, ClassSession> existingSessionMap) {
+      ClassManagement classManagement,
+      LocalDate today,
+      Map<LocalDate, ClassSession> existingSessionMap) {
     LocalDate endOfMonth = today.withDayOfMonth(today.lengthOfMonth());
 
     return Stream.iterate(today, date -> !date.isAfter(endOfMonth), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
-        .filter(it-> !existingSessionMap.containsKey(it))
+        .filter(it -> !existingSessionMap.containsKey(it))
         .map(
             date ->
                 ClassSession.builder()

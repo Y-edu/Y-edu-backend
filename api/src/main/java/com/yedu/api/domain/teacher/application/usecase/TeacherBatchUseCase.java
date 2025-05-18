@@ -91,7 +91,7 @@ public class TeacherBatchUseCase {
                   .map(Optional::get)
                   .filter(ClassManagement::hasSchedule)
                   .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
-                  .forEach(classSessionCommandService::createSingleSessions);
+                  .forEach(it -> classSessionCommandService.createSingleSessions(it, false));
             });
 
     LocalDateTime now = LocalDateTime.now();
@@ -136,8 +136,9 @@ public class TeacherBatchUseCase {
               return matchings.stream()
                   .map(
                       matching -> {
-                        Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(
-                            matching.getClassMatchingId());
+                        Optional<ClassManagement> management =
+                            classManagementQueryService.queryWithSchedule(
+                                matching.getClassMatchingId());
 
                         if (management.isPresent() && management.get().hasSchedule()) {
                           return null;

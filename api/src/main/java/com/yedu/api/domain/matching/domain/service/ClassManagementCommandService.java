@@ -113,6 +113,6 @@ public class ClassManagementCommandService {
 
     Teacher teacher = classMatching.getTeacher();
 
-    return classSessionCommandService.createSessionOf(teacher);
+    return classSessionCommandService.createSessionOf(teacher, true);
   }
 }

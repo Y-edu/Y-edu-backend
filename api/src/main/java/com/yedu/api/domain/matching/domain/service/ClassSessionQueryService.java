@@ -42,8 +42,7 @@ public class ClassSessionQueryService {
                                   classSessionRepository.findByClassManagementAndSessionDateBetween(
                                       cm,
                                       now.with(TemporalAdjusters.firstDayOfMonth()),
-                                      now.with(TemporalAdjusters.lastDayOfMonth())
-                                  ))));
+                                      now.with(TemporalAdjusters.lastDayOfMonth())))));
                 })
             .filter(Optional::isPresent)
             .map(Optional::get)

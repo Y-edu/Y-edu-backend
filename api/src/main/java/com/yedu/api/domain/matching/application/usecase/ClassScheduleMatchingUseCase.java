@@ -174,7 +174,7 @@ public class ClassScheduleMatchingUseCase {
     }
 
     Teacher teacher = matching.getTeacher();
-    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher);
+    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher, false);
 
     return classSessionQueryService.query(matchings);
   }
