@@ -54,8 +54,7 @@ public class ClassSchedule extends BaseEntity {
       ClassManagement classManagement, LocalDate today, Map<LocalDate, ClassSession> existingSessionMap) {
     LocalDate endOfMonth = today.withDayOfMonth(today.lengthOfMonth());
 
-    return Stream.iterate(today, date -> date.plusDays(1))
-        .filter(date -> !date.isAfter(endOfMonth))
+    return Stream.iterate(today, date -> !date.isAfter(endOfMonth), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it-> !existingSessionMap.containsKey(it))
         .map(
