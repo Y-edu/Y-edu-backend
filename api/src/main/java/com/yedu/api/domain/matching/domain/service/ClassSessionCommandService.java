@@ -67,7 +67,8 @@ public class ClassSessionCommandService {
 
     session.complete(request.understanding(), request.homeworkPercentage());
 
-    Hibernate.initialize(session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
+    Hibernate.initialize(
+        session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
     return session;
   }
 

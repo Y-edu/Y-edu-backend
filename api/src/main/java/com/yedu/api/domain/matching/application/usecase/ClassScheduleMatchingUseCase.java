@@ -220,11 +220,7 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getClassMinute().toString(),
                 Optional.ofNullable(session.getHomeworkPercentage()).orElse(0),
                 Optional.ofNullable(session.getUnderstanding()).orElse(""),
-                LocalDateTime.now().toString()
-            )
-        )
-    );
-
+                LocalDateTime.now().toString())));
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {

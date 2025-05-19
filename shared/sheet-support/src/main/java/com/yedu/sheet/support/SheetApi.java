@@ -26,31 +26,30 @@ public class SheetApi {
 
   @SneakyThrows
   public SheetApi() {
-    InputStream inputStream = SheetApi.class
-        .getClassLoader()
-        .getResourceAsStream("key.json");
+    InputStream inputStream = SheetApi.class.getClassLoader().getResourceAsStream("key.json");
 
-    GoogleCredential credential = GoogleCredential.fromStream(inputStream)
-        .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
+    GoogleCredential credential =
+        GoogleCredential.fromStream(inputStream)
+            .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
 
-    this.sheet = new Sheets.Builder(
-        credential.getTransport(),
-        credential.getJsonFactory(),
-        credential
-    ).build();
+    this.sheet =
+        new Sheets.Builder(credential.getTransport(), credential.getJsonFactory(), credential)
+            .build();
   }
 
   @SneakyThrows
   public void write(List<List<Object>> values) {
     ValueRange body = new ValueRange().setValues(values);
 
-    AppendValuesResponse appendValuesResponse = sheet.spreadsheets().values()
-        .append(spreadsheetId, sheetName, body)
-        .setValueInputOption("RAW") // 또는 USER_ENTERED
-        .setInsertDataOption("INSERT_ROWS")
-        .setIncludeValuesInResponse(true)
-        .execute();
-
+    AppendValuesResponse appendValuesResponse =
+        sheet
+            .spreadsheets()
+            .values()
+            .append(spreadsheetId, sheetName, body)
+            .setValueInputOption("RAW") // 또는 USER_ENTERED
+            .setInsertDataOption("INSERT_ROWS")
+            .setIncludeValuesInResponse(true)
+            .execute();
 
     log.info(">>> append row : appendValuesResponse:{}", appendValuesResponse);
   }
