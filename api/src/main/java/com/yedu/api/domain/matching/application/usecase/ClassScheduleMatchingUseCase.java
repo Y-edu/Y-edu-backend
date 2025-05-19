@@ -207,6 +207,7 @@ public class ClassScheduleMatchingUseCase {
 
     ClassMatching matching = session.getClassManagement().getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+
     sheetApi.write(
         List.of(
             List.of(
@@ -214,14 +215,16 @@ public class ClassScheduleMatchingUseCase {
                 teacherInfo.getNickName(),
                 teacherInfo.getName(),
                 teacherInfo.getPhoneNumber(),
-                session.getSessionDate(),
-                session.getClassTime(),
-                session.getHomeworkPercentage(),
-                session.getUnderstanding(),
-                LocalDateTime.now()
+                session.getSessionDate().toString(), // 여기 수정
+                session.getClassTime().getStart().toString(),
+                session.getClassTime().getClassMinute().toString(),
+                Optional.ofNullable(session.getHomeworkPercentage()).orElse(0),
+                Optional.ofNullable(session.getUnderstanding()).orElse(""),
+                LocalDateTime.now().toString()
             )
         )
     );
+
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {

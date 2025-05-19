@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,7 @@ public class ClassSessionCommandService {
 
     session.complete(request.understanding(), request.homeworkPercentage());
 
+    Hibernate.initialize(session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
     return session;
   }
 
