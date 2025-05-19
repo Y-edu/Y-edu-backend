@@ -40,4 +40,3 @@ out/
 ### yml ###
 /api/src/main/resources/application-*.yml
 /consumer/src/main/resources/application-*.yml
-/shared/sheet-support/src/main/resources/key.json
