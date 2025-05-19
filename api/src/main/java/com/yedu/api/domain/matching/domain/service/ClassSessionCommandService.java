@@ -61,10 +61,12 @@ public class ClassSessionCommandService {
     session.revertCancel();
   }
 
-  public void complete(Long sessionId, CompleteSessionRequest request) {
+  public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
 
     session.complete(request.understanding(), request.homeworkPercentage());
+
+    return session;
   }
 
   public void change(Long sessionId, LocalDate sessionDate, LocalTime start) {

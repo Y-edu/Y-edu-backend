@@ -60,6 +60,8 @@ dependencies {
     implementation(project(":shared:cache-support"))
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
+    implementation(project(":shared:sheet-support"))
+
 
     implementation ("org.springframework.boot:spring-boot-starter-validation")
     implementation ("org.springframework.boot:spring-boot-starter-data-jpa")

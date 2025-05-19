@@ -17,6 +17,7 @@ import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
@@ -26,10 +27,13 @@ import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
+import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
+import com.yedu.sheet.support.SheetApi;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,11 +64,18 @@ public class ClassScheduleMatchingUseCase {
   private final KeyStorage<Long> classSessionKeyStorage;
 
   private final MatchingTimetableQueryService matchingTimetableQueryService;
+
   private final ClassMatchingGetService classMatchingGetService;
+
   private final ClassManagementCommandService classManagementCommandService;
+
   private final ClassSessionCommandService classSessionCommandService;
+
   private final ClassSessionQueryService classSessionQueryService;
+
   private final ClassManagementQueryService classManagementQueryService;
+
+  private final SheetApi sheetApi;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
@@ -192,7 +203,25 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
-    classSessionCommandService.complete(sessionId, request);
+    ClassSession session = classSessionCommandService.complete(sessionId, request);
+
+    ClassMatching matching = session.getClassManagement().getClassMatching();
+    TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+    sheetApi.write(
+        List.of(
+            List.of(
+                matching.getApplicationForm().getApplicationFormId(),
+                teacherInfo.getNickName(),
+                teacherInfo.getName(),
+                teacherInfo.getPhoneNumber(),
+                session.getSessionDate(),
+                session.getClassTime(),
+                session.getHomeworkPercentage(),
+                session.getUnderstanding(),
+                LocalDateTime.now()
+            )
+        )
+    );
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {

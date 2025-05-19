@@ -55,3 +55,8 @@ management:
     web:
       exposure:
         include: 'prometheus,mappings'
+
+
+google:
+  sheet:
+    id: 1ArUez8CaKaRQU0vmeE-uvrOnY43u2VSBNV9V122222k
