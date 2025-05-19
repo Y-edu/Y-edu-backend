@@ -46,9 +46,9 @@ jobs:
       run: |
         cp ./logback/api-logback-spring.xml  ./api/src/main/resources/logback-spring.xml
 
-    - name: create sheet api key file
+    - name: create sheet api key file from base64
       run: |
-        echo "${{ secrets.SHEET_KEY_FILE }}" > ./shared/sheet-support/src/main/resources/key.json
+        echo "${{ secrets.SHEET_KEY_FILE_BASE64 }}" | base64 -d > ./shared/sheet-support/src/main/resources/key.json
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
