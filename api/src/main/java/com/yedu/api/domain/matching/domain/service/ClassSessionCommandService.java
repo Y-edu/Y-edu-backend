@@ -98,18 +98,18 @@ public class ClassSessionCommandService {
 
   public void createSingleSessions(ClassManagement classManagement, boolean forceCreate) {
     LocalDate today = LocalDate.now();
+    LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
     List<ClassSchedule> schedules = classManagement.getSchedules();
-
     List<ClassSession> existingSessions =
         classSessionRepository.findByClassManagementAndSessionDateIsGreaterThanEqual(
-            classManagement, today);
+            classManagement, firstDayOfThisMonth);
 
     if (!forceCreate) {
       boolean hasExistingSessionInThisMonth =
           existingSessions.stream()
               .anyMatch(
                   it ->
-                      it.getSessionDate().getMonth().equals(today.getMonth())
+                      it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth())
                           && !it.isCompleted()
                           && !it.isCancel());
 
