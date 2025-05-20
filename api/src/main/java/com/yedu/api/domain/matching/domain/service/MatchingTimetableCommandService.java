@@ -42,7 +42,7 @@ public class MatchingTimetableCommandService {
                                 .timetableTime(time)
                                 .build())));
 
-    Hibernate.initialize(classMatching);
+
     return classMatching;
   }
 }

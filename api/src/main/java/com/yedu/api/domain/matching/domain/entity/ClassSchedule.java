@@ -32,7 +32,7 @@ public class ClassSchedule extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long classScheduleId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "class_management_id")
   private ClassManagement classManagement;
 

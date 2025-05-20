@@ -16,7 +16,7 @@ public class TeacherMath {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long mathId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   private Teacher teacher;
 
   @Column(columnDefinition = "TEXT")

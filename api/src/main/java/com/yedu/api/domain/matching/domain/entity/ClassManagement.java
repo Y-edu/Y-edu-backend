@@ -31,12 +31,12 @@ public class ClassManagement extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long classManagementId;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "class_matching_id")
   private ClassMatching classMatching;
 
   @OneToMany(
-      fetch = FetchType.LAZY,
+      fetch = FetchType.EAGER,
       cascade = {CascadeType.ALL},
       orphanRemoval = true,
       mappedBy = "classManagement")

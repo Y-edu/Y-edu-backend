@@ -16,7 +16,7 @@ public class Settlement {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long settlementId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   private Parents parents;
 
   private String receipt;

@@ -47,11 +47,14 @@ public abstract class AbstractConsumer implements Consumer<Message> {
     CommonRequest commonRequest = parsers.get(message.type()).apply(message);
     Notification notification = beforeConsume(commonRequest);
 
+    notificationRepository.save(notification);
+
     if (!enable && !testerPhoneNumbers.contains(notification.getReceiverPhoneNumber())) {
-      throw new IllegalStateException("메시지 처리가 비활성화되어 있습니다.");
+      notification.fail();
+      log.error("메시지 처리가 비활성화되어 있습니다. notification id :{}", notification.getId());
+      return;
     }
 
-    notificationRepository.save(notification);
     try {
       MessageResponse response = apiTemplate.send(commonRequest);
       notification.success(response.messagekey());

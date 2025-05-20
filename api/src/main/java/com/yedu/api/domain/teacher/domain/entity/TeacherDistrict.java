@@ -22,6 +22,6 @@ public class TeacherDistrict extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private District district;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   private Teacher teacher;
 }

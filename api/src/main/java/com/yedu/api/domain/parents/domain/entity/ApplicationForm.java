@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class ApplicationForm extends BaseEntity {
   @Id private String applicationFormId; // 지역구 + 학부모PK + 학부모 횟수(a~z)
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   private Parents parents;
 
   @Column(nullable = false)

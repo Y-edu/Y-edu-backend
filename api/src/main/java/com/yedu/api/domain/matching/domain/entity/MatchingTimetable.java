@@ -25,7 +25,7 @@ public class MatchingTimetable extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Day day;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "class_matching_id")
   private ClassMatching classMatching;
 }
