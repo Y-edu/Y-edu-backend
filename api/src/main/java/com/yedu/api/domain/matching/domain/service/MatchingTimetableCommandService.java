@@ -9,6 +9,7 @@ import com.yedu.api.global.exception.matching.MatchingNotFoundException;
 import com.yedu.api.global.exception.matching.MatchingTimetableAlreadyException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,8 @@ public class MatchingTimetableCommandService {
                                 .day(dayTime.getDay())
                                 .timetableTime(time)
                                 .build())));
+
+    Hibernate.initialize(classMatching);
 
     return classMatching;
   }
