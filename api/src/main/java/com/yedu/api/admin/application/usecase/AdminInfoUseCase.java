@@ -89,7 +89,7 @@ public class AdminInfoUseCase {
         .findFirst()
         .map(
             classMatching ->
-                classManagementQueryService.query(classMatching.getClassMatchingId()).get());
+                classManagementQueryService.query(classMatching.getClassMatchingId()).orElse(null));
   }
 
   public AllFilteringTeacher searchAllTeacher(
