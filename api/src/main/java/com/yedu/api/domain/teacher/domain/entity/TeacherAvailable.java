@@ -27,7 +27,7 @@ public class TeacherAvailable extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Day day;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   private Teacher teacher;
 
   public boolean isSameTo(ApplicationFormAvailable applicationFormAvailable) {
