@@ -13,6 +13,7 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.ClassManagementNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class ClassManagementCommandService {
     ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
     classMatching.startSchedule();
 
-    return classManagementRepository
+    ClassManagement classManagement = classManagementRepository
         .findByClassMatching_ClassMatchingId(request.classMatchingId())
         .orElseGet(
             () -> {
@@ -39,6 +40,9 @@ public class ClassManagementCommandService {
                   ClassManagement.builder().classMatching(classMatching).build();
               return classManagementRepository.save(newClassManagement);
             });
+
+    Hibernate.initialize(classManagement);
+    return classManagement;
   }
 
   public ClassMatching delete(ClassScheduleRefuseRequest request, Long id) {
