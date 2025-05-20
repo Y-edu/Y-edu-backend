@@ -51,7 +51,8 @@ public abstract class AbstractConsumer implements Consumer<Message> {
 
     if (!enable && !testerPhoneNumbers.contains(notification.getReceiverPhoneNumber())) {
       notification.fail();
-      throw new IllegalStateException("메시지 처리가 비활성화되어 있습니다.");
+      log.error("메시지 처리가 비활성화되어 있습니다. notification id :{}", notification.getId());
+      return;
     }
 
     try {
