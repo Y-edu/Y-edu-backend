@@ -17,6 +17,7 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.api.global.exception.matching.MatchingStatusException;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class ClassMatchingManageUseCase {
   private final TeacherUpdateService teacherUpdateService;
   private final ApplicationEventPublisher eventPublisher;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
+  private final ClassManagementTokenStorage classManagementTokenStorage;
 
   public List<ClassMatching> saveAllClassMatching(
       List<Teacher> teachers, ApplicationForm applicationForm) {
@@ -111,8 +113,9 @@ public class ClassMatchingManageUseCase {
     classManagementQueryService.query().stream()
         .map(
             classManagement -> {
+              String token = classManagementTokenStorage.get(classManagement.getClassManagementId());
               classManagementCommandService.completeRemind(classManagement);
-              return mapToTeacherClassRemindEvent(classManagement);
+              return mapToTeacherClassRemindEvent(classManagement, token);
             })
         .forEach(eventPublisher::publishEvent);
   }

@@ -30,6 +30,7 @@ import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
+import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import com.yedu.sheet.support.SheetApi;
@@ -41,9 +42,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 @RequiredArgsConstructor
 @Component
@@ -65,6 +66,7 @@ public class ClassScheduleMatchingUseCase {
   private final KeyStorage<Long> classSessionKeyStorage;
 
   private final MatchingTimetableQueryService matchingTimetableQueryService;
+  private final ClassManagementTokenStorage classManagementTokenStorage;
 
   private final ClassMatchingGetService classMatchingGetService;
 
@@ -83,6 +85,7 @@ public class ClassScheduleMatchingUseCase {
     ClassManagement classManagement = managementCommandService.schedule(request);
     String classManagementToken =
         classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+        classManagementTokenStorage.store(classManagement.getClassManagementId(), classManagementToken);
     List<MatchingTimetable> timetables =
         matchingTimetableQueryService.query(
             classManagement.getClassMatching().getClassMatchingId());
