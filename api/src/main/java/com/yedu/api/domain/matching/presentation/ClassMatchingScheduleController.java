@@ -11,6 +11,7 @@ import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
+import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
@@ -160,13 +161,13 @@ public class ClassMatchingScheduleController {
 
   @GetMapping("/token/sessions")
   @Operation(
-      summary = "토큰 기반 수업 일시 조회 API",
-      description = "토큰으로 수업 일시를 조회합니다",
+      summary = "토큰 기반 수업 일시, 과외 완료 여부 조회 API",
+      description = "토큰으로 수업 일시와 과외 완료 여부를 조회합니다",
       tags = {"완료톡 관련 API"})
-  public ResponseEntity<LocalDate> retrieveSessionDateByToken(String token) {
-    LocalDate sessionDate = scheduleMatchingUseCase.retrieveSessionDateByToken(token);
+  public ResponseEntity<RetrieveSessionDateResponse> retrieveSessionDateByToken(String token) {
+    RetrieveSessionDateResponse response = scheduleMatchingUseCase.retrieveSessionDateByToken(token);
 
-    return ResponseEntity.ok(sessionDate);
+    return ResponseEntity.ok(response);
   }
 
   @PatchMapping("/sessions/{sessionId}/change")

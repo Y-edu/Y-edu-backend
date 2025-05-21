@@ -13,6 +13,7 @@ import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequ
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
+import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
@@ -231,8 +232,11 @@ public class ClassScheduleMatchingUseCase {
         new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
   }
 
-  public LocalDate retrieveSessionDateByToken(String token) {
+  public RetrieveSessionDateResponse retrieveSessionDateByToken(String token) {
     Long sessionId = classSessionKeyStorage.get(token);
+    if (sessionId == null) {
+      return RetrieveSessionDateResponse.empty();
+    }
 
     return classSessionQueryService.querySessionDate(sessionId);
   }
