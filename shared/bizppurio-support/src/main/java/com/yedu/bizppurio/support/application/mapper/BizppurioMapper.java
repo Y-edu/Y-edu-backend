@@ -649,8 +649,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
         new WebButton(
             "전화상담 결과 공유하기",
             WEB_LINK,
-            resultShareFormUrl + teacherClassRemindEvent.managementId(),
-            resultShareFormUrl + teacherClassRemindEvent.managementId());
+            resultShareFormUrl + teacherClassRemindEvent.token(),
+            resultShareFormUrl + teacherClassRemindEvent.token());
     Message messageBody =
         new ButtonMessage(
             message,

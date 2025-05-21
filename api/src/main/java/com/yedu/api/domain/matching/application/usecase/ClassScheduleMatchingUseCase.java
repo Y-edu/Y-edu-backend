@@ -14,6 +14,7 @@ import com.yedu.api.domain.matching.domain.entity.MatchingTimetable;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
+import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import java.util.List;
@@ -38,12 +39,14 @@ public class ClassScheduleMatchingUseCase {
   private final TokenStorage<Long> matchingIdApplicationNotifyKeyStorage;
 
   private final MatchingTimetableQueryService matchingTimetableQueryService;
+  private final ClassManagementTokenStorage classManagementTokenStorage;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
     ClassManagement classManagement = managementCommandService.schedule(request);
     String classManagementToken =
         classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+        classManagementTokenStorage.store(classManagement.getClassManagementId(), classManagementToken);
     List<MatchingTimetable> timetables =
         matchingTimetableQueryService.query(
             classManagement.getClassMatching().getClassMatchingId());

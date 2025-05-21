@@ -36,7 +36,6 @@ public class ClassManagementCommandService {
               return classManagementRepository.save(newClassManagement);
             });
 
-    Hibernate.initialize(classManagement);
     return classManagement;
   }
 
