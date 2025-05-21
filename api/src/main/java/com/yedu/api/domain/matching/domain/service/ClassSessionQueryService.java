@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.domain.service;
 
+import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
@@ -59,10 +60,10 @@ public class ClassSessionQueryService {
     return new SessionResponse(scheduleMap);
   }
 
-  public LocalDate querySessionDate(Long sessionId) {
+  public RetrieveSessionDateResponse querySessionDate(Long sessionId) {
     return classSessionRepository
         .findById(sessionId)
-        .map(ClassSession::getSessionDate)
+        .map(it-> new RetrieveSessionDateResponse(it.getSessionDate(), it.isCompleted()))
         .orElseThrow();
   }
 }
