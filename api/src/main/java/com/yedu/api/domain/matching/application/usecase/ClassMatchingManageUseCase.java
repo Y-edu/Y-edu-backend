@@ -109,7 +109,6 @@ public class ClassMatchingManageUseCase {
   }
 
   public void remindClassMatching() {
-    if (!checkTime()) return;
     classManagementQueryService.query().stream()
         .map(
             classManagement -> {
@@ -120,8 +119,4 @@ public class ClassMatchingManageUseCase {
         .forEach(eventPublisher::publishEvent);
   }
 
-  private boolean checkTime() {
-    int hour = LocalDateTime.now().getHour();
-    return !(hour >= 0 && hour < 10); // 새벽이면 전송 안 함
-  }
 }
