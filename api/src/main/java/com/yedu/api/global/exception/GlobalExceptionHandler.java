@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity handleInternalServerException(Exception ex) {
+    // 스택트레이스 상 ResourceHttpRequestHandler에서 발생한 경우
+    if (ex.getStackTrace() != null) {
+      for (StackTraceElement element : ex.getStackTrace()) {
+        if (element.getClassName().contains("ResourceHttpRequestHandler")) {
+          return ResponseEntity
+              .status(HttpStatus.BAD_REQUEST)
+              .body("잘못된 정적 리소스 요청입니다.");
+        }
+      }
+    }
     log.error(LOG_FORMAT, "500", ex.getStackTrace());
     log.error("errorMessage : {}", ex.getMessage());
     return ResponseEntity.internalServerError().body(ex.getMessage());
