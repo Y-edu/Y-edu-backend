@@ -1,6 +1,6 @@
 package com.yedu.paymint.api.dto;
 
-public record BillApprovalRequest(
+public record ApproveBillRequest(
     String apikey,                          // ERP 연동코드
     String bill_id,                         // 청구서 ID
     String appr_pay_type,                   // 결제수단
