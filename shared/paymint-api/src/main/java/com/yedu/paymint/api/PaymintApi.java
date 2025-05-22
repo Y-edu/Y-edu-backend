@@ -1,6 +1,8 @@
 package com.yedu.paymint.api;
 
 
+import com.yedu.paymint.api.dto.CancelPaymentRequest;
+import com.yedu.paymint.api.dto.CancelPaymentResponse;
 import com.yedu.paymint.api.dto.SendBillRequest;
 import com.yedu.paymint.api.dto.SendBillResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,18 @@ public class PaymintApi {
         .bodyValue(request)
         .retrieve()
         .bodyToMono(SendBillResponse.class)
+        .block();
+  }
+
+  /**
+   * 결제 취소
+   */
+  public CancelPaymentResponse cancelPayment(CancelPaymentRequest request) {
+    return paymintWebClient.post()
+        .uri("/if/bill/cancel")
+        .bodyValue(request)
+        .retrieve()
+        .bodyToMono(CancelPaymentResponse.class)
         .block();
   }
 

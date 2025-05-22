@@ -1,9 +1,9 @@
 package com.yedu.api.domain.order;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import com.yedu.paymint.api.dto.BillApprovalRequest;
+import com.yedu.paymint.api.dto.BillApprovalResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 public class OrderController {
@@ -12,7 +12,7 @@ public class OrderController {
    * 승인동기화
    */
   @PostMapping("/order/result")
-  void orderResult(){
-
+  public BillApprovalResponse approveBillWebHook(BillApprovalRequest request){
+    return null;
   }
 }
