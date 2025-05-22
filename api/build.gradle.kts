@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
+    implementation(project(":shared:paymint-api"))
 
 
     implementation ("org.springframework.boot:spring-boot-starter-validation")
