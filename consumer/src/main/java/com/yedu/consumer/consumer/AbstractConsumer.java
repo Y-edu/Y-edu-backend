@@ -8,6 +8,7 @@ import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
 import com.yedu.consumer.domain.notification.entity.Notification;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.rabbitmq.support.Message;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,16 @@ public abstract class AbstractConsumer implements Consumer<Message> {
     Notification notification = beforeConsume(commonRequest);
 
     notificationRepository.save(notification);
+
+    boolean isDuplicateMessage = notificationRepository.findByTemplateCodeAndReceiverPhoneNumberAndDeliveredAtAfter(
+            notification.getTemplateCode(), notification.getReceiverPhoneNumber(), LocalDateTime.now().minusMinutes(3))
+        .stream().anyMatch(it -> it.isDuplicate(notification));
+
+    if (isDuplicateMessage) {
+      notification.fail();
+      log.error("중복된 발송처리입니다. notification id :{}", notification.getId());
+      return;
+    }
 
     if (!enable && !testerPhoneNumbers.contains(notification.getReceiverPhoneNumber())) {
       notification.fail();
