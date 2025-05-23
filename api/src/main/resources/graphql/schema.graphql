@@ -1,0 +1,102 @@
+type Query {
+    applicationFormByMatchingId(matchingId: Int): ApplicationForm
+}
+
+type ApplicationForm {
+    applicationFormId: String
+    childAge: String
+    isOnline: Boolean
+    district: String
+    dong: String
+    subject: String
+    favoriteStyle: String
+    favoriteGender: String
+    source: String
+    classCount: String
+    pay: Int
+    availableTimes: [AvailableTime]
+    parent: Parents
+    teacher: Teacher
+    matchingStatus: String
+    matchingRefuseReason: String
+    classManagement: ClassManagement
+}
+
+
+type AvailableTime {
+    availableId: Int
+    day: String
+    time: String
+}
+
+type Parents {
+    parentId: Int
+    kakaoName: String
+    phoneNumber: String
+    marketingAgree: Boolean
+}
+
+
+type Teacher {
+    teacherId: Int
+    realName: String
+    nickName: String
+    email: String
+    phoneNumber: String
+    university: String
+    major: String
+    highSchool: String
+    birth: String
+    gender: String
+    profileImage: String
+    video: String
+    introduce: String
+    comment: String
+    teachingStyle: [String]
+    teachingStyleDescription: [String]
+    english: TeacherEnglish
+    math: TeacherMath
+}
+
+type TeacherEnglish {
+    possible:Boolean
+    experience: String
+    foreignExperience :String
+    teachingStyle: String
+    teachingHistory: Int
+}
+
+type TeacherMath {
+    possible:Boolean
+    experience: String
+    teachingStyle: String
+    teachingHistory: Int
+}
+
+
+type ClassManagement {
+    classManagementId: Int
+    textBook: String
+    firstDay: String
+    schedule: [Schedule]
+    sessions: [Session]
+}
+
+type Schedule {
+    classScheduleId: Int
+    day: String
+    start: String
+    classMinute: Int
+}
+
+type Session {
+    classSessionId: Int
+    date: String
+    start: String
+    classMinute: Int
+    understanding: String
+    homeworkPercentage: Int
+    cancel: Boolean
+    cancelReason: String
+    completed: Boolean
+}
