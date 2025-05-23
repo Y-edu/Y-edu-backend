@@ -66,4 +66,12 @@ public class ClassSessionQueryService {
         .map(it-> new RetrieveSessionDateResponse(it.getSessionDate(), it.isCompleted(), it.getClassManagement().getClassMatching().getTeacher().getTeacherId()))
         .orElseThrow();
   }
+
+  public List<ClassSession> query(ClassManagement management) {
+    LocalDate now = LocalDate.now();
+    return classSessionRepository.findByClassManagementAndSessionDateBetween(
+        management,
+        now.with(TemporalAdjusters.firstDayOfMonth()),
+        now.with(TemporalAdjusters.lastDayOfMonth()));
+  }
 }

@@ -1,14 +1,18 @@
 package com.yedu.api.domain.matching.presentation;
 
 import com.yedu.api.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
+import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingInfoUseCase;
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/matching")
@@ -51,4 +55,10 @@ public class ClassMatchingController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @QueryMapping
+  public ApplicationFormResponse applicationFormByMatchingId(@Argument Long matchingId) {
+    return matchingInfoUseCase.applicationFormByMatchingId(matchingId);
+  }
+
 }

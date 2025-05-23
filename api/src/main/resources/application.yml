@@ -4,6 +4,9 @@ server:
       cookie:
         same-site: none
 spring:
+  graphql:
+    graphiql:
+      enabled: true
   config:
     import: optional:application-local.yml
   flyway:
@@ -32,6 +35,7 @@ spring:
 jwt:
   refreshExpiration: 1209600
   accessExpiration: 86400
+
 
 cloud:
   aws:
