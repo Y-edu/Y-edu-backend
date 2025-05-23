@@ -1,7 +1,6 @@
 package com.yedu.consumer.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yedu.bizppurio.support.application.usecase.BizppurioCheckStep;
 import com.yedu.common.dto.MessageStatusRequest;
 import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.common.event.discord.NotificationDeliverySuccessEvent;
@@ -20,19 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class SystemMessageConsumer implements Consumer<Message> {
 
-  private final BizppurioCheckStep bizppurioCheckStep;
+  private static final String SUCCESS = "7000";
 
   private final ObjectMapper objectMapper;
 
   private final NotificationRepository notificationRepository;
+
   private final ApplicationEventPublisher applicationEventPublisher;
 
   public SystemMessageConsumer(
       ObjectMapper objectMapper,
-      BizppurioCheckStep bizppurioCheckStep,
       NotificationRepository notificationRepository,
       ApplicationEventPublisher applicationEventPublisher) {
-    this.bizppurioCheckStep = bizppurioCheckStep;
     this.objectMapper = objectMapper;
     this.notificationRepository = notificationRepository;
     this.applicationEventPublisher = applicationEventPublisher;
@@ -46,14 +44,12 @@ public class SystemMessageConsumer implements Consumer<Message> {
     MessageStatusRequest request = bizppurioWebHookEvent.request();
 
     updateNotificationStatus(request);
-
-    bizppurioCheckStep.checkByWebHook(request);
   }
 
   private void updateNotificationStatus(MessageStatusRequest request) {
     Optional<Notification> notification =
         notificationRepository.findByServerKeyAndClientKey(request.CMSGID(), request.REFKEY());
-    if (bizppurioCheckStep.isSuccess(request)) {
+    if (request.RESULT().equals(SUCCESS)) {
       notification.ifPresent(
           it -> {
             it.successDelivery();

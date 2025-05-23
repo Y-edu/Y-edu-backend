@@ -90,7 +90,8 @@ public class ClassScheduleMatchingUseCase {
         matchingTimetableQueryService.query(
             classManagement.getClassMatching().getClassMatchingId());
 
-    eventPublisher.publishEvent(mapToMatchingParentsEvent(classManagement));
+    eventPublisher.publishEvent(mapToParentsExchangeEvent(classManagement));
+    eventPublisher.publishEvent(mapToParentsClassNoticeEvent(classManagement));
     eventPublisher.publishEvent(
         mapToTeacherNotifyClassInfoEvent(
             classManagementToken, classNotifyToken, classManagement, timetables));
@@ -118,7 +119,7 @@ public class ClassScheduleMatchingUseCase {
         key -> {
           ClassManagement classManagement = managementCommandService.confirm(request, key);
           eventPublisher.publishEvent(mapToParentsClassInfoEvent(classManagement));
-          eventPublisher.publishEvent(mapToMatchingConfirmTeacherEvent(classManagement));
+          eventPublisher.publishEvent(mapToClassGuideEvent(classManagement));
         });
   }
 

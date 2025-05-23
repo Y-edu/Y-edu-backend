@@ -1,7 +1,5 @@
 package com.yedu.bizppurio.support.application.mapper;
 
-import static com.yedu.common.event.bizppurio.MatchingParentsEvent.*;
-import static com.yedu.common.event.bizppurio.ParentsClassInfoEvent.*;
 
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.dto.req.ContentRequest;
@@ -9,9 +7,9 @@ import com.yedu.bizppurio.support.application.dto.req.content.*;
 import com.yedu.bizppurio.support.config.BizppurioProperties;
 import com.yedu.bizppurio.support.config.BizpurrioTemplate;
 import com.yedu.common.event.bizppurio.*;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.ClassGuideEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceFinishTalkEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
+import com.yedu.common.event.bizppurio.ClassGuideEvent;
+import com.yedu.common.event.bizppurio.ParentsClassInfoEvent.ClassTime;
+import com.yedu.common.event.bizppurio.ParentsClassInfoEvent.FirstDay;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -454,7 +452,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             message,
             properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_NOTICE),
             BizpurrioTemplate.YEDU_OFFICIAL_PARENTS_CLASS_NOTICE.getCode());
-    return createCommonRequest(messageBody, parentsClassNoticeEvent.phoneNumber());
+    return createCommonRequest(messageBody, parentsClassNoticeEvent.parentsPhoneNumber());
   }
 
   public CommonRequest mapToParentsClassInfo(ParentsClassInfoEvent parentsClassInfoEvent) {
@@ -677,54 +675,6 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, classGuideEvent.phoneNumber());
   }
 
-  public CommonRequest mapToIntroduceFinishTalk(IntroduceFinishTalkEvent introduceFinishTalkEvent) {
-    String message =
-        ("\uD83D\uDCE2 완료톡 쌓기 안내 \uD83D\uDCE2\n"
-            + "\n"
-            + "매 수업이 끝난 직후, 본 채널에 ‘수업을 완료했다’는 기록을 메세지로 보내주셔야 합니다! ☝\uD83C\uDFFB\n"
-            + "\n"
-            + "다음 전송한 메세지 내용을 복사하신 후, 아래에 수업 완료 내역을 추가하여 다시 보내주세요. \uD83D\uDE42\n"
-            + "\n"
-            + "완료톡에 기반해 급여 정산이 이루어지기에 정확하게 작성 부탁드립니다. \n"
-            + "\n"
-            + "1\uFE0F⃣ 실제로 진행된 수업 분을 써주세요. \n"
-            + "(지각해 40분 수업했다면 40분 기록)\n"
-            + "2\uFE0F⃣ 휴강도 적어주세요. \n"
-            + "3\uFE0F⃣ 담당자가 완료톡을 수정하여 보냈다면 수정한 메세지를 복붙해 이어 추가해주세요.");
-    Message messageBody =
-        new TextMessage(
-            message,
-            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_FINISH_TALK),
-            BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_FINISH_TALK.getCode());
-    return createCommonRequest(messageBody, introduceFinishTalkEvent.phoneNumber());
-  }
-
-  public CommonRequest mapToIntroduceWriteFinishTalk(
-      IntroduceWriteFinishTalkEvent introduceWriteFinishTalkEvent) {
-    String message =
-        ("\uD83D\uDCCC 완료톡 작성 예시 \uD83D\uDCCC\n"
-            + "\n"
-            + "완료톡 작성 예시를 알려드릴게요. 매 수업이 끝난 후 아래 내용대로 완료톡 작성을 부탁드립니다! \uD83D\uDE0A\n"
-            + "\n"
-            + "예시)\n"
-            + introduceWriteFinishTalkEvent.applicationFormId()
-            + " (주 "
-            + introduceWriteFinishTalkEvent.count()
-            + "회 "
-            + introduceWriteFinishTalkEvent.time()
-            + "분) ("
-            + (introduceWriteFinishTalkEvent.count() * 4)
-            + "회 기준)\n"
-            + "- 0월 00일 1회차 00분 완료 \n"
-            + "\n"
-            + "0을 실제 숫자로 채워주세요. 2회차는 진행 후, 1회차 내용 아래에 추가하여 보내주시면 됩니다.");
-    Message messageBody =
-        new TextMessage(
-            message,
-            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_WRITE_FINISH_TALK),
-            BizpurrioTemplate.YEDU_TUTOR_INTRODUCE_WRITE_FINISH_TALK.getCode());
-    return createCommonRequest(messageBody, introduceWriteFinishTalkEvent.phoneNumber());
-  }
 
   public CommonRequest mapToPayNotification(PayNotificationEvent event) {
     String message =

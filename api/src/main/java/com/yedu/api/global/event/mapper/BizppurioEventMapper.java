@@ -12,11 +12,6 @@ import com.yedu.api.domain.parents.domain.vo.DayTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.common.event.bizppurio.*;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.ClassGuideEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceFinishTalkEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
-import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
-import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsExchangeEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -197,13 +192,7 @@ public class BizppurioEventMapper {
         classManagementToken);
   }
 
-  public static MatchingParentsEvent mapToMatchingParentsEvent(ClassManagement classManagement) {
-    ParentsExchangeEvent parentsExchangeEvent = mapToParentsExchangeEvent(classManagement);
-    ParentsClassNoticeEvent parentsClassNoticeEvent = mapToParentsClassNoticeEvent(classManagement);
-    return new MatchingParentsEvent(parentsExchangeEvent, parentsClassNoticeEvent);
-  }
-
-  private static ParentsExchangeEvent mapToParentsExchangeEvent(ClassManagement classManagement) {
+  public static ParentsExchangeEvent mapToParentsExchangeEvent(ClassManagement classManagement) {
     ClassMatching classMatching = classManagement.getClassMatching();
     Teacher teacher = classMatching.getTeacher();
     ApplicationForm applicationForm = classMatching.getApplicationForm();
@@ -214,17 +203,7 @@ public class BizppurioEventMapper {
         parents.getPhoneNumber());
   }
 
-  public static MatchingConfirmTeacherEvent mapToMatchingConfirmTeacherEvent(
-      ClassManagement classManagement) {
-    ClassGuideEvent classGuideEvent = mapToClassGuideEvent(classManagement);
-    IntroduceFinishTalkEvent introduceFinishTalkEvent = mapToFinishTalkEvent(classManagement);
-    IntroduceWriteFinishTalkEvent introduceWriteFinishTalkEvent =
-        mapToWriteFinishTalkEvent(classManagement);
-    return new MatchingConfirmTeacherEvent(
-        classGuideEvent, introduceFinishTalkEvent, introduceWriteFinishTalkEvent);
-  }
-
-  private static ParentsClassNoticeEvent mapToParentsClassNoticeEvent(
+  public static ParentsClassNoticeEvent mapToParentsClassNoticeEvent(
       ClassManagement classManagement) {
     ApplicationForm applicationForm = classManagement.getClassMatching().getApplicationForm();
     Parents parents = applicationForm.getParents();
@@ -237,22 +216,4 @@ public class BizppurioEventMapper {
     return new ClassGuideEvent(teacher.getTeacherInfo().getPhoneNumber());
   }
 
-  public static IntroduceFinishTalkEvent mapToFinishTalkEvent(ClassManagement classManagement) {
-    ClassMatching classMatching = classManagement.getClassMatching();
-    Teacher teacher = classMatching.getTeacher();
-    return new IntroduceFinishTalkEvent(teacher.getTeacherInfo().getPhoneNumber());
-  }
-
-  public static IntroduceWriteFinishTalkEvent mapToWriteFinishTalkEvent(
-      ClassManagement classManagement) {
-    ApplicationForm applicationForm = classManagement.getClassMatching().getApplicationForm();
-    List<ClassSchedule> schedules = classManagement.getSchedules();
-    ClassSchedule classSchedule = schedules.get(0);
-    Teacher teacher = classManagement.getClassMatching().getTeacher();
-    return new IntroduceWriteFinishTalkEvent(
-        applicationForm.getApplicationFormId(),
-        classManagement.getSchedules().size(),
-        classSchedule.getClassTime().getClassMinute(),
-        teacher.getTeacherInfo().getPhoneNumber());
-  }
 }

@@ -7,11 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum BizpurrioTemplate {
-  YEDU_TUTOR_INTRODUCE_FINISH_TALK(
-      "bizp_2025040523400000717272288", "[선생님 매칭 완료 4] 완료톡 안내", Profile.YEDU_TUTOR),
-  YEDU_TUTOR_INTRODUCE_WRITE_FINISH_TALK(
-      "bizp_2025040523425900717346483", "[선생님 매칭 완료 5] 완료톡 안내", Profile.YEDU_TUTOR),
-
   YEDU_APPLY_AGREE(
       "bizp_2025022410400114555103928", "[선생님 등록 3] 약관 동의 (ver.2)", Profile.YEDU_APPLY),
   YEDU_APPLY_PHOTO_HURRY(

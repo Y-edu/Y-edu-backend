@@ -4,16 +4,15 @@ import com.yedu.common.event.bizppurio.ApplyAgreeEvent;
 import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.common.event.bizppurio.InviteMatchingChannelInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingAcceptCaseInfoEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent;
-import com.yedu.common.event.bizppurio.MatchingConfirmTeacherEvent.IntroduceWriteFinishTalkEvent;
-import com.yedu.common.event.bizppurio.MatchingParentsEvent;
-import com.yedu.common.event.bizppurio.MatchingParentsEvent.ParentsClassNoticeEvent;
+import com.yedu.common.event.bizppurio.ClassGuideEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseDistrictEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;
 import com.yedu.common.event.bizppurio.NotifyCallingEvent;
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.ParentsClassInfoEvent;
+import com.yedu.common.event.bizppurio.ParentsClassNoticeEvent;
+import com.yedu.common.event.bizppurio.ParentsExchangeEvent;
 import com.yedu.common.event.bizppurio.PayNotificationEvent;
 import com.yedu.common.event.bizppurio.PhotoHurryEvent;
 import com.yedu.common.event.bizppurio.PhotoSubmitEvent;
@@ -115,7 +114,7 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
-  public void handle(MatchingConfirmTeacherEvent event) {
+  public void handle(ClassGuideEvent event) {
     produceTeacherMessage(event);
   }
 
@@ -145,12 +144,6 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
-  public void handle(IntroduceWriteFinishTalkEvent event) {
-    produceTeacherMessage(event);
-  }
-
-  @EventListener
-  @Async
   public void handle(NotifyCallingEvent event) {
     produceParentMessage(event);
   }
@@ -169,7 +162,7 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
-  public void handle(MatchingParentsEvent event) {
+  public void handle(ParentsExchangeEvent event) {
     produceParentMessage(event);
   }
 

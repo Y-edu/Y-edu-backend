@@ -27,7 +27,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class BizppurioAuth {
   private final WebClient webClient;
   private final RedisRepository redisRepository;
-  private final ApplicationEventPublisher eventPublisher;
 
   @Value("${bizppurio.token}")
   private String bizzppurioToken;
