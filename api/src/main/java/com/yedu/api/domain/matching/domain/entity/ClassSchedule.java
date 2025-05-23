@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,9 +55,17 @@ public class ClassSchedule extends BaseEntity {
       ClassManagement classManagement,
       LocalDate today,
       Map<LocalDate, ClassSession> existingSessionMap) {
+    LocalDate classStartDate = Optional.ofNullable(classManagement.getFirstDay())
+        .map(firstDay-> {
+          if (firstDay.isBefore(today)) {
+            return today;
+          }
+          return firstDay;
+        })
+        .orElse(today);
     LocalDate endOfMonth = today.withDayOfMonth(today.lengthOfMonth());
 
-    return Stream.iterate(today, date -> !date.isAfter(endOfMonth), date -> date.plusDays(1))
+    return Stream.iterate(classStartDate, date -> !date.isAfter(endOfMonth), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
         .map(
