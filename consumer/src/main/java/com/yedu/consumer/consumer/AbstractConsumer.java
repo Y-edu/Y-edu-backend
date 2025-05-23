@@ -30,7 +30,7 @@ public abstract class AbstractConsumer implements Consumer<Message> {
   @Value("${message.enable}")
   private Boolean enable;
 
-  private final Set<String> testerPhoneNumbers = Set.of("01059367332");
+  private final Set<String> testerPhoneNumbers = Set.of("01059367332", "01043112954", "01051316160", "01062635228", "01067672374");
 
   protected final Map<Class<?>, Function<Message, CommonRequest>> parsers = new HashMap<>();
 
