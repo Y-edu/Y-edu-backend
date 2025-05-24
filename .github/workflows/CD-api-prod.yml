@@ -46,6 +46,12 @@ jobs:
         run: |
           cp ./logback/api-logback-spring.xml  ./api/src/main/resources/logback-spring.xml
 
+      - name: Modify existing JSON file with jq
+        run: |
+          jq '.private_key = "${{ secrets.SHEET_API_PRIVATE_KEY }}"' ./shared/sheet-support/src/main/resources/key.json > tmp.json && mv tmp.json ./shared/sheet-support/src/main/resources/key.json
+          jq '.private_key_id = "${{ secrets.SHEET_API_PRIVATE_KEY_ID }}"' ./shared/sheet-support/src/main/resources/key.json > tmp.json && mv tmp.json ./shared/sheet-support/src/main/resources/key.json
+
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ${{ env.working-directory }}
