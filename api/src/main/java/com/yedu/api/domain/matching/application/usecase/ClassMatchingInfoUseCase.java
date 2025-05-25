@@ -21,7 +21,6 @@ import com.yedu.api.domain.parents.domain.vo.DayTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherAvailable;
 import com.yedu.api.domain.teacher.domain.entity.TeacherEnglish;
-import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.api.domain.teacher.domain.entity.TeacherMath;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.api.domain.teacher.domain.repository.TeacherEnglishRepository;
@@ -98,9 +97,11 @@ public class ClassMatchingInfoUseCase {
 
   public ApplicationFormResponse applicationFormByMatchingId(Long matchingId) {
     ClassMatching matching = classMatchingGetService.getById(matchingId);
-    Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(matchingId);
+    Optional<ClassManagement> management =
+        classManagementQueryService.queryWithSchedule(matchingId);
     ApplicationForm applicationForm = matching.getApplicationForm();
-    List<ApplicationFormAvailable> availables = applicationFormAvailableQueryService.query(applicationForm.getApplicationFormId());
+    List<ApplicationFormAvailable> availables =
+        applicationFormAvailableQueryService.query(applicationForm.getApplicationFormId());
     Teacher teacher = matching.getTeacher();
     Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher(teacher);
     Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher(teacher);
@@ -120,88 +121,113 @@ public class ClassMatchingInfoUseCase {
         .subject(applicationForm.getWantedSubject().toString())
         .favoriteStyle(applicationForm.getFavoriteStyle())
         .matchingRefuseReason(matching.getRefuseReason())
-        .availableTimes(availables.stream().map(it-> ApplicationFormResponse.AvailableTime.builder()
-            .availableId(it.getId())
-            .day(it.getDay().toString())
-            .time(it.getAvailableTime().toString())
-            .build()).toList())
-        .parent(ApplicationFormResponse.Parents.builder()
-            .parentId(parents.getParentsId())
-            .kakaoName(parents.getKakaoName())
-            .phoneNumber(parents.getPhoneNumber())
-            .marketingAgree(parents.isMarketingAgree())
-            .build())
-        .teacher(ApplicationFormResponse.Teacher.builder()
-            .teacherId(teacher.getTeacherId())
-            .realName(teacher.getTeacherInfo().getName())
-            .nickName(teacher.getTeacherInfo().getNickName())
-            .email(teacher.getTeacherInfo().getEmail())
-            .phoneNumber(teacher.getTeacherInfo().getPhoneNumber())
-            .university(teacher.getTeacherSchoolInfo().getUniversity())
-            .major(teacher.getTeacherSchoolInfo().getMajor())
-            .highSchool(teacher.getTeacherSchoolInfo().getHighSchool())
-            .birth(teacher.getTeacherInfo().getBirth())
-            .gender(teacher.getTeacherInfo().getGender().toString())
-            .profileImage(teacher.getTeacherInfo().getProfile())
-            .video(teacher.getTeacherInfo().getVideo())
-            .introduce(teacher.getTeacherClassInfo().getIntroduce())
-            .comment(teacher.getTeacherClassInfo().getComment())
-            .teachingStyle(List.of(
-                teacher.getTeacherClassInfo().getTeachingStyleInfo1(),
-                teacher.getTeacherClassInfo().getTeachingStyleInfo2()
-            ))
-            .english(
-                ApplicationFormResponse.TeacherEnglish.builder()
-                    .possible(teacher.getTeacherClassInfo().isEnglishPossible())
-                    .experience(englishTeacher.map(TeacherEnglish::getTeachingExperience).orElse(null))
-                    .foreignExperience(englishTeacher.map(TeacherEnglish::getForeignExperience).orElse(null))
-                    .teachingStyle(englishTeacher.map(TeacherEnglish::getTeachingStyle).orElse(null))
-                    .teachingHistory(englishTeacher.map(TeacherEnglish::getTeachingHistory).orElse(null))
-                    .build()
-            )
-            .math(
-                ApplicationFormResponse.TeacherMath.builder()
-                    .possible(teacher.getTeacherClassInfo().isMathPossible())
-                    .experience(mathTeacher.map(TeacherMath::getTeachingExperience).orElse(null))
-                    .teachingStyle(mathTeacher.map(TeacherMath::getTeachingStyle).orElse(null))
-                    .teachingHistory(mathTeacher.map(TeacherMath::getTeachingHistory).orElse(null))
-                    .build())
-            .build())
+        .availableTimes(
+            availables.stream()
+                .map(
+                    it ->
+                        ApplicationFormResponse.AvailableTime.builder()
+                            .availableId(it.getId())
+                            .day(it.getDay().toString())
+                            .time(it.getAvailableTime().toString())
+                            .build())
+                .toList())
+        .parent(
+            ApplicationFormResponse.Parents.builder()
+                .parentId(parents.getParentsId())
+                .kakaoName(parents.getKakaoName())
+                .phoneNumber(parents.getPhoneNumber())
+                .marketingAgree(parents.isMarketingAgree())
+                .build())
+        .teacher(
+            ApplicationFormResponse.Teacher.builder()
+                .teacherId(teacher.getTeacherId())
+                .realName(teacher.getTeacherInfo().getName())
+                .nickName(teacher.getTeacherInfo().getNickName())
+                .email(teacher.getTeacherInfo().getEmail())
+                .phoneNumber(teacher.getTeacherInfo().getPhoneNumber())
+                .university(teacher.getTeacherSchoolInfo().getUniversity())
+                .major(teacher.getTeacherSchoolInfo().getMajor())
+                .highSchool(teacher.getTeacherSchoolInfo().getHighSchool())
+                .birth(teacher.getTeacherInfo().getBirth())
+                .gender(teacher.getTeacherInfo().getGender().toString())
+                .profileImage(teacher.getTeacherInfo().getProfile())
+                .video(teacher.getTeacherInfo().getVideo())
+                .introduce(teacher.getTeacherClassInfo().getIntroduce())
+                .comment(teacher.getTeacherClassInfo().getComment())
+                .teachingStyle(
+                    List.of(
+                        teacher.getTeacherClassInfo().getTeachingStyleInfo1(),
+                        teacher.getTeacherClassInfo().getTeachingStyleInfo2()))
+                .english(
+                    ApplicationFormResponse.TeacherEnglish.builder()
+                        .possible(teacher.getTeacherClassInfo().isEnglishPossible())
+                        .experience(
+                            englishTeacher.map(TeacherEnglish::getTeachingExperience).orElse(null))
+                        .foreignExperience(
+                            englishTeacher.map(TeacherEnglish::getForeignExperience).orElse(null))
+                        .teachingStyle(
+                            englishTeacher.map(TeacherEnglish::getTeachingStyle).orElse(null))
+                        .teachingHistory(
+                            englishTeacher.map(TeacherEnglish::getTeachingHistory).orElse(null))
+                        .build())
+                .math(
+                    ApplicationFormResponse.TeacherMath.builder()
+                        .possible(teacher.getTeacherClassInfo().isMathPossible())
+                        .experience(
+                            mathTeacher.map(TeacherMath::getTeachingExperience).orElse(null))
+                        .teachingStyle(mathTeacher.map(TeacherMath::getTeachingStyle).orElse(null))
+                        .teachingHistory(
+                            mathTeacher.map(TeacherMath::getTeachingHistory).orElse(null))
+                        .build())
+                .build())
         .classManagement(
             ApplicationFormResponse.ClassManagement.builder()
-                .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
+                .classManagementId(
+                    management.map(ClassManagement::getClassManagementId).orElse(null))
                 .textBook(management.map(ClassManagement::getTextbook).orElse(null))
-                .firstDay(management.map(ClassManagement::getFirstDay).map(LocalDate::toString).orElse(null))
+                .firstDay(
+                    management
+                        .map(ClassManagement::getFirstDay)
+                        .map(LocalDate::toString)
+                        .orElse(null))
                 .schedule(
-                    management.map(ClassManagement::getSchedules)
-                        .map(schedules-> schedules.stream().map(it->
-                            ApplicationFormResponse.Schedule
-                                .builder()
-                                .classScheduleId(it.getClassScheduleId())
-                                .day(it.getDay().toString())
-                                .start(it.getClassTime().getStart().toString())
-                                .classMinute(it.getClassTime().getClassMinute())
-                                .build()
-                        ).toList()).orElse(null)
-                )
+                    management
+                        .map(ClassManagement::getSchedules)
+                        .map(
+                            schedules ->
+                                schedules.stream()
+                                    .map(
+                                        it ->
+                                            ApplicationFormResponse.Schedule.builder()
+                                                .classScheduleId(it.getClassScheduleId())
+                                                .day(it.getDay().toString())
+                                                .start(it.getClassTime().getStart().toString())
+                                                .classMinute(it.getClassTime().getClassMinute())
+                                                .build())
+                                    .toList())
+                        .orElse(null))
                 .sessions(
-                    management.map(classSessionQueryService::query)
-                        .map(sessions-> sessions.stream().map(it->
-                            ApplicationFormResponse.Session.builder()
-                                .classSessionId(it.getClassSessionId())
-                                .date(it.getSessionDate().toString())
-                                .start(it.getClassTime().getStart().toString())
-                                .classMinute(it.getClassTime().getClassMinute())
-                                .understanding(it.getUnderstanding())
-                                .homeworkPercentage(it.getHomeworkPercentage())
-                                .cancel(it.isCancel())
-                                .cancelReason(it.getCancelReason())
-                                .completed(it.isCompleted())
-                                .build()
-                            ).toList()).orElse(null)
-                )
-                .build()
-        )
+                    management
+                        .map(classSessionQueryService::query)
+                        .map(
+                            sessions ->
+                                sessions.stream()
+                                    .map(
+                                        it ->
+                                            ApplicationFormResponse.Session.builder()
+                                                .classSessionId(it.getClassSessionId())
+                                                .date(it.getSessionDate().toString())
+                                                .start(it.getClassTime().getStart().toString())
+                                                .classMinute(it.getClassTime().getClassMinute())
+                                                .understanding(it.getUnderstanding())
+                                                .homeworkPercentage(it.getHomeworkPercentage())
+                                                .cancel(it.isCancel())
+                                                .cancelReason(it.getCancelReason())
+                                                .completed(it.isCompleted())
+                                                .build())
+                                    .toList())
+                        .orElse(null))
+                .build())
         .build();
   }
 }

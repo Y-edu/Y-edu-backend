@@ -8,11 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-  /**
-   * 승인동기화
-   */
+  /** 승인동기화 */
   @PostMapping("/order/result")
-  public ApproveBillResponse approveBillWebHook(ApproveBillRequest request){
+  public ApproveBillResponse approveBillWebHook(ApproveBillRequest request) {
     return null;
   }
 }

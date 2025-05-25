@@ -34,7 +34,6 @@ import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import com.yedu.sheet.support.SheetApi;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,7 @@ public class ClassScheduleMatchingUseCase {
     ClassManagement classManagement = managementCommandService.schedule(request);
     String classManagementToken =
         classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
-        classManagementTokenStorage.store(classManagement.getClassManagementId(), classManagementToken);
+    classManagementTokenStorage.store(classManagement.getClassManagementId(), classManagementToken);
     List<MatchingTimetable> timetables =
         matchingTimetableQueryService.query(
             classManagement.getClassMatching().getClassMatchingId());

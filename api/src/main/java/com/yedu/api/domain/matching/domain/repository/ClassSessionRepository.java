@@ -21,5 +21,4 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
   void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalse(ClassManagement classManagement);
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
-
 }

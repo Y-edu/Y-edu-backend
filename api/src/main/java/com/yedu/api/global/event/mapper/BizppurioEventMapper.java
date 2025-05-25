@@ -135,9 +135,7 @@ public class BizppurioEventMapper {
       ClassManagement classManagement, String token) {
     Teacher teacher = classManagement.getClassMatching().getTeacher();
     return new TeacherClassRemindEvent(
-        teacher.getTeacherInfo().getNickName(),
-        teacher.getTeacherInfo().getPhoneNumber(),
-        token);
+        teacher.getTeacherInfo().getNickName(), teacher.getTeacherInfo().getPhoneNumber(), token);
   }
 
   public static TeacherScheduleEvent mapToTeacherScheduleEvent(
@@ -215,5 +213,4 @@ public class BizppurioEventMapper {
     Teacher teacher = classMatching.getTeacher();
     return new ClassGuideEvent(teacher.getTeacherInfo().getPhoneNumber());
   }
-
 }

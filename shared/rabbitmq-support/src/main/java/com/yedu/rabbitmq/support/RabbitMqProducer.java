@@ -2,9 +2,9 @@ package com.yedu.rabbitmq.support;
 
 import com.yedu.common.event.bizppurio.ApplyAgreeEvent;
 import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
+import com.yedu.common.event.bizppurio.ClassGuideEvent;
 import com.yedu.common.event.bizppurio.InviteMatchingChannelInfoEvent;
 import com.yedu.common.event.bizppurio.MatchingAcceptCaseInfoEvent;
-import com.yedu.common.event.bizppurio.ClassGuideEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseDistrictEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;

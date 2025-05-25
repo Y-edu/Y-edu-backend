@@ -63,7 +63,13 @@ public class ClassSessionQueryService {
   public RetrieveSessionDateResponse querySessionDate(Long sessionId) {
     return classSessionRepository
         .findById(sessionId)
-        .map(it-> new RetrieveSessionDateResponse(it.getSessionDate(), it.isCompleted(), it.getClassManagement().getClassMatching().getTeacher().getTeacherId(), it.getClassTime()))
+        .map(
+            it ->
+                new RetrieveSessionDateResponse(
+                    it.getSessionDate(),
+                    it.isCompleted(),
+                    it.getClassManagement().getClassMatching().getTeacher().getTeacherId(),
+                    it.getClassTime()))
         .orElseThrow();
   }
 

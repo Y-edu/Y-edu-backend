@@ -39,5 +39,4 @@ public class WebClientConfig {
         .defaultHeader(HttpHeaders.CONTENT_TYPE, "application/json")
         .build();
   }
-
 }

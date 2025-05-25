@@ -13,7 +13,6 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/matching")
 @RequiredArgsConstructor
@@ -60,5 +59,4 @@ public class ClassMatchingController {
   public ApplicationFormResponse applicationFormByMatchingId(@Argument Long matchingId) {
     return matchingInfoUseCase.applicationFormByMatchingId(matchingId);
   }
-
 }

@@ -12,5 +12,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
   Optional<Notification> findByServerKeyAndClientKey(String serverKey, String clientKey);
 
-  List<Notification> findByTemplateCodeAndReceiverPhoneNumberAndDeliveredAtAfter(String templateCode, String receiverPhoneNumber, LocalDateTime deliveredAtAfter);
+  List<Notification> findByTemplateCodeAndReceiverPhoneNumberAndDeliveredAtAfter(
+      String templateCode, String receiverPhoneNumber, LocalDateTime deliveredAtAfter);
 }

@@ -69,21 +69,25 @@ public class Notification {
     this.deliveredAt = LocalDateTime.now();
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof Notification that)) {
       return false;
     }
-    return getPushType() == that.getPushType() && getReceiverType() == that.getReceiverType()
+    return getPushType() == that.getPushType()
+        && getReceiverType() == that.getReceiverType()
         && Objects.equals(getReceiverPhoneNumber(), that.getReceiverPhoneNumber())
-        && Objects.equals(getContent(), that.getContent()) && Objects.equals(
-        getTemplateCode(), that.getTemplateCode());
+        && Objects.equals(getContent(), that.getContent())
+        && Objects.equals(getTemplateCode(), that.getTemplateCode());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getPushType(), getReceiverType(), getReceiverPhoneNumber(), getContent(),
+    return Objects.hash(
+        getPushType(),
+        getReceiverType(),
+        getReceiverPhoneNumber(),
+        getContent(),
         getTemplateCode());
   }
 
@@ -91,6 +95,7 @@ public class Notification {
    * 5초이내에 재발송된 알림은 중복처리로 판단
    */
   public boolean isDuplicate(Notification notification) {
-    return this.equals(notification) && (this.deliveredAt.plusSeconds(5)).isAfter(LocalDateTime.now());
+    return this.equals(notification)
+        && (this.deliveredAt.plusSeconds(5)).isAfter(LocalDateTime.now());
   }
 }

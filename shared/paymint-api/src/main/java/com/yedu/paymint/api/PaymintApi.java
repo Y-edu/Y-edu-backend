@@ -1,10 +1,9 @@
 package com.yedu.paymint.api;
 
-
-import com.yedu.paymint.api.dto.DestroyBillRequest;
-import com.yedu.paymint.api.dto.DestroyBillResponse;
 import com.yedu.paymint.api.dto.CancelPaymentRequest;
 import com.yedu.paymint.api.dto.CancelPaymentResponse;
+import com.yedu.paymint.api.dto.DestroyBillRequest;
+import com.yedu.paymint.api.dto.DestroyBillResponse;
 import com.yedu.paymint.api.dto.RetrieveBillPaymentStatusRequest;
 import com.yedu.paymint.api.dto.RetrieveBillPaymentStatusResponse;
 import com.yedu.paymint.api.dto.SendBillRequest;
@@ -19,11 +18,10 @@ public class PaymintApi {
 
   private final WebClient paymintWebClient;
 
-  /**
-   * 청구서 발송 요청
-   */
+  /** 청구서 발송 요청 */
   public SendBillResponse sendBill(SendBillRequest request) {
-    return paymintWebClient.post()
+    return paymintWebClient
+        .post()
         .uri("/if/bill/send")
         .bodyValue(request)
         .retrieve()
@@ -31,11 +29,10 @@ public class PaymintApi {
         .block();
   }
 
-  /**
-   * 결제 취소
-   */
+  /** 결제 취소 */
   public CancelPaymentResponse cancelPayment(CancelPaymentRequest request) {
-    return paymintWebClient.post()
+    return paymintWebClient
+        .post()
         .uri("/if/bill/cancel")
         .bodyValue(request)
         .retrieve()
@@ -43,11 +40,10 @@ public class PaymintApi {
         .block();
   }
 
-  /**
-   * 청구서 파기
-   */
+  /** 청구서 파기 */
   public DestroyBillResponse destroyBill(DestroyBillRequest request) {
-    return paymintWebClient.post()
+    return paymintWebClient
+        .post()
         .uri("/if/bill/destroy")
         .bodyValue(request)
         .retrieve()
@@ -55,18 +51,15 @@ public class PaymintApi {
         .block();
   }
 
-
-  /**
-   * 결제 상태 조회
-   */
-  public RetrieveBillPaymentStatusResponse retrieveBillPaymentStatus(RetrieveBillPaymentStatusRequest request) {
-    return paymintWebClient.post()
+  /** 결제 상태 조회 */
+  public RetrieveBillPaymentStatusResponse retrieveBillPaymentStatus(
+      RetrieveBillPaymentStatusRequest request) {
+    return paymintWebClient
+        .post()
         .uri("/if/bill/read")
         .bodyValue(request)
         .retrieve()
         .bodyToMono(RetrieveBillPaymentStatusResponse.class)
         .block();
   }
-
-
 }

@@ -20,7 +20,6 @@ import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -112,11 +111,11 @@ public class ClassMatchingManageUseCase {
     classManagementQueryService.query().stream()
         .map(
             classManagement -> {
-              String token = classManagementTokenStorage.get(classManagement.getClassManagementId());
+              String token =
+                  classManagementTokenStorage.get(classManagement.getClassManagementId());
               classManagementCommandService.completeRemind(classManagement);
               return mapToTeacherClassRemindEvent(classManagement, token);
             })
         .forEach(eventPublisher::publishEvent);
   }
-
 }

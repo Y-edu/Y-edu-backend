@@ -1,6 +1,5 @@
 package com.yedu.bizppurio.support.application.mapper;
 
-
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.dto.req.ContentRequest;
 import com.yedu.bizppurio.support.application.dto.req.content.*;
@@ -674,7 +673,6 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, classGuideEvent.phoneNumber());
   }
-
 
   public CommonRequest mapToPayNotification(PayNotificationEvent event) {
     String message =

@@ -35,9 +35,7 @@ public class GlobalExceptionHandler {
     if (ex.getStackTrace() != null) {
       for (StackTraceElement element : ex.getStackTrace()) {
         if (element.getClassName().contains("ResourceHttpRequestHandler")) {
-          return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body("잘못된 정적 리소스 요청입니다.");
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 정적 리소스 요청입니다.");
         }
       }
     }

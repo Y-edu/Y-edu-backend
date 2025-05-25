@@ -16,7 +16,6 @@ import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -165,7 +164,8 @@ public class ClassMatchingScheduleController {
       description = "토큰으로 수업 일시와 과외 완료 여부를 조회합니다",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<RetrieveSessionDateResponse> retrieveSessionDateByToken(String token) {
-    RetrieveSessionDateResponse response = scheduleMatchingUseCase.retrieveSessionDateByToken(token);
+    RetrieveSessionDateResponse response =
+        scheduleMatchingUseCase.retrieveSessionDateByToken(token);
 
     return ResponseEntity.ok(response);
   }
