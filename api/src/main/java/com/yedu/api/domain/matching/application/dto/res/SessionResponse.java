@@ -20,7 +20,9 @@ public record SessionResponse(Map<String, List<Schedule>> schedules) {
       @Schema(description = "이해도") String understanding,
       @Schema(description = "숙제 완료도") Integer homeworkPercentage,
       @Schema(description = "과외 일시") LocalDate classDate,
-      @Schema(description = "과외 시간") LocalTime classStart) {}
+      @Schema(description = "과외 시간") LocalTime classStart,
+      @Schema(description = "과외 소요시간") Integer classMinute
+      ) {}
 
   public static List<SessionResponse.Schedule> from(List<ClassSession> sessions) {
     return sessions.stream()
@@ -35,6 +37,7 @@ public record SessionResponse(Map<String, List<Schedule>> schedules) {
                     .classStart(it.getClassTime().getStart())
                     .understanding(it.getUnderstanding())
                     .homeworkPercentage(it.getHomeworkPercentage())
+                    .classMinute(it.getClassTime().getClassMinute())
                     .build())
         .toList();
   }
