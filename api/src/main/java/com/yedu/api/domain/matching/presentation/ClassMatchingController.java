@@ -5,11 +5,13 @@ import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingInfoUseCase;
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
+import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,5 +60,10 @@ public class ClassMatchingController {
   @QueryMapping
   public ApplicationFormResponse applicationFormByMatchingId(@Argument Long matchingId) {
     return matchingInfoUseCase.applicationFormByMatchingId(matchingId);
+  }
+
+  @SchemaMapping(typeName = "ApplicationForm" , field = "parent")
+  public ApplicationFormResponse.Parents parent(final ApplicationFormResponse applicationForm){
+    return matchingInfoUseCase.parents(applicationForm);
   }
 }

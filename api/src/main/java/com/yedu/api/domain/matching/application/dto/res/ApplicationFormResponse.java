@@ -2,7 +2,9 @@ package com.yedu.api.domain.matching.application.dto.res;
 
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class ApplicationFormResponse {
   private String applicationFormId;

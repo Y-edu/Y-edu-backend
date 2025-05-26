@@ -105,7 +105,6 @@ public class ClassMatchingInfoUseCase {
     Teacher teacher = matching.getTeacher();
     Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher(teacher);
     Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher(teacher);
-    Parents parents = applicationForm.getParents();
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
@@ -131,13 +130,6 @@ public class ClassMatchingInfoUseCase {
                             .time(it.getAvailableTime().toString())
                             .build())
                 .toList())
-        .parent(
-            ApplicationFormResponse.Parents.builder()
-                .parentId(parents.getParentsId())
-                .kakaoName(parents.getKakaoName())
-                .phoneNumber(parents.getPhoneNumber())
-                .marketingAgree(parents.isMarketingAgree())
-                .build())
         .teacher(
             ApplicationFormResponse.Teacher.builder()
                 .teacherId(teacher.getTeacherId())
@@ -229,5 +221,18 @@ public class ClassMatchingInfoUseCase {
                         .orElse(null))
                 .build())
         .build();
+  }
+
+  public ApplicationFormResponse.Parents parents(ApplicationFormResponse applicationFormResponse) {
+    Parents parents = parentsGetService.applicationFormByFormId(
+        applicationFormResponse.getApplicationFormId())
+        .getParents();
+
+    return ApplicationFormResponse.Parents.builder()
+            .parentId(parents.getParentsId())
+            .kakaoName(parents.getKakaoName())
+            .phoneNumber(parents.getPhoneNumber())
+            .marketingAgree(parents.isMarketingAgree())
+            .build();
   }
 }
