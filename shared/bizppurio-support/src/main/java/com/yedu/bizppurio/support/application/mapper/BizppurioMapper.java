@@ -706,12 +706,11 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     String message =
         """
-매 수업 후 제출했던 완료톡 작성이 변경돼요!
-수업이 끝나면, 자동으로 발송된 카톡
-메세지에서 [과외 완료] 버튼을 눌러 한줄 리뷰를 작성해주세요.
+매 수업 후 제출하던 완료톡 작성 방식이 변경됩니다!
+수업이 끝난 후, 자동으로 발송되는 카카오톡 메시지에서 [과외 완료] 버튼을 눌러 한 줄 리뷰를 작성해주세요.
 
-수업 리뷰로 완료톡 작성이 대체되며,
-수업 보수가 다음 달 1일, 일괄정산됩니다!
+앞으로는 수업 리뷰가 완료톡을 대체하며,
+수업 보수는 매월 1일에 일괄 정산됩니다!
     """;
 
     Message messageBody =
@@ -726,9 +725,10 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
       TeacherWithScheduleCompleteTalkEvent event) {
     String message =
         """
-#{sessionDate} #{applicationFormId} 과외를마치셨나요?
+#{sessionDate} #{applicationFormId} 과외를 마치셨나요?
 
-[과외 완료] 버튼을 눌러 수업 리뷰를남겨주세요. 정산 시 수업 진행 횟수의기준이 되니, 꼭 작성 부탁드려요!
+[과외 완료] 버튼을 눌러 수업 리뷰를 남겨주세요.
+정산 시 수업 진행 횟수의 기준이 되니 꼭 작성 부탁드립니다!
        """
             .strip()
             .replace(
@@ -768,9 +768,10 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
       TeacherWithNoScheduleCompleteTalkEvent event) {
     String message =
         """
-#{applicationFormId} 과외를마치셨나요?
+#{applicationFormId} 과외를 마치셨나요?
 
-[과외 완료] 버튼을 눌러 수업 리뷰를남겨주세요. 정산 시 수업 진행 횟수의기준이 되니, 꼭 작성 부탁드려요!
+[과외 완료] 버튼을 눌러 수업 리뷰를 남겨주세요.
+정산 시 수업 진행 횟수의 기준이 되니 꼭 작성 부탁드려요!
        """
             .strip()
             .replace("#{applicationFormId}", event.applicationFormId());
