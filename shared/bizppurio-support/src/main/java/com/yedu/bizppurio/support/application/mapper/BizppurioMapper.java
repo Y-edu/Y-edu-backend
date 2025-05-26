@@ -717,8 +717,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_NOTICE_COMPLETE_TALK_CHANGE),
-            BizpurrioTemplate.YEDU_MATCHING_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.getCode());
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.getCode());
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
@@ -758,8 +758,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_SCHEDULE_COMPLETE_TALK),
-            BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_SCHEDULE_COMPLETE_TALK.getCode(),
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK.getCode(),
             new CommonButton[] {completeSessionButton, changeSessionButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
@@ -784,8 +784,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
         new ButtonMessage(
             message,
             properties.getKey(
-                BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK),
-            BizpurrioTemplate.YEDU_MATCHING_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK.getCode(),
+                BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
