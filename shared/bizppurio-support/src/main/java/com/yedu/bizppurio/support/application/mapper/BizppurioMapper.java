@@ -764,6 +764,49 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
+  public CommonRequest mapToTeacherWithScheduleCompleteTalkRemindEvent(
+      TeacherWithScheduleCompleteTalkRemindEvent event) {
+    String message =
+        """
+#{sessionDate} #{applicationFormId} 과외 리뷰가 아직 작성되지 않았어요.
+
+[과외 완료] 버튼을 눌러 수업 리뷰를 남겨주세요.
+정산 시 수업 진행 횟수의 기준이 되니 꼭 작성 부탁드립니다!
+       """
+            .strip()
+            .replace(
+                "#{sessionDate}",
+                event
+                    .sessionDate()
+                    .format(DateTimeFormatter.ofPattern("M월 d일 (E)").withLocale(Locale.KOREAN)))
+            .replace("#{applicationFormId}", event.applicationFormId());
+
+    String completeSessionUrl =
+        "https://"
+            + properties.landingUrl()
+            + "/teacher/session-complete?token="
+            + event.completeSessionToken();
+    CommonButton completeSessionButton =
+        new WebButton("과외 완료 \uD83D\uDCAC", WEB_LINK, completeSessionUrl, completeSessionUrl);
+
+    String changeSessionUrl =
+        "https://"
+            + properties.landingUrl()
+            + "/teacher/session-schedule?token="
+            + event.changeSessionToken();
+    CommonButton changeSessionButton =
+        new WebButton(
+            "날짜 변경 / 휴강 \uD83D\uDDD3\uFE0F", WEB_LINK, changeSessionUrl, changeSessionUrl);
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND.getCode(),
+            new CommonButton[] {completeSessionButton, changeSessionButton});
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
   public CommonRequest mapToTeacherWithNoScheduleCompleteTalkEvent(
       TeacherWithNoScheduleCompleteTalkEvent event) {
     String message =

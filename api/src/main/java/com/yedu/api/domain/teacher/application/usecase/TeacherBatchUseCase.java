@@ -16,6 +16,7 @@ import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
+import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -69,14 +70,14 @@ public class TeacherBatchUseCase {
   }
 
   public void remind() {
-    sendCompleteTalkEvent(false);
-  }
-
-  public void completeTalkToTeacherWithSchedule() {
     sendCompleteTalkEvent(true);
   }
 
-  private void sendCompleteTalkEvent(boolean checkCache) {
+  public void completeTalkToTeacherWithSchedule() {
+    sendCompleteTalkEvent(false);
+  }
+
+  private void sendCompleteTalkEvent(boolean isRemind) {
     teacherGetService
         .activeTeachers()
         .forEach(
@@ -101,8 +102,8 @@ public class TeacherBatchUseCase {
             .stream()
             .filter(
                 it ->
-                    it.isFinishAndNotComplete(now)
-                        && (!checkCache || !classSessionStorage.has(it.getClassSessionId())))
+                    it.isFinishAndNotComplete(now, isRemind)
+                        && (isRemind || !classSessionStorage.has(it.getClassSessionId())))
             .toList();
 
     sessions.forEach(
@@ -115,13 +116,23 @@ public class TeacherBatchUseCase {
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
-          eventPublisher.publishEvent(
-              new TeacherWithScheduleCompleteTalkEvent(
-                  applicationForm.getApplicationFormId(),
-                  teacher.getTeacherInfo().getPhoneNumber(),
-                  it.getSessionDate(),
-                  completeToken,
-                  changeSessionToken));
+          if (isRemind){
+            eventPublisher.publishEvent(
+                new TeacherWithScheduleCompleteTalkRemindEvent(
+                    applicationForm.getApplicationFormId(),
+                    teacher.getTeacherInfo().getPhoneNumber(),
+                    it.getSessionDate(),
+                    completeToken,
+                    changeSessionToken));
+          }else{
+            eventPublisher.publishEvent(
+                new TeacherWithScheduleCompleteTalkEvent(
+                    applicationForm.getApplicationFormId(),
+                    teacher.getTeacherInfo().getPhoneNumber(),
+                    it.getSessionDate(),
+                    completeToken,
+                    changeSessionToken));
+          }
 
           // 캐시 여부에 상관없이 세션을 캐시 처리
           classSessionStorage.cache(it.getClassSessionId());

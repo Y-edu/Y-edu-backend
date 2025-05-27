@@ -25,6 +25,7 @@ import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
 import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
+import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.event.EventListener;
@@ -139,6 +140,12 @@ public class RabbitMqProducer {
   @EventListener
   @Async
   public void handle(TeacherWithNoScheduleCompleteTalkEvent event) {
+    produceTeacherMessage(event);
+  }
+
+  @EventListener
+  @Async
+  public void handle(TeacherWithScheduleCompleteTalkRemindEvent event) {
     produceTeacherMessage(event);
   }
 

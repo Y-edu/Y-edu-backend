@@ -83,12 +83,17 @@ public class ClassSession extends BaseEntity {
     this.classTime = this.classTime.withStart(start);
   }
 
-  public boolean isFinishAndNotComplete(LocalDateTime time) {
+  public boolean isFinishAndNotComplete(LocalDateTime time, boolean isRemind) {
     if (completed) {
       return false;
     }
     if (cancel) {
       return false;
+    }
+    // 리마인드 알림톡은 수업 종료 이후 1시간 뒤 발송되야함
+    if (isRemind) {
+      return sessionDate.equals(time.toLocalDate())
+          && this.classTime.finishTime().plusHours(1L).isBefore(time.toLocalTime());
     }
     return sessionDate.equals(time.toLocalDate())
         && this.classTime.finishTime().isBefore(time.toLocalTime());
