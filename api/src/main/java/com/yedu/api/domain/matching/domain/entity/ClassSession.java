@@ -45,6 +45,8 @@ public class ClassSession extends BaseEntity {
 
   private boolean completed;
 
+  private boolean remind;
+
   @Embedded private ClassTime classTime;
 
   public void cancel(String cancelReason) {
@@ -97,5 +99,9 @@ public class ClassSession extends BaseEntity {
     }
     return sessionDate.equals(time.toLocalDate())
         && this.classTime.finishTime().isBefore(time.toLocalTime());
+  }
+
+  public void remind(){
+    this.remind = true;
   }
 }

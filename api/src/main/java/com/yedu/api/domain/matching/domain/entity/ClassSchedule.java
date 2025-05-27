@@ -79,6 +79,7 @@ public class ClassSchedule extends BaseEntity {
                     .classTime(this.classTime)
                     .completed(false)
                     .cancel(false)
+                    .remind(false)
                     .build())
         .toList();
   }
