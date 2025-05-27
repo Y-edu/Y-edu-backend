@@ -58,6 +58,7 @@ public class SystemMessageConsumer implements Consumer<Message> {
           });
       return;
     }
+    log.error("delivery failed - webhook response: {}",request);
     notification.ifPresent(Notification::failDelivery);
   }
 }
