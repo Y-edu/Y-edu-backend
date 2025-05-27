@@ -796,7 +796,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             + event.changeSessionToken();
     CommonButton changeSessionButton =
         new WebButton(
-            "날짜 변경 / 휴강 \uD83D\uDDD3\uFE0F", WEB_LINK, changeSessionUrl, changeSessionUrl);
+            "날짜 변경 / 휴강 \uD83D\uDDD3", WEB_LINK, changeSessionUrl, changeSessionUrl);
 
     Message messageBody =
         new ButtonMessage(
