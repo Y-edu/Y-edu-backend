@@ -1,5 +1,6 @@
 package com.yedu.api.domain.teacher.domain.entity.constant;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;
 import lombok.Getter;
@@ -28,5 +29,9 @@ public enum Day {
   public static Day byDate(LocalDate date) {
     int dayOfWeek = date.getDayOfWeek().getValue();
     return Day.byInt(dayOfWeek - 1);
+  }
+
+  public DayOfWeek to() {
+    return DayOfWeek.of(this.dayNum + 1); // DayOfWeek: 월=1, ..., 일=7
   }
 }

@@ -35,10 +35,21 @@ import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import com.yedu.sheet.support.SheetApi;
 import com.yedu.sheet.support.SheetService;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -173,12 +184,65 @@ public class ClassScheduleMatchingUseCase {
                     ClassSchedule::getDay,
                     Collectors.mapping(ClassSchedule::getClassTime, Collectors.toList())));
 
+    List<ClassSession> sessions = classSessionQueryService.query(classManagement);
+
+    Map<LocalDate, Boolean> sessionReviewMap = sessions.stream()
+        .collect(Collectors.toMap(
+            ClassSession::getSessionDate,
+            ClassSession::isCompleted,
+            (existing, replacement) -> existing || replacement  // 하나라도 true면 true
+        ));
+    LocalDate now = LocalDate.now();
+    Map<String, List<LocalDate>> weekDatesMap = new HashMap<>();
+    WeekFields weekFields = WeekFields.of(Locale.KOREA);
+    Month baseMonth = now.getMonth();
+
+    for (Entry<Day, List<ClassTime>> entry : schedules.entrySet()) {
+      Day day = entry.getKey();
+      DayOfWeek dayOfWeek = day.to();
+
+      // 기준일: 이번 달 시작 주의 해당 요일부터 시작
+      LocalDate targetDate = now.with(TemporalAdjusters.nextOrSame(dayOfWeek));
+
+      while (targetDate.getMonth() == baseMonth) {
+        int week = targetDate.get(weekFields.weekOfWeekBasedYear());
+        int year = targetDate.getYear();
+        String weekKey = year + "-" + week;
+
+        weekDatesMap.computeIfAbsent(weekKey, k -> new ArrayList<>()).add(targetDate);
+
+        targetDate = targetDate.plusWeeks(1L);
+      }
+      int week = targetDate.get(weekFields.weekOfWeekBasedYear());
+      int year = targetDate.getYear();
+      String weekKey = year + "-" + week;
+
+      weekDatesMap.computeIfAbsent(weekKey, k -> new ArrayList<>()).add(targetDate);
+    }
+
+// 주차별로 리뷰 있는지 확인
+    Set<LocalDate> filteredDates = new HashSet<>();
+
+    for (Map.Entry<String, List<LocalDate>> weekEntry : weekDatesMap.entrySet()) {
+      List<LocalDate> datesInWeek = weekEntry.getValue();
+
+      boolean hasReview = datesInWeek.stream()
+          .anyMatch(d -> sessionReviewMap.getOrDefault(d, false));
+
+      if (!hasReview) {
+        filteredDates.addAll(datesInWeek);
+      }
+    }
+
     return new RetrieveScheduleResponse(
         matching.getApplicationForm().getApplicationFormId(),
         matching.getClassMatchingId(),
         send,
-        schedules);
+        schedules,
+        filteredDates.stream().toList()
+    );
   }
+
 
   public SessionResponse retrieveSession(String token) {
     ClassMatching matching = getClassMatchingByToken(token);

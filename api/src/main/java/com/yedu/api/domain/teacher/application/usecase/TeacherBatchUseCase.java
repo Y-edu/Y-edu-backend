@@ -92,7 +92,7 @@ public class TeacherBatchUseCase {
                   .map(Optional::get)
                   .filter(ClassManagement::hasSchedule)
                   .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
-                  .forEach(it -> classSessionCommandService.createSingleSessions(it, false));
+                  .forEach(it -> classSessionCommandService.createSingleSessions(it, false, null));
             });
 
     LocalDateTime now = LocalDateTime.now();
