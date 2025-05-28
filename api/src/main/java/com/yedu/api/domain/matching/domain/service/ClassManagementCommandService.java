@@ -102,7 +102,7 @@ public class ClassManagementCommandService {
 
     classManagement.resetSchedule();
 
-    classSessionCommandService.deleteSession(classManagement);
+    classSessionCommandService.deleteSession(classManagement, request.changeStartDate());
 
     request.schedules().stream()
         .map(
@@ -116,6 +116,6 @@ public class ClassManagementCommandService {
 
     Teacher teacher = classMatching.getTeacher();
 
-    return classSessionCommandService.createSessionOf(teacher, true);
+    return classSessionCommandService.createSessionOf(teacher, true, request.changeStartDate());
   }
 }

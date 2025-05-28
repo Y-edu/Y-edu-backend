@@ -42,11 +42,13 @@ public class ClassSessionCommandService {
       List<ClassSchedule> schedules,
       ClassManagement classManagement,
       Map<LocalDate, ClassSession> existingSessionMap,
-      LocalDate today) {
+      LocalDate today,
+      LocalDate changeStartDate) {
+
     return schedules.stream()
         .flatMap(
             schedule ->
-                schedule.generateUpcomingDates(classManagement, today, existingSessionMap).stream())
+                schedule.generateUpcomingDates(classManagement, today, existingSessionMap, changeStartDate).stream())
         .toList();
   }
 
@@ -84,24 +86,24 @@ public class ClassSessionCommandService {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 일정입니다"));
   }
 
-  public void deleteSession(ClassManagement classManagement) {
-    classSessionRepository.deleteByClassManagementAndCancelIsFalseAndCompletedIsFalse(
-        classManagement);
+  public void deleteSession(ClassManagement classManagement, LocalDate changeStartDate) {
+    classSessionRepository.deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(
+        classManagement, changeStartDate);
   }
 
-  public List<ClassMatching> createSessionOf(Teacher teacher, boolean forceCreate) {
+  public List<ClassMatching> createSessionOf(Teacher teacher, boolean forceCreate, LocalDate changeStartDate) {
     List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
 
     classMatchings.forEach(
         cm ->
             classManagementRepository
                 .findWithSchedule(cm.getClassMatchingId())
-                .ifPresent(it -> this.createSingleSessions(it, forceCreate)));
+                .ifPresent(it -> this.createSingleSessions(it, forceCreate, changeStartDate)));
 
     return classMatchings;
   }
 
-  public void createSingleSessions(ClassManagement classManagement, boolean forceCreate) {
+  public void createSingleSessions(ClassManagement classManagement, boolean forceCreate, LocalDate changeStartDate) {
     LocalDate today = LocalDate.now();
     LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
     List<ClassSchedule> schedules = classManagement.getSchedules();
@@ -123,7 +125,7 @@ public class ClassSessionCommandService {
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
 
     List<ClassSession> newSessions =
-        generateNewSessions(schedules, classManagement, existingSessionMap, today);
+        generateNewSessions(schedules, classManagement, existingSessionMap, today, changeStartDate);
     classSessionRepository.saveAll(newSessions);
   }
 }

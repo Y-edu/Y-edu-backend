@@ -18,7 +18,7 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
   List<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate);
 
-  void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalse(ClassManagement classManagement);
+  void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(ClassManagement classManagement, LocalDate changeStartDate);
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 }
