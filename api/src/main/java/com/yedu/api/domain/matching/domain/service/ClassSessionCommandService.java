@@ -114,9 +114,7 @@ public class ClassSessionCommandService {
           existingSessions.stream()
               .anyMatch(
                   it ->
-                      it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth())
-                          && !it.isCompleted()
-                          && !it.isCancel());
+                      it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
 
       if (hasExistingSessionInThisMonth) {
         return;
