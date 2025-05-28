@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -65,10 +66,10 @@ public class ClassSchedule extends BaseEntity {
                   return firstDay;
                 })
             .orElse(Optional.ofNullable(changeStartDate).orElse(today));
-    LocalDate endOfMonth = today.withDayOfMonth(today.lengthOfMonth());
+    LocalDate lastDay = today.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
     return Stream.iterate(
-            classStartDate, date -> !date.isAfter(endOfMonth), date -> date.plusDays(1))
+            classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
         .map(
