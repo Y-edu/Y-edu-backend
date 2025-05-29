@@ -78,4 +78,16 @@ public class ClassMatchingController {
   public ApplicationFormResponse.ClassManagement classManagement(final ApplicationFormResponse applicationForm){
     return matchingInfoUseCase.classManagement(applicationForm);
   }
+
+  @SchemaMapping(typeName = "Teacher" , field = "english")
+  public ApplicationFormResponse.TeacherEnglish english(final ApplicationFormResponse.Teacher teacher){
+    return matchingInfoUseCase.english(teacher);
+  }
+
+  @SchemaMapping(typeName = "Teacher" , field = "math")
+  public ApplicationFormResponse.TeacherMath math(final ApplicationFormResponse.Teacher teacher){
+    return matchingInfoUseCase.math(teacher);
+  }
+
+
 }

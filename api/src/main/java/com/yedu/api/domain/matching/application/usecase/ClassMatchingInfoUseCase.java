@@ -168,8 +168,8 @@ public class ClassMatchingInfoUseCase {
             .build();
   }
 
-  public ApplicationFormResponse.TeacherEnglish english(ApplicationFormResponse applicationFormResponse) {
-    Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher_TeacherId(applicationFormResponse.getTeacher().getTeacherId());
+  public ApplicationFormResponse.TeacherEnglish english(ApplicationFormResponse.Teacher teacher) {
+    Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher_TeacherId(teacher.getTeacherId());
 
     return ApplicationFormResponse.TeacherEnglish.builder()
             .possible(englishTeacher.isPresent())
@@ -184,8 +184,8 @@ public class ClassMatchingInfoUseCase {
             .build();
   }
 
-  public ApplicationFormResponse.TeacherMath math(ApplicationFormResponse applicationFormResponse) {
-    Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher_TeacherId(applicationFormResponse.getTeacher().getTeacherId());
+  public ApplicationFormResponse.TeacherMath math(ApplicationFormResponse.Teacher teacher) {
+    Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher_TeacherId(teacher.getTeacherId());
 
     return ApplicationFormResponse.TeacherMath.builder()
         .possible(mathTeacher.isPresent())
