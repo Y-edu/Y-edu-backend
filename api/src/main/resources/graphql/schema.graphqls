@@ -1,9 +1,10 @@
 type Query {
-    applicationFormByMatchingId(matchingId: Int): ApplicationForm
+    applicationFormByMatchingId(matchingIds: [Int], matchingStatus :[String]): [ApplicationForm]
 }
 
 type ApplicationForm {
     applicationFormId: String
+    matchingId: Int
     childAge: String
     isOnline: Boolean
     district: String

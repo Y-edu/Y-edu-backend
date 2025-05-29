@@ -7,6 +7,8 @@ import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +56,7 @@ public class ClassMatchingInfoUseCase {
   private final TeacherMathRepository teacherMathRepository;
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassSessionQueryService classSessionQueryService;
+  private final ClassMatchingRepository classMatchingRepository;
 
   public ClassMatchingForTeacherResponse applicationFormToTeacher(String token) {
     TeacherNotifyApplicationFormDto dto = teacherNotifyApplicationFormKeyStorage.get(token);
@@ -95,19 +99,21 @@ public class ClassMatchingInfoUseCase {
             .toList());
   }
 
-  public ApplicationFormResponse applicationFormByMatchingId(Long matchingId) {
-    ClassMatching matching = classMatchingGetService.getById(matchingId);
-    Optional<ClassManagement> management =
-        classManagementQueryService.queryWithSchedule(matchingId);
+  public List<ApplicationFormResponse> applicationFormByMatchingId(List<Long> matchingIds, List<MatchingStatus> matchingStatus) {
+    List<ClassMatching> matchings= getMatchings(matchingIds, matchingStatus);
+    return matchings.stream().map(this::getApplicationFormResponses)
+        .toList();
+  }
+
+  private ApplicationFormResponse getApplicationFormResponses(ClassMatching matching) {
     ApplicationForm applicationForm = matching.getApplicationForm();
-    List<ApplicationFormAvailable> availables =
-        applicationFormAvailableQueryService.query(applicationForm.getApplicationFormId());
     Teacher teacher = matching.getTeacher();
     Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher(teacher);
     Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher(teacher);
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
+        .matchingId(matching.getClassMatchingId())
         .classCount(applicationForm.getClassCount())
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
@@ -120,16 +126,6 @@ public class ClassMatchingInfoUseCase {
         .subject(applicationForm.getWantedSubject().toString())
         .favoriteStyle(applicationForm.getFavoriteStyle())
         .matchingRefuseReason(matching.getRefuseReason())
-        .availableTimes(
-            availables.stream()
-                .map(
-                    it ->
-                        ApplicationFormResponse.AvailableTime.builder()
-                            .availableId(it.getId())
-                            .day(it.getDay().toString())
-                            .time(it.getAvailableTime().toString())
-                            .build())
-                .toList())
         .teacher(
             ApplicationFormResponse.Teacher.builder()
                 .teacherId(teacher.getTeacherId())
@@ -172,55 +168,14 @@ public class ClassMatchingInfoUseCase {
                             mathTeacher.map(TeacherMath::getTeachingHistory).orElse(null))
                         .build())
                 .build())
-        .classManagement(
-            ApplicationFormResponse.ClassManagement.builder()
-                .classManagementId(
-                    management.map(ClassManagement::getClassManagementId).orElse(null))
-                .textBook(management.map(ClassManagement::getTextbook).orElse(null))
-                .firstDay(
-                    management
-                        .map(ClassManagement::getFirstDay)
-                        .map(LocalDate::toString)
-                        .orElse(null))
-                .schedule(
-                    management
-                        .map(ClassManagement::getSchedules)
-                        .map(
-                            schedules ->
-                                schedules.stream()
-                                    .map(
-                                        it ->
-                                            ApplicationFormResponse.Schedule.builder()
-                                                .classScheduleId(it.getClassScheduleId())
-                                                .day(it.getDay().toString())
-                                                .start(it.getClassTime().getStart().toString())
-                                                .classMinute(it.getClassTime().getClassMinute())
-                                                .build())
-                                    .toList())
-                        .orElse(null))
-                .sessions(
-                    management
-                        .map(classSessionQueryService::query)
-                        .map(
-                            sessions ->
-                                sessions.stream()
-                                    .map(
-                                        it ->
-                                            ApplicationFormResponse.Session.builder()
-                                                .classSessionId(it.getClassSessionId())
-                                                .date(it.getSessionDate().toString())
-                                                .start(it.getClassTime().getStart().toString())
-                                                .classMinute(it.getClassTime().getClassMinute())
-                                                .understanding(it.getUnderstanding())
-                                                .homeworkPercentage(it.getHomeworkPercentage())
-                                                .cancel(it.isCancel())
-                                                .cancelReason(it.getCancelReason())
-                                                .completed(it.isCompleted())
-                                                .build())
-                                    .toList())
-                        .orElse(null))
-                .build())
         .build();
+  }
+
+  private List<ClassMatching> getMatchings(List<Long> matchingIds, List<MatchingStatus> statuses) {
+    if (CollectionUtils.isEmpty(matchingIds)) {
+      return classMatchingRepository.findByMatchStatusIn(statuses);
+    }
+    return classMatchingRepository.findByClassMatchingIdInAndMatchStatusIn(matchingIds, statuses);
   }
 
   public ApplicationFormResponse.Parents parents(ApplicationFormResponse applicationFormResponse) {
@@ -233,6 +188,78 @@ public class ClassMatchingInfoUseCase {
             .kakaoName(parents.getKakaoName())
             .phoneNumber(parents.getPhoneNumber())
             .marketingAgree(parents.isMarketingAgree())
+            .build();
+  }
+
+
+  public List<ApplicationFormResponse.AvailableTime> availableTimes(ApplicationFormResponse applicationFormResponse) {
+
+    List<ApplicationFormAvailable> availables =
+        applicationFormAvailableQueryService.query(applicationFormResponse.getApplicationFormId());
+
+    return availables.stream()
+            .map(
+                it ->
+                    ApplicationFormResponse.AvailableTime.builder()
+                        .availableId(it.getId())
+                        .day(it.getDay().toString())
+                        .time(it.getAvailableTime().toString())
+                        .build())
+            .toList();
+  }
+
+
+
+
+  public ApplicationFormResponse.ClassManagement classManagement(ApplicationFormResponse applicationFormResponse) {
+    Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(applicationFormResponse.getMatchingId());
+
+    return ApplicationFormResponse.ClassManagement.builder()
+            .classManagementId(
+                management.map(ClassManagement::getClassManagementId).orElse(null))
+            .textBook(management.map(ClassManagement::getTextbook).orElse(null))
+            .firstDay(
+                management
+                    .map(ClassManagement::getFirstDay)
+                    .map(LocalDate::toString)
+                    .orElse(null))
+            .schedule(
+                management
+                    .map(ClassManagement::getSchedules)
+                    .map(
+                        schedules ->
+                            schedules.stream()
+                                .map(
+                                    it ->
+                                        ApplicationFormResponse.Schedule.builder()
+                                            .classScheduleId(it.getClassScheduleId())
+                                            .day(it.getDay().toString())
+                                            .start(it.getClassTime().getStart().toString())
+                                            .classMinute(it.getClassTime().getClassMinute())
+                                            .build())
+                                .toList())
+                    .orElse(null))
+            .sessions(
+                management
+                    .map(classSessionQueryService::query)
+                    .map(
+                        sessions ->
+                            sessions.stream()
+                                .map(
+                                    it ->
+                                        ApplicationFormResponse.Session.builder()
+                                            .classSessionId(it.getClassSessionId())
+                                            .date(it.getSessionDate().toString())
+                                            .start(it.getClassTime().getStart().toString())
+                                            .classMinute(it.getClassTime().getClassMinute())
+                                            .understanding(it.getUnderstanding())
+                                            .homeworkPercentage(it.getHomeworkPercentage())
+                                            .cancel(it.isCancel())
+                                            .cancelReason(it.getCancelReason())
+                                            .completed(it.isCompleted())
+                                            .build())
+                                .toList())
+                    .orElse(null))
             .build();
   }
 }
