@@ -31,7 +31,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-    open-in-view: false
+    open-in-view: true
 jwt:
   refreshExpiration: 1209600
   accessExpiration: 86400

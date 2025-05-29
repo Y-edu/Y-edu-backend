@@ -41,6 +41,7 @@ public class ApplicationFormResponse {
     private Boolean marketingAgree;
   }
 
+  @Getter
   @Builder
   public static class Teacher {
     private Long teacherId;

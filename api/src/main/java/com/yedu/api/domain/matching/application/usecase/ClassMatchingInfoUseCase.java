@@ -108,8 +108,6 @@ public class ClassMatchingInfoUseCase {
   private ApplicationFormResponse getApplicationFormResponses(ClassMatching matching) {
     ApplicationForm applicationForm = matching.getApplicationForm();
     Teacher teacher = matching.getTeacher();
-    Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher(teacher);
-    Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher(teacher);
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
@@ -146,27 +144,6 @@ public class ClassMatchingInfoUseCase {
                     List.of(
                         teacher.getTeacherClassInfo().getTeachingStyleInfo1(),
                         teacher.getTeacherClassInfo().getTeachingStyleInfo2()))
-                .english(
-                    ApplicationFormResponse.TeacherEnglish.builder()
-                        .possible(teacher.getTeacherClassInfo().isEnglishPossible())
-                        .experience(
-                            englishTeacher.map(TeacherEnglish::getTeachingExperience).orElse(null))
-                        .foreignExperience(
-                            englishTeacher.map(TeacherEnglish::getForeignExperience).orElse(null))
-                        .teachingStyle(
-                            englishTeacher.map(TeacherEnglish::getTeachingStyle).orElse(null))
-                        .teachingHistory(
-                            englishTeacher.map(TeacherEnglish::getTeachingHistory).orElse(null))
-                        .build())
-                .math(
-                    ApplicationFormResponse.TeacherMath.builder()
-                        .possible(teacher.getTeacherClassInfo().isMathPossible())
-                        .experience(
-                            mathTeacher.map(TeacherMath::getTeachingExperience).orElse(null))
-                        .teachingStyle(mathTeacher.map(TeacherMath::getTeachingStyle).orElse(null))
-                        .teachingHistory(
-                            mathTeacher.map(TeacherMath::getTeachingHistory).orElse(null))
-                        .build())
                 .build())
         .build();
   }
@@ -189,6 +166,35 @@ public class ClassMatchingInfoUseCase {
             .phoneNumber(parents.getPhoneNumber())
             .marketingAgree(parents.isMarketingAgree())
             .build();
+  }
+
+  public ApplicationFormResponse.TeacherEnglish english(ApplicationFormResponse applicationFormResponse) {
+    Optional<TeacherEnglish> englishTeacher = teacherEnglishRepository.findByTeacher_TeacherId(applicationFormResponse.getTeacher().getTeacherId());
+
+    return ApplicationFormResponse.TeacherEnglish.builder()
+            .possible(englishTeacher.isPresent())
+            .experience(
+                englishTeacher.map(TeacherEnglish::getTeachingExperience).orElse(null))
+            .foreignExperience(
+                englishTeacher.map(TeacherEnglish::getForeignExperience).orElse(null))
+            .teachingStyle(
+                englishTeacher.map(TeacherEnglish::getTeachingStyle).orElse(null))
+            .teachingHistory(
+                englishTeacher.map(TeacherEnglish::getTeachingHistory).orElse(null))
+            .build();
+  }
+
+  public ApplicationFormResponse.TeacherMath math(ApplicationFormResponse applicationFormResponse) {
+    Optional<TeacherMath> mathTeacher = teacherMathRepository.findByTeacher_TeacherId(applicationFormResponse.getTeacher().getTeacherId());
+
+    return ApplicationFormResponse.TeacherMath.builder()
+        .possible(mathTeacher.isPresent())
+        .experience(
+            mathTeacher.map(TeacherMath::getTeachingExperience).orElse(null))
+        .teachingStyle(mathTeacher.map(TeacherMath::getTeachingStyle).orElse(null))
+        .teachingHistory(
+            mathTeacher.map(TeacherMath::getTeachingHistory).orElse(null))
+        .build();
   }
 
 

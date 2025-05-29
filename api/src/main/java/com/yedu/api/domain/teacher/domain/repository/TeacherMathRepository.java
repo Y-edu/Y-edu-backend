@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TeacherMathRepository extends JpaRepository<TeacherMath, Long> {
   Optional<TeacherMath> findByTeacher(Teacher teacher);
 
+  Optional<TeacherMath> findByTeacher_TeacherId(long teacherId);
+
   void deleteAllByTeacher_TeacherInfo_PhoneNumber(String phoneNumber);
 }

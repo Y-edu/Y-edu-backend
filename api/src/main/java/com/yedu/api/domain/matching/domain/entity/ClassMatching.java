@@ -21,10 +21,10 @@ public class ClassMatching extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long classMatchingId;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private Teacher teacher;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   private ApplicationForm applicationForm;
 
   private boolean response;
