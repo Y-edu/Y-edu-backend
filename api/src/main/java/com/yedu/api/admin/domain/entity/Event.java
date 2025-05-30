@@ -9,11 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+//@Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event extends BaseEntity {
+public class Event  {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
