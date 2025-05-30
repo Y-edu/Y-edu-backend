@@ -8,5 +8,7 @@ public enum MatchingStatus {
   입금단계,
   매칭,
   최종매칭,
-  과외결렬
+  과외결렬,
+  일시중단,
+  종료
 }
