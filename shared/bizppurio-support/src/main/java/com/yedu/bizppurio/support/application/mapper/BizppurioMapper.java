@@ -795,13 +795,13 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             + "/teacher/session-schedule?token="
             + event.changeSessionToken();
     CommonButton changeSessionButton =
-        new WebButton(
-            "날짜 변경 / 휴강 \uD83D\uDDD3", WEB_LINK, changeSessionUrl, changeSessionUrl);
+        new WebButton("날짜 변경 / 휴강 \uD83D\uDDD3", WEB_LINK, changeSessionUrl, changeSessionUrl);
 
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND),
+            properties.getKey(
+                BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND),
             BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND.getCode(),
             new CommonButton[] {completeSessionButton, changeSessionButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
@@ -827,8 +827,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.getKey(
-                BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK),
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK),
             BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK.getCode(),
             new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());

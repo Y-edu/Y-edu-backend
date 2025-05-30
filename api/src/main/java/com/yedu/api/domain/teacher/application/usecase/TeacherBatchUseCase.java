@@ -100,7 +100,7 @@ public class TeacherBatchUseCase {
         classSessionRepository
             .findBySessionDateAndCancelIsFalseAndCompletedIsFalse(now.toLocalDate())
             .stream()
-            .filter(it-> !it.isRemind())
+            .filter(it -> !it.isRemind())
             .filter(
                 it ->
                     it.isFinishAndNotComplete(now, isRemind)
@@ -117,7 +117,7 @@ public class TeacherBatchUseCase {
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
-          if (isRemind){
+          if (isRemind) {
             it.remind();
             eventPublisher.publishEvent(
                 new TeacherWithScheduleCompleteTalkRemindEvent(
@@ -126,7 +126,7 @@ public class TeacherBatchUseCase {
                     it.getSessionDate(),
                     completeToken,
                     changeSessionToken));
-          }else{
+          } else {
             eventPublisher.publishEvent(
                 new TeacherWithScheduleCompleteTalkEvent(
                     applicationForm.getApplicationFormId(),

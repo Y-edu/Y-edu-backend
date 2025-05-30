@@ -97,4 +97,13 @@ public class ClassMatching extends BaseEntity {
 
     return this;
   }
+
+  public void pause() {
+    this.matchStatus = MatchingStatus.일시중단;
+  }
+
+  public void changeTeacher(Teacher newTeacher) {
+    this.matchStatus = MatchingStatus.최종매칭;
+    this.teacher = newTeacher;
+  }
 }

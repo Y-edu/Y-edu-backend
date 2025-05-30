@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum BizpurrioTemplate {
-
   YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE(
       "bizp_2025052520311673437373861", "완료톡 변경 안내", Profile.YEDU_TUTOR),
   YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK(

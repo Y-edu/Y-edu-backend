@@ -49,6 +49,8 @@ public class ClassSession extends BaseEntity {
 
   @Embedded private ClassTime classTime;
 
+  private Integer realClassTime;
+
   public void cancel(String cancelReason) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
@@ -68,14 +70,15 @@ public class ClassSession extends BaseEntity {
     this.cancelReason = null;
   }
 
-  public void complete(String understanding, Integer homeworkPercentage) {
+  public void complete(Integer realClassMinute, String understanding, Integer homeworkPercentage) {
     if (cancel) {
       throw new IllegalStateException("취소된 일정입니다");
     }
     if (completed) {
       throw new IllegalStateException("이미 완료된 일정입니다");
     }
-    completed = true;
+    this.completed = true;
+    this.realClassTime = realClassMinute;
     this.homeworkPercentage = homeworkPercentage;
     this.understanding = understanding;
   }
@@ -101,7 +104,7 @@ public class ClassSession extends BaseEntity {
         && this.classTime.finishTime().isBefore(time.toLocalTime());
   }
 
-  public void remind(){
+  public void remind() {
     this.remind = true;
   }
 }

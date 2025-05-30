@@ -11,6 +11,5 @@ import org.springframework.stereotype.Service;
 public class MockSheetService implements SheetApi {
 
   @Override
-  public void write(List<List<Object>> values) {
-  }
+  public void write(List<List<Object>> values) {}
 }

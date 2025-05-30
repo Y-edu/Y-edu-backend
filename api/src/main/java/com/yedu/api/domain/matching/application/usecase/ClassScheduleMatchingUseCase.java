@@ -34,7 +34,6 @@ import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
 import com.yedu.sheet.support.SheetApi;
-import com.yedu.sheet.support.SheetService;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -186,12 +185,14 @@ public class ClassScheduleMatchingUseCase {
 
     List<ClassSession> sessions = classSessionQueryService.query(classManagement);
 
-    Map<LocalDate, Boolean> sessionReviewMap = sessions.stream()
-        .collect(Collectors.toMap(
-            ClassSession::getSessionDate,
-            ClassSession::isCompleted,
-            (existing, replacement) -> existing || replacement  // 하나라도 true면 true
-        ));
+    Map<LocalDate, Boolean> sessionReviewMap =
+        sessions.stream()
+            .collect(
+                Collectors.toMap(
+                    ClassSession::getSessionDate,
+                    ClassSession::isCompleted,
+                    (existing, replacement) -> existing || replacement // 하나라도 true면 true
+                    ));
     LocalDate now = LocalDate.now();
     Map<String, List<LocalDate>> weekDatesMap = new HashMap<>();
     WeekFields weekFields = WeekFields.of(Locale.KOREA);
@@ -220,14 +221,14 @@ public class ClassScheduleMatchingUseCase {
       weekDatesMap.computeIfAbsent(weekKey, k -> new ArrayList<>()).add(targetDate);
     }
 
-// 주차별로 리뷰 있는지 확인
+    // 주차별로 리뷰 있는지 확인
     Set<LocalDate> filteredDates = new HashSet<>();
 
     for (Map.Entry<String, List<LocalDate>> weekEntry : weekDatesMap.entrySet()) {
       List<LocalDate> datesInWeek = weekEntry.getValue();
 
-      boolean hasReview = datesInWeek.stream()
-          .anyMatch(d -> sessionReviewMap.getOrDefault(d, false));
+      boolean hasReview =
+          datesInWeek.stream().anyMatch(d -> sessionReviewMap.getOrDefault(d, false));
 
       if (!hasReview) {
         filteredDates.addAll(datesInWeek);
@@ -239,10 +240,8 @@ public class ClassScheduleMatchingUseCase {
         matching.getClassMatchingId(),
         send,
         schedules,
-        filteredDates.stream().toList()
-    );
+        filteredDates.stream().toList());
   }
-
 
   public SessionResponse retrieveSession(String token) {
     ClassMatching matching = getClassMatchingByToken(token);
@@ -254,7 +253,8 @@ public class ClassScheduleMatchingUseCase {
     }
 
     Teacher teacher = matching.getTeacher();
-    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher, false, null);
+    List<ClassMatching> matchings =
+        classSessionCommandService.createSessionOf(teacher, false, null);
 
     return classSessionQueryService.query(matchings);
   }
@@ -273,8 +273,8 @@ public class ClassScheduleMatchingUseCase {
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = classSessionCommandService.complete(sessionId, request);
-
-    ClassMatching matching = session.getClassManagement().getClassMatching();
+    ClassManagement classManagement = session.getClassManagement();
+    ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
 
     sheetApi.write(
@@ -287,6 +287,7 @@ public class ClassScheduleMatchingUseCase {
                 session.getSessionDate().toString(), // 여기 수정
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
+                Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
                 Optional.ofNullable(session.getHomeworkPercentage()).orElse(0),
                 Optional.ofNullable(session.getUnderstanding()).orElse(""),
                 LocalDateTime.now().toString())));
@@ -297,7 +298,8 @@ public class ClassScheduleMatchingUseCase {
 
     this.completeSession(
         sessionId,
-        new CompleteSessionRequest(request.understanding(), request.homeworkPercentage()));
+        new CompleteSessionRequest(
+            request.classMinute(), request.understanding(), request.homeworkPercentage()));
   }
 
   public RetrieveSessionDateResponse retrieveSessionDateByToken(String token) {

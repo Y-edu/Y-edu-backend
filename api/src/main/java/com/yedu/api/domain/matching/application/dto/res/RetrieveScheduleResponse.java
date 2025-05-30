@@ -11,11 +11,11 @@ public record RetrieveScheduleResponse(
     Long classMatchingId,
     boolean send,
     Map<Day, List<ClassTime>> schedules,
-    List<LocalDate> changeStartDates
-    ) {
+    List<LocalDate> changeStartDates) {
 
   public static RetrieveScheduleResponse empty(
       String applicationFormId, Long classMatchingId, boolean send) {
-    return new RetrieveScheduleResponse(applicationFormId, classMatchingId, send, Map.of(), List.of());
+    return new RetrieveScheduleResponse(
+        applicationFormId, classMatchingId, send, Map.of(), List.of());
   }
 }

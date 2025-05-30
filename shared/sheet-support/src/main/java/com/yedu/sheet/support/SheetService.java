@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Profile({"prod","dev"})
-public class SheetService implements SheetApi{
+@Profile({"prod", "dev"})
+public class SheetService implements SheetApi {
 
   private final Sheets sheet;
 

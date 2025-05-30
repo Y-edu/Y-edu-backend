@@ -6,12 +6,12 @@ import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherR
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingInfoUseCase;
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
-import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.http.ResponseEntity;
@@ -60,34 +60,50 @@ public class ClassMatchingController {
   }
 
   @QueryMapping
-  public List<ApplicationFormResponse> applicationFormByMatchingId(@Argument List<Long> matchingIds, @Argument List<MatchingStatus> matchingStatus) {
+  public List<ApplicationFormResponse> applicationFormByMatchingId(
+      @Argument List<Long> matchingIds, @Argument List<MatchingStatus> matchingStatus) {
     return matchingInfoUseCase.applicationFormByMatchingId(matchingIds, matchingStatus);
   }
 
-  @SchemaMapping(typeName = "ApplicationForm" , field = "parent")
-  public ApplicationFormResponse.Parents parent(final ApplicationFormResponse applicationForm){
+  @MutationMapping
+  public Boolean pauseMatching(@Argument List<Long> matchingIds) {
+    matchingManageUseCase.pauseMatchings(matchingIds);
+
+    return Boolean.TRUE;
+  }
+
+  @MutationMapping
+  public Boolean updateMatching(@Argument Long matchingId, @Argument Long newTeacherId) {
+    matchingManageUseCase.updateMatching(matchingId, newTeacherId);
+
+    return Boolean.TRUE;
+  }
+
+  @SchemaMapping(typeName = "ApplicationForm", field = "parent")
+  public ApplicationFormResponse.Parents parent(final ApplicationFormResponse applicationForm) {
     return matchingInfoUseCase.parents(applicationForm);
   }
 
-  @SchemaMapping(typeName = "ApplicationForm" , field = "availableTimes")
-  public List<ApplicationFormResponse.AvailableTime> availableTimes(final ApplicationFormResponse applicationForm){
+  @SchemaMapping(typeName = "ApplicationForm", field = "availableTimes")
+  public List<ApplicationFormResponse.AvailableTime> availableTimes(
+      final ApplicationFormResponse applicationForm) {
     return matchingInfoUseCase.availableTimes(applicationForm);
   }
 
-  @SchemaMapping(typeName = "ApplicationForm" , field = "classManagement")
-  public ApplicationFormResponse.ClassManagement classManagement(final ApplicationFormResponse applicationForm){
+  @SchemaMapping(typeName = "ApplicationForm", field = "classManagement")
+  public ApplicationFormResponse.ClassManagement classManagement(
+      final ApplicationFormResponse applicationForm) {
     return matchingInfoUseCase.classManagement(applicationForm);
   }
 
-  @SchemaMapping(typeName = "Teacher" , field = "english")
-  public ApplicationFormResponse.TeacherEnglish english(final ApplicationFormResponse.Teacher teacher){
+  @SchemaMapping(typeName = "Teacher", field = "english")
+  public ApplicationFormResponse.TeacherEnglish english(
+      final ApplicationFormResponse.Teacher teacher) {
     return matchingInfoUseCase.english(teacher);
   }
 
-  @SchemaMapping(typeName = "Teacher" , field = "math")
-  public ApplicationFormResponse.TeacherMath math(final ApplicationFormResponse.Teacher teacher){
+  @SchemaMapping(typeName = "Teacher", field = "math")
+  public ApplicationFormResponse.TeacherMath math(final ApplicationFormResponse.Teacher teacher) {
     return matchingInfoUseCase.math(teacher);
   }
-
-
 }

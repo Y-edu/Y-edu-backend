@@ -55,7 +55,8 @@ public class ClassSchedule extends BaseEntity {
   public Collection<ClassSession> generateUpcomingDates(
       ClassManagement classManagement,
       LocalDate today,
-      Map<LocalDate, ClassSession> existingSessionMap, LocalDate changeStartDate) {
+      Map<LocalDate, ClassSession> existingSessionMap,
+      LocalDate changeStartDate) {
     LocalDate classStartDate =
         Optional.ofNullable(classManagement.getFirstDay())
             .map(
@@ -68,8 +69,7 @@ public class ClassSchedule extends BaseEntity {
             .orElse(Optional.ofNullable(changeStartDate).orElse(today));
     LocalDate lastDay = today.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
-    return Stream.iterate(
-            classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
+    return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
         .map(

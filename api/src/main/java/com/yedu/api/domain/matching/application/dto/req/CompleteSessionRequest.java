@@ -1,3 +1,4 @@
 package com.yedu.api.domain.matching.application.dto.req;
 
-public record CompleteSessionRequest(String understanding, Integer homeworkPercentage) {}
+public record CompleteSessionRequest(
+    Integer classMinute, String understanding, Integer homeworkPercentage) {}

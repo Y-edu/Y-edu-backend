@@ -48,7 +48,10 @@ public class ClassSessionCommandService {
     return schedules.stream()
         .flatMap(
             schedule ->
-                schedule.generateUpcomingDates(classManagement, today, existingSessionMap, changeStartDate).stream())
+                schedule
+                    .generateUpcomingDates(
+                        classManagement, today, existingSessionMap, changeStartDate)
+                    .stream())
         .toList();
   }
 
@@ -67,7 +70,7 @@ public class ClassSessionCommandService {
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
 
-    session.complete(request.understanding(), request.homeworkPercentage());
+    session.complete(request.classMinute(), request.understanding(), request.homeworkPercentage());
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
@@ -87,11 +90,13 @@ public class ClassSessionCommandService {
   }
 
   public void deleteSession(ClassManagement classManagement, LocalDate changeStartDate) {
-    classSessionRepository.deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(
-        classManagement, changeStartDate);
+    classSessionRepository
+        .deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(
+            classManagement, changeStartDate);
   }
 
-  public List<ClassMatching> createSessionOf(Teacher teacher, boolean forceCreate, LocalDate changeStartDate) {
+  public List<ClassMatching> createSessionOf(
+      Teacher teacher, boolean forceCreate, LocalDate changeStartDate) {
     List<ClassMatching> classMatchings = classMatchingGetService.getMatched(teacher);
 
     classMatchings.forEach(
@@ -103,7 +108,8 @@ public class ClassSessionCommandService {
     return classMatchings;
   }
 
-  public void createSingleSessions(ClassManagement classManagement, boolean forceCreate, LocalDate changeStartDate) {
+  public void createSingleSessions(
+      ClassManagement classManagement, boolean forceCreate, LocalDate changeStartDate) {
     LocalDate today = LocalDate.now();
     LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
     List<ClassSchedule> schedules = classManagement.getSchedules();
@@ -115,8 +121,7 @@ public class ClassSessionCommandService {
       boolean hasExistingSessionInThisMonth =
           existingSessions.stream()
               .anyMatch(
-                  it ->
-                      it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
+                  it -> it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
 
       if (hasExistingSessionInThisMonth) {
         return;

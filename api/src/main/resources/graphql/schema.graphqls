@@ -1,6 +1,10 @@
 type Query {
     applicationFormByMatchingId(matchingIds: [Int], matchingStatus :[String]): [ApplicationForm]
 }
+type Mutation {
+    pauseMatching(matchingIds: [Int]): Boolean
+    updateMatching(matchingId: Int, newTeacherId: Int): Boolean
+}
 
 type ApplicationForm {
     applicationFormId: String

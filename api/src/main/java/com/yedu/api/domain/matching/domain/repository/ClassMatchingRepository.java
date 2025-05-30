@@ -32,7 +32,8 @@ public interface ClassMatchingRepository
 
   List<ClassMatching> findByMatchStatusIn(List<MatchingStatus> matchStatus);
 
-  List<ClassMatching> findByClassMatchingIdInAndMatchStatusIn(List<Long> classMatchingIds, List<MatchingStatus> matchStatus);
+  List<ClassMatching> findByClassMatchingIdInAndMatchStatusIn(
+      List<Long> classMatchingIds, List<MatchingStatus> matchStatus);
 
   void deleteAllByApplicationForm_Parents_PhoneNumber(String phoneNumber);
 
