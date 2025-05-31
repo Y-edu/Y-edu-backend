@@ -98,8 +98,11 @@ public class ClassMatching extends BaseEntity {
     return this;
   }
 
-  public void pause(MatchingStatus matchStatus) {
-    if (matchStatus == MatchingStatus.일시중단 || matchStatus == MatchingStatus.중단) {
+  public void update(MatchingStatus matchStatus) {
+    if (matchStatus == MatchingStatus.일시중단
+        || matchStatus == MatchingStatus.중단
+        || matchStatus == MatchingStatus.최종매칭
+    ) {
       this.matchStatus = matchStatus;
     }
   }
