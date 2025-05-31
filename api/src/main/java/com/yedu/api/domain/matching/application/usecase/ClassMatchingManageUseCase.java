@@ -7,6 +7,7 @@ import static com.yedu.api.global.event.mapper.BizppurioEventMapper.*;
 import com.yedu.api.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
 import com.yedu.api.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
@@ -123,13 +124,13 @@ public class ClassMatchingManageUseCase {
         .forEach(eventPublisher::publishEvent);
   }
 
-  public void pauseMatchings(List<Long> matchingIds) {
+  public void updateMatching(List<Long> matchingIds, MatchingStatus matchingStatus) {
     List<ClassMatching> matchings = classMatchingRepository.findAllById(matchingIds);
 
-    matchings.forEach(ClassMatching::pause);
+    matchings.forEach(it-> it.pause(matchingStatus));
   }
 
-  public void updateMatching(Long matchingId, Long newTeacherId) {
+  public void changeTeacher(Long matchingId, Long newTeacherId) {
     ClassMatching matching = classMatchingRepository.findById(matchingId).orElseThrow();
     Teacher newTeacher = teacherGetService.byId(newTeacherId);
 

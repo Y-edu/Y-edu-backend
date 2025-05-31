@@ -66,15 +66,15 @@ public class ClassMatchingController {
   }
 
   @MutationMapping
-  public Boolean pauseMatching(@Argument List<Long> matchingIds) {
-    matchingManageUseCase.pauseMatchings(matchingIds);
+  public Boolean updateMatching(@Argument List<Long> matchingIds, @Argument MatchingStatus matchingStatus) {
+    matchingManageUseCase.updateMatching(matchingIds, matchingStatus);
 
     return Boolean.TRUE;
   }
 
   @MutationMapping
-  public Boolean updateMatching(@Argument Long matchingId, @Argument Long newTeacherId) {
-    matchingManageUseCase.updateMatching(matchingId, newTeacherId);
+  public Boolean changeTeacher(@Argument Long matchingId, @Argument Long newTeacherId) {
+    matchingManageUseCase.changeTeacher(matchingId, newTeacherId);
 
     return Boolean.TRUE;
   }

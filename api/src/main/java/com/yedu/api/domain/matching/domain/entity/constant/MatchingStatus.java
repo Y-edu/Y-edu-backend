@@ -10,5 +10,6 @@ public enum MatchingStatus {
   최종매칭,
   과외결렬,
   일시중단,
+  중단,
   종료
 }
