@@ -111,4 +111,8 @@ public class ClassMatching extends BaseEntity {
     this.matchStatus = MatchingStatus.최종매칭;
     this.teacher = newTeacher;
   }
+
+  public boolean isNotInProgessStatus() {
+    return matchStatus != MatchingStatus.최종매칭;
+  }
 }

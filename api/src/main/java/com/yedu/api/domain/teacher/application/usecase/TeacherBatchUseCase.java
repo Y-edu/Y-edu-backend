@@ -110,6 +110,9 @@ public class TeacherBatchUseCase {
     sessions.forEach(
         it -> {
           ClassMatching matching = it.getClassManagement().getClassMatching();
+          if (matching.isNotInProgessStatus()){
+            return;
+          }
           ApplicationForm applicationForm = matching.getApplicationForm();
           Teacher teacher = matching.getTeacher();
 
