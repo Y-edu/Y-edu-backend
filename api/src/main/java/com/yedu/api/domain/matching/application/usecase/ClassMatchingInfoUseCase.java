@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -150,9 +151,9 @@ public class ClassMatchingInfoUseCase {
 
   private List<ClassMatching> getMatchings(List<Long> matchingIds, List<MatchingStatus> statuses) {
     if (CollectionUtils.isEmpty(matchingIds)) {
-      return classMatchingRepository.findByMatchStatusIn(statuses);
+      return classMatchingRepository.findByMatchStatusIn(statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
     }
-    return classMatchingRepository.findByClassMatchingIdInAndMatchStatusIn(matchingIds, statuses);
+    return classMatchingRepository.findByClassMatchingIdInAndMatchStatusIn(matchingIds, statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
   }
 
   public ApplicationFormResponse.Parents parents(ApplicationFormResponse applicationFormResponse) {

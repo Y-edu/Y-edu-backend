@@ -7,6 +7,7 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -30,10 +31,10 @@ public interface ClassMatchingRepository
 
   List<ClassMatching> findByTeacherAndMatchStatus(Teacher teacher, MatchingStatus matchStatus);
 
-  List<ClassMatching> findByMatchStatusIn(List<MatchingStatus> matchStatus);
+  List<ClassMatching> findByMatchStatusIn(List<MatchingStatus> matchStatus, Sort sort);
 
   List<ClassMatching> findByClassMatchingIdInAndMatchStatusIn(
-      List<Long> classMatchingIds, List<MatchingStatus> matchStatus);
+      List<Long> classMatchingIds, List<MatchingStatus> matchStatus, Sort sort);
 
   void deleteAllByApplicationForm_Parents_PhoneNumber(String phoneNumber);
 
