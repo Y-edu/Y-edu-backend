@@ -70,7 +70,7 @@ public class ClassSessionCommandService {
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
 
-    session.complete(request.classMinute(), request.understanding(), request.homeworkPercentage());
+    session.complete(request.classMinute(), request.understanding(), request.homework());
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());

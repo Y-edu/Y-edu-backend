@@ -37,7 +37,7 @@ public class ClassSession extends BaseEntity {
 
   private String understanding;
 
-  private Integer homeworkPercentage;
+  private String homework;
 
   private boolean cancel;
 
@@ -70,7 +70,7 @@ public class ClassSession extends BaseEntity {
     this.cancelReason = null;
   }
 
-  public void complete(Integer realClassMinute, String understanding, Integer homeworkPercentage) {
+  public void complete(Integer realClassMinute, String understanding, String homework) {
     if (cancel) {
       throw new IllegalStateException("취소된 일정입니다");
     }
@@ -79,7 +79,7 @@ public class ClassSession extends BaseEntity {
     }
     this.completed = true;
     this.realClassTime = realClassMinute;
-    this.homeworkPercentage = homeworkPercentage;
+    this.homework = homework;
     this.understanding = understanding;
   }
 

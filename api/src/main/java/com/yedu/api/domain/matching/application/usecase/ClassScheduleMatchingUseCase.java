@@ -54,6 +54,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -147,12 +148,12 @@ public class ClassScheduleMatchingUseCase {
       ClassMatching matching = classMatchingGetService.getById(request.classMatchingId());
       List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-      return classSessionQueryService.query(matchings);
+      return classSessionQueryService.query(matchings, Pageable.ofSize(3));
     }
     ClassMatching matching = getClassMatchingByToken(request.token());
     List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-    return classSessionQueryService.query(matchings);
+    return classSessionQueryService.query(matchings, Pageable.ofSize(3));
   }
 
   public List<RetrieveScheduleResponse> retrieveSchedules(String token) {
@@ -243,7 +244,7 @@ public class ClassScheduleMatchingUseCase {
         filteredDates.stream().toList());
   }
 
-  public SessionResponse retrieveSession(String token) {
+  public SessionResponse retrieveSession(String token, Pageable pageable) {
     ClassMatching matching = getClassMatchingByToken(token);
     ClassManagement classManagement =
         classManagementQueryService.query(matching.getClassMatchingId()).orElse(null);
@@ -256,7 +257,7 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> matchings =
         classSessionCommandService.createSessionOf(teacher, false, null);
 
-    return classSessionQueryService.query(matchings);
+    return classSessionQueryService.query(matchings, pageable);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
@@ -288,7 +289,7 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
-                Optional.ofNullable(session.getHomeworkPercentage()).orElse(0),
+                Optional.ofNullable(session.getHomework()).orElse(""),
                 Optional.ofNullable(session.getUnderstanding()).orElse(""),
                 LocalDateTime.now().toString())));
   }
@@ -299,7 +300,7 @@ public class ClassScheduleMatchingUseCase {
     this.completeSession(
         sessionId,
         new CompleteSessionRequest(
-            request.classMinute(), request.understanding(), request.homeworkPercentage()));
+            request.classMinute(), request.understanding(), request.homework()));
   }
 
   public RetrieveSessionDateResponse retrieveSessionDateByToken(String token) {

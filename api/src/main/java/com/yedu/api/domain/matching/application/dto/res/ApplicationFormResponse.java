@@ -105,7 +105,7 @@ public class ApplicationFormResponse {
     private String start;
     private Integer classMinute;
     private String understanding;
-    private Integer homeworkPercentage;
+    private String homework;
     private Boolean cancel;
     private String cancelReason;
     private Boolean completed;

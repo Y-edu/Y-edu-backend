@@ -12,9 +12,13 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,36 +31,42 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
 
-  public SessionResponse query(List<ClassMatching> classMatchings) {
+  public SessionResponse query(List<ClassMatching> classMatchings, Pageable pageable) {
     LocalDate now = LocalDate.now();
-    Map<String, List<Schedule>> scheduleMap =
-        classMatchings.stream()
-            .map(
-                matching -> {
-                  Optional<ClassManagement> optionalManagement =
-                      classManagementQueryService.query(matching.getClassMatchingId());
-                  return optionalManagement.map(
-                      cm ->
-                          Map.entry(
-                              matching.getApplicationForm().getApplicationFormId(),
-                              SessionResponse.from(
-                                  classSessionRepository.findByClassManagementAndSessionDateBetween(
-                                      cm,
-                                      now.with(TemporalAdjusters.firstDayOfMonth()),
-                                      now.plusMonths(1)
-                                          .with(TemporalAdjusters.lastDayOfMonth())))));
-                })
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(
-                Collectors.toMap(
-                    Map.Entry::getKey,
-                    entry ->
-                        entry.getValue().stream()
-                            .sorted(
-                                Comparator.comparing(SessionResponse.Schedule::classDate)
-                                    .thenComparing(SessionResponse.Schedule::classStart))
-                            .toList()));
+    LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
+    LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
+
+    Map<String, Page<SessionResponse.Schedule>> scheduleMap = classMatchings.stream()
+        .map(matching -> {
+          String applicationFormId = matching.getApplicationForm().getApplicationFormId();
+          Optional<ClassManagement> optionalManagement =
+              classManagementQueryService.query(matching.getClassMatchingId());
+
+          if (optionalManagement.isEmpty()) {
+            return null;
+          }
+
+          ClassManagement cm = optionalManagement.get();
+
+          Page<ClassSession> sessions = classSessionRepository
+              .findByClassManagementAndSessionDateBetween(cm, startOfMonth, endOfMonth, pageable);
+
+          // Page<ClassSession> → Page<Schedule>
+          Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);
+
+          // 정렬된 Page<Schedule> 생성
+          List<SessionResponse.Schedule> sortedList = schedulePage.getContent().stream()
+              .sorted(Comparator.comparing(SessionResponse.Schedule::classDate)
+                  .thenComparing(SessionResponse.Schedule::classStart))
+              .toList();
+
+          Page<SessionResponse.Schedule> sortedPage =
+              new PageImpl<>(sortedList, pageable, schedulePage.getTotalElements());
+
+          return Map.entry(applicationFormId, sortedPage);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     return new SessionResponse(scheduleMap);
   }
@@ -79,6 +89,7 @@ public class ClassSessionQueryService {
     return classSessionRepository.findByClassManagementAndSessionDateBetween(
         management,
         now.with(TemporalAdjusters.firstDayOfMonth()),
-        now.with(TemporalAdjusters.lastDayOfMonth()));
+        now.with(TemporalAdjusters.lastDayOfMonth())
+        );
   }
 }

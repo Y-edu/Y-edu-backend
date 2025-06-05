@@ -67,7 +67,7 @@ public class ClassSchedule extends BaseEntity {
                   return firstDay;
                 })
             .orElse(Optional.ofNullable(changeStartDate).orElse(today));
-    LocalDate lastDay = today.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+    LocalDate lastDay = today.with(TemporalAdjusters.lastDayOfMonth());
 
     return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
