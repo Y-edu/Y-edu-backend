@@ -31,7 +31,7 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
 
-  public SessionResponse query(List<ClassMatching> classMatchings, Pageable pageable) {
+  public SessionResponse query(List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
     LocalDate now = LocalDate.now();
     LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
     LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
@@ -48,8 +48,12 @@ public class ClassSessionQueryService {
 
           ClassManagement cm = optionalManagement.get();
 
-          Page<ClassSession> sessions = classSessionRepository
-              .findByClassManagementAndSessionDateBetween(cm, startOfMonth, endOfMonth, pageable);
+          Page<ClassSession> sessions = Optional.ofNullable(isComplete).map(
+                  it -> classSessionRepository.findByClassManagementAndSessionDateBetweenAndCompleted(
+                      cm, startOfMonth, endOfMonth, isComplete, pageable))
+              .orElseGet(() -> classSessionRepository
+                  .findByClassManagementAndSessionDateBetween(cm, startOfMonth, endOfMonth,
+                      pageable));
 
           // Page<ClassSession> → Page<Schedule>
           Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);

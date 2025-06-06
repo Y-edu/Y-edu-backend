@@ -148,12 +148,12 @@ public class ClassScheduleMatchingUseCase {
       ClassMatching matching = classMatchingGetService.getById(request.classMatchingId());
       List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-      return classSessionQueryService.query(matchings, Pageable.ofSize(3));
+      return classSessionQueryService.query(matchings, null, Pageable.ofSize(3));
     }
     ClassMatching matching = getClassMatchingByToken(request.token());
     List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-    return classSessionQueryService.query(matchings, Pageable.ofSize(3));
+    return classSessionQueryService.query(matchings, null, Pageable.ofSize(3));
   }
 
   public List<RetrieveScheduleResponse> retrieveSchedules(String token) {
@@ -244,7 +244,7 @@ public class ClassScheduleMatchingUseCase {
         filteredDates.stream().toList());
   }
 
-  public SessionResponse retrieveSession(String token, Pageable pageable) {
+  public SessionResponse retrieveSession(String token, Pageable pageable, Boolean isComplete) {
     ClassMatching matching = getClassMatchingByToken(token);
     ClassManagement classManagement =
         classManagementQueryService.query(matching.getClassMatchingId()).orElse(null);
@@ -257,7 +257,7 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> matchings =
         classSessionCommandService.createSessionOf(teacher, false, null);
 
-    return classSessionQueryService.query(matchings, pageable);
+    return classSessionQueryService.query(matchings, isComplete, pageable);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {

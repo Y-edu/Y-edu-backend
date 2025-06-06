@@ -20,6 +20,7 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
   Page<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
+  Page<ClassSession> findByClassManagementAndSessionDateBetweenAndCompleted(ClassManagement classManagement, LocalDate startDate, LocalDate endDate, boolean completed, Pageable pageable);
 
   List<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate);
