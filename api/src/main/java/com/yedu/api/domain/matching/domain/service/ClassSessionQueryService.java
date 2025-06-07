@@ -58,16 +58,7 @@ public class ClassSessionQueryService {
           // Page<ClassSession> → Page<Schedule>
           Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);
 
-          // 정렬된 Page<Schedule> 생성
-          List<SessionResponse.Schedule> sortedList = schedulePage.getContent().stream()
-              .sorted(Comparator.comparing(SessionResponse.Schedule::classDate)
-                  .thenComparing(SessionResponse.Schedule::classStart))
-              .toList();
-
-          Page<SessionResponse.Schedule> sortedPage =
-              new PageImpl<>(sortedList, pageable, schedulePage.getTotalElements());
-
-          return Map.entry(applicationFormId, sortedPage);
+          return Map.entry(applicationFormId, schedulePage);
         })
         .filter(Objects::nonNull)
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

@@ -54,7 +54,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -144,16 +146,17 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public SessionResponse create(CreateScheduleRequest request) {
+    Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "sessionDate"));
     if (request.classMatchingId() != null) {
       ClassMatching matching = classMatchingGetService.getById(request.classMatchingId());
       List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-      return classSessionQueryService.query(matchings, null, Pageable.ofSize(3));
+      return classSessionQueryService.query(matchings, null, pageable);
     }
     ClassMatching matching = getClassMatchingByToken(request.token());
     List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
-    return classSessionQueryService.query(matchings, null, Pageable.ofSize(3));
+    return classSessionQueryService.query(matchings, null, pageable);
   }
 
   public List<RetrieveScheduleResponse> retrieveSchedules(String token) {
