@@ -10,17 +10,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ClassSessionRepository extends JpaRepository<ClassSession, Long> {
+public interface ClassSessionRepository extends JpaRepository<ClassSession, Long> , CustomClassSessionRepository{
 
   List<ClassSession> findBySessionDateAndCancelIsFalseAndCompletedIsFalse(LocalDate sessionDate);
 
   List<ClassSession> findByClassManagementAndSessionDateIsGreaterThanEqual(
       ClassManagement classManagement, LocalDate date);
-
-  Page<ClassSession> findByClassManagementAndSessionDateBetween(
-      ClassManagement classManagement, LocalDate startDate, LocalDate endDate, Pageable pageable);
-
-  Page<ClassSession> findByClassManagementAndSessionDateBetweenAndCompleted(ClassManagement classManagement, LocalDate startDate, LocalDate endDate, boolean completed, Pageable pageable);
 
   List<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate);
