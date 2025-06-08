@@ -106,7 +106,7 @@ public class ClassMatchingScheduleController {
       summary = "과외 실제 일정 조회 API",
       description = "설정된 과외 일정이 없다면 생성 후 반환합니다",
       tags = {"완료톡 관련 API"})
-  public ResponseEntity<SessionResponse> retrieveSession(String token, Boolean isComplete, @PageableDefault(sort = "sessionDate", direction = Direction.ASC) Pageable pageable) {
+  public ResponseEntity<SessionResponse> retrieveSession(String token, Boolean isComplete, @PageableDefault(sort = "sessionDate", direction = Direction.DESC) Pageable pageable) {
     SessionResponse response = scheduleMatchingUseCase.retrieveSession(token, pageable, isComplete);
 
     return ResponseEntity.ok(response);

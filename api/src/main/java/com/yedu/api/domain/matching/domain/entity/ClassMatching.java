@@ -6,6 +6,7 @@ import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.entity.BaseEntity;
 import com.yedu.api.global.exception.matching.MatchingNotSendStatusException;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class ClassMatching extends BaseEntity {
   private ApplicationForm applicationForm;
 
   private boolean response;
+
   private int responseTime;
 
   @Builder.Default
@@ -35,6 +37,8 @@ public class ClassMatching extends BaseEntity {
   private MatchingStatus matchStatus = MatchingStatus.대기;
 
   private String refuseReason;
+
+  private LocalDateTime pausedAt;
 
   public boolean isWaiting() {
     return matchStatus == MatchingStatus.대기;
@@ -100,10 +104,13 @@ public class ClassMatching extends BaseEntity {
 
   public void update(MatchingStatus matchStatus) {
     if (matchStatus == MatchingStatus.일시중단
-        || matchStatus == MatchingStatus.중단
-        || matchStatus == MatchingStatus.최종매칭
-    ) {
+        || matchStatus == MatchingStatus.중단){
       this.matchStatus = matchStatus;
+      this.pausedAt = LocalDateTime.now();
+    }
+    else if(matchStatus == MatchingStatus.최종매칭) {
+      this.matchStatus = matchStatus;
+      this.pausedAt = null;
     }
   }
 

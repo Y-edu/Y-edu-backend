@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.domain.entity;
 
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.entity.BaseEntity;
 import jakarta.persistence.Embedded;
@@ -58,6 +59,18 @@ public class ClassSession extends BaseEntity {
     if (completed) {
       throw new IllegalStateException("완료된 일정입니다");
     }
+    ClassMatching classMatching = classManagement.getClassMatching();
+    MatchingStatus matchStatus = classMatching.getMatchStatus();
+
+    boolean isStoppedBeforeSession =
+        (matchStatus == MatchingStatus.중단 || matchStatus == MatchingStatus.일시중단)
+            && classMatching.getPausedAt() != null
+            && !classMatching.getPausedAt().toLocalDate().isAfter(sessionDate);
+
+    if (matchStatus != MatchingStatus.최종매칭 && isStoppedBeforeSession) {
+      throw new IllegalStateException("최종 매칭된 과외가 아니거나, 중단된 과외입니다");
+    }
+
     cancel = true;
     this.cancelReason = cancelReason;
   }
@@ -77,6 +90,18 @@ public class ClassSession extends BaseEntity {
     if (completed) {
       throw new IllegalStateException("이미 완료된 일정입니다");
     }
+    ClassMatching classMatching = classManagement.getClassMatching();
+    MatchingStatus matchStatus = classMatching.getMatchStatus();
+
+    boolean isStoppedBeforeSession =
+        (matchStatus == MatchingStatus.중단 || matchStatus == MatchingStatus.일시중단)
+            && classMatching.getPausedAt() != null
+            && !classMatching.getPausedAt().toLocalDate().isAfter(sessionDate);
+
+    if (matchStatus != MatchingStatus.최종매칭 && isStoppedBeforeSession) {
+      throw new IllegalStateException("최종 매칭된 과외가 아니거나, 중단된 과외입니다");
+    }
+
     this.completed = true;
     this.realClassTime = realClassMinute;
     this.homework = homework;
