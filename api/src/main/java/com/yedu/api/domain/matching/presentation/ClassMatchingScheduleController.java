@@ -19,7 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -107,6 +109,14 @@ public class ClassMatchingScheduleController {
       description = "설정된 과외 일정이 없다면 생성 후 반환합니다",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<SessionResponse> retrieveSession(String token, Boolean isComplete, @PageableDefault(sort = "sessionDate", direction = Direction.DESC) Pageable pageable) {
+    if (isComplete != null && !isComplete) {
+      pageable = PageRequest.of(
+          pageable.getPageNumber(),
+          pageable.getPageSize(),
+          Sort.by(Sort.Direction.ASC, "sessionDate")
+      );
+    }
+
     SessionResponse response = scheduleMatchingUseCase.retrieveSession(token, pageable, isComplete);
 
     return ResponseEntity.ok(response);
