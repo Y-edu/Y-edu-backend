@@ -34,7 +34,7 @@ public class ClassSessionQueryService {
   public SessionResponse query(List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
     LocalDate now = LocalDate.now();
     LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
-    LocalDate endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
+    LocalDate endOfMonth = now.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
 
     Map<String, Page<SessionResponse.Schedule>> scheduleMap = classMatchings.stream()
         .map(matching -> {
