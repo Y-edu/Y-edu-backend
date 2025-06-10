@@ -118,14 +118,14 @@ public class ClassSessionCommandService {
             classManagement, firstDayOfThisMonth);
 
     if (!forceCreate) {
-      boolean hasExistingSessionInThisMonth =
-          existingSessions.stream()
-              .anyMatch(
-                  it -> it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
-
-      if (hasExistingSessionInThisMonth) {
-        return;
-      }
+//      boolean hasExistingSessionInThisMonth =
+//          existingSessions.stream()
+//              .anyMatch(
+//                  it -> it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
+//
+//      if (hasExistingSessionInThisMonth) {
+//        return;
+//      }
     }
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
 
