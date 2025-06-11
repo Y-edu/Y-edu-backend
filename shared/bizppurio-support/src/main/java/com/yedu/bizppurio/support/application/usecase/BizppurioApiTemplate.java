@@ -31,7 +31,6 @@ public class BizppurioApiTemplate {
   private String messageUrl;
 
   public MessageResponse send(CommonRequest commonRequest) {
-
     if (!Pattern.matches(PHONE_REGEX, commonRequest.to())) {
       log.error("알림톡 발송 실패, 전화번호 오류 : {} / commonRequest : {}", commonRequest.to(), commonRequest);
       throw new IllegalArgumentException();
@@ -45,7 +44,7 @@ public class BizppurioApiTemplate {
       log.error("Json 직렬화 실패");
       throw new IllegalArgumentException("Json 직렬화 실패");
     }
-    log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().getContent());
+    log.info("알림톡 발송 : {}", request);
     String refkey = commonRequest.refkey();
     String message = commonRequest.content().getContent().getMessage();
     redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
