@@ -23,6 +23,7 @@ import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
 import com.yedu.consumer.domain.notification.entity.Notification;
+import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeWithGuidelineEvent;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.consumer.domain.notification.type.PushType;
 import com.yedu.consumer.domain.notification.type.ReceiverType;
@@ -79,6 +80,9 @@ public class TeacherMessageConsumer extends AbstractConsumer {
     registerParser(
         TeacherCompleteTalkChangeNoticeEvent.class,
         mapper::mapToTeacherCompleteTalkChangeNoticeEvent);
+    registerParser(
+        TeacherCompleteTalkChangeNoticeWithGuidelineEvent.class,
+        mapper::mapToTeacherCompleteTalkChangeNoticeWithGuidelineEvent);
     registerParser(
         TeacherWithScheduleCompleteTalkEvent.class,
         mapper::mapToTeacherWithScheduleCompleteTalkEvent);

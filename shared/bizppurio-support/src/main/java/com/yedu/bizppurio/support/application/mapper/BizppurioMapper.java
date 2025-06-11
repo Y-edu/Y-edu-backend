@@ -706,11 +706,16 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     String message =
         """
-매 수업 후 제출하던 완료톡 작성 방식이 변경됩니다!
-수업이 끝난 후, 자동으로 발송되는 카카오톡 메시지에서 [과외 완료] 버튼을 눌러 한 줄 리뷰를 작성해주세요.
+매 수업 후 작성하던 완료톡이
+이제는 수업 리뷰로 바뀌었어요!
 
-앞으로는 수업 리뷰가 완료톡을 대체하며,
-수업 보수는 매월 1일에 일괄 정산됩니다!
+수업이 끝나는 시간에 맞춰
+카카오톡으로 보내드리는 메시지에서 [과외 완료] 버튼을 눌러
+한줄 리뷰를 작성해 주세요.
+
+‘한줄 리뷰’를 작성하면
+해당 수업이 완료로 처리되고,
+이 기록을 기준으로 수업 보수가 정산돼요!
     """;
 
     Message messageBody =
@@ -718,6 +723,34 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             message,
             properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE),
             BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.getCode());
+
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
+
+  public CommonRequest mapToTeacherCompleteTalkChangeNoticeWithGuidelineEvent(
+      TeacherCompleteTalkChangeNoticeWithGuidelineEvent event) {
+
+    String message =
+        """
+구체적인 내용을 가이드로 정리했어요🙂
+
+다음 수업 전까지, 꼭 가이드를 확인 후 변경된 ‘수업 한줄 리뷰'를 남겨주세요! 
+
+ 리뷰 작성이 지연될 경우, 수업료 정산에 차질이 생길 수 있어요 🙏
+""";
+
+    CommonButton guideLineLinkButton =
+        new WebButton(
+            "[필독!] 가이드라인 보기", WEB_LINK, "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5", "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5");
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE.getCode(),
+            new CommonButton[] {guideLineLinkButton});
+
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 

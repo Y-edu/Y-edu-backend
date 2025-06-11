@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum BizpurrioTemplate {
   YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE(
-      "bizp_2025052520311673437373861", "완료톡 변경 안내", Profile.YEDU_TUTOR),
+      "bizp_2025060311502712112401815", "완료톡 변경 공지 v3", Profile.YEDU_TUTOR),
+  YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE(
+      "bizp_2025060200172312112417167", "완료톡 변경 공지 v2", Profile.YEDU_TUTOR),
   YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK(
       "bizp_2025052520331312112850111", "시간/날짜 등록된 경우 완료톡", Profile.YEDU_TUTOR),
   YEDU_TUTOR_TEACHER_WITH_NO_SCHEDULE_COMPLETE_TALK(
@@ -73,6 +75,10 @@ public enum BizpurrioTemplate {
 
   public static BizpurrioTemplate of(String code) {
     return Arrays.stream(values()).filter(it -> it.code.equals(code)).findFirst().get();
+  }
+
+  public boolean hasSameCode(String code) {
+    return this.code.equals(code);
   }
 
   @RequiredArgsConstructor

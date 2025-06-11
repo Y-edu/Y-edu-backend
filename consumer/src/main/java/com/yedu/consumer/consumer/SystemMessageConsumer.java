@@ -1,10 +1,12 @@
 package com.yedu.consumer.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yedu.bizppurio.support.config.BizpurrioTemplate;
 import com.yedu.common.dto.MessageStatusRequest;
 import com.yedu.common.event.bizppurio.BizppurioWebHookEvent;
 import com.yedu.common.event.discord.NotificationDeliverySuccessEvent;
 import com.yedu.consumer.domain.notification.entity.Notification;
+import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeWithGuidelineEvent;
 import com.yedu.consumer.domain.notification.repository.NotificationRepository;
 import com.yedu.consumer.mapper.NotificationMapper;
 import com.yedu.rabbitmq.support.Message;
@@ -53,6 +55,9 @@ public class SystemMessageConsumer implements Consumer<Message> {
       notification.ifPresent(
           it -> {
             it.successDelivery();
+            if(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.hasSameCode(it.getTemplateCode())){
+              applicationEventPublisher.publishEvent(new TeacherCompleteTalkChangeNoticeWithGuidelineEvent(it.getReceiverPhoneNumber()));
+            }
             NotificationDeliverySuccessEvent event = NotificationMapper.map(it);
             applicationEventPublisher.publishEvent(event);
           });
