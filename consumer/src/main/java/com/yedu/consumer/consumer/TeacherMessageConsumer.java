@@ -55,7 +55,7 @@ public class TeacherMessageConsumer extends AbstractConsumer {
         .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
         .receiverPhoneNumber(request.to())
         .content(getContent(request))
-        .templateCode(request.content().at().getTemplateCode())
+        .templateCode(request.content().getContent().getTemplateCode())
         .clientKey(request.refkey())
         .consumedAt(LocalDateTime.now())
         .status(Status.IN_PROGRESS)

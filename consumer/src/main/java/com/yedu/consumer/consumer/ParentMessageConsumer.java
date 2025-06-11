@@ -24,21 +24,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParentMessageConsumer extends AbstractConsumer {
 
-  private static final String NEXT = "NEXT";
-  private static final String CLASS_NOTICE = "CLASS_NOTICE|";
-
   private final BizppurioMapper mapper;
-  private final RedisRepository redisRepository;
 
   public ParentMessageConsumer(
       ObjectMapper objectMapper,
       BizppurioMapper mapper,
       BizppurioApiTemplate apiTemplate,
-      RedisRepository redisRepository,
       NotificationRepository notificationRepository) {
     super(apiTemplate, notificationRepository, objectMapper);
     this.mapper = mapper;
-    this.redisRepository = redisRepository;
   }
 
   @Override
@@ -48,7 +42,7 @@ public class ParentMessageConsumer extends AbstractConsumer {
         .pushType(PushType.BIZPURRIO_KAKAO_ALARMTALK)
         .receiverPhoneNumber(request.to())
         .content(getContent(request))
-        .templateCode(request.content().at().getTemplateCode())
+        .templateCode(request.content().getContent().getTemplateCode())
         .clientKey(request.refkey())
         .build();
   }

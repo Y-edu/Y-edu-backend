@@ -1,6 +1,7 @@
 package com.yedu.bizppurio.support.application.mapper;
 
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
+import com.yedu.bizppurio.support.application.dto.req.ContentImageRequest;
 import com.yedu.bizppurio.support.application.dto.req.ContentRequest;
 import com.yedu.bizppurio.support.application.dto.req.content.*;
 import com.yedu.bizppurio.support.config.BizppurioProperties;
@@ -724,7 +725,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE),
             BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE.getCode());
 
-    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+    return createCommonImageRequest(messageBody, event.teacherPhoneNumber());
   }
 
 
@@ -866,10 +867,17 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
-  private CommonRequest createCommonRequest(Message messageBody, String phoneNumber) {
+  private CommonRequest<ContentRequest> createCommonRequest(Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
     ContentRequest contentRequest = new ContentRequest(messageBody);
     return new CommonRequest(
         properties.id(), "at", properties.number(), phoneNumber, contentRequest, refKey);
+  }
+
+  private CommonRequest<ContentImageRequest> createCommonImageRequest(Message messageBody, String phoneNumber) {
+    String refKey = UUID.randomUUID().toString().replace("-", "");
+    ContentImageRequest contentRequest = new ContentImageRequest(messageBody);
+    return new CommonRequest(
+        properties.id(), "ai", properties.number(), phoneNumber, contentRequest, refKey);
   }
 }

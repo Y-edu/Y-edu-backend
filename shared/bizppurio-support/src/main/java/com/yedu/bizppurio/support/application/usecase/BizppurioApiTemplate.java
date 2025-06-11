@@ -45,9 +45,9 @@ public class BizppurioApiTemplate {
       log.error("Json 직렬화 실패");
       throw new IllegalArgumentException("Json 직렬화 실패");
     }
-    log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().at());
+    log.info("알림톡 발송 : {} \n{}", commonRequest.to(), commonRequest.content().getContent());
     String refkey = commonRequest.refkey();
-    String message = commonRequest.content().at().getMessage();
+    String message = commonRequest.content().getContent().getMessage();
     redisRepository.setValues(refkey, message, Duration.ofSeconds(30l));
     return webClient
         .post()
