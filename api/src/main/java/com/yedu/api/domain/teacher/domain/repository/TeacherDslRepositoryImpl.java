@@ -21,6 +21,7 @@ import com.yedu.api.domain.teacher.domain.entity.constant.District;
 import com.yedu.api.domain.teacher.domain.entity.constant.TeacherGender;
 import com.yedu.api.domain.teacher.domain.entity.constant.TeacherStatus;
 import com.yedu.common.type.ClassType;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class TeacherDslRepositoryImpl implements TeacherDslRepository {
                 .and(subjectSpecifier(subject))
                 .and(teacherDistrict.district.eq(district))
                 .and(teacher.status.eq(TeacherStatus.활동중)))
+        .setLockMode(LockModeType.PESSIMISTIC_WRITE)
         .fetch();
   }
 
