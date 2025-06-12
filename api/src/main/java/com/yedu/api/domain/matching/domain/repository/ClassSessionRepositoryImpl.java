@@ -81,10 +81,10 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
             classSession.classManagement.eq(classManagement),
             classSession.completed.eq(completed),
             (
-                classSession.sessionDate.after(now)
+                classSession.sessionDate.goe(now)
                     .and(classSession.sessionDate.between(startDate, endDate))
             ).or(
-                classSession.sessionDate.loe(now)
+                classSession.sessionDate.before(now)
                     .and(classSession.sessionDate.between(startDate, endDate))
                     .and(classSession.cancel.isFalse())
             )
@@ -101,10 +101,10 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
             classSession.classManagement.eq(classManagement),
             classSession.completed.eq(completed),
             (
-                classSession.sessionDate.after(now)
+                classSession.sessionDate.goe(now)
                     .and(classSession.sessionDate.between(startDate, endDate))
             ).or(
-                classSession.sessionDate.loe(now)
+                classSession.sessionDate.before(now)
                     .and(classSession.sessionDate.between(startDate, endDate))
                     .and(classSession.cancel.isFalse())
             )
