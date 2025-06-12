@@ -120,15 +120,16 @@ public class ClassSessionCommandService {
             classManagement, firstDayOfThisMonth);
 
     if (!forceCreate) {
-      Set<YearMonth> targetMonths = Set.of(
-          YearMonth.from(today),
-          YearMonth.from(today.plusMonths(1)),
-          YearMonth.from(today.plusMonths(2))
-      );
+      Set<YearMonth> targetMonths =
+          Set.of(
+              YearMonth.from(today),
+              YearMonth.from(today.plusMonths(1)),
+              YearMonth.from(today.plusMonths(2)));
 
-      Set<YearMonth> monthsWithExistingSessions = existingSessions.stream()
-          .map(session -> YearMonth.from(session.getSessionDate()))
-          .collect(Collectors.toSet());
+      Set<YearMonth> monthsWithExistingSessions =
+          existingSessions.stream()
+              .map(session -> YearMonth.from(session.getSessionDate()))
+              .collect(Collectors.toSet());
 
       // 3개월 모두 이미 존재한다면 생성을 건너뜀
       if (monthsWithExistingSessions.containsAll(targetMonths)) {

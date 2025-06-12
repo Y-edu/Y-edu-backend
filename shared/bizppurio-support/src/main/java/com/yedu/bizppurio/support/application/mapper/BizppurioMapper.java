@@ -728,7 +728,6 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonImageRequest(messageBody, event.teacherPhoneNumber());
   }
 
-
   public CommonRequest mapToTeacherCompleteTalkChangeNoticeWithGuidelineEvent(
       TeacherCompleteTalkChangeNoticeWithGuidelineEvent event) {
 
@@ -743,13 +742,18 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
     CommonButton guideLineLinkButton =
         new WebButton(
-            "[필독!] 가이드라인 보기", WEB_LINK, "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5", "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5");
+            "[필독!] 가이드라인 보기",
+            WEB_LINK,
+            "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5",
+            "https://sedate-handspring-b07.notion.site/207afa1037b280cf8c21c7dc50d162b5");
 
     Message messageBody =
         new ButtonMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE),
-            BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE.getCode(),
+            properties.getKey(
+                BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_NOTICE_COMPLETE_TALK_CHANGE_WITH_GUIDELINE
+                .getCode(),
             new CommonButton[] {guideLineLinkButton});
 
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
@@ -867,14 +871,16 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
-  private CommonRequest<ContentRequest> createCommonRequest(Message messageBody, String phoneNumber) {
+  private CommonRequest<ContentRequest> createCommonRequest(
+      Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
     ContentRequest contentRequest = new ContentRequest(messageBody);
     return new CommonRequest(
         properties.id(), "at", properties.number(), phoneNumber, contentRequest, refKey);
   }
 
-  private CommonRequest<ContentImageRequest> createCommonImageRequest(Message messageBody, String phoneNumber) {
+  private CommonRequest<ContentImageRequest> createCommonImageRequest(
+      Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
     ContentImageRequest contentRequest = new ContentImageRequest(messageBody);
     return new CommonRequest(

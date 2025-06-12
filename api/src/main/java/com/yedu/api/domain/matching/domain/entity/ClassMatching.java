@@ -103,12 +103,10 @@ public class ClassMatching extends BaseEntity {
   }
 
   public void update(MatchingStatus matchStatus) {
-    if (matchStatus == MatchingStatus.일시중단
-        || matchStatus == MatchingStatus.중단){
+    if (matchStatus == MatchingStatus.일시중단 || matchStatus == MatchingStatus.중단) {
       this.matchStatus = matchStatus;
       this.pausedAt = LocalDateTime.now();
-    }
-    else if(matchStatus == MatchingStatus.최종매칭) {
+    } else if (matchStatus == MatchingStatus.최종매칭) {
       this.matchStatus = matchStatus;
       this.pausedAt = null;
     }

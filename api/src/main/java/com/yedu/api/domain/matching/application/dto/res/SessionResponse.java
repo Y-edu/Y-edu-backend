@@ -24,20 +24,19 @@ public record SessionResponse(Map<String, Page<Schedule>> schedules) {
       @Schema(description = "과외 소요시간") Integer classMinute) {}
 
   public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions) {
-    return sessions
-        .map(
-            it ->
-                Schedule.builder()
-                    .classSessionId(it.getClassSessionId())
-                    .cancel(it.isCancel())
-                    .cancelReason(it.getCancelReason())
-                    .complete(it.isCompleted())
-                    .classDate(it.getSessionDate())
-                    .classStart(it.getClassTime().getStart())
-                    .understanding(it.getUnderstanding())
-                    .homework(it.getHomework())
-                    .classMinute(it.getClassTime().getClassMinute())
-                    .build());
+    return sessions.map(
+        it ->
+            Schedule.builder()
+                .classSessionId(it.getClassSessionId())
+                .cancel(it.isCancel())
+                .cancelReason(it.getCancelReason())
+                .complete(it.isCompleted())
+                .classDate(it.getSessionDate())
+                .classStart(it.getClassTime().getStart())
+                .understanding(it.getUnderstanding())
+                .homework(it.getHomework())
+                .classMinute(it.getClassTime().getClassMinute())
+                .build());
   }
 
   public static SessionResponse empty() {

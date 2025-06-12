@@ -2,14 +2,12 @@ package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
-import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +15,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,37 +28,45 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
 
-  public SessionResponse query(List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
+  public SessionResponse query(
+      List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
     LocalDate now = LocalDate.now();
     LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
     LocalDate endOfMonth = now.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
 
-    Map<String, Page<SessionResponse.Schedule>> scheduleMap = classMatchings.stream()
-        .map(matching -> {
-          String applicationFormId = matching.getApplicationForm().getApplicationFormId();
-          Optional<ClassManagement> optionalManagement =
-              classManagementQueryService.query(matching.getClassMatchingId());
+    Map<String, Page<SessionResponse.Schedule>> scheduleMap =
+        classMatchings.stream()
+            .map(
+                matching -> {
+                  String applicationFormId = matching.getApplicationForm().getApplicationFormId();
+                  Optional<ClassManagement> optionalManagement =
+                      classManagementQueryService.query(matching.getClassMatchingId());
 
-          if (optionalManagement.isEmpty()) {
-            return null;
-          }
+                  if (optionalManagement.isEmpty()) {
+                    return null;
+                  }
 
-          ClassManagement cm = optionalManagement.get();
+                  ClassManagement cm = optionalManagement.get();
 
-          Page<ClassSession> sessions = Optional.ofNullable(isComplete).map(
-                  it -> classSessionRepository.findByClassManagementAndSessionDateBetweenAndCompleted(
-                      cm, startOfMonth, endOfMonth, isComplete, pageable))
-              .orElseGet(() -> classSessionRepository
-                  .findByClassManagementAndSessionDateBetween(cm, startOfMonth, endOfMonth,
-                      pageable));
+                  Page<ClassSession> sessions =
+                      Optional.ofNullable(isComplete)
+                          .map(
+                              it ->
+                                  classSessionRepository
+                                      .findByClassManagementAndSessionDateBetweenAndCompleted(
+                                          cm, startOfMonth, endOfMonth, isComplete, pageable))
+                          .orElseGet(
+                              () ->
+                                  classSessionRepository.findByClassManagementAndSessionDateBetween(
+                                      cm, startOfMonth, endOfMonth, pageable));
 
-          // Page<ClassSession> → Page<Schedule>
-          Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);
+                  // Page<ClassSession> → Page<Schedule>
+                  Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);
 
-          return Map.entry(applicationFormId, schedulePage);
-        })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                  return Map.entry(applicationFormId, schedulePage);
+                })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     return new SessionResponse(scheduleMap);
   }
@@ -84,7 +89,6 @@ public class ClassSessionQueryService {
     return classSessionRepository.findByClassManagementAndSessionDateBetween(
         management,
         now.with(TemporalAdjusters.firstDayOfMonth()),
-        now.with(TemporalAdjusters.lastDayOfMonth())
-        );
+        now.with(TemporalAdjusters.lastDayOfMonth()));
   }
 }

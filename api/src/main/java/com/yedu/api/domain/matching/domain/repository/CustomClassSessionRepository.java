@@ -13,7 +13,10 @@ public interface CustomClassSessionRepository {
   Page<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
-  Page<ClassSession> findByClassManagementAndSessionDateBetweenAndCompleted(ClassManagement classManagement, LocalDate startDate, LocalDate endDate, boolean completed, Pageable pageable);
-
-
+  Page<ClassSession> findByClassManagementAndSessionDateBetweenAndCompleted(
+      ClassManagement classManagement,
+      LocalDate startDate,
+      LocalDate endDate,
+      boolean completed,
+      Pageable pageable);
 }

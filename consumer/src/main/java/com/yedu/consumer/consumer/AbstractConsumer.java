@@ -94,7 +94,6 @@ public abstract class AbstractConsumer implements Consumer<Message> {
         });
   }
 
-
   protected String getContent(CommonRequest request) {
     String message = request.content().getContent().getMessage();
     CommonButton[] buttons = request.content().getContent().getButtons();

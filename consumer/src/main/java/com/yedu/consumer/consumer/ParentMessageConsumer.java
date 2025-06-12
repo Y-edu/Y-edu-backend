@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yedu.bizppurio.support.application.dto.req.CommonRequest;
 import com.yedu.bizppurio.support.application.mapper.BizppurioMapper;
 import com.yedu.bizppurio.support.application.usecase.BizppurioApiTemplate;
-import com.yedu.cache.support.RedisRepository;
 import com.yedu.common.event.bizppurio.NotifyCallingEvent;
 import com.yedu.common.event.bizppurio.ParentsClassInfoEvent;
 import com.yedu.common.event.bizppurio.ParentsClassNoticeEvent;

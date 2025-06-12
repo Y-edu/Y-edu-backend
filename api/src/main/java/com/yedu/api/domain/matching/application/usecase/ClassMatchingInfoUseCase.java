@@ -151,9 +151,11 @@ public class ClassMatchingInfoUseCase {
 
   private List<ClassMatching> getMatchings(List<Long> matchingIds, List<MatchingStatus> statuses) {
     if (CollectionUtils.isEmpty(matchingIds)) {
-      return classMatchingRepository.findByMatchStatusIn(statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
+      return classMatchingRepository.findByMatchStatusIn(
+          statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
     }
-    return classMatchingRepository.findByClassMatchingIdInAndMatchStatusIn(matchingIds, statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
+    return classMatchingRepository.findByClassMatchingIdInAndMatchStatusIn(
+        matchingIds, statuses, Sort.by(Sort.Direction.ASC, "matchStatus"));
   }
 
   public ApplicationFormResponse.Parents parents(ApplicationFormResponse applicationFormResponse) {

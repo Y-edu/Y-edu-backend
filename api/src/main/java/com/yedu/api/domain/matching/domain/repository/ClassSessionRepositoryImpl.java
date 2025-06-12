@@ -9,7 +9,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,39 +28,43 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate, Pageable pageable) {
 
     LocalDate now = LocalDate.now();
-    List<ClassSession> results = queryFactory
-        .selectFrom(classSession)
-        .where(
-            classSession.classManagement.eq(classManagement),
-            (
-                classSession.sessionDate.after(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-            ).or(
-                classSession.sessionDate.loe(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-                    .and(classSession.cancel.isFalse())
-            )
-        )
-        .offset(pageable.getOffset())
-        .limit(pageable.getPageSize())
-        .orderBy(getOrderSpecifiers(pageable.getSort()))
-        .fetch();
+    List<ClassSession> results =
+        queryFactory
+            .selectFrom(classSession)
+            .where(
+                classSession.classManagement.eq(classManagement),
+                (classSession
+                        .sessionDate
+                        .after(now)
+                        .and(classSession.sessionDate.between(startDate, endDate)))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .loe(now)
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                            .and(classSession.cancel.isFalse())))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(getOrderSpecifiers(pageable.getSort()))
+            .fetch();
 
-    Long total = queryFactory
-        .select(classSession.count())
-        .from(classSession)
-        .where(
-            classSession.classManagement.eq(classManagement),
-            (
-                classSession.sessionDate.after(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-            ).or(
-                classSession.sessionDate.loe(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-                    .and(classSession.cancel.isFalse())
-            )
-        )
-        .fetchOne();
+    Long total =
+        queryFactory
+            .select(classSession.count())
+            .from(classSession)
+            .where(
+                classSession.classManagement.eq(classManagement),
+                (classSession
+                        .sessionDate
+                        .after(now)
+                        .and(classSession.sessionDate.between(startDate, endDate)))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .loe(now)
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                            .and(classSession.cancel.isFalse())))
+            .fetchOne();
 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
   }
@@ -72,58 +75,60 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
       LocalDate startDate,
       LocalDate endDate,
       boolean completed,
-      Pageable pageable
-  ) {
+      Pageable pageable) {
     LocalDate now = LocalDate.now();
-    List<ClassSession> results = queryFactory
-        .selectFrom(classSession)
-        .where(
-            classSession.classManagement.eq(classManagement),
-            classSession.completed.eq(completed),
-            (
-                classSession.sessionDate.goe(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-            ).or(
-                classSession.sessionDate.before(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-                    .and(classSession.cancel.isFalse())
-            )
-        )
-        .offset(pageable.getOffset())
-        .limit(pageable.getPageSize())
-        .orderBy(getOrderSpecifiers(pageable.getSort()))
-        .fetch();
+    List<ClassSession> results =
+        queryFactory
+            .selectFrom(classSession)
+            .where(
+                classSession.classManagement.eq(classManagement),
+                classSession.completed.eq(completed),
+                (classSession
+                        .sessionDate
+                        .goe(now)
+                        .and(classSession.sessionDate.between(startDate, endDate)))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now)
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                            .and(classSession.cancel.isFalse())))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(getOrderSpecifiers(pageable.getSort()))
+            .fetch();
 
-    Long total = queryFactory
-        .select(classSession.count())
-        .from(classSession)
-        .where(
-            classSession.classManagement.eq(classManagement),
-            classSession.completed.eq(completed),
-            (
-                classSession.sessionDate.goe(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-            ).or(
-                classSession.sessionDate.before(now)
-                    .and(classSession.sessionDate.between(startDate, endDate))
-                    .and(classSession.cancel.isFalse())
-            )
-        )
-        .fetchOne();
+    Long total =
+        queryFactory
+            .select(classSession.count())
+            .from(classSession)
+            .where(
+                classSession.classManagement.eq(classManagement),
+                classSession.completed.eq(completed),
+                (classSession
+                        .sessionDate
+                        .goe(now)
+                        .and(classSession.sessionDate.between(startDate, endDate)))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now)
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                            .and(classSession.cancel.isFalse())))
+            .fetchOne();
 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
   }
-
 
   private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
     PathBuilder<ClassSession> pathBuilder = new PathBuilder<>(ClassSession.class, "classSession");
 
     return sort.stream()
-        .map(order -> new OrderSpecifier<>(
-            order.isAscending() ? Order.ASC : Order.DESC,
-            pathBuilder.getComparable(order.getProperty(), Comparable.class)
-        ))
+        .map(
+            order ->
+                new OrderSpecifier<>(
+                    order.isAscending() ? Order.ASC : Order.DESC,
+                    pathBuilder.getComparable(order.getProperty(), Comparable.class)))
         .toArray(OrderSpecifier[]::new);
   }
-
 }

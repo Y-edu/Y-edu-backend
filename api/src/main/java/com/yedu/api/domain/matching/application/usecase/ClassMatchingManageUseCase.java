@@ -127,7 +127,7 @@ public class ClassMatchingManageUseCase {
   public void updateMatching(List<Long> matchingIds, MatchingStatus matchingStatus) {
     List<ClassMatching> matchings = classMatchingRepository.findAllById(matchingIds);
 
-    matchings.forEach(it-> it.update(matchingStatus));
+    matchings.forEach(it -> it.update(matchingStatus));
   }
 
   public void changeTeacher(Long matchingId, Long newTeacherId) {

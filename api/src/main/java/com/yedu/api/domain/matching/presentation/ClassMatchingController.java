@@ -66,7 +66,8 @@ public class ClassMatchingController {
   }
 
   @MutationMapping
-  public Boolean updateMatching(@Argument List<Long> matchingIds, @Argument MatchingStatus matchingStatus) {
+  public Boolean updateMatching(
+      @Argument List<Long> matchingIds, @Argument MatchingStatus matchingStatus) {
     matchingManageUseCase.updateMatching(matchingIds, matchingStatus);
 
     return Boolean.TRUE;
