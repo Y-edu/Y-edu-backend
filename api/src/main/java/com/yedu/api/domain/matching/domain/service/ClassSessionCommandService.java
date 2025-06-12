@@ -10,8 +10,10 @@ import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,14 +120,20 @@ public class ClassSessionCommandService {
             classManagement, firstDayOfThisMonth);
 
     if (!forceCreate) {
-//      boolean hasExistingSessionInThisMonth =
-//          existingSessions.stream()
-//              .anyMatch(
-//                  it -> it.getSessionDate().getMonth().equals(firstDayOfThisMonth.getMonth()));
-//
-//      if (hasExistingSessionInThisMonth) {
-//        return;
-//      }
+      Set<YearMonth> targetMonths = Set.of(
+          YearMonth.from(today),
+          YearMonth.from(today.plusMonths(1)),
+          YearMonth.from(today.plusMonths(2))
+      );
+
+      Set<YearMonth> monthsWithExistingSessions = existingSessions.stream()
+          .map(session -> YearMonth.from(session.getSessionDate()))
+          .collect(Collectors.toSet());
+
+      // 3개월 모두 이미 존재한다면 생성을 건너뜀
+      if (monthsWithExistingSessions.containsAll(targetMonths)) {
+        return;
+      }
     }
     Map<LocalDate, ClassSession> existingSessionMap = mapSessionsByDate(existingSessions);
 
