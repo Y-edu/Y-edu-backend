@@ -63,7 +63,13 @@ public class TeacherBatchUseCase {
 
   public void completeTalkNotice() {
     List.of(22L, 49L, 55L).forEach(it -> {
-      Teacher teacher = teacherGetService.byId(it);
+      Teacher teacher;
+      try{
+         teacher = teacherGetService.byId(it);
+      }catch (Exception e){
+        log.error("선생님 찾기 중 오류 발생 : {} , id : {}", e.getMessage(), it);
+        return;
+      }
       String phoneNumber = teacher.getTeacherInfo().getPhoneNumber();
       TeacherCompleteTalkChangeNoticeEvent event = new TeacherCompleteTalkChangeNoticeEvent(phoneNumber);
       eventPublisher.publishEvent(event);
