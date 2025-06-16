@@ -62,12 +62,14 @@ public class TeacherBatchUseCase {
   }
 
   public void completeTalkNotice() {
-    teacherGetService.activeTeachers().stream()
-        .map(
-            teacher ->
-                new TeacherCompleteTalkChangeNoticeEvent(teacher.getTeacherInfo().getPhoneNumber()))
-        .forEach(eventPublisher::publishEvent);
+    List.of(22L, 49L, 55L).forEach(it -> {
+      Teacher teacher = teacherGetService.byId(it);
+      String phoneNumber = teacher.getTeacherInfo().getPhoneNumber();
+      TeacherCompleteTalkChangeNoticeEvent event = new TeacherCompleteTalkChangeNoticeEvent(phoneNumber);
+      eventPublisher.publishEvent(event);
+    });
   }
+
 
   public void remind() {
     sendCompleteTalkEvent(true);
