@@ -140,6 +140,7 @@ public class TeacherBatchUseCase {
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
+          log.info(">>>> 이벤트 발행 session Id : {} / 리마인드 여부 : {} / 선생님 ID : {} / 닉네임 : {}", it.getClassSessionId(), isRemind, teacher.getTeacherId(), teacher.getTeacherInfo().getNickName());
           if (isRemind) {
             it.remind();
             eventPublisher.publishEvent(
