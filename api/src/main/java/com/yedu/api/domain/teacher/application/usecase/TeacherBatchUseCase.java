@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class TeacherBatchUseCase {
 
   private static final List<Long> TEACHER_COMPLETE_TALK_WHITE_LIST = List.of(
+      22L,
+      49L,
       52L
   );
 
