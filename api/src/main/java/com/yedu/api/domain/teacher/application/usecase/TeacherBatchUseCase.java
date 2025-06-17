@@ -33,6 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class TeacherBatchUseCase {
 
+  private static final List<Long> TEACHER_COMPLETE_TALK_WHITE_LIST = List.of(
+      52L
+  );
+
   private final TeacherGetService teacherGetService;
 
   private final ApplicationEventPublisher eventPublisher;
@@ -88,6 +92,8 @@ public class TeacherBatchUseCase {
   private void sendCompleteTalkEvent(boolean isRemind) {
     teacherGetService
         .activeTeachers()
+        .stream()
+        .filter(teacher -> TEACHER_COMPLETE_TALK_WHITE_LIST.contains(teacher.getTeacherId()))
         .forEach(
             teacher -> {
               List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher);
@@ -123,6 +129,10 @@ public class TeacherBatchUseCase {
           }
           ApplicationForm applicationForm = matching.getApplicationForm();
           Teacher teacher = matching.getTeacher();
+
+          if (!TEACHER_COMPLETE_TALK_WHITE_LIST.contains(teacher.getTeacherId())){
+            return;
+          }
 
           String completeToken = classSessionKeyStorage.storeAndGet(it.getClassSessionId());
           String changeSessionToken =
