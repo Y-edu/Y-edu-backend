@@ -34,6 +34,7 @@ public class ParentsMapper {
         .online(request.online())
         .district(District.fromString(request.district()))
         .dong(request.dong())
+        .wantTime(request.wantedTime())
         .wantedSubject(request.wantedSubject())
         .favoriteStyle(request.favoriteStyle())
         .favoriteGender(request.favoriteGender())

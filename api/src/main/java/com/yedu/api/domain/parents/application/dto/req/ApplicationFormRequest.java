@@ -10,6 +10,7 @@ public record ApplicationFormRequest(
     String phoneNumber,
     String age,
     ClassType wantedSubject,
+    String wantedTime,
     List<String> classGoals,
     Gender favoriteGender,
     String favoriteStyle,
