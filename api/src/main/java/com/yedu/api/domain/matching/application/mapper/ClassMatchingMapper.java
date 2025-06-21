@@ -30,7 +30,7 @@ public class ClassMatchingMapper {
         applicationForm.getDong(),
         goals,
         applicationForm.getFavoriteStyle(),
-        parentDayTimes,
+        applicationForm.getWantTime(),
         teacherDayTimes,
         classMatching.getMatchStatus());
   }

@@ -119,6 +119,7 @@ public class ClassMatchingInfoUseCase {
         .pay(applicationForm.getPay())
         .matchingStatus(matching.getMatchStatus().toString())
         .childAge(applicationForm.getAge())
+        .wantedTime(applicationForm.getWantTime())
         .isOnline(applicationForm.getOnline().equals(Online.비대면))
         .source(applicationForm.getSource())
         .favoriteGender(applicationForm.getFavoriteGender().toString())

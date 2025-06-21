@@ -23,7 +23,7 @@ allprojects {
 	apply(plugin = "org.openapi.generator")
 	java {
 		toolchain {
-			languageVersion = JavaLanguageVersion.of(17)
+			languageVersion = JavaLanguageVersion.of(21)
 		}
 	}
 
@@ -42,6 +42,32 @@ allprojects {
 	}
 
 	repositories {
+		maven {
+			name = "nexusSnapshots"
+			url = uri("http://infrabird.duckdns.org:10006/repository/maven-snapshots/")
+			isAllowInsecureProtocol = true
+			credentials {
+				username =
+				password =
+			}
+			content {
+				includeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
+			}
+		}
+
+		maven {
+			name = "nexusReleases"
+			url = uri("http://infrabird.duckdns.org:10006/repository/maven-releases/")
+			isAllowInsecureProtocol = true
+			credentials {
+				username =
+				password =
+			}
+			content {
+				excludeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
+			}
+		}
+
 		mavenCentral()
 	}
 }
