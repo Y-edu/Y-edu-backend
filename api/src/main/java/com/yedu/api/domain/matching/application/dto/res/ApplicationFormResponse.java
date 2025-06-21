@@ -22,6 +22,7 @@ public class ApplicationFormResponse {
   private List<AvailableTime> availableTimes;
   private Parents parent;
   private Teacher teacher;
+  private String wantedTime;
   private String matchingStatus;
   private String matchingRefuseReason;
   private ClassManagement classManagement;

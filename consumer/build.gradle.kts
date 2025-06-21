@@ -8,7 +8,7 @@ jib {
 
 
     from {
-        image = "amazoncorretto:17"
+        image = "amazoncorretto:21"
     }
     to {
         image = "ghcr.io/$repositoryUsername/${project.name}:${project.version}"

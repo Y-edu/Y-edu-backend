@@ -29,6 +29,7 @@ tasks.register("generateTypeScriptClient") {
 }
 
 
+
 jib {
     val repositoryUsername = "y-edu"
     val repositoryToken = System.getenv("DEPLOY_TOKEN")
@@ -37,7 +38,7 @@ jib {
 
 
     from {
-        image = "amazoncorretto:17"
+        image = "amazoncorretto:21"
     }
     to {
         image = "ghcr.io/$repositoryUsername/${project.name}:${project.version}"
@@ -61,7 +62,7 @@ dependencies {
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
-    implementation(project(":shared:paymint-api"))
+    implementation(group = "com.yedu", name = "payment-interface", version = "1.0.0-SNAPSHOT", classifier = "plain")
 
 
     implementation("org.springframework.boot:spring-boot-starter-graphql")
@@ -117,3 +118,4 @@ val bootJar: org.springframework.boot.gradle.tasks.bundling.BootJar by tasks
 
 bootJar.enabled = true
 jar.enabled = true
+
