@@ -46,6 +46,10 @@ jobs:
       run: |
         cp ./logback/api-logback-spring.xml  ./api/src/main/resources/logback-spring.xml
 
+    - name: Copy gradle secret file
+      run: |
+        echo "${{ secrets.GRADLE_SECRET }}" > ./gradle-secret.properties
+
     - name: Modify existing JSON file with jq
       run: |
         jq '.private_key = "${{ secrets.SHEET_API_PRIVATE_KEY }}"' ./shared/sheet-support/src/main/resources/key.json > tmp.json && mv tmp.json ./shared/sheet-support/src/main/resources/key.json

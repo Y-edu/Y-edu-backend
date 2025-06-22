@@ -55,15 +55,13 @@ jib {
     }
 }
 
-
 dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:cache-support"))
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
-    implementation(group = "com.yedu", name = "payment-interface", version = "1.0.0-SNAPSHOT", classifier = "plain")
-
+    implementation("com.yedu:payment-interface:1.0.0")
 
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation ("org.springframework.boot:spring-boot-starter-validation")

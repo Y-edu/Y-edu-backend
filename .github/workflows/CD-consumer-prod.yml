@@ -47,6 +47,10 @@ jobs:
         run: |
           cp ./logback/consumer-logback-spring.xml  ./consumer/src/main/resources/logback-spring.xml
 
+      - name: Copy gradle secret file
+        run: |
+          echo "${{ secrets.GRADLE_SECRET }}" > ./gradle-secret.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ${{ env.working-directory }}
