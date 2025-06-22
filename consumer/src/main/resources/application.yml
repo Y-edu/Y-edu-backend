@@ -19,13 +19,14 @@ spring:
         format_sql: true
     open-in-view: false
 
-discord:
-  retry-count: 2
-  retry-interval-seconds: 3
-  web-client-properties:
-    connection-time-out: 10
-    read-time-out: 10
-    write-time-out: 10
+app:
+  discord-api:
+    retry-count: 2
+    retry-interval-seconds: 3
+    web-client-properties:
+      connection-time-out: 10
+      read-time-out: 10
+      write-time-out: 10
 
 bizppurio:
   token: 'https://api.bizppurio.com/v1/token'
@@ -39,4 +40,4 @@ bizppurio:
     class_guide: 'https://2ly.link/2639z'
 
 message:
-  enable: false
+  enable: true

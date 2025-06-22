@@ -4,7 +4,7 @@ import com.yedu.common.webclient.WebClientProperties;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("discord")
+@ConfigurationProperties("app.discord-api")
 record DiscordWebClientProperties(
     Map<DiscordWebhookType, String> webhooks,
     WebClientProperties webClientProperties,
