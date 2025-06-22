@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -264,7 +265,28 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
-    classSessionCommandService.change(sessionId, request.sessionDate(), request.start());
+    Pair<ClassSession, LocalDate> changeInfo = classSessionCommandService.change(sessionId,
+        request.sessionDate(),
+        request.start());
+    ClassSession session = changeInfo.getKey();
+    ClassManagement classManagement = session.getClassManagement();
+    ClassMatching matching = classManagement.getClassMatching();
+    TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+
+    // todo 날짜변경쉬트에 쓰기
+    sheetApi.write(
+        List.of(
+            List.of(
+                matching.getApplicationForm().getApplicationFormId(),
+                teacherInfo.getNickName(),
+                teacherInfo.getName(),
+                teacherInfo.getPhoneNumber(),
+                changeInfo.getValue().toString(), // 변경전 날짜
+                session.getSessionDate().toString(), // 변경한 날짜
+                session.getClassTime().getStart().toString(),
+                session.getClassTime().getClassMinute().toString(),
+                LocalDateTime.now().toString())), "change"
+    );
   }
 
   public void cancelSession(Long sessionId, String cancelReason) {

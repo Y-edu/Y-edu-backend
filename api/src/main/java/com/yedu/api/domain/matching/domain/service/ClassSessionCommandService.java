@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,10 +84,13 @@ public class ClassSessionCommandService {
     return session;
   }
 
-  public void change(Long sessionId, LocalDate sessionDate, LocalTime start) {
+  public Pair<ClassSession,LocalDate> change(Long sessionId, LocalDate sessionDate, LocalTime start) {
     ClassSession session = findSessionById(sessionId);
+    LocalDate beforeSessionDate = session.getSessionDate();
 
     session.changeDate(sessionDate, start);
+
+    return Pair.of(session, beforeSessionDate);
   }
 
   private ClassSession findSessionById(Long sessionId) {
