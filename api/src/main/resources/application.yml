@@ -46,13 +46,20 @@ cloud:
     stack:
       auto: false
 
-discord:
-  retry-count: 2
-  retry-interval-seconds: 3
-  web-client-properties:
-    connection-time-out: 10
-    read-time-out: 10
-    write-time-out: 10
+app:
+  payment-api:
+    web-client-properties:
+      connection-time-out: 3
+      read-time-out: 3
+      write-time-out: 4
+  discord-api:
+    retry-count: 2
+    retry-interval-seconds: 3
+    web-client-properties:
+      connection-time-out: 10
+      read-time-out: 10
+      write-time-out: 10
+
 
 management:
   endpoints:
