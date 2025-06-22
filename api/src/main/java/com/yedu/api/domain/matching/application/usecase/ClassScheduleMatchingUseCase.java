@@ -284,6 +284,7 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
                 "휴강",
+                Optional.ofNullable(session.getCancelReason()).orElse(""),
                 LocalDateTime.now().toString())), "cancel"
         );
   }
