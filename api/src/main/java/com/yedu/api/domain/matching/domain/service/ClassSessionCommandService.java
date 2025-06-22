@@ -57,16 +57,20 @@ public class ClassSessionCommandService {
         .toList();
   }
 
-  public void cancel(Long sessionId, String cancelReason) {
+  public ClassSession cancel(Long sessionId, String cancelReason) {
     ClassSession session = findSessionById(sessionId);
 
     session.cancel(cancelReason);
+
+    return session;
   }
 
-  public void revertCancel(Long sessionId) {
+  public ClassSession revertCancel(Long sessionId) {
     ClassSession session = findSessionById(sessionId);
 
     session.revertCancel();
+
+    return session;
   }
 
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {

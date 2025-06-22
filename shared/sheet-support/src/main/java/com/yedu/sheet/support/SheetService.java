@@ -24,8 +24,6 @@ public class SheetService implements SheetApi {
   @Value("${google.sheet.id}")
   private String spreadsheetId;
 
-  private final String sheetName = "data";
-
   @SneakyThrows
   public SheetService() {
     InputStream inputStream = SheetService.class.getClassLoader().getResourceAsStream("key.json");
@@ -39,7 +37,7 @@ public class SheetService implements SheetApi {
   }
 
   @SneakyThrows
-  public void write(List<List<Object>> values) {
+  public void write(List<List<Object>> values, String sheetName) {
     ValueRange body = new ValueRange().setValues(values);
 
     AppendValuesResponse appendValuesResponse =

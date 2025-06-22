@@ -268,11 +268,44 @@ public class ClassScheduleMatchingUseCase {
   }
 
   public void cancelSession(Long sessionId, String cancelReason) {
-    classSessionCommandService.cancel(sessionId, cancelReason);
+    ClassSession session = classSessionCommandService.cancel(sessionId, cancelReason);
+    ClassManagement classManagement = session.getClassManagement();
+    ClassMatching matching = classManagement.getClassMatching();
+    TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+
+    sheetApi.write(
+        List.of(
+            List.of(
+                matching.getApplicationForm().getApplicationFormId(),
+                teacherInfo.getNickName(),
+                teacherInfo.getName(),
+                teacherInfo.getPhoneNumber(),
+                session.getSessionDate().toString(), // 여기 수정
+                session.getClassTime().getStart().toString(),
+                session.getClassTime().getClassMinute().toString(),
+                "휴강",
+                LocalDateTime.now().toString())), "cancel"
+        );
   }
 
   public void revertCancelSession(Long sessionId) {
-    classSessionCommandService.revertCancel(sessionId);
+    ClassSession session = classSessionCommandService.revertCancel(sessionId);
+    ClassManagement classManagement = session.getClassManagement();
+    ClassMatching matching = classManagement.getClassMatching();
+    TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+
+    sheetApi.write(
+        List.of(
+            List.of(
+                matching.getApplicationForm().getApplicationFormId(),
+                teacherInfo.getNickName(),
+                teacherInfo.getName(),
+                teacherInfo.getPhoneNumber(),
+                session.getSessionDate().toString(), // 여기 수정
+                session.getClassTime().getStart().toString(),
+                session.getClassTime().getClassMinute().toString(),
+                "휴강 취소",
+                LocalDateTime.now().toString())), "cancel");
   }
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
@@ -294,7 +327,7 @@ public class ClassScheduleMatchingUseCase {
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
                 Optional.ofNullable(session.getHomework()).orElse(""),
                 Optional.ofNullable(session.getUnderstanding()).orElse(""),
-                LocalDateTime.now().toString())));
+                LocalDateTime.now().toString())),"data");
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {
