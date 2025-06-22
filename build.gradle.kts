@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
 	java
 	id ("java-library")
@@ -41,15 +43,26 @@ allprojects {
 		}
 	}
 
+	val localProps = Properties().apply {
+		val localFile = rootProject.file("gradle-secret.properties")
+		if (localFile.exists()) {
+			localFile.inputStream().use { load(it) }
+		}
+	}
+	val nexusUsername = localProps.getProperty("nexusUsername") as String
+	val nexusPassword = localProps.getProperty("nexusPassword") as String
+	val nexusUrl = localProps.getProperty("nexusUrl") as String
+
 	repositories {
 		maven {
 			name = "nexusSnapshots"
-			url = uri("http://infrabird.duckdns.org:10006/repository/maven-snapshots/")
-			isAllowInsecureProtocol = true
+
 			credentials {
-				username =
-				password =
+				username = nexusUsername
+				password = nexusPassword
 			}
+			url = uri("$nexusUrl/repository/maven-snapshots/")
+			isAllowInsecureProtocol = true
 			content {
 				includeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
 			}
@@ -57,12 +70,12 @@ allprojects {
 
 		maven {
 			name = "nexusReleases"
-			url = uri("http://infrabird.duckdns.org:10006/repository/maven-releases/")
-			isAllowInsecureProtocol = true
 			credentials {
-				username =
-				password =
+				username = nexusUsername
+				password = nexusPassword
 			}
+			url = uri("$nexusUrl/repository/maven-releases/")
+			isAllowInsecureProtocol = true
 			content {
 				excludeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
 			}

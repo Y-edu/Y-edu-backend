@@ -40,3 +40,4 @@ out/
 ### yml ###
 /api/src/main/resources/application-*.yml
 /consumer/src/main/resources/application-*.yml
+/gradle-secret.properties
