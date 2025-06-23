@@ -68,7 +68,7 @@ public class TeacherBatchUseCase {
   }
 
   public void completeTalkNotice() {
-    List.of(52L).forEach(it -> {
+    List.of(25L).forEach(it -> {
       Teacher teacher;
       try{
          teacher = teacherGetService.byId(it);
