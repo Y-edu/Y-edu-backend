@@ -61,7 +61,7 @@ public class ParentsManageUseCase {
     }
 
     if (applicationFormRepository.findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(applicationForm.getParents(), applicationForm.getDistrict(), applicationForm.getWantedSubject(),
-        applicationForm.getAge(), applicationForm.getClassCount(), LocalDateTime.now().minusSeconds(5)).isPresent()) {
+        applicationForm.getAge(), applicationForm.getClassCount(), LocalDateTime.now().minusMinutes(1)).isPresent()) {
       log.warn("중복 제출- 과외 식별자 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
       return;
     }
