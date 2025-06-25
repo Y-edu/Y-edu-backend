@@ -36,7 +36,9 @@ public class TeacherBatchUseCase {
   private static final List<Long> TEACHER_COMPLETE_TALK_WHITE_LIST = List.of(
       22L,
       49L,
-      52L
+      52L,
+      25L,
+      78L
   );
 
   private final TeacherGetService teacherGetService;
