@@ -17,7 +17,6 @@ import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -115,12 +114,9 @@ public class TeacherBatchUseCase {
             });
 
     LocalDateTime now = LocalDateTime.now();
-    LocalDate today = now.toLocalDate();
-    LocalDate yesterday = today.minusDays(1);
-
     List<ClassSession> sessions =
         classSessionRepository
-            .findBySessionDateBetweenAndCancelIsFalseAndCompletedIsFalse(yesterday, today)
+            .findBySessionDateAndCancelIsFalseAndCompletedIsFalse(now.toLocalDate())
             .stream()
             .filter(it -> !it.isRemind())
             .filter(

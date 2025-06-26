@@ -122,9 +122,11 @@ public class ClassSession extends BaseEntity {
     }
     // 리마인드 알림톡은 수업 종료 이후 1시간 뒤 발송되야함
     if (isRemind) {
-      return this.classTime.finishTime().plusHours(1L).isBefore(time.toLocalTime());
+      return sessionDate.equals(time.toLocalDate())
+          && this.classTime.finishTime().plusHours(1L).isBefore(time.toLocalTime());
     }
-    return this.classTime.finishTime().isBefore(time.toLocalTime());
+    return sessionDate.equals(time.toLocalDate())
+        && this.classTime.finishTime().isBefore(time.toLocalTime());
   }
 
   public void remind() {
