@@ -125,10 +125,11 @@ public class TeacherBatchUseCase {
                         && (isRemind || !classSessionStorage.has(it.getClassSessionId())))
             .toList();
 
+    log.info(">>> 발송 후보 과외 일정 : {}", sessions);
     sessions.forEach(
         it -> {
           ClassMatching matching = it.getClassManagement().getClassMatching();
-          if (matching.isNotInProgessStatus() || it.isRemind()) {
+          if (matching.isNotInProgessStatus() || it.isRemind() || it.isCancel()) {
             return;
           }
           ApplicationForm applicationForm = matching.getApplicationForm();
@@ -142,7 +143,7 @@ public class TeacherBatchUseCase {
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
-          log.info(">>>> 이벤트 발행 session Id : {} / 리마인드 여부 : {} / 선생님 ID : {} / 닉네임 : {}", it.getClassSessionId(), isRemind, teacher.getTeacherId(), teacher.getTeacherInfo().getNickName());
+          log.info(">>>> 이벤트 발행 session Id : {} / 리마인드 여부 : {} / 선생님 ID : {} / 닉네임 : {} / 과외 일정 : {}", it.getClassSessionId(), isRemind, teacher.getTeacherId(), teacher.getTeacherInfo().getNickName(), it);
           if (isRemind) {
             it.remind();
             eventPublisher.publishEvent(

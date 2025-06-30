@@ -18,8 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /** 실제 수업 정보 기록 */
+@ToString
 @Entity
 @Getter
 @Builder
