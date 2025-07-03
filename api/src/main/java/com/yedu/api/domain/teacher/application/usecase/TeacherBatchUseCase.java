@@ -110,6 +110,7 @@ public class TeacherBatchUseCase {
                   .map(Optional::get)
                   .filter(ClassManagement::hasSchedule)
                   .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
+                  .filter(it-> !isRemind) // remind가 아닌 경우에만 세션 생성
                   .forEach(it -> classSessionCommandService.createSingleSessions(it, false, null));
             });
 
