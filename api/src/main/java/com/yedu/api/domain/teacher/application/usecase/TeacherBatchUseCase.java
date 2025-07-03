@@ -111,7 +111,10 @@ public class TeacherBatchUseCase {
                   .filter(ClassManagement::hasSchedule)
                   .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
                   .filter(it-> !isRemind) // remind가 아닌 경우에만 세션 생성
-                  .forEach(it -> classSessionCommandService.createSingleSessions(it, false, null));
+                  .forEach(it -> {
+                    log.info(" >>> 배치 과외 일정 생성 시작 - classManagementId: {}", it.getClassManagementId());
+                    classSessionCommandService.createSingleSessions(it, false, null);
+                  });
             });
 
     LocalDateTime now = LocalDateTime.now();

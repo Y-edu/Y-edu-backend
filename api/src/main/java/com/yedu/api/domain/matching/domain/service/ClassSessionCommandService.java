@@ -120,6 +120,8 @@ public class ClassSessionCommandService {
 
   public void createSingleSessions(
       ClassManagement classManagement, boolean forceCreate, LocalDate changeStartDate) {
+    log.info(">>> 과외 일정 생성 : classManagementId = {}, forceCreate = {}, changeStartDate = {}",
+      classManagement.getClassManagementId(), forceCreate, changeStartDate);
     LocalDate today = LocalDate.now();
     LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
     List<ClassSchedule> schedules = classManagement.getSchedules();
