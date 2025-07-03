@@ -2,6 +2,7 @@ package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
@@ -51,17 +52,25 @@ public class ClassSessionQueryService {
                   Page<ClassSession> sessions =
                       Optional.ofNullable(isComplete)
                           .map(
-                              it ->
-                                  classSessionRepository
+                              complete -> {
+                                if (complete) {
+                                  return classSessionRepository
                                       .findByClassManagementAndSessionDateBetweenAndCompleted(
-                                          cm, startOfMonth, endOfMonth, isComplete, pageable))
+                                          cm, startOfMonth.minusMonths(1L), endOfMonth, isComplete, pageable);
+                                }
+                                return classSessionRepository
+                                    .findByClassManagementAndSessionDateBetweenAndCompleted(
+                                        cm, startOfMonth, endOfMonth, isComplete, pageable);
+
+                              }
+                          )
                           .orElseGet(
                               () ->
                                   classSessionRepository.findByClassManagementAndSessionDateBetween(
                                       cm, startOfMonth, endOfMonth, pageable));
 
                   // Page<ClassSession> → Page<Schedule>
-                  Page<SessionResponse.Schedule> schedulePage = SessionResponse.from(sessions);
+                  Page<Schedule> schedulePage = SessionResponse.from(sessions);
 
                   return Map.entry(applicationFormId, schedulePage);
                 })
