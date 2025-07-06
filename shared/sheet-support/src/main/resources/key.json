@@ -1,10 +1,10 @@
 {
   "type": "service_account",
-  "project_id": "y-edu-460311",
+  "project_id": "y-edu-465114",
   "private_key_id": "${SHEET_API_PRIVATE_KEY_ID}",
   "private_key": "${SHEET_API_PRIVATE_KEY}",
-  "client_email": "yedu-syncer@y-edu-460311.iam.gserviceaccount.com",
-  "client_id": "111582398593397644379",
+  "client_email": "yedu-298@y-edu-465114.iam.gserviceaccount.com",
+  "client_id": "112153605892163228429",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
