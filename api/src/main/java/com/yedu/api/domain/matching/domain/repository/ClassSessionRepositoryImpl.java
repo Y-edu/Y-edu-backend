@@ -44,10 +44,7 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .and(classSession.sessionDate.between(startDate, endDate))
                             .and(classSession.cancel.isFalse()))
                     .or(
-                        classSession
-                            .sessionDate
-                            .before(now.minusDays(7))
-                            .and(classSession.sessionDate.between(startDate, endDate))
+                        classSession.sessionDate.between(now.minusDays(7), endDate)
                     )
             )
             .offset(pageable.getOffset())
@@ -72,10 +69,7 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .and(classSession.sessionDate.between(startDate, endDate))
                             .and(classSession.cancel.isFalse()))
                     .or(
-                        classSession
-                            .sessionDate
-                            .before(now.minusDays(7))
-                            .and(classSession.sessionDate.between(startDate, endDate))
+                        classSession.sessionDate.between(now.minusDays(7), endDate)
                     )
             )
 
@@ -110,10 +104,7 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .and(classSession.cancel.isFalse())
                     )
                     .or(
-                        classSession
-                            .sessionDate
-                            .before(now.minusDays(7))
-                            .and(classSession.sessionDate.between(startDate, endDate))
+                        classSession.sessionDate.between(now.minusDays(7), endDate)
                     )
             )
             .offset(pageable.getOffset())
@@ -140,10 +131,7 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .and(classSession.cancel.isFalse()))
 
                     .or(
-                        classSession
-                            .sessionDate
-                            .before(now.minusDays(7))
-                            .and(classSession.sessionDate.between(startDate, endDate))
+                        classSession.sessionDate.between(now.minusDays(7), endDate)
                     )
 
             )
