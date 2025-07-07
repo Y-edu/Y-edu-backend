@@ -42,7 +42,14 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .sessionDate
                             .loe(now)
                             .and(classSession.sessionDate.between(startDate, endDate))
-                            .and(classSession.cancel.isFalse())))
+                            .and(classSession.cancel.isFalse()))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now.minusDays(7))
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                    )
+            )
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .orderBy(getOrderSpecifiers(pageable.getSort()))
@@ -63,7 +70,15 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .sessionDate
                             .loe(now)
                             .and(classSession.sessionDate.between(startDate, endDate))
-                            .and(classSession.cancel.isFalse())))
+                            .and(classSession.cancel.isFalse()))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now.minusDays(7))
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                    )
+            )
+
             .fetchOne();
 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
@@ -92,7 +107,15 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .sessionDate
                             .before(now)
                             .and(classSession.sessionDate.between(startDate, endDate))
-                            .and(classSession.cancel.isFalse())))
+                            .and(classSession.cancel.isFalse())
+                    )
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now.minusDays(7))
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                    )
+            )
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .orderBy(getOrderSpecifiers(pageable.getSort()))
@@ -114,7 +137,16 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             .sessionDate
                             .before(now)
                             .and(classSession.sessionDate.between(startDate, endDate))
-                            .and(classSession.cancel.isFalse())))
+                            .and(classSession.cancel.isFalse()))
+
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now.minusDays(7))
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                    )
+
+            )
             .fetchOne();
 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
