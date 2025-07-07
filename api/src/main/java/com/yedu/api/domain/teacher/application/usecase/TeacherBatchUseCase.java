@@ -70,7 +70,20 @@ public class TeacherBatchUseCase {
   }
 
   public void completeTalkNotice() {
-    List.of(78L).forEach(it -> {
+    List.of(58L,
+        24L,
+        74L,
+        42L,
+        44L,
+        17L,
+        55L,
+        70L,
+        71L,
+        72L,
+        48L,
+        75L,
+        77L
+    ).forEach(it -> {
       Teacher teacher;
       try{
          teacher = teacherGetService.byId(it);
