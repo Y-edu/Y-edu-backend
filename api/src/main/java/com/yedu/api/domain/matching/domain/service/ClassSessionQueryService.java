@@ -3,6 +3,7 @@ package com.yedu.api.domain.matching.domain.service;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule;
+import com.yedu.api.domain.matching.application.dto.res.SessionResponse.ScheduleInfo;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
@@ -30,12 +31,13 @@ public class ClassSessionQueryService {
   private final ClassSessionRepository classSessionRepository;
 
   public SessionResponse query(
+      ClassMatching tokenClassMatching,
       List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
     LocalDate now = LocalDate.now();
     LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).minusMonths(1L);
     LocalDate endOfMonth = now.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
 
-    Map<String, Page<SessionResponse.Schedule>> scheduleMap =
+    Map<String, ScheduleInfo> scheduleMap =
         classMatchings.stream()
             .map(
                 matching -> {
@@ -64,7 +66,7 @@ public class ClassSessionQueryService {
                   // Page<ClassSession> → Page<Schedule>
                   Page<Schedule> schedulePage = SessionResponse.from(sessions);
 
-                  return Map.entry(applicationFormId, schedulePage);
+                  return Map.entry(applicationFormId, new ScheduleInfo(schedulePage, matching.getClassMatchingId() == tokenClassMatching.getClassMatchingId()));
                 })
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

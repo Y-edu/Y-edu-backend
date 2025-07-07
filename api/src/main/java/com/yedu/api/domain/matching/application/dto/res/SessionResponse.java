@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.application.dto.res;
 
+import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -9,7 +10,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
-public record SessionResponse(Map<String, Page<Schedule>> schedules) {
+public record SessionResponse(Map<String, ScheduleInfo> schedules) {
+
+  public record ScheduleInfo(
+      Page<Schedule> schedules,
+      boolean send
+  ){
+
+  }
 
   @Builder(access = AccessLevel.PRIVATE)
   public record Schedule(
