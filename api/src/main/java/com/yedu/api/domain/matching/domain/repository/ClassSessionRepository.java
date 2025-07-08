@@ -25,13 +25,6 @@ public interface ClassSessionRepository
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
-  List<ClassSession> findByClassManagementAndSessionDateIsBefore(ClassManagement classManagement, LocalDate sessionDateBefore);
-
-  List<ClassSession> findByClassManagementAndSessionDateIsBeforeOrderBySessionDateDesc(
-      ClassManagement classManagement, LocalDate sessionDateBefore);
-
-  List<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBy(ClassManagement classManagement, LocalDate sessionDateBefore);
-
   Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
       ClassManagement classManagement, LocalDate sessionDateBefore);
 }
