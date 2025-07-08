@@ -85,14 +85,12 @@ public class ClassSessionCommandService {
     int roundMaxNumber = round * 4; // 한달기준
 
     classSessionRepository
-        .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
+        .findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
             session.getClassManagement(), session.getSessionDate()
         )
         .ifPresentOrElse((prevSession)-> {
               Integer prevRound = prevSession.getRound();
-              Integer newRound = (prevRound == null)
-                  ? null
-                  : (prevRound >= roundMaxNumber) ? 0 : prevRound + 1;
+              Integer newRound =  (prevRound >= roundMaxNumber) ? 0 : prevRound + 1;
 
           session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
         },
