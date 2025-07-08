@@ -25,6 +25,7 @@ public interface ClassSessionRepository
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
-  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
-      ClassManagement classManagement, LocalDate sessionDateBefore);
+  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
+      ClassManagement classManagement, LocalDate sessionDate);
+
 }
