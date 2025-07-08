@@ -4,6 +4,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,4 +24,14 @@ public interface ClassSessionRepository
       ClassManagement classManagement, LocalDate changeStartDate);
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
+
+  List<ClassSession> findByClassManagementAndSessionDateIsBefore(ClassManagement classManagement, LocalDate sessionDateBefore);
+
+  List<ClassSession> findByClassManagementAndSessionDateIsBeforeOrderBySessionDateDesc(
+      ClassManagement classManagement, LocalDate sessionDateBefore);
+
+  List<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBy(ClassManagement classManagement, LocalDate sessionDateBefore);
+
+  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
+      ClassManagement classManagement, LocalDate sessionDateBefore);
 }

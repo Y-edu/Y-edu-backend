@@ -346,6 +346,7 @@ public class ClassScheduleMatchingUseCase {
                 teacherInfo.getName(),
                 teacherInfo.getPhoneNumber(),
                 session.getSessionDate().toString(), // 여기 수정
+                Optional.ofNullable(session.getRound()).map(String::valueOf).orElse(""), // 여기 수정
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
