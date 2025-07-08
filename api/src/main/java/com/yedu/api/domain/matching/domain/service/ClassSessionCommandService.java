@@ -14,6 +14,8 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,8 +78,29 @@ public class ClassSessionCommandService {
 
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
+    ClassManagement classManagement = session.getClassManagement();
+    ClassMatching classMatching = classManagement.getClassMatching();
+    String classCount = classMatching.getApplicationForm().getClassCount();
+    Integer round = parseClassCount(classCount);
+    int roundMaxNumber = round * 4; // 한달기준
 
-    session.complete(request.classMinute(), request.understanding(), request.homework());
+    classSessionRepository
+        .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
+            session.getClassManagement(), session.getSessionDate()
+        )
+        .ifPresentOrElse((prevSession)-> {
+          Integer prevRound = prevSession.getRound();
+          Integer newRound;
+              if (prevRound >= roundMaxNumber) {
+                newRound = 0;
+              } else {
+                newRound = prevRound + 1;
+          }
+
+          session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
+        },
+        ()-> session.complete(request.classMinute(), request.understanding(), request.homework()));
+
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
@@ -151,5 +174,14 @@ public class ClassSessionCommandService {
     List<ClassSession> newSessions =
         generateNewSessions(schedules, classManagement, existingSessionMap, today, changeStartDate);
     classSessionRepository.saveAll(newSessions);
+  }
+
+
+  private Integer parseClassCount(String input) {
+    Matcher matcher = Pattern.compile("\\d+").matcher(input);
+    if (matcher.find()) {
+      return Integer.parseInt(matcher.group());
+    }
+    return null;
   }
 }
