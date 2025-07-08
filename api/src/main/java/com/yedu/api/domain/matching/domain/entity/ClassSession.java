@@ -137,7 +137,7 @@ public class ClassSession extends BaseEntity {
 
   public void complete(Integer realClassMinute, String understanding, String homework, Integer round) {
     if (round != null){
-      this.round++;
+      this.round = round + 1;
     }
     this.complete(realClassMinute, understanding, homework);
   }
