@@ -54,6 +54,8 @@ public class ClassSession extends BaseEntity {
 
   private Integer realClassTime;
 
+  private Integer round; // 회차
+
   public void cancel(String cancelReason) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
@@ -131,5 +133,12 @@ public class ClassSession extends BaseEntity {
 
   public void remind() {
     this.remind = true;
+  }
+
+  public void complete(Integer realClassMinute, String understanding, String homework, Integer round) {
+    if (round != null){
+      this.round++;
+    }
+    this.complete(realClassMinute, understanding, homework);
   }
 }
