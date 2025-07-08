@@ -90,7 +90,7 @@ public class ClassSessionCommandService {
         )
         .ifPresentOrElse((prevSession)-> {
               Integer prevRound = prevSession.getRound();
-              Integer newRound =  (prevRound >= roundMaxNumber) ? 0 : prevRound + 1;
+              Integer newRound =  (prevRound >= roundMaxNumber) ? 1 : prevRound + 1;
 
           session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
         },
