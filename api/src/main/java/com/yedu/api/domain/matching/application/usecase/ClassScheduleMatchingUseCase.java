@@ -337,6 +337,7 @@ public class ClassScheduleMatchingUseCase {
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
+    String roundNumber = roundNumber(matching, session);
 
     sheetApi.write(
         List.of(
@@ -345,14 +346,26 @@ public class ClassScheduleMatchingUseCase {
                 teacherInfo.getNickName(),
                 teacherInfo.getName(),
                 teacherInfo.getPhoneNumber(),
-                session.getSessionDate().toString(), // 여기 수정
-                Optional.ofNullable(session.getRound()).map(String::valueOf).orElse(""), // 여기 수정
+                session.getSessionDate().toString(),
+                roundNumber,
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
                 Optional.ofNullable(session.getHomework()).orElse(""),
                 Optional.ofNullable(session.getUnderstanding()).orElse(""),
                 LocalDateTime.now().toString())),"data");
+  }
+
+  private String roundNumber(ClassMatching matching, ClassSession session) {
+    if (matching.getApplicationForm().getApplicationFormId().equals("T-16")){
+      return Optional.ofNullable(session.getRound())
+          .map(it-> {
+            int count = it * 2;
+            return (count - 1) + "," + count;
+          }).orElse("");
+    }
+     return Optional.ofNullable(session.getRound())
+          .map(String::valueOf).orElse("");
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {
