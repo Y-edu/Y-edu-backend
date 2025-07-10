@@ -53,6 +53,7 @@ public class ParentsManageUseCase {
             .optionalParentsByPhoneNumber(request.phoneNumber())
             .orElseGet(() -> parentsSaveService.saveParents(mapToParents(request)));
 
+    parentsUpdateService.updateCount(parents); // todo : 나중에 학부모 생성과 신청서 생성이 분리되면 나누어질 부분
     ApplicationForm applicationForm = mapToApplicationForm(parents, request);
 
     if (applicationFormRepository.findById(applicationForm.getApplicationFormId()).isPresent()) {
@@ -65,8 +66,6 @@ public class ParentsManageUseCase {
       log.warn("중복 제출- 과외 식별자 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
       return;
     }
-
-    parentsUpdateService.updateCount(parents); // todo : 나중에 학부모 생성과 신청서 생성이 분리되면 나누어질 부분
 
     List<Goal> goals =
         request.classGoals().stream().map(goal -> mapToGoal(applicationForm, goal)).toList();
