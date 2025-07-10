@@ -3,6 +3,7 @@ package com.yedu.api.domain.teacher.presentation;
 import com.yedu.api.domain.teacher.application.usecase.TeacherBatchUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +30,8 @@ public class TeacherBatchController {
   @Operation(
       summary = "완료톡 변경 안내 알림톡 발송",
       tags = {"완료톡 관련 API"})
-  public ResponseEntity<Void> completeTalkNotice() {
-    teacherBatchUseCase.completeTalkNotice();
+  public ResponseEntity<Void> completeTalkNotice(Set<Long> teacherIds) {
+    teacherBatchUseCase.completeTalkNotice(teacherIds);
 
     return ResponseEntity.noContent().build();
   }

@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,14 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 @Slf4j
 public class TeacherBatchUseCase {
-
-  private static final List<Long> TEACHER_COMPLETE_TALK_WHITE_LIST = List.of(
-      22L,
-      49L,
-      52L,
-      25L,
-      78L
-  );
 
   private final TeacherGetService teacherGetService;
 
@@ -69,21 +62,8 @@ public class TeacherBatchUseCase {
         .forEach(eventPublisher::publishEvent);
   }
 
-  public void completeTalkNotice() {
-    List.of(58L,
-        24L,
-        74L,
-        42L,
-        44L,
-        17L,
-        55L,
-        70L,
-        71L,
-        72L,
-        48L,
-        75L,
-        77L
-    ).forEach(it -> {
+  public void completeTalkNotice(Set<Long> teacherIds) {
+    teacherIds.forEach(it -> {
       Teacher teacher;
       try{
          teacher = teacherGetService.byId(it);
@@ -110,7 +90,6 @@ public class TeacherBatchUseCase {
     teacherGetService
         .activeTeachers()
         .stream()
-        .filter(teacher -> TEACHER_COMPLETE_TALK_WHITE_LIST.contains(teacher.getTeacherId()))
         .forEach(
             teacher -> {
               List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher);
@@ -151,11 +130,6 @@ public class TeacherBatchUseCase {
           }
           ApplicationForm applicationForm = matching.getApplicationForm();
           Teacher teacher = matching.getTeacher();
-
-          if (!TEACHER_COMPLETE_TALK_WHITE_LIST.contains(teacher.getTeacherId())){
-            return;
-          }
-
           String completeToken = classSessionKeyStorage.storeAndGet(it.getClassSessionId());
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
