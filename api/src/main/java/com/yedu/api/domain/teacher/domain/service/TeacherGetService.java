@@ -99,6 +99,6 @@ public class TeacherGetService {
   }
 
   public List<Teacher> activeTeachers() {
-    return teacherRepository.findTeacherByStatus(TeacherStatus.활동중);
+    return teacherRepository.findAll(); // todo 수정
   }
 }
