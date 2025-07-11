@@ -1,5 +1,6 @@
 package com.yedu.api.domain.teacher.presentation;
 
+import com.yedu.api.domain.teacher.application.dto.req.CompleteTalkNoticeRequest;
 import com.yedu.api.domain.teacher.application.usecase.TeacherBatchUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,8 +31,8 @@ public class TeacherBatchController {
   @Operation(
       summary = "완료톡 변경 안내 알림톡 발송",
       tags = {"완료톡 관련 API"})
-  public ResponseEntity<Void> completeTalkNotice(Set<Long> teacherIds) {
-    teacherBatchUseCase.completeTalkNotice(teacherIds);
+  public ResponseEntity<Void> completeTalkNotice(CompleteTalkNoticeRequest request) {
+    teacherBatchUseCase.completeTalkNotice(request.teacherIds());
 
     return ResponseEntity.noContent().build();
   }
