@@ -106,8 +106,10 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
 
     return predicate.and(
         classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.일시중단)
+            .and(classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.중단))
             .or(
-                classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.일시중단)
+                (classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.일시중단)
+                    .or(classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.중단)))
                     .and(
                         classSession.sessionDate.loe(
                             Expressions.dateTemplate(
@@ -117,7 +119,8 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                             )
                         )
                     )
-            ));
+            )
+    );
   }
 
 
