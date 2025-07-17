@@ -2,6 +2,7 @@ package com.yedu.api.domain.matching.application.dto.res;
 
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
-public record SessionResponse(Map<String, ScheduleInfo> schedules) {
+public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, MatchingStatus> matchingStatuses) {
 
   public record ScheduleInfo(
       Page<Schedule> schedules,
@@ -50,6 +51,6 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules) {
   }
 
   public static SessionResponse empty() {
-    return new SessionResponse(Map.of());
+    return new SessionResponse(Map.of(), Map.of());
   }
 }
