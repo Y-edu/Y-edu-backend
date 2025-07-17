@@ -83,8 +83,7 @@ public class ClassSessionCommandService {
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
     String classCount = classMatching.getApplicationForm().getClassCount();
-    Integer round = parseClassCount(classCount);
-    int roundMaxNumber = round * 4; // 한달기준
+    final int roundMaxNumber = getRoundMaxNumber(classMatching, classCount);
 
     classSessionRepository
         .findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
@@ -102,6 +101,15 @@ public class ClassSessionCommandService {
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
     return session;
+  }
+
+
+  private int getRoundMaxNumber(ClassMatching classMatching, String classCount) {
+    if (classMatching.getApplicationForm().getApplicationFormId().equals("T-16")){
+      return 6;
+    }
+      Integer round = parseClassCount(classCount);
+      return round * 4; // 한달기준
   }
 
   public Pair<ClassSession,LocalDate> change(Long sessionId, LocalDate sessionDate, LocalTime start) {
