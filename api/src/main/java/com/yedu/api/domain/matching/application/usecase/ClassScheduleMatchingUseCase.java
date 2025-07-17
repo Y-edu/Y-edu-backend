@@ -352,8 +352,10 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getClassMinute().toString(),
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
                 Optional.ofNullable(session.getHomework()).orElse(""),
-                Optional.ofNullable(session.getUnderstanding()).orElse(""),
-                LocalDateTime.now().toString())),"data");
+                LocalDateTime.now().toString(),
+                Optional.ofNullable(session.getUnderstanding()).orElse("")
+                ))
+        ,"data");
   }
 
   private String roundNumber(ClassMatching matching, ClassSession session) {
