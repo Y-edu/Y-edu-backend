@@ -82,17 +82,15 @@ public class ClassSessionCommandService {
     // FIXME :: 결제 선생 연동 후 입금날짜 기준으로 회차 다시 기록해야함, 현재로직은 이전과외일정 기준으로 회차를 설정하는데, 이전 과외 일정이 없거나 신규 과외는 회차가 기록되지 않는 이슈가 있음
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
-    String classCount = classMatching.getApplicationForm().getClassCount();
-    final int roundMaxNumber = getRoundMaxNumber(classMatching, classCount);
 
     classSessionRepository
         .findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
             session.getClassManagement(), session.getSessionDate()
         )
         .ifPresentOrElse((prevSession)-> {
+              Integer maxRoundNumber = classMatching.getApplicationForm().maxRoundNumber();
               Integer prevRound = prevSession.getRound();
-              Integer newRound =  (prevRound >= roundMaxNumber) ? 1 : prevRound + 1;
-
+              Integer newRound =  (prevRound >= maxRoundNumber) ? 1 : prevRound + 1;
           session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
         },
         ()-> session.complete(request.classMinute(), request.understanding(), request.homework(), 1));
@@ -101,15 +99,6 @@ public class ClassSessionCommandService {
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
     return session;
-  }
-
-
-  private int getRoundMaxNumber(ClassMatching classMatching, String classCount) {
-    if (classMatching.getApplicationForm().getApplicationFormId().equals("T-16")){
-      return 6;
-    }
-      Integer round = parseClassCount(classCount);
-      return round * 4; // 한달기준
   }
 
   public Pair<ClassSession,LocalDate> change(Long sessionId, LocalDate sessionDate, LocalTime start) {
@@ -181,12 +170,4 @@ public class ClassSessionCommandService {
     classSessionRepository.saveAll(newSessions);
   }
 
-
-  private Integer parseClassCount(String input) {
-    Matcher matcher = Pattern.compile("\\d+").matcher(input);
-    if (matcher.find()) {
-      return Integer.parseInt(matcher.group());
-    }
-    return null;
-  }
 }

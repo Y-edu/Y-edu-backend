@@ -9,6 +9,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
+import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ClassSessionQueryService {
         classMatchings.stream()
             .map(
                 matching -> {
-                  String applicationFormId = matching.getApplicationForm().getApplicationFormId();
+                  ApplicationForm applicationForm = matching.getApplicationForm();
                   Optional<ClassManagement> optionalManagement =
                       classManagementQueryService.query(matching.getClassMatchingId());
 
@@ -66,9 +67,9 @@ public class ClassSessionQueryService {
                                       cm, startOfMonth, endOfMonth, pageable));
 
                   // Page<ClassSession> → Page<Schedule>
-                  Page<Schedule> schedulePage = SessionResponse.from(sessions);
+                  Page<Schedule> schedulePage = SessionResponse.from(sessions, applicationForm.maxRoundNumber());
 
-                  return Map.entry(applicationFormId, new ScheduleInfo(schedulePage, matching.getClassMatchingId() == tokenClassMatching.getClassMatchingId()));
+                  return Map.entry(applicationForm.getApplicationFormId(), new ScheduleInfo(schedulePage, matching.getClassMatchingId() == tokenClassMatching.getClassMatchingId()));
                 })
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

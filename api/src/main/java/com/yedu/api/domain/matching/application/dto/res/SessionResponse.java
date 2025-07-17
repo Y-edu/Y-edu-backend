@@ -30,10 +30,11 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
       @Schema(description = "숙제") String homework,
       @Schema(description = "과외 일시") LocalDate classDate,
       @Schema(description = "과외 시간") LocalTime classStart,
-      @Schema(description = "회차 정보") Integer round,
+      @Schema(description = "현재 회차 정보") Integer currentRound,
+      @Schema(description = "최대 회차 정보") Integer maxRound,
       @Schema(description = "과외 소요시간") Integer classMinute) {}
 
-  public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions) {
+  public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions, Integer maxRound) {
     return sessions.map(
         it ->
             Schedule.builder()
@@ -45,7 +46,8 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
-                .round(it.getRound())
+                .currentRound(it.getRound())
+                .maxRound(maxRound)
                 .classMinute(it.getClassTime().getClassMinute())
                 .build());
   }
