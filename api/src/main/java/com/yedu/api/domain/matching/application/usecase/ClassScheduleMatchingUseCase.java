@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -261,7 +262,13 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> matchings =
         classSessionCommandService.createSessionOf(teacher, false, null);
 
-    return classSessionQueryService.query(matching, matchings, isComplete, pageable);
+    List<ClassMatching> pausedMatching = classMatchingGetService.getPaused(teacher);
+
+    List<ClassMatching> merged = Stream.of(matchings, pausedMatching)
+        .flatMap(List::stream)
+        .toList();
+
+    return classSessionQueryService.query(matching, merged, isComplete, pageable);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
