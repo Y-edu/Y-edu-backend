@@ -39,7 +39,7 @@ public class ClassMatchingGetService {
   }
 
   public List<ClassMatching> getPaused(Teacher teacher) {
-    return classMatchingRepository.findByTeacherAndMatchStatus(teacher, MatchingStatus.일시중단);
+    return classMatchingRepository.findByTeacherAndMatchStatusIn(teacher, List.of(MatchingStatus.일시중단, MatchingStatus.중단));
   }
 
   public ClassMatching getBySessionId(Long sessionId) {

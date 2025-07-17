@@ -5,6 +5,7 @@ import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import io.lettuce.core.dynamic.annotation.Param;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
@@ -39,4 +40,6 @@ public interface ClassMatchingRepository
   void deleteAllByApplicationForm_Parents_PhoneNumber(String phoneNumber);
 
   void deleteAllByTeacher_TeacherInfo_PhoneNumber(String phoneNumber);
+
+  List<ClassMatching> findByTeacherAndMatchStatusIn(Teacher teacher, Collection<MatchingStatus> matchStatuses);
 }
