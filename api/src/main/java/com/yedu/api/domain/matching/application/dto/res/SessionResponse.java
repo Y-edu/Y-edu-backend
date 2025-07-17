@@ -29,6 +29,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules) {
       @Schema(description = "숙제") String homework,
       @Schema(description = "과외 일시") LocalDate classDate,
       @Schema(description = "과외 시간") LocalTime classStart,
+      @Schema(description = "회차 정보") Integer round,
       @Schema(description = "과외 소요시간") Integer classMinute) {}
 
   public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions) {
@@ -43,6 +44,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules) {
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
+                .round(it.getRound())
                 .classMinute(it.getClassTime().getClassMinute())
                 .build());
   }

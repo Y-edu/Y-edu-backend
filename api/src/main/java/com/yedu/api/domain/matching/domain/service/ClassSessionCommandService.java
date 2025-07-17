@@ -96,7 +96,7 @@ public class ClassSessionCommandService {
 
           session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
         },
-        ()-> session.complete(request.classMinute(), request.understanding(), request.homework()));
+        ()-> session.complete(request.classMinute(), request.understanding(), request.homework(), 1));
 
 
     Hibernate.initialize(
