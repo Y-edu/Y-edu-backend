@@ -7,6 +7,8 @@ import com.yedu.api.domain.teacher.domain.entity.constant.District;
 import com.yedu.api.global.entity.BaseEntity;
 import com.yedu.common.type.ClassType;
 import jakarta.persistence.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +22,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationForm extends BaseEntity {
+
+  private static final int ROUND_TIMES = 4;
+
   @Id private String applicationFormId; // 지역구 + 학부모PK + 학부모 횟수(a~z)
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -84,4 +89,18 @@ public class ApplicationForm extends BaseEntity {
   public void updateProceedStatus() {
     proceedStatus = !proceedStatus;
   }
+
+  public Integer maxRoundNumber(){
+    // FIXME : T-16 과외만 최대 6회차로 고정되야함
+    if (applicationFormId.equals("T-16")){
+      return 6;
+    }
+
+    Matcher matcher = Pattern.compile("\\d+").matcher(classCount);
+    if (matcher.find()) {
+      return Integer.parseInt(matcher.group()) * ROUND_TIMES;
+    }
+    return null;
+  }
+
 }

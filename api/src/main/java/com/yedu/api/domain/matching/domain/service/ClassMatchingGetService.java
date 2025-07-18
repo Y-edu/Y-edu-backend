@@ -38,6 +38,10 @@ public class ClassMatchingGetService {
     return classMatchingRepository.findByTeacherAndMatchStatus(teacher, MatchingStatus.최종매칭);
   }
 
+  public List<ClassMatching> getPaused(Teacher teacher) {
+    return classMatchingRepository.findByTeacherAndMatchStatusIn(teacher, List.of(MatchingStatus.일시중단, MatchingStatus.중단));
+  }
+
   public ClassMatching getBySessionId(Long sessionId) {
     return classMatchingRepository
         .findBySessionId(sessionId)

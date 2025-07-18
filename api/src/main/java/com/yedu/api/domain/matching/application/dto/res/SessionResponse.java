@@ -2,6 +2,7 @@ package com.yedu.api.domain.matching.application.dto.res;
 
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
-public record SessionResponse(Map<String, ScheduleInfo> schedules) {
+public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, MatchingStatus> matchingStatuses) {
 
   public record ScheduleInfo(
       Page<Schedule> schedules,
@@ -29,9 +30,11 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules) {
       @Schema(description = "숙제") String homework,
       @Schema(description = "과외 일시") LocalDate classDate,
       @Schema(description = "과외 시간") LocalTime classStart,
+      @Schema(description = "현재 회차 정보") Integer currentRound,
+      @Schema(description = "최대 회차 정보") Integer maxRound,
       @Schema(description = "과외 소요시간") Integer classMinute) {}
 
-  public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions) {
+  public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions, Integer maxRound) {
     return sessions.map(
         it ->
             Schedule.builder()
@@ -43,11 +46,13 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules) {
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
+                .currentRound(it.getRound())
+                .maxRound(maxRound)
                 .classMinute(it.getClassTime().getClassMinute())
                 .build());
   }
 
   public static SessionResponse empty() {
-    return new SessionResponse(Map.of());
+    return new SessionResponse(Map.of(), Map.of());
   }
 }
