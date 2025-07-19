@@ -9,6 +9,7 @@ CREATE TABLE class_session
     homework_percentage INT COMMENT '아이의 숙제 완료도(%)',
     cancel BOOLEAN DEFAULT FALSE COMMENT '휴강 여부',
     cancel_reason VARCHAR(255) COMMENT '휴강 사유',
+    is_today_cancel BOOLEAN DEFAULT FALSE COMMENT '당일 취소 여부',
     completed BOOLEAN DEFAULT FALSE COMMENT '수업 완료 여부',
     start TIME COMMENT '수업 시작 시간',
     class_minute INT COMMENT '수업 시간',

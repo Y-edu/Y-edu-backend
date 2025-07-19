@@ -1,6 +1,7 @@
 package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
@@ -60,10 +61,10 @@ public class ClassSessionCommandService {
         .toList();
   }
 
-  public ClassSession cancel(Long sessionId, String cancelReason) {
+  public ClassSession cancel(Long sessionId, CancelReason cancelReason) {
     ClassSession session = findSessionById(sessionId);
 
-    session.cancel(cancelReason);
+    session.cancel(cancelReason.name());
 
     return session;
   }
