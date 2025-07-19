@@ -86,7 +86,6 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
       LocalDate endDate
   ) {
     BooleanExpression predicate = classSession.classManagement.eq(classManagement)
-        .and(classSession.completed.eq(completed))
         .and(
             classSession.sessionDate.goe(now)
                 .and(classSession.sessionDate.between(startDate, endDate))
@@ -98,29 +97,32 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                 .or(
                     classSession.sessionDate.between(now.minusDays(7), endDate)
                 )
+        )
+        .and(
+            classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.일시중단)
+                .and(classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.중단))
+                .or(
+                    (classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.일시중단)
+                        .or(classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.중단)))
+                        .and(
+                            classSession.sessionDate.loe(
+                                Expressions.dateTemplate(
+                                    LocalDate.class,
+                                    "date({0})",
+                                    classSession.classManagement.classMatching.pausedAt
+                                )
+                            )
+                        )
+                )
         );
 
     if (completed == null) {
       return predicate;
     }
 
-    return predicate.and(
-        classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.일시중단)
-            .and(classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.중단))
-            .or(
-                (classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.일시중단)
-                    .or(classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.중단)))
-                    .and(
-                        classSession.sessionDate.loe(
-                            Expressions.dateTemplate(
-                                LocalDate.class,
-                                "date({0})",
-                                classSession.classManagement.classMatching.pausedAt
-                            )
-                        )
-                    )
-            )
-    );
+    return predicate
+        .and(classSession.completed.eq(completed));
+
   }
 
 
