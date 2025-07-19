@@ -1,6 +1,7 @@
 package com.yedu.api.domain.matching.domain.entity;
 
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.entity.BaseEntity;
 import jakarta.persistence.Embedded;
@@ -56,6 +57,8 @@ public class ClassSession extends BaseEntity {
 
   private Integer round; // 회차
 
+  private boolean isTodayCancel;
+
   public void cancel(String cancelReason) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
@@ -76,6 +79,7 @@ public class ClassSession extends BaseEntity {
     }
 
     cancel = true;
+    isTodayCancel = sessionDate.isEqual(LocalDate.now());
     this.cancelReason = cancelReason;
   }
 

@@ -24,6 +24,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
   public record Schedule(
       Long classSessionId,
       @Schema(description = "휴강 여부") boolean cancel,
+      @Schema(description = "당일 휴강 여부") boolean isTodayCancel,
       @Schema(description = "휴강 사유") String cancelReason,
       @Schema(description = "완료 여부") boolean complete,
       @Schema(description = "이해도") String understanding,
@@ -40,6 +41,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
             Schedule.builder()
                 .classSessionId(it.getClassSessionId())
                 .cancel(it.isCancel())
+                .isTodayCancel(it.isTodayCancel())
                 .cancelReason(it.getCancelReason())
                 .complete(it.isCompleted())
                 .classDate(it.getSessionDate())

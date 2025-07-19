@@ -15,6 +15,7 @@ import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveRes
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
@@ -296,7 +297,7 @@ public class ClassScheduleMatchingUseCase {
     );
   }
 
-  public void cancelSession(Long sessionId, String cancelReason) {
+  public void cancelSession(Long sessionId, CancelReason cancelReason) {
     ClassSession session = classSessionCommandService.cancel(sessionId, cancelReason);
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
