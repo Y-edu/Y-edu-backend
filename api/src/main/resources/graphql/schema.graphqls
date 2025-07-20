@@ -97,6 +97,8 @@ type Schedule {
 type Session {
     classSessionId: Int
     date: String
+    currentRound: Int
+    maxRound: Int
     start: String
     classMinute: Int
     understanding: String

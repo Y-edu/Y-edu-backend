@@ -220,6 +220,9 @@ public class ClassMatchingInfoUseCase {
     Optional<ClassManagement> management =
         classManagementQueryService.queryWithSchedule(applicationFormResponse.getMatchingId());
 
+    Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
+        .orElse(null);
+
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
         .textBook(management.map(ClassManagement::getTextbook).orElse(null))
@@ -259,6 +262,8 @@ public class ClassMatchingInfoUseCase {
                                         .cancel(it.isCancel())
                                         .cancelReason(it.getCancelReason())
                                         .completed(it.isCompleted())
+                                        .currentRound(it.getRound())
+                                        .maxRound(maxRoundNumber)
                                         .build())
                             .toList())
                 .orElse(null))

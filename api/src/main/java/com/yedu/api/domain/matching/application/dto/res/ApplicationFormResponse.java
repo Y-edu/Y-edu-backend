@@ -110,5 +110,7 @@ public class ApplicationFormResponse {
     private Boolean cancel;
     private String cancelReason;
     private Boolean completed;
+    private Integer currentRound;
+    private Integer maxRound;
   }
 }
