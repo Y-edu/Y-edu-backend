@@ -6,7 +6,11 @@ import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
@@ -36,7 +40,26 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
       @Schema(description = "과외 소요시간") Integer classMinute) {}
 
   public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions, Integer maxRound) {
-    return sessions.map(
+    List<ClassSession> sessionList = sessions.getContent();
+    List<ClassSession> activeSessions = sessionList.stream()
+        .filter(s -> !s.isCancel())
+        .sorted(Comparator.comparing(ClassSession::getSessionDate))
+        .toList();
+
+    Map<Long, Integer> roundMap = new LinkedHashMap<>();
+    int round = 1;
+
+    for (ClassSession s : activeSessions) {
+      if (s.getRound() != null) {
+        round = s.getRound();
+      }
+      roundMap.put(s.getClassSessionId(), round);
+      round++;
+      if (round > maxRound) round = 1;
+    }
+
+    return sessions
+        .map(
         it ->
             Schedule.builder()
                 .classSessionId(it.getClassSessionId())
@@ -48,7 +71,8 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
-                .currentRound(it.getRound())
+                .currentRound(Optional.ofNullable(it.getRound())
+                    .orElse(roundMap.get(it.getClassSessionId())))
                 .maxRound(maxRound)
                 .classMinute(it.getClassTime().getClassMinute())
                 .build());
