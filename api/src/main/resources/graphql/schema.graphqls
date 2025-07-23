@@ -101,6 +101,7 @@ type Session {
     maxRound: Int
     start: String
     classMinute: Int
+    realClassMinute: Int
     understanding: String
     homeworkPercentage: Int
     cancel: Boolean

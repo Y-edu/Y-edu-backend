@@ -105,6 +105,7 @@ public class ApplicationFormResponse {
     private String date;
     private String start;
     private Integer classMinute;
+    private Integer realClassMinute;
     private String understanding;
     private String homework;
     private Boolean cancel;

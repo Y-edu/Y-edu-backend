@@ -257,6 +257,7 @@ public class ClassMatchingInfoUseCase {
                                         .date(it.getSessionDate().toString())
                                         .start(it.getClassTime().getStart().toString())
                                         .classMinute(it.getClassTime().getClassMinute())
+                                        .realClassMinute(it.getRealClassTime())
                                         .understanding(it.getUnderstanding())
                                         .homework(it.getHomework())
                                         .cancel(it.isCancel())
