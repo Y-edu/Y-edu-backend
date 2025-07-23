@@ -297,8 +297,8 @@ public class ClassScheduleMatchingUseCase {
     );
   }
 
-  public void cancelSession(Long sessionId, CancelReason cancelReason) {
-    ClassSession session = classSessionCommandService.cancel(sessionId, cancelReason);
+  public void cancelSession(Long sessionId, CancelReason cancelReason, Boolean isTodayCancel) {
+    ClassSession session = classSessionCommandService.cancel(sessionId, cancelReason, isTodayCancel);
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
