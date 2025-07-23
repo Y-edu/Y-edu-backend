@@ -3,6 +3,7 @@ package com.yedu.api.domain.matching.application.usecase;
 import static com.yedu.api.global.event.mapper.BizppurioEventMapper.*;
 import static com.yedu.api.global.event.mapper.DiscordEventMapper.*;
 
+import com.yedu.api.domain.matching.application.dto.req.CancelSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.ChangeSessionDateRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
@@ -297,8 +298,8 @@ public class ClassScheduleMatchingUseCase {
     );
   }
 
-  public void cancelSession(Long sessionId, CancelReason cancelReason, Boolean isTodayCancel) {
-    ClassSession session = classSessionCommandService.cancel(sessionId, cancelReason, isTodayCancel);
+  public void cancelSession(Long sessionId, CancelSessionRequest cancelSessionRequest) {
+    ClassSession session = classSessionCommandService.cancel(sessionId, cancelSessionRequest.cancelReason(), cancelSessionRequest.isTodayCancel());
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();

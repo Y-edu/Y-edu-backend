@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.presentation;
 
+import com.yedu.api.domain.matching.application.dto.req.CancelSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.ChangeSessionDateRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleConfirmRequest;
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleMatchingRequest;
@@ -133,10 +134,9 @@ public class ClassMatchingScheduleController {
       tags = {"완료톡 관련 API"})
   public ResponseEntity<Void> cancelSession(
       @PathVariable Long sessionId,
-      @RequestParam CancelReason cancelReason,
-      @RequestBody Boolean isTodayCancel) {
+      @RequestBody CancelSessionRequest cancelSessionRequest) {
 
-    scheduleMatchingUseCase.cancelSession(sessionId, cancelReason, isTodayCancel);
+    scheduleMatchingUseCase.cancelSession(sessionId, cancelSessionRequest);
 
     return ResponseEntity.noContent().build();
   }
