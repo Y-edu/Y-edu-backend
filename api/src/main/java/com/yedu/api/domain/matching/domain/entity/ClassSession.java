@@ -59,7 +59,7 @@ public class ClassSession extends BaseEntity {
 
   private boolean isTodayCancel;
 
-  public void cancel(String cancelReason) {
+  public void cancel(String cancelReason, boolean isTodayCancel) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
     }
@@ -79,7 +79,7 @@ public class ClassSession extends BaseEntity {
     }
 
     cancel = true;
-    isTodayCancel = sessionDate.isEqual(LocalDate.now());
+    this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
   }
 

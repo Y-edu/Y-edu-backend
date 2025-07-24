@@ -61,10 +61,10 @@ public class ClassSessionCommandService {
         .toList();
   }
 
-  public ClassSession cancel(Long sessionId, CancelReason cancelReason) {
+  public ClassSession cancel(Long sessionId, CancelReason cancelReason, Boolean isTodayCancel) {
     ClassSession session = findSessionById(sessionId);
 
-    session.cancel(cancelReason.name());
+    session.cancel(cancelReason.name(), isTodayCancel);
 
     return session;
   }
