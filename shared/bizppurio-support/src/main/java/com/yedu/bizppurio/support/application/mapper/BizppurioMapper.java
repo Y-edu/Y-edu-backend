@@ -708,7 +708,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 
   private String formatPay(int amount) {
     double pay = amount / 10_000.0;
-    return PAY_FORMAT.format(pay) + "만원";
+    return PAY_FORMAT.format(pay);
   }
 
   public CommonRequest mapToTeacherCompleteTalkChangeNoticeEvent(
