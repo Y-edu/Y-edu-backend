@@ -10,6 +10,7 @@ import com.yedu.common.event.bizppurio.*;
 import com.yedu.common.event.bizppurio.ClassGuideEvent;
 import com.yedu.common.event.bizppurio.ParentsClassInfoEvent.ClassTime;
 import com.yedu.common.event.bizppurio.ParentsClassInfoEvent.FirstDay;
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -51,6 +52,9 @@ public class BizppurioMapper {
   private static final String BOT = "BK";
   private static final String CHANNEL = "AC";
   private static final String MESSAGE = "MD";
+
+
+  private static final DecimalFormat PAY_FORMAT = new DecimalFormat("#.##");
 
   public CommonRequest mapToApplyAgree(ApplyAgreeEvent applyAgreeEvent) {
     String message =
@@ -692,7 +696,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
         """
             .strip()
             .replace("#{name}", event.nickName())
-            .replace("#{pay}", String.valueOf(event.pay() / 10_000));
+            .replace("#{pay}", formatPay(event.pay()));
 
     Message messageBody =
         new TextMessage(
@@ -700,6 +704,11 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION),
             BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION.getCode());
     return createCommonRequest(messageBody, event.parentPhoneNumber());
+  }
+
+  private String formatPay(int amount) {
+    double pay = amount / 10_000.0;
+    return PAY_FORMAT.format(pay);
   }
 
   public CommonRequest mapToTeacherCompleteTalkChangeNoticeEvent(
