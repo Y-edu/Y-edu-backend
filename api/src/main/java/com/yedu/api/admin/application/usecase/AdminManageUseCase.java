@@ -14,6 +14,7 @@ import com.yedu.api.admin.domain.service.AdminSaveService;
 import com.yedu.api.admin.domain.service.AdminUpdateService;
 import com.yedu.api.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
@@ -29,6 +30,7 @@ import com.yedu.common.type.ClassType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,7 @@ public class AdminManageUseCase {
   private final KeyStorage<MatchingTimeTableDto> matchingTimetableKeyStorage;
   private final TeacherNotifyApplicationFormKeyStorage teacherNotifyApplicationFormKeyStorage;
   private final MatchingIdApplicationNotifyKeyStorage matchingIdApplicationNotifyKeyStorage;
+  private final ClassMatchingGetService classMatchingGetService;
 
   public void updateParentsKakaoName(long parentsId, ParentsKakaoNameRequest request) {
     Parents parents = adminGetService.parentsById(parentsId);
@@ -83,6 +86,18 @@ public class AdminManageUseCase {
     RecommendTeacherEvent recommendTeacherEvent = recommendTeacherEvents.get(0);
     eventPublisher.publishEvent(
         mapToRecommendGuideEvent(recommendTeacherEvent.parentsPhoneNumber()));
+  }
+
+  public Pair<String, ClassType> retrieveRecommendTeacherToken(Long classMatchingId) {
+    ClassMatching matching = classMatchingGetService.getById(classMatchingId);
+    long teacherId = matching.getTeacher().getTeacherId();
+    ClassType wantedSubject = matching.getApplicationForm().getWantedSubject();
+
+    MatchingTimeTableDto key = new MatchingTimeTableDto(teacherId, classMatchingId, wantedSubject);
+
+    return Pair.of(
+        matchingTimetableKeyStorage.storeAndGet(key),
+        wantedSubject);
   }
 
   private String createMatchingTimeTableToken(ClassMatching classMatching) {
