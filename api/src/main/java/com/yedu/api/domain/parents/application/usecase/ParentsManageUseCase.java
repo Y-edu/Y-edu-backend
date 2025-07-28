@@ -47,7 +47,9 @@ public class ParentsManageUseCase {
   private final RedisRepository redisRepository;
   private final ApplicationFormRepository applicationFormRepository;
 
-  public void saveParentsAndApplication(ApplicationFormRequest request) {
+  
+  public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend) {
+    
     Parents parents =
         parentsGetService
             .optionalParentsByPhoneNumber(request.phoneNumber())
@@ -67,6 +69,31 @@ public class ParentsManageUseCase {
       return;
     }
 
+     //  applicationFormId를 제외한 모든 필드가 동일한 중복 신청서 체크 (최초발송)
+    if (!isResend &&
+        applicationFormRepository.findByAllFieldsExceptId(
+            applicationForm.getParents(),
+            applicationForm.getAge(),
+            applicationForm.getOnline(),
+            applicationForm.getDistrict(),
+            applicationForm.getDong(),
+            applicationForm.getWantedSubject(),
+            applicationForm.getLevel(),
+            applicationForm.getFavoriteCondition(),
+            applicationForm.getEducationImportance(),
+            applicationForm.getFavoriteStyle(),
+            applicationForm.getFavoriteGender(),
+            applicationForm.getFavoriteDirection(),
+            applicationForm.getWantTime(),
+            applicationForm.getClassCount(),
+            applicationForm.getClassTime(),
+            applicationForm.getSource(),
+            applicationForm.isProceedStatus(),
+            applicationForm.getPay()).isPresent()) {
+      log.warn("중복 제출- 모든 필드 동일한 신청서 발견 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
+      return;
+    }
+   
     List<Goal> goals =
         request.classGoals().stream().map(goal -> mapToGoal(applicationForm, goal)).toList();
     parentsSaveService.saveApplication(applicationForm, goals);
@@ -100,5 +127,10 @@ public class ParentsManageUseCase {
         .map(applicationFormAvailableQueryService::query)
         .map(ApplicationFormAvailableMapper::map)
         .orElseGet(ApplicationFormTimeTableResponse::empty);
+  }
+
+
+  public void resendParentsAndApplication(ApplicationFormRequest request) {
+    saveParentsAndApplication(request, true);
   }
 }
