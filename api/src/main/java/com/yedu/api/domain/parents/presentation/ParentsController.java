@@ -26,7 +26,14 @@ public class ParentsController {
   @PostMapping("/save/application")
   @Operation(summary = "Tally 제출 - 학부모 신청건 API")
   public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
-    parentsManageUseCase.saveParentsAndApplication(request);
+    parentsManageUseCase.saveParentsAndApplication(request, false);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/resend/application")
+  @Operation(summary = "관리자 직접 제출 - 학부모 신청건 재발송 API")
+  public ResponseEntity resendApplication(@RequestBody ApplicationFormRequest request) {
+    parentsManageUseCase.resendParentsAndApplication(request);
     return ResponseEntity.ok().build();
   }
 
