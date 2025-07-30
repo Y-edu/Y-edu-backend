@@ -26,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -124,6 +125,14 @@ public class AdminController {
   public ResponseEntity recommendTeacher(@RequestBody RecommendTeacherRequest request) {
     adminManageUseCase.recommendTeacher(request);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/details/matching/recommend")
+  @Operation(summary = "학부모에게 선생님 제안 알림톡 링크 조회", description = "학부모에게 선생님 제안 알림톡 링크 조회 API")
+  public ResponseEntity<String> retrieveRecommendTeacherToken(@RequestParam Long classMatchingId) {
+    Pair<String, ClassType> tokenWithClassType = adminManageUseCase.retrieveRecommendTeacherToken(classMatchingId);
+
+    return ResponseEntity.ok(tokenWithClassType.getLeft() + "?subject=" + tokenWithClassType.getRight());
   }
 
   @PostMapping("/details/matching/proposal/{applicationFormId}")
