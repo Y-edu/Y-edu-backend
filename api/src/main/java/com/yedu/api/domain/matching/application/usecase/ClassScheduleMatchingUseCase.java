@@ -13,6 +13,7 @@ import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
+import com.yedu.api.domain.matching.application.dto.res.RetrieveMonthlyClassTimeResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
@@ -51,7 +52,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +65,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 @Component
@@ -409,4 +413,37 @@ public class ClassScheduleMatchingUseCase {
               return classMatchingGetService.getById(matchingId);
             });
   }
+
+  public RetrieveMonthlyClassTimeResponse retrieveMonthlyClassTime(String token, Long classMatchingId, int monthsCount) {
+    ClassMatching matching = StringUtils.hasText(token)
+        ? getClassMatchingByToken(token)
+        : classMatchingGetService.getById(classMatchingId);
+
+    LocalDate now = LocalDate.now();
+    LocalDate thisMonthStart = now.withDayOfMonth(1);
+
+    List<LocalDate> monthStarts = IntStream.range(0, monthsCount)
+        .mapToObj(thisMonthStart::minusMonths)
+        .toList();
+    Map<Integer, CompletableFuture<Integer>> futureMap = monthStarts.stream()
+        .collect(Collectors.toMap(
+            LocalDate::getMonthValue,
+            start -> {
+              LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+              return classSessionQueryService.sumClassTimeAsync(matching, start, end);
+            }
+        ));
+
+    CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0])).join();
+
+    Map<Integer, Integer> result = futureMap.entrySet().stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            e -> e.getValue().join()
+        ));
+
+    return new RetrieveMonthlyClassTimeResponse(result);
+  }
+
+
 }

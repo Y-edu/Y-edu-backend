@@ -2,10 +2,12 @@ package com.yedu.api.domain.matching.domain.repository;
 
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import io.lettuce.core.dynamic.annotation.Param;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -28,4 +30,15 @@ public interface ClassSessionRepository
   Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
       ClassManagement classManagement, LocalDate sessionDate);
 
+  @Query("""
+    select sum(cs.realClassTime) from ClassSession cs 
+    where cs.classManagement.classMatching.classMatchingId = :matchingId 
+      and cs.cancel is false 
+      and cs.completed is true 
+      and cs.isTodayCancel is false
+      and cs.sessionDate between :startDate and :endDate
+  """)
+  Integer sumClassTime(@Param("matchingId") Long matchingId,
+      @Param("startDate") LocalDate startDate,
+      @Param("endDate") LocalDate endDate);
 }
