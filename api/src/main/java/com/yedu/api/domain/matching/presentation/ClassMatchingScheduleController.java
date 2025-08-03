@@ -11,6 +11,7 @@ import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequ
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
+import com.yedu.api.domain.matching.application.dto.res.RetrieveMonthlyClassTimeResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
@@ -19,6 +20,7 @@ import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -200,5 +203,24 @@ public class ClassMatchingScheduleController {
     scheduleMatchingUseCase.changeSessionDate(sessionId, changeSessionDateRequest);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/sessions/month")
+  @Operation(
+      summary = "월별 수업 총 진행 시간",
+      description = "월별로 수업 총 실제 수업 진행 시간을 반환합니다",
+      tags = {"완료톡 관련 API"})
+  public ResponseEntity<RetrieveMonthlyClassTimeResponse> retrieveMonthlyClassTime(
+      @RequestParam(required = false) String token,
+      @RequestParam(required = false) Long classMatchingId,
+      @RequestParam(required = false, defaultValue = "2") Integer monthCount
+  ) {
+    if (!StringUtils.hasText(token) && classMatchingId == null){
+      throw new IllegalArgumentException("token 또는 matchingId 중 하나는 필수 값입니다");
+    }
+
+    RetrieveMonthlyClassTimeResponse response = scheduleMatchingUseCase.retrieveMonthlyClassTime(token, classMatchingId, monthCount);
+
+    return ResponseEntity.ok(response);
   }
 }
