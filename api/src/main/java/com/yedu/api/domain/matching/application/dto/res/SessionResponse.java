@@ -37,7 +37,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
       @Schema(description = "과외 시간") LocalTime classStart,
       @Schema(description = "현재 회차 정보") Integer currentRound,
       @Schema(description = "최대 회차 정보") Integer maxRound,
-      @Schema(description = "과외 소요시간") Integer classMinute) {}
+      @Schema(description = "과외 소요 시간") Integer classMinute) {}
 
   public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions, Integer maxRound) {
     List<ClassSession> sessionList = sessions.getContent();
@@ -74,7 +74,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
                 .currentRound(Optional.ofNullable(it.getRound())
                     .orElse(roundMap.get(it.getClassSessionId())))
                 .maxRound(maxRound)
-                .classMinute(it.getClassTime().getClassMinute())
+                .classMinute(it.isCompleted() ? it.getRealClassTime() : it.getClassTime().getClassMinute())
                 .build());
   }
 
