@@ -4,9 +4,13 @@ import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.*;
 
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
+import com.yedu.api.domain.parents.application.dto.res.ParentSessionResponse;
 import com.yedu.api.domain.parents.application.mapper.ApplicationFormAvailableMapper;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
@@ -24,6 +28,7 @@ import com.yedu.api.domain.teacher.domain.aggregate.TeacherWithAvailable;
 import com.yedu.cache.support.RedisRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +51,8 @@ public class ParentsManageUseCase {
   private final ApplicationFormAvailableCommandService applicationFormAvailableCommandService;
   private final RedisRepository redisRepository;
   private final ApplicationFormRepository applicationFormRepository;
+  private final ClassMatchingGetService classMatchingGetService;
+  private final ClassSessionQueryService classSessionQueryService;
 
   
   public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend) {
@@ -132,5 +139,15 @@ public class ParentsManageUseCase {
 
   public void resendParentsAndApplication(ApplicationFormRequest request) {
     saveParentsAndApplication(request, true);
+  }
+
+  public List<ParentSessionResponse> retrieveSessions(String phoneNumber) {
+    Parents parent = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
+
+    List<ClassMatching> matchings = classMatchingGetService.getMatched(parent);
+    Map<ClassMatching, List<ClassSession>> sessionWithMatching = classSessionQueryService.query(matchings);
+
+    return ParentSessionResponse.of(sessionWithMatching);
   }
 }

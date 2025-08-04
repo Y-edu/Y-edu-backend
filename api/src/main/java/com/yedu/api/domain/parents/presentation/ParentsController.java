@@ -3,14 +3,17 @@ package com.yedu.api.domain.parents.presentation;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
+import com.yedu.api.domain.parents.application.dto.res.ParentSessionResponse;
 import com.yedu.api.domain.parents.application.usecase.ParentsManageUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +45,15 @@ public class ParentsController {
   public ResponseEntity<ApplicationFormTimeTableResponse> retrieveTimeTable(
       @Valid @ParameterObject ApplicationFormTimeTableRequest request) {
     ApplicationFormTimeTableResponse response = parentsManageUseCase.retrieveTimeTable(request);
+
+    return ResponseEntity.ok().body(response);
+  }
+
+
+  @GetMapping("/{phoneNumber}/sessions")
+  @Operation(summary = "학부모의 과외 일정 조회")
+  public ResponseEntity<List<ParentSessionResponse>> retrieveSessions(@PathVariable String phoneNumber) {
+    List<ParentSessionResponse> response = parentsManageUseCase.retrieveSessions(phoneNumber);
 
     return ResponseEntity.ok().body(response);
   }
