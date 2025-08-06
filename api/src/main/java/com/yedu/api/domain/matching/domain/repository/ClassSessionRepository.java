@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -41,4 +42,23 @@ public interface ClassSessionRepository
   Integer sumClassTime(@Param("matchingId") Long matchingId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
+
+  @Query("""
+    select cs from ClassSession cs
+    where cs.classManagement.classManagementId = (
+      select cs2.classManagement.classManagementId
+      from ClassSession cs2
+      where cs2.classSessionId = :sessionId
+    )
+    order by cs.sessionDate asc
+  """)
+  List<ClassSession> findBySameClassManagementId(@Param("sessionId") Long sessionId);
+
+  @Query("""
+    UPDATE ClassSession cs
+    SET cs.round = :round
+    WHERE cs.classSessionId = :sessionId
+  """)
+  @Modifying
+  void updateRoundBySessionId(@Param("sessionId") Long sessionId, @Param("round") Integer round);
 }

@@ -282,6 +282,15 @@ public class ClassScheduleMatchingUseCase {
         request.sessionDate(),
         request.start());
     ClassSession session = changeInfo.getKey();
+
+    // 휴강된 세션이거나 당일 취소된 세션인 경우 에러 발생
+    if (session.isCancel() || session.isTodayCancel()) {
+      throw new IllegalStateException("휴강되거나 당일 취소된 세션은 날짜를 변경할 수 없습니다");
+    }
+
+    // 날짜 변경 후 round 순차 업데이트
+    classSessionCommandService.updateRoundSequentially(sessionId);
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -304,6 +313,12 @@ public class ClassScheduleMatchingUseCase {
 
   public void cancelSession(Long sessionId, CancelSessionRequest cancelSessionRequest) {
     ClassSession session = classSessionCommandService.cancel(sessionId, cancelSessionRequest.cancelReason(), cancelSessionRequest.isTodayCancel());
+    
+    // Teacher 취소인 경우 round 순차 업데이트
+    if (cancelSessionRequest.cancelReason() == CancelReason.TEACHER) {
+      classSessionCommandService.updateRoundSequentially(sessionId);
+    }
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -326,6 +341,12 @@ public class ClassScheduleMatchingUseCase {
 
   public void revertCancelSession(Long sessionId) {
     ClassSession session = classSessionCommandService.revertCancel(sessionId);
+    
+    // Teacher 취소 철회인 경우 round 순차 업데이트
+    if (CancelReason.TEACHER.name().equals(session.getCancelReason())) {
+      classSessionCommandService.updateRoundSequentially(sessionId);
+    }
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
