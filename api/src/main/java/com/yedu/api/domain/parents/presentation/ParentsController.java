@@ -1,5 +1,6 @@
 package com.yedu.api.domain.parents.presentation;
 
+import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
@@ -56,5 +57,13 @@ public class ParentsController {
     List<ParentSessionResponse> response = parentsManageUseCase.retrieveSessions(phoneNumber);
 
     return ResponseEntity.ok().body(response);
+  }
+
+  @PostMapping("/{phoneNumber}/sessions/change-form")
+  @Operation(summary = "학부모의 과외 일시정지/교체 신청 접수")
+  public ResponseEntity<Void> acceptChangeSessionForm(@PathVariable String phoneNumber, @RequestBody AcceptChangeSessionRequest acceptChangeSessionRequest) {
+    parentsManageUseCase.acceptChangeSessionForm(phoneNumber, acceptChangeSessionRequest);
+
+    return ResponseEntity.noContent().build();
   }
 }
