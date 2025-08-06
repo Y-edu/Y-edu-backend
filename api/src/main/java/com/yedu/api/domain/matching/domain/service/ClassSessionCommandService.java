@@ -182,29 +182,11 @@ public class ClassSessionCommandService {
 
     for (ClassSession session : sessions) {
       if (session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason())) {
-        // Teacher 취소인 경우 round가 null이면 이전 회차 + 1 계산
-        if (session.getRound() == null) {
-          // 이전 완료된 세션의 round를 찾아서 + 1
-          Optional<ClassSession> prevCompletedSession = classSessionRepository
-              .findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
-                  session.getClassManagement(), session.getSessionDate());
-          
-          if (prevCompletedSession.isPresent()) {
-            Integer prevRound = prevCompletedSession.get().getRound();
-            teacherCancelRound = prevRound + 1;
-            classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), teacherCancelRound);
-          } else {
-            // 이전 완료된 세션이 없으면 1로 설정
-            teacherCancelRound = 1;
-            classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), teacherCancelRound);
-          }
-        } else {
-          // round가 이미 있으면 그대로 유지
-          teacherCancelRound = session.getRound();
-        }
+        // round가 이미 있으면 그대로 유지
+        teacherCancelRound = session.getRound();
         afterTeacherCancel = true;
         isNextAfterTeacherCancel = true;
-      } else if (afterTeacherCancel) { // Only update sessions AFTER a teacher cancel
+      } else if (afterTeacherCancel) {
         if (isNextAfterTeacherCancel) {
           // Teacher 취소 다음 세션은 무조건 0
           classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
@@ -215,7 +197,6 @@ public class ClassSessionCommandService {
           roundCounter++;
         }
       }
-      // Teacher 취소 전 세션들은 기존 round 유지 (변경하지 않음)
     }
   }
 

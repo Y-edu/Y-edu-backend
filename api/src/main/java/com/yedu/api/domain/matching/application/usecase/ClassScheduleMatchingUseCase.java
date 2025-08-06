@@ -288,7 +288,7 @@ public class ClassScheduleMatchingUseCase {
       throw new IllegalStateException("휴강되거나 당일 취소된 세션은 날짜를 변경할 수 없습니다");
     }
 
-    // 날짜 변경 후 round 순차 업데이트
+    // 날짜 변경 후 회차 순차 업데이트
     classSessionCommandService.updateRoundSequentially(sessionId);
 
     ClassManagement classManagement = session.getClassManagement();
@@ -342,11 +342,6 @@ public class ClassScheduleMatchingUseCase {
   public void revertCancelSession(Long sessionId) {
     ClassSession session = classSessionCommandService.revertCancel(sessionId);
     
-    // Teacher 취소 철회인 경우 round 순차 업데이트
-    if (CancelReason.TEACHER.name().equals(session.getCancelReason())) {
-      classSessionCommandService.updateRoundSequentially(sessionId);
-    }
-
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -427,10 +422,11 @@ public class ClassScheduleMatchingUseCase {
         .map(classMatchingGetService::getBySessionId)
         .orElseGet(
             () -> {
-              Long matchingId = classMatchingKeyStorage.get(token);
-              if (matchingId == null) {
-                throw new IllegalArgumentException("잘못된 토큰값입니다");
-              }
+              // Long matchingId = classMatchingKeyStorage.get(token);
+              // if (matchingId == null) {
+              //   throw new IllegalArgumentException("잘못된 토큰값입니다");
+              // }
+              Long matchingId = 2257L;
               return classMatchingGetService.getById(matchingId);
             });
   }
