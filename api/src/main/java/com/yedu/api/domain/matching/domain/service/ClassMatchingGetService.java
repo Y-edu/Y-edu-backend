@@ -4,6 +4,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.MatchingNotFoundException;
 import java.util.List;
@@ -38,6 +39,9 @@ public class ClassMatchingGetService {
     return classMatchingRepository.findByTeacherAndMatchStatus(teacher, MatchingStatus.최종매칭);
   }
 
+  public List<ClassMatching> getMatched(Parents parent) {
+    return classMatchingRepository.findByParent(parent);
+  }
   public List<ClassMatching> getPaused(Teacher teacher) {
     return classMatchingRepository.findByTeacherAndMatchStatusIn(teacher, List.of(MatchingStatus.일시중단, MatchingStatus.중단));
   }
@@ -47,4 +51,5 @@ public class ClassMatchingGetService {
         .findBySessionId(sessionId)
         .orElseThrow(() -> new IllegalArgumentException("매칭 정보를 찾을수가 없습니다"));
   }
+
 }

@@ -2,15 +2,13 @@ package com.yedu.api.domain.matching.domain.service;
 
 import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveRequest;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
+import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.payment.PaymentOperationWrapper;
-import com.yedu.payment.dto.SendBillRequest;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,5 +44,9 @@ public class ClassManagementQueryService {
     return classManagementRepository
         .findAllByRemindIsFalseAndCreatedAtIsLessThanEqualAndClassMatching_MatchStatus(
             LocalDateTime.now().minusDays(1L), MatchingStatus.매칭);
+  }
+
+  public List<ClassManagement> query(List<ClassMatching> matchings) {
+     return classManagementRepository.findAllByClassMatchingIn(matchings);
   }
 }
