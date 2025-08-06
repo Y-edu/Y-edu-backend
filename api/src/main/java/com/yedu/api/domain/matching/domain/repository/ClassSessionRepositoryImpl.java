@@ -95,7 +95,7 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
                         .and(classSession.cancel.isFalse())
                 )
                 .or(
-                    classSession.sessionDate.between(now.minusDays(7), endDate)
+                    classSession.sessionDate.between(now.minusDays(14), endDate)
                 )
         )
         .and(

@@ -183,7 +183,7 @@ public class ClassSessionCommandService {
     for (ClassSession session : sessions) {
       if (session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason())) {
         // round가 이미 있으면 그대로 유지
-        teacherCancelRound = session.getRound();
+        teacherCancelRound = session.getRound() != null ? session.getRound() : 0;
         afterTeacherCancel = true;
         isNextAfterTeacherCancel = true;
       } else if (afterTeacherCancel) {
