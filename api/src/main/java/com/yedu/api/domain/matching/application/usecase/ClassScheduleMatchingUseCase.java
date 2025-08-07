@@ -422,12 +422,11 @@ public class ClassScheduleMatchingUseCase {
         .map(classMatchingGetService::getBySessionId)
         .orElseGet(
             () -> {
-              // Long matchingId = classMatchingKeyStorage.get(token);
-              // if (matchingId == null) {
-              //   throw new IllegalArgumentException("잘못된 토큰값입니다");
-              // }
+              Long matchingId = classMatchingKeyStorage.get(token);
+              if (matchingId == null) {
+                throw new IllegalArgumentException("잘못된 토큰값입니다");
+              }
 
-              Long matchingId = 2257L;
               return classMatchingGetService.getById(matchingId);
             });
   }
