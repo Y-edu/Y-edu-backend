@@ -71,8 +71,14 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
-                .currentRound(Optional.ofNullable(it.getRound())
-                    .orElse(roundMap.get(it.getClassSessionId())))
+                .currentRound(
+                    Optional.ofNullable(it.getTeacherRound())
+                        .filter(r -> r != 0)
+                        .orElseGet(() -> {
+                            Integer roundValue = roundMap.get(it.getClassSessionId());
+                            return (roundValue != null && roundValue != 0) ? roundValue : null;
+                        })
+                )
                 .maxRound(maxRound)
                 .classMinute(it.isCompleted() ? it.getRealClassTime() : it.getClassTime().getClassMinute())
                 .build());

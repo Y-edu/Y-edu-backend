@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Profile({"local"})
+@Profile({"local", "default"})
 public class MockSheetService implements SheetApi {
 
   @Override
