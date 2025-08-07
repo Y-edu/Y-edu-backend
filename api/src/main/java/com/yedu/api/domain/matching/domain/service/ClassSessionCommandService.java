@@ -222,7 +222,7 @@ public class ClassSessionCommandService {
   }
   
   private void updateRound(ClassSession session, int newRound, Integer maxRound) {
-    if (newRound < maxRound) {
+    if (newRound <= maxRound) {
       classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), newRound);
     } else {
       classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 1);
@@ -230,7 +230,7 @@ public class ClassSessionCommandService {
   }
   
   private int getNextRoundCounter(int currentCounter, int newRound, Integer maxRound) {
-    if (newRound < maxRound) {
+    if (newRound <= maxRound) {
       return currentCounter + 1;
     } else {
       return 2; // 1부터 다시 시작하므로 다음은 2

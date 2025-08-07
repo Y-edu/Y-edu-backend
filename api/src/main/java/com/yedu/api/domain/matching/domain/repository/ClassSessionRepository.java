@@ -63,7 +63,7 @@ public interface ClassSessionRepository
   void updateRoundBySessionId(@Param("sessionId") Long sessionId, @Param("teacherRound") Integer teacherRound);
 
   @Query("""
-    SELECT COALESCE(MAX(cs.teacherRound), 0)
+    SELECT COALESCE(MAX(cs.teacherRound), 1)
     FROM ClassSession cs
     WHERE cs.classManagement.classMatching.classMatchingId = :matchingId
       AND cs.teacherRound IS NOT NULL
