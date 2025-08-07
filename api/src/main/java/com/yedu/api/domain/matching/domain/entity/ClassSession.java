@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.With;
 
 /** 실제 수업 정보 기록 */
 @ToString
@@ -55,6 +56,7 @@ public class ClassSession extends BaseEntity {
 
   private Integer realClassTime;
 
+  @With
   private Integer round; // 회차
 
   private boolean isTodayCancel;

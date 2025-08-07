@@ -69,4 +69,19 @@ public interface ClassSessionRepository
       AND cs.teacherRound IS NOT NULL
   """)
   Integer findMaxRoundByMatchingId(@Param("matchingId") Long matchingId);
+
+  @Query("""
+  select cs 
+  from ClassSession cs 
+  where cs.classManagement in :classManagements
+    and cs.cancel = false 
+    and cs.isTodayCancel = false 
+    and cs.completed = false 
+    and cs.sessionDate between :startDate and :endDate
+""")
+  List<ClassSession> findSession(
+      @Param("classManagements") List<ClassManagement> classManagements,
+      @Param("startDate") LocalDate startDate,
+      @Param("endDate") LocalDate endDate
+  );
 }

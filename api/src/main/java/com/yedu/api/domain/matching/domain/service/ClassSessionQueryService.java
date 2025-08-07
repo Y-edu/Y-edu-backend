@@ -113,4 +113,17 @@ public class ClassSessionQueryService {
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
   }
 
+  public Map<ClassMatching, List<ClassSession>> query(List<ClassMatching> matchings) {
+    List<ClassManagement> managements = classManagementQueryService.query(matchings);
+
+    LocalDate startDate = LocalDate.now();
+    LocalDate endDate = startDate.plusMonths(1).withDayOfMonth(startDate.plusMonths(1).lengthOfMonth());
+
+    List<ClassSession> sessions = classSessionRepository.findSession(managements, startDate, endDate);
+
+    return sessions.stream()
+        .collect(Collectors.groupingBy(
+            cs -> cs.getClassManagement().getClassMatching()
+        ));
+  }
 }

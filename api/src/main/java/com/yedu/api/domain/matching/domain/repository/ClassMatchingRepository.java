@@ -3,6 +3,7 @@ package com.yedu.api.domain.matching.domain.repository;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.Collection;
@@ -42,4 +43,11 @@ public interface ClassMatchingRepository
   void deleteAllByTeacher_TeacherInfo_PhoneNumber(String phoneNumber);
 
   List<ClassMatching> findByTeacherAndMatchStatusIn(Teacher teacher, Collection<MatchingStatus> matchStatuses);
+
+  @Query("""
+    select cm from ClassMatching cm
+      where cm.matchStatus = '최종매칭'
+        and cm.applicationForm.parents = :parents
+  """)
+  List<ClassMatching> findByParent(Parents parents);
 }
