@@ -56,9 +56,17 @@ public interface ClassSessionRepository
 
   @Query("""
     UPDATE ClassSession cs
-    SET cs.round = :round
+    SET cs.teacherRound = :teacherRound
     WHERE cs.classSessionId = :sessionId
   """)
   @Modifying
-  void updateRoundBySessionId(@Param("sessionId") Long sessionId, @Param("round") Integer round);
+  void updateRoundBySessionId(@Param("sessionId") Long sessionId, @Param("teacherRound") Integer teacherRound);
+
+  @Query("""
+    SELECT COALESCE(MAX(cs.teacherRound), 0)
+    FROM ClassSession cs
+    WHERE cs.classManagement.classMatching.classMatchingId = :matchingId
+      AND cs.teacherRound IS NOT NULL
+  """)
+  Integer findMaxRoundByMatchingId(@Param("matchingId") Long matchingId);
 }
