@@ -65,7 +65,9 @@ public class ClassSchedule extends BaseEntity {
             )
             .orElse(today);
     LocalDate lastDay = today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
-
+    Integer maxRound = calculateMaxRound(classManagement);
+    Integer nextTeacherRound = calculateNextTeacherRound(existingSessionMap, maxRound);
+    
     return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
@@ -78,7 +80,41 @@ public class ClassSchedule extends BaseEntity {
                     .completed(false)
                     .cancel(false)
                     .remind(false)
+                    .teacherRound(nextTeacherRound)
+                    .maxRound(maxRound)
                     .build())
         .toList();
+  }
+
+  private Integer calculateMaxRound(ClassManagement classManagement) {
+    String classCount = classManagement.getClassMatching().getApplicationForm().getClassCount();
+    
+    return switch (classCount) {
+        case String count when count.contains("주 1회") -> 4;
+        case String count when count.contains("주 2회") -> 8;
+        case String count when count.contains("주 3회") -> 12;
+        case String count when count.contains("주 4회") -> 16;
+        case String count when count.contains("주 5회") -> 20;
+        case String count when count.contains("주 6회") -> 24;
+        case String count when count.contains("주 7회") -> 28;
+        default -> 4;
+    };
+  }
+
+  private int calculateNextTeacherRound(Map<LocalDate, ClassSession> existingSessions, Integer maxRound) {
+    if (existingSessions.isEmpty()) {
+      return 1;
+    }
+    
+    // 마지막 세션의 teacher_round 확인
+    ClassSession lastSession = existingSessions.get(existingSessions.size() - 1);
+    Integer lastTeacherRound = lastSession.getTeacherRound();
+    
+    if (lastTeacherRound == null || lastTeacherRound == 0) {
+        return 1;
+    }
+    
+    // 다음 순서 계산 (순환)
+    return (lastTeacherRound % maxRound) + 1;
   }
 }

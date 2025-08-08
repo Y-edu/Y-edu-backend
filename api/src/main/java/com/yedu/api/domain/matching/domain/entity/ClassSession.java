@@ -63,6 +63,8 @@ public class ClassSession extends BaseEntity {
 
   private Integer teacherRound;
 
+  private Integer maxRound;
+
   public void cancel(String cancelReason, boolean isTodayCancel) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
