@@ -176,8 +176,7 @@ public class ClassSessionCommandService {
       return;
     }
     
-    Long matchingId = sessions.get(0).getClassManagement().getClassMatching().getClassMatchingId();
-    Integer maxRound = classSessionRepository.findMaxRoundByMatchingId(matchingId);
+    Integer maxRound = sessions.get(0).getMaxRound();
     
     Integer teacherCancelRound = 0;
     boolean afterTeacherCancel = false;
