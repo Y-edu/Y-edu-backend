@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
+    api(project(":shared:scheduling-support"))
     implementation("com.yedu:payment-interface:1.0.0")
 
     implementation("org.springframework.boot:spring-boot-starter-graphql")
