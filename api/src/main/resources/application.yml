@@ -4,6 +4,13 @@ server:
       cookie:
         same-site: none
 spring:
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    properties:
+      org.quartz.jobStore.isClustered: true
+      org.quartz.jobStore.useProperties: false
   graphql:
     graphiql:
       enabled: true
