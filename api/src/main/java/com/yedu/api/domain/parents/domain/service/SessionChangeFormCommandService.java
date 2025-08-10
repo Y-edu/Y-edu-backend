@@ -6,7 +6,7 @@ import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
 import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.parents.domain.entity.SessionChangeForm;
-import com.yedu.api.domain.parents.domain.job.MatchingStatusPauseeJob;
+import com.yedu.api.domain.parents.domain.job.MatchingStatusPauseJob;
 import com.yedu.api.domain.parents.domain.repository.SessionChangeFormRepository;
 import com.yedu.scheduling.support.ScheduleService;
 import java.time.LocalDate;
@@ -43,6 +43,6 @@ public class SessionChangeFormCommandService {
     LocalDateTime executeTime = LocalDateTime.of(lastDate, lastTime);
     ClassMatching classMatching = lastSession.getClassManagement().getClassMatching();
 
-    scheduleService.schedule(executeTime, MatchingStatusPauseeJob.class, new JobDataMap(Map.of("id", classMatching.getClassMatchingId())));
+    scheduleService.schedule(executeTime, MatchingStatusPauseJob.class, new JobDataMap(Map.of("id", classMatching.getClassMatchingId())));
   }
 }

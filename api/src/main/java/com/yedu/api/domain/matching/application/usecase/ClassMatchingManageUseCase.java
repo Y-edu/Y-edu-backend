@@ -6,6 +6,7 @@ import static com.yedu.api.global.event.mapper.BizppurioEventMapper.*;
 
 import com.yedu.api.domain.matching.application.dto.req.ClassMatchingRefuseRequest;
 import com.yedu.api.domain.matching.application.mapper.ClassMatchingMapper;
+import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
@@ -20,9 +21,11 @@ import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.api.domain.teacher.domain.service.TeacherUpdateService;
 import com.yedu.api.global.exception.matching.MatchingStatusException;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
+import com.yedu.cache.support.storage.ClassManagementKeyStorage;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
+import com.yedu.common.event.bizppurio.ResumeClassEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -45,6 +48,7 @@ public class ClassMatchingManageUseCase {
   private final ClassManagementTokenStorage classManagementTokenStorage;
   private final ClassMatchingRepository classMatchingRepository;
   private final TeacherGetService teacherGetService;
+  private final ClassManagementKeyStorage classManagementKeyStorage;
 
   public List<ClassMatching> saveAllClassMatching(
       List<Teacher> teachers, ApplicationForm applicationForm) {
@@ -127,7 +131,23 @@ public class ClassMatchingManageUseCase {
   public void updateMatching(List<Long> matchingIds, MatchingStatus matchingStatus) {
     List<ClassMatching> matchings = classMatchingRepository.findAllById(matchingIds);
 
-    matchings.forEach(it -> it.update(matchingStatus));
+    matchings.forEach(it -> {
+      MatchingStatus before = it.getMatchStatus();
+      it.update(matchingStatus);
+      MatchingStatus after = it.getMatchStatus();
+
+      if (before.equals(MatchingStatus.일시중단) && after.equals(MatchingStatus.최종매칭)) {
+        String teacherPhoneNumber = it.getTeacher().getTeacherInfo().getPhoneNumber();
+
+        ClassManagement classManagement = classManagementQueryService.query(it.getClassMatchingId())
+            .orElseThrow(()-> new IllegalArgumentException("매칭 정보를 찾을 수 없습니다"));
+
+        String classManagementToken = classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+
+        eventPublisher.publishEvent(new ResumeClassEvent(teacherPhoneNumber, classManagementToken));
+      }
+    });
+
   }
 
   public void changeTeacher(Long matchingId, Long newTeacherId) {

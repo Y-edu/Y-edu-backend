@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Component
 @RequiredArgsConstructor
-public class MatchingStatusPauseeJob implements Job {
+public class MatchingStatusPauseJob implements Job {
 
   private final ClassMatchingRepository matchingRepository;
 
@@ -19,6 +19,6 @@ public class MatchingStatusPauseeJob implements Job {
   public void execute(JobExecutionContext context) {
     Long id = context.getMergedJobDataMap().getLong("id");
 
-    matchingRepository.findById(id).ifPresent(matching -> matching.update(MatchingStatus.중단));
+    matchingRepository.findById(id).ifPresent(matching -> matching.update(MatchingStatus.일시중단));
   }
 }

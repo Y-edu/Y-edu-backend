@@ -18,6 +18,7 @@ import com.yedu.common.event.bizppurio.PhotoHurryEvent;
 import com.yedu.common.event.bizppurio.PhotoSubmitEvent;
 import com.yedu.common.event.bizppurio.RecommendGuideEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
+import com.yedu.common.event.bizppurio.ResumeClassEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
@@ -28,12 +29,14 @@ import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RabbitMqProducer {
@@ -154,6 +157,12 @@ public class RabbitMqProducer {
   @Async
   public void handle(TeacherWithScheduleCompleteTalkRemindEvent event) {
     produceTeacherMessage(event);
+  }
+
+  @EventListener
+  @Async
+  public void handle(ResumeClassEvent event) {
+    log.info("event : {}", event.token());
   }
 
   @EventListener
