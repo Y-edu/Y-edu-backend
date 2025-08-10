@@ -8,7 +8,6 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
-import com.yedu.api.domain.matching.domain.repository.ClassScheduleRepository;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.global.exception.matching.ClassManagementNotFoundException;
@@ -23,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClassManagementCommandService {
 
   private final ClassManagementRepository classManagementRepository;
-
-  private final ClassScheduleRepository classScheduleRepository;
 
   private final ClassMatchingGetService classMatchingGetService;
 
@@ -72,8 +69,7 @@ public class ClassManagementCommandService {
   private ClassManagement findClassManagementWithSchedule(
       ClassScheduleConfirmRequest request, Long id) {
     ClassManagement classManagement = queryById(id);
-
-    classScheduleRepository.deleteAllByClassManagement(classManagement);
+    classManagement.resetSchedule();
 
     request.schedules().stream()
         .map(
