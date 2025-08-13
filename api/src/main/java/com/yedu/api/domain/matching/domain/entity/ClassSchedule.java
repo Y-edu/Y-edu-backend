@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 @Getter
@@ -67,22 +68,28 @@ public class ClassSchedule extends BaseEntity {
     LocalDate lastDay = today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
     Integer maxRound = calculateMaxRound(classManagement);
     Integer nextTeacherRound = calculateNextTeacherRound(existingSessionMap, maxRound);
+    AtomicInteger teacherRoundCounter = new AtomicInteger(nextTeacherRound);
     
     return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
         .map(
-            date ->
-                ClassSession.builder()
+            date -> {
+                int currentRound = teacherRoundCounter.getAndUpdate(round -> 
+                    round >= maxRound ? 1 : round + 1
+                );
+                
+                return ClassSession.builder()
                     .classManagement(classManagement)
                     .sessionDate(date)
                     .classTime(this.classTime)
                     .completed(false)
                     .cancel(false)
                     .remind(false)
-                    .teacherRound(nextTeacherRound)
+                    .teacherRound(currentRound)
                     .maxRound(maxRound)
-                    .build())
+                    .build();
+            })
         .toList();
   }
 
