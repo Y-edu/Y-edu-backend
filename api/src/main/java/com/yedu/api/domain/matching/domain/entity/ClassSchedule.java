@@ -76,7 +76,7 @@ public class ClassSchedule extends BaseEntity {
         .map(
             date -> {
                 int currentRound = teacherRoundCounter.getAndUpdate(round -> 
-                    round >= maxRound ? 1 : round + 1
+                    round > maxRound ? 1 : round + 1
                 );
                 
                 return ClassSession.builder()
