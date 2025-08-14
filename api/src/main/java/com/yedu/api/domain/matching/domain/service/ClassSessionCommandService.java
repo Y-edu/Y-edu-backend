@@ -8,14 +8,19 @@ import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
+import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,13 +54,53 @@ public class ClassSessionCommandService {
       LocalDate today,
       LocalDate changeStartDate) {
 
-    return schedules.stream()
-        .flatMap(
-            schedule ->
-                schedule
-                    .generateUpcomingDates(
-                        classManagement, today, existingSessionMap, changeStartDate)
-                    .stream())
+    // 주차 수에 따라 라운드 증가량 결정
+    int weeklyFrequency = 1;  // 순차적으로 1씩 증가
+    
+    // 모든 스케줄의 날짜를 수집하여 정렬
+    List<LocalDate> allDates = schedules.stream()
+        .flatMap(schedule -> 
+            Stream.iterate(
+                Optional.ofNullable(changeStartDate)
+                    .or(() -> Optional.ofNullable(classManagement.getFirstDay())
+                        .map(firstDay -> firstDay.isBefore(today) ? today : firstDay))
+                    .orElse(today),
+                date -> !date.isAfter(today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth())),
+                date -> date.plusDays(1))
+            .filter(date -> Day.byDate(date).equals(schedule.getDay()))
+            .filter(it -> !existingSessionMap.containsKey(it)))
+        .sorted()
+        .toList();
+    
+    // 전체 날짜에 대해 순차적으로 라운드 할당
+    // 기존 로직을 활용하여 maxRound와 nextTeacherRound 계산
+    Integer maxRound = 8; // 기본값, 필요시 로직 추가
+    Integer nextTeacherRound = 1; // 기본값, 필요시 로직 추가
+    AtomicInteger globalCounter = new AtomicInteger(nextTeacherRound);
+    
+    return allDates.stream()
+        .map(date -> {
+            int currentRound = globalCounter.getAndUpdate(round -> 
+                round >= maxRound ? 1 : round + weeklyFrequency
+            );
+            
+            // 해당 날짜의 스케줄 찾기
+            ClassSchedule schedule = schedules.stream()
+                .filter(s -> Day.byDate(date).equals(s.getDay()))
+                .findFirst()
+                .orElseThrow();
+            
+            return ClassSession.builder()
+                .classManagement(classManagement)
+                .sessionDate(date)
+                .classTime(schedule.getClassTime())
+                .completed(false)
+                .cancel(false)
+                .remind(false)
+                .teacherRound(currentRound)
+                .maxRound(maxRound)
+                .build();
+        })
         .toList();
   }
 
@@ -166,6 +211,7 @@ public class ClassSessionCommandService {
 
     List<ClassSession> newSessions =
         generateNewSessions(schedules, classManagement, existingSessionMap, today, changeStartDate);
+    System.out.println("newSessions: " + newSessions);
     classSessionRepository.saveAll(newSessions);
   }
 
