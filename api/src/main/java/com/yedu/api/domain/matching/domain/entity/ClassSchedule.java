@@ -43,6 +43,9 @@ public class ClassSchedule extends BaseEntity {
   private Day day;
 
   @Embedded private ClassTime classTime;
+  
+  // 클래스 레벨로 이동하여 중복 생성 방지
+  private static final AtomicInteger globalTeacherRoundCounter = new AtomicInteger(1);
 
   public boolean contains(ClassSession session) {
     Day day = Day.byDate(session.getSessionDate());
@@ -68,15 +71,17 @@ public class ClassSchedule extends BaseEntity {
     LocalDate lastDay = today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
     Integer maxRound = calculateMaxRound(classManagement);
     Integer nextTeacherRound = calculateNextTeacherRound(existingSessionMap, maxRound);
-    AtomicInteger teacherRoundCounter = new AtomicInteger(nextTeacherRound);
+    // 전역 카운터 사용하여 중복 생성 방지
+    globalTeacherRoundCounter.set(nextTeacherRound);
     
     return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
         .map(
             date -> {
-                int currentRound = teacherRoundCounter.getAndUpdate(round -> 
-                    round > maxRound ? 1 : round + 1
+                // 전체 날짜 순서대로 라운드 증가 (요일 무관)
+                int currentRound = globalTeacherRoundCounter.getAndUpdate(round -> 
+                    round >= maxRound ? 1 : round + 1
                 );
                 
                 return ClassSession.builder()
