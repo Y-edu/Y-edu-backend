@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,9 +74,30 @@ public class ClassSessionCommandService {
         .toList();
     
     // 전체 날짜에 대해 순차적으로 라운드 할당
-    // 기존 로직을 활용하여 maxRound와 nextTeacherRound 계산
-    Integer maxRound = 8; // 기본값, 필요시 로직 추가
-    Integer nextTeacherRound = 1; // 기본값, 필요시 로직 추가
+    // ClassManagement에서 maxRound 계산
+    String classCount = classManagement.getClassMatching().getApplicationForm().getClassCount();
+    Integer maxRound = switch (classCount) {
+        case String count when count.contains("주 1회") -> 4;
+        case String count when count.contains("주 2회") -> 8;
+        case String count when count.contains("주 3회") -> 12;
+        case String count when count.contains("주 4회") -> 16;
+        case String count when count.contains("주 5회") -> 20;
+        case String count when count.contains("주 6회") -> 24;
+        case String count when count.contains("주 7회") -> 28;
+        default -> 4;
+    };
+    
+    // 기존 세션에서 다음 teacherRound 계산
+    Integer nextTeacherRound = 1; // 기본값
+    if (!existingSessionMap.isEmpty()) {
+        ClassSession lastSession = existingSessionMap.values().stream()
+            .max(Comparator.comparing(ClassSession::getSessionDate))
+            .orElse(null);
+        if (lastSession != null && lastSession.getTeacherRound() != null && lastSession.getTeacherRound() != 0) {
+            nextTeacherRound = (lastSession.getTeacherRound() % maxRound) + 1;
+        }
+    }
+    
     AtomicInteger globalCounter = new AtomicInteger(nextTeacherRound);
     
     return allDates.stream()
