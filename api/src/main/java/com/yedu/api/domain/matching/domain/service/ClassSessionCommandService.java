@@ -275,6 +275,58 @@ public class ClassSessionCommandService {
     }
   }
   
+  // 일반 휴강은 teacherRound 현재 회차만 0으로 처리하고, 그뒤 회차들은 +1씩 증가하고, maxRound보다 커지면 1로 초기화
+  public void updateRoundForGeneralCancel(Long sessionId) {
+    List<ClassSession> sessions = classSessionRepository.findBySameClassManagementId(sessionId);
+    
+    if (sessions.isEmpty()) {
+      return;
+    }
+
+    // 1. 현재 sessionId의 teacherRound를 조회하여 변수에 저장
+    ClassSession targetSession = sessions.stream()
+        .filter(s -> s.getClassSessionId().equals(sessionId))
+        .findFirst()
+        .orElse(null);
+    
+    if (targetSession == null) {
+      return;
+    }
+    
+    Integer originalTeacherRound = targetSession.getTeacherRound();
+    
+    // 2. teacherRound를 0으로 업데이트
+    classSessionRepository.updateRoundBySessionId(sessionId, 0);
+
+    Integer maxRound = sessions.get(0).getMaxRound();
+    // 3. 다음 session 데이터부터는 저장된 변수로 업데이트하고 +1씩 증가
+    boolean foundSessionId = false;
+    boolean isFirstAfterSessionId = true;
+    
+    for (ClassSession session : sessions) {
+      if (session.getClassSessionId() == sessionId) {
+        foundSessionId = true;  // sessionId를 찾았음
+        continue;
+      }
+      
+      if (foundSessionId) {  // sessionId 이후의 세션만 처리
+        if (isFirstAfterSessionId) {
+          // 첫 번째 세션: originalTeacherRound 그대로 사용
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), originalTeacherRound);
+          isFirstAfterSessionId = false;
+        } else {
+          // 두 번째 세션부터: +1씩 증가
+          int nextRound = originalTeacherRound + 1;
+          if (nextRound > maxRound) {
+            nextRound = 1;  // maxRound보다 커지면 1로 초기화
+          }
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), nextRound);
+          originalTeacherRound = nextRound;  // 다음 세션을 위해 업데이트
+        }
+      }
+    }
+  }
+
   private boolean isTeacherCancel(ClassSession session) {
     return session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason());
   }

@@ -319,6 +319,11 @@ public class ClassScheduleMatchingUseCase {
       classSessionCommandService.updateRoundSequentially(sessionId);
     }
 
+    // 일반 휴강 
+    if (cancelSessionRequest.cancelReason() == CancelReason.TOGETHER) {
+      classSessionCommandService.updateRoundForGeneralCancel(sessionId);
+    }
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
