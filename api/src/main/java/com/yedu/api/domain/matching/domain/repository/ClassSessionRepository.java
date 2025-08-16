@@ -63,6 +63,14 @@ public interface ClassSessionRepository
   void updateRoundBySessionId(@Param("sessionId") Long sessionId, @Param("teacherRound") Integer teacherRound);
 
   @Query("""
+    UPDATE ClassSession cs
+    SET cs.sessionDate = :newDate
+    WHERE cs.classSessionId = :sessionId
+  """)
+  @Modifying
+  void updateSessionDateBySessionId(@Param("sessionId") Long sessionId, @Param("newDate") LocalDate newDate);
+
+  @Query("""
     SELECT COALESCE(MAX(cs.teacherRound), 1)
     FROM ClassSession cs
     WHERE cs.classManagement.classMatching.classMatchingId = :matchingId
