@@ -249,15 +249,23 @@ public class ClassSessionCommandService {
     
     Integer maxRound = sessions.get(0).getMaxRound();
     int currentRound = 1;
-    
+    int todayCancelTeacherRound = 0;
     for (ClassSession session : sessions) {
+     
       if (session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason())) {
-        // 취소된 세션은 원래 teacherRound 유지 (변경하지 않음)
-        // 다음 세션에서 0으로 설정할 예정
+        todayCancelTeacherRound = session.getTeacherRound();
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
       } else {
         // 정상 세션은 순차적으로 teacherRound 설정
-        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
-        currentRound++;
+        if (todayCancelTeacherRound != 0) {
+          currentRound = todayCancelTeacherRound;
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), todayCancelTeacherRound);
+          todayCancelTeacherRound = 0;
+        } else {
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
+          currentRound++;
+        }
+        
         if (currentRound > maxRound) {
           currentRound = 1; // maxRound 초과시 1로 초기화
         }
