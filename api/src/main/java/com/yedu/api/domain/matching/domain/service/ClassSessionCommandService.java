@@ -247,41 +247,55 @@ public class ClassSessionCommandService {
     // 날짜순으로 정렬
     sessions.sort(Comparator.comparing(ClassSession::getSessionDate));
     
-    Integer maxRound = sessions.get(0).getMaxRound();
-    int currentRound = 1;
-    int todayCancelTeacherRound = 0;
-    for (ClassSession session : sessions) {
-     
-      if (session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason())) {
-        todayCancelTeacherRound = session.getTeacherRound();
-        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
-      } else {
-        // 정상 세션은 순차적으로 teacherRound 설정
-        if (todayCancelTeacherRound != 0) {
-          currentRound = todayCancelTeacherRound;
-          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), todayCancelTeacherRound);
-          todayCancelTeacherRound = 0;
-        } else {
-          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
-          currentRound++;
-        }
-        
-        if (currentRound > maxRound) {
-          currentRound = 1; // maxRound 초과시 1로 초기화
-        }
-      }
+    // 1. 취소된 sessionId의 teacherRound를 변수에 저장
+    ClassSession targetSession = sessions.stream()
+        .filter(s -> s.getClassSessionId().equals(sessionId))
+        .findFirst()
+        .orElse(null);
+    
+    if (targetSession == null) {
+      return;
     }
     
-    // TEACHER 취소 다음 세션을 0으로 설정
-    for (int i = 0; i < sessions.size() - 1; i++) {
-      ClassSession currentSession = sessions.get(i);
-      ClassSession nextSession = sessions.get(i + 1);
-      
-      if (currentSession.isTodayCancel() && 
-          CancelReason.TEACHER.name().equals(currentSession.getCancelReason())) {
-        // 다음 세션의 teacherRound를 0으로 설정
-        classSessionRepository.updateRoundBySessionId(nextSession.getClassSessionId(), 0);
+    Integer originalTeacherRound = targetSession.getTeacherRound();
+    
+    // 2. 취소된 sessionId의 teacherRound를 0으로 업데이트
+    classSessionRepository.updateRoundBySessionId(sessionId, 0);
+    
+    Integer maxRound = sessions.get(0).getMaxRound();
+    boolean foundSessionId = false;
+    boolean isFirstAfterSessionId = true;
+    boolean isStartAfterTeacherRound = false;
+    
+    int currentRound = originalTeacherRound;
+    
+    for (ClassSession session : sessions) {
+      if (session.getClassSessionId().equals(sessionId)) {
+        foundSessionId = true;
+        continue;
       }
+      
+      if (foundSessionId) {
+        if (isFirstAfterSessionId) {
+          // 3. 취소된 다음 회차의 teacherRound를 0으로 업데이트
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
+          isFirstAfterSessionId = false;
+          isStartAfterTeacherRound = true;
+        } else {
+          // 4. 그 다음 회차부터는 originalTeacherRound부터 시작해서 +1씩 업데이트
+          if (isStartAfterTeacherRound) {
+            currentRound = originalTeacherRound;
+            isStartAfterTeacherRound = false;
+          } else {
+            currentRound++;
+          }
+          if (currentRound > maxRound) {
+            currentRound = 1; // maxRound 초과시 1로 초기화
+          }
+          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
+        }
+      }
+      // foundSessionId가 false인 경우는 취소된 sessionId 이전 데이터이므로 건드리지 않음
     }
   }
   
