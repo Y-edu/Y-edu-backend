@@ -237,6 +237,8 @@ public class ClassSessionCommandService {
     classSessionRepository.saveAll(newSessions);
   }
 
+  
+
   public void updateRoundSequentially(Long sessionId) {
     List<ClassSession> sessions = classSessionRepository.findBySameClassManagementId(sessionId);
     
@@ -299,6 +301,47 @@ public class ClassSessionCommandService {
     }
   }
   
+  // 특정 날짜 업데이트 후 정렬하여 teacherRound 순차 업데이트
+  public void updateDateAndReorderRounds(Long sessionId) {
+    List<ClassSession> sessions = classSessionRepository.findBySameClassManagementId(sessionId);
+    
+    if (sessions.isEmpty()) {
+      return;
+    }
+  
+    // 2. 업데이트된 데이터로 다시 조회
+    sessions = classSessionRepository.findBySameClassManagementId(sessionId);
+    
+    // 3. 날짜순으로 정렬
+    sessions.sort(Comparator.comparing(ClassSession::getSessionDate));
+    
+    Integer maxRound = sessions.get(0).getMaxRound();
+    int currentRound = 1;
+    
+    // 4. 정렬된 순서대로 teacherRound 순차 업데이트
+    for (int i = 0; i < sessions.size(); i++) {
+      ClassSession session = sessions.get(i);
+      ClassSession previousSession = (i > 0) ? sessions.get(i - 1) : null;
+      
+      if (session.isCancel()) {
+        // 현재 회차가 isCancel = true이면 teacherRound = 0
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
+        // currentRound는 증가하지 않음 (취소된 세션은 번호를 건너뜀)
+      } else if (previousSession != null && previousSession.isTodayCancel()) {
+        // 이전 회차가 isTodayCancel = true이면 현재 회차는 teacherRound = 0
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
+        // currentRound는 증가하지 않음 (취소된 세션은 번호를 건너뜀)
+      } else {
+        // 정상 세션은 순차적으로 teacherRound 설정
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
+        currentRound++;
+        if (currentRound > maxRound) {
+          currentRound = 1; // maxRound 초과시 1로 초기화
+        }
+      }
+    }
+  }
+  
   // 일반 휴강은 teacherRound 현재 회차만 0으로 처리하고, 그뒤 회차들은 +1씩 증가하고, maxRound보다 커지면 1로 초기화
   public void updateRoundForGeneralCancel(Long sessionId) {
     List<ClassSession> sessions = classSessionRepository.findBySameClassManagementId(sessionId);
@@ -348,35 +391,6 @@ public class ClassSessionCommandService {
           originalTeacherRound = nextRound;  // 다음 세션을 위해 업데이트
         }
       }
-    }
-  }
-
-  private boolean isTeacherCancel(ClassSession session) {
-    return session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason());
-  }
-  
-  private boolean isOtherCancel(ClassSession session) {
-    return session.isTodayCancel() && !CancelReason.TEACHER.name().equals(session.getCancelReason());
-  }
-  
-  private Integer getValidTeacherRound(ClassSession session) {
-    Integer teacherRound = session.getTeacherRound();
-    return teacherRound != null && teacherRound != 0 ? teacherRound : 0;
-  }
-  
-  private void updateRound(ClassSession session, int newRound, Integer maxRound) {
-    if (newRound <= maxRound) {
-      classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), newRound);
-    } else {
-      classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 1);
-    }
-  }
-  
-  private int getNextRoundCounter(int currentCounter, int newRound, Integer maxRound) {
-    if (newRound <= maxRound) {
-      return currentCounter + 1;
-    } else {
-      return 2; // 1부터 다시 시작하므로 다음은 2
     }
   }
 }

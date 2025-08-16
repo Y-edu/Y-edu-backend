@@ -289,7 +289,7 @@ public class ClassScheduleMatchingUseCase {
     }
 
     // 날짜 변경 후 회차 순차 업데이트
-    classSessionCommandService.updateRoundSequentially(sessionId);
+    classSessionCommandService.updateDateAndReorderRounds(sessionId);
 
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
