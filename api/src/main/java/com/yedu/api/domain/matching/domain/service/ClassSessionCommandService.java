@@ -244,32 +244,22 @@ public class ClassSessionCommandService {
       return;
     }
     
-    Integer maxRound = sessions.get(0).getMaxRound();
+    // 날짜순으로 정렬
+    sessions.sort(Comparator.comparing(ClassSession::getSessionDate));
     
-    Integer teacherCancelRound = 0;
-    boolean afterTeacherCancel = false;
-    boolean isNextAfterTeacherCancel = false;
-    int roundCounter = 1;
-
+    Integer maxRound = sessions.get(0).getMaxRound();
+    int currentRound = 1;
+    
     for (ClassSession session : sessions) {
-      if (isTeacherCancel(session)) {
-        // Teacher 취소: 기존 round 유지
-        teacherCancelRound = getValidTeacherRound(session);
-        afterTeacherCancel = true;
-        isNextAfterTeacherCancel = true;
-      } else if (isOtherCancel(session)) {
-        // 다른 이유로 취소: round 순차 증가
-        updateRound(session, teacherCancelRound + roundCounter, maxRound);
-        roundCounter = getNextRoundCounter(roundCounter, teacherCancelRound + roundCounter, maxRound);
-      } else if (afterTeacherCancel) {
-        if (isNextAfterTeacherCancel) {
-          // Teacher 취소 다음 세션: round = 0
-          classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
-          isNextAfterTeacherCancel = false;
-        } else {
-          // Teacher 취소 다다음 세션부터: round 순차 증가
-          updateRound(session, teacherCancelRound + roundCounter, maxRound);
-          roundCounter = getNextRoundCounter(roundCounter, teacherCancelRound + roundCounter, maxRound);
+      if (session.isTodayCancel() && CancelReason.TEACHER.name().equals(session.getCancelReason())) {
+        // 취소된 세션은 teacherRound를 0으로 설정
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), 0);
+      } else {
+        // 정상 세션은 순차적으로 teacherRound 설정
+        classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentRound);
+        currentRound++;
+        if (currentRound > maxRound) {
+          currentRound = 1; // maxRound 초과시 1로 초기화
         }
       }
     }
