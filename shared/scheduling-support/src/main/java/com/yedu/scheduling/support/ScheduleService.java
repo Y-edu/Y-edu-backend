@@ -9,6 +9,7 @@ import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
@@ -22,9 +23,9 @@ public class ScheduleService {
   private final Scheduler scheduler;
 
   @SneakyThrows
-  public <T extends Job> void schedule(LocalDateTime executeTime, Class<T> jobClass, JobDataMap jobDataMap)  {
+  public <T extends Job> void schedule(LocalDateTime executeTime, Class<T> jobClass, JobDataMap jobDataMap, String jobName)  {
     JobDetail jobDetail = JobBuilder.newJob(jobClass)
-        .withIdentity("job_" + jobClass.getName() + "_" + executeTime.toString())
+        .withIdentity(jobName)
         .usingJobData(jobDataMap)
         .build();
 
@@ -35,4 +36,11 @@ public class ScheduleService {
 
     scheduler.scheduleJob(jobDetail, trigger);
   }
+
+  @SneakyThrows
+  public <T extends Job> boolean cancelScheduledJob(String jobName) {
+    JobKey jobKey = JobKey.jobKey(jobName);
+    return scheduler.deleteJob(jobKey);
+  }
+
 }

@@ -10,8 +10,13 @@ import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
+import com.yedu.api.domain.parents.domain.entity.SessionChangeForm;
+import com.yedu.api.domain.parents.domain.repository.SessionChangeFormRepository;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +25,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.math3.util.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -34,6 +40,7 @@ public class ClassSessionQueryService {
   private final ClassManagementQueryService classManagementQueryService;
 
   private final ClassSessionRepository classSessionRepository;
+  private final SessionChangeFormRepository sessionChangeFormRepository;
 
   public SessionResponse query(
       ClassMatching tokenClassMatching,
@@ -113,17 +120,31 @@ public class ClassSessionQueryService {
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
   }
 
-  public Map<ClassMatching, List<ClassSession>> query(List<ClassMatching> matchings) {
+  public Map<ClassSession, List<SessionChangeForm>> query(List<ClassMatching> matchings) {
     List<ClassManagement> managements = classManagementQueryService.query(matchings);
-
+    if (managements.isEmpty()) {
+      return Collections.emptyMap();
+    }
     LocalDate startDate = LocalDate.now();
-    LocalDate endDate = startDate.plusMonths(1).withDayOfMonth(startDate.plusMonths(1).lengthOfMonth());
+    LocalDate endDate = startDate.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
-    List<ClassSession> sessions = classSessionRepository.findSession(managements, startDate, endDate);
+    List<ClassSession> sessions = classSessionRepository.findSession(
+        managements, startDate, endDate);
 
-    return sessions.stream()
-        .collect(Collectors.groupingBy(
-            cs -> cs.getClassManagement().getClassMatching()
-        ));
+    if (sessions.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    List<SessionChangeForm> sessionChangeForms =
+        sessionChangeFormRepository.findByLastSessionBeforeChangeIn(sessions);
+    Map<ClassSession, List<SessionChangeForm>> forms = sessionChangeForms.stream()
+        .collect(Collectors.groupingBy(SessionChangeForm::getLastSessionBeforeChange));
+
+    Map<ClassSession, List<SessionChangeForm>> result = new LinkedHashMap<>();
+    for (ClassSession session : sessions) {
+      result.put(session, forms.getOrDefault(session, new ArrayList<>()));
+    }
+    return result;
   }
+
 }
