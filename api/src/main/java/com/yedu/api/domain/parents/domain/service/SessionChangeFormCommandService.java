@@ -29,7 +29,6 @@ public class SessionChangeFormCommandService {
   private final SessionChangeFormRepository sessionChangeFormRepository;
   private final ClassSessionRepository classSessionRepository;
   private final ScheduleService scheduleService;
-  private final Job job;
 
   public void save(Parents parents, AcceptChangeSessionRequest request) {
     ClassSession lastSession = classSessionRepository.findById(request.sessionId()).orElseThrow();
