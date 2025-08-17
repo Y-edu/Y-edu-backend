@@ -17,6 +17,7 @@ import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.api.domain.parents.domain.entity.Goal;
 import com.yedu.api.domain.parents.domain.entity.Parents;
+import com.yedu.api.domain.parents.domain.entity.SessionChangeForm;
 import com.yedu.api.domain.parents.domain.repository.ApplicationFormRepository;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableCommandService;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableQueryService;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -149,9 +151,9 @@ public class ParentsManageUseCase {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
     List<ClassMatching> matchings = classMatchingGetService.getMatched(parent);
-    Map<ClassMatching, List<ClassSession>> sessionWithMatching = classSessionQueryService.query(matchings);
+    Map<ClassSession, List<SessionChangeForm>> sessions = classSessionQueryService.query(matchings);
 
-    return ParentSessionResponse.of(sessionWithMatching);
+    return ParentSessionResponse.of(sessions);
   }
 
   public void acceptChangeSessionForm(String phoneNumber, AcceptChangeSessionRequest request) {
