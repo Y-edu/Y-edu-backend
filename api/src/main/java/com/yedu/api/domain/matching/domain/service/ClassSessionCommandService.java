@@ -446,7 +446,7 @@ public class ClassSessionCommandService {
     if (!validSessions.isEmpty()) {
         int currentTeacherRound = 1;  // 해당 월은 1부터 시작
         
-        for (ClassSession session : requestedValidSessions) {
+        for (ClassSession session : validSessions) {
             classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentTeacherRound);
             System.out.println("정상 세션 teacherRound 설정: " + session.getClassSessionId() + " -> " + currentTeacherRound);
             currentTeacherRound++;
