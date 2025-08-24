@@ -18,6 +18,7 @@ public class ApplicationFormResponse {
   private String favoriteGender;
   private String source;
   private String classCount;
+  private String classTime;
   private Integer pay;
   private List<AvailableTime> availableTimes;
   private Parents parent;
