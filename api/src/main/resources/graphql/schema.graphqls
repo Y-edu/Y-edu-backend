@@ -18,7 +18,7 @@ type ApplicationForm {
     favoriteGender: String
     source: String
     classCount: String
-    classTime: String ## 수업시수
+    classTime: String
     pay: Int
     availableTimes: [AvailableTime]
     parent: Parents
