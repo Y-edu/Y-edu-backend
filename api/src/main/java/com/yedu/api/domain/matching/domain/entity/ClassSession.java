@@ -87,6 +87,7 @@ public class ClassSession extends BaseEntity {
     cancel = true;
     this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
+    this.teacherRound = 0;
   }
 
   public void revertCancel() {
@@ -95,6 +96,7 @@ public class ClassSession extends BaseEntity {
     }
     cancel = false;
     this.cancelReason = null;
+    this.teacherRound = 1;
   }
 
   public void complete(Integer realClassMinute, String understanding, String homework) {

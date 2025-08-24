@@ -24,6 +24,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Entity
 @Getter
@@ -70,31 +73,47 @@ public class ClassSchedule extends BaseEntity {
             .orElse(today);
     LocalDate lastDay = today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
     Integer maxRound = calculateMaxRound(classManagement);
-    Integer nextTeacherRound = calculateNextTeacherRound(existingSessionMap, maxRound);
-    // 전역 카운터 사용하여 중복 생성 방지
-    globalTeacherRoundCounter.set(nextTeacherRound);
     
-    return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
+    // 새로 생성될 날짜들을 수집하여 정렬
+    List<LocalDate> newDates = Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
         .filter(it -> !existingSessionMap.containsKey(it))
-        .map(
-            date -> {
-                // 전체 날짜 순서대로 라운드 증가 (요일 무관)
-                int currentRound = globalTeacherRoundCounter.getAndUpdate(round -> 
-                    round >= maxRound ? 1 : round + 1
-                );
-                
-                return ClassSession.builder()
-                    .classManagement(classManagement)
-                    .sessionDate(date)
-                    .classTime(this.classTime)
-                    .completed(false)
-                    .cancel(false)
-                    .remind(false)
-                    .teacherRound(currentRound)
-                    .maxRound(maxRound)
-                    .build();
-            })
+        .sorted()
+        .toList();
+    
+    if (newDates.isEmpty()) {
+        return List.of();
+    }
+    
+    // 새로 생성되는 날짜들에서 월별로 teacherRound 관리
+    AtomicInteger teacherRoundCounter = new AtomicInteger(1);
+    AtomicReference<LocalDate> currentMonthRef = new AtomicReference<>();
+    
+    return newDates.stream()
+        .map(date -> {
+            // 월이 바뀌면 teacherRound를 1로 리셋
+            LocalDate currentMonth = currentMonthRef.get();
+            if (currentMonth == null || 
+                date.getMonth() != currentMonth.getMonth() || 
+                date.getYear() != currentMonth.getYear()) {
+                teacherRoundCounter.set(1);
+                currentMonthRef.set(date);
+            }
+            
+            // 현재 월 내에서 순차적으로 증가
+            int currentRound = teacherRoundCounter.getAndIncrement();
+            
+            return ClassSession.builder()
+                .classManagement(classManagement)
+                .sessionDate(date)
+                .classTime(this.classTime)
+                .completed(false)
+                .cancel(false)
+                .remind(false)
+                .teacherRound(currentRound)
+                .maxRound(maxRound)
+                .build();
+        })
         .toList();
   }
 
@@ -111,22 +130,5 @@ public class ClassSchedule extends BaseEntity {
         case String count when count.contains("주 7회") -> 28;
         default -> 4;
     };
-  }
-
-  private int calculateNextTeacherRound(Map<LocalDate, ClassSession> existingSessions, Integer maxRound) {
-    if (existingSessions.isEmpty()) {
-      return 1;
-    }
-    
-    // 마지막 세션의 teacher_round 확인
-    ClassSession lastSession = existingSessions.get(existingSessions.size() - 1);
-    Integer lastTeacherRound = lastSession.getTeacherRound();
-    
-    if (lastTeacherRound == null || lastTeacherRound == 0) {
-        return 1;
-    }
-    
-    // 다음 순서 계산 (순환)
-    return (lastTeacherRound % maxRound) + 1;
   }
 }
