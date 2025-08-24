@@ -880,6 +880,35 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
+
+  public CommonRequest mapToParentCompleteTalkNotify(
+      ParentCompleteTalkNotifyEvent event) {
+    String message =
+        """
+✅️ #{teacherNickName} #{round}회차 한줄 리뷰
+
+[리뷰 내용]\s
+#{content}
+
+[아이 숙제 완료 정도]
+#{homework}
+       """
+            .strip()
+            .replace("#{teacherNickName}", event.nickName())
+            .replace("#{round}", String.valueOf(event.parentRoundNumber()))
+            .replace("#{content}", event.reviewContent())
+            .replace("#{homework}", event.homework())
+        ;
+
+
+    Message messageBody =
+        new TextMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY),
+            BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY.getCode());
+    return createCommonRequest(messageBody, event.parentPhoneNumber());
+  }
+
   private CommonRequest<ContentRequest> createCommonRequest(
       Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
@@ -895,4 +924,5 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return new CommonRequest(
         properties.id(), "ai", properties.number(), phoneNumber, contentRequest, refKey);
   }
+
 }

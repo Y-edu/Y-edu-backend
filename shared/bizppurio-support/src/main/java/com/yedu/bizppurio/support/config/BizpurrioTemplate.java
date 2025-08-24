@@ -65,7 +65,9 @@ public enum BizpurrioTemplate {
   YEDU_OFFICIAL_PARENTS_CLASS_INFO(
       "bizp_2025040422464800717675248", "[학부모 매칭 완료 3] 전화 상담 내용 안내", Profile.YEDU_OFFICIAL),
   YEDU_OFFICIAL_PAY_NOTIFICATION(
-      "bizp_2025050119355644482892135", "[학부모 매칭 완료 1] 계좌 입금 요청 v2", Profile.YEDU_OFFICIAL);
+      "bizp_2025050119355644482892135", "[학부모 매칭 완료 1] 계좌 입금 요청 v2", Profile.YEDU_OFFICIAL),
+  YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY(
+      "bizp_2025081800160232533510346", "학부모 과외 리뷰 v1", Profile.YEDU_OFFICIAL);
 
   private final String code;
 

@@ -36,6 +36,7 @@ import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
+import com.yedu.common.event.bizppurio.ParentCompleteTalkNotifyEvent;
 import com.yedu.sheet.support.SheetApi;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -100,6 +101,8 @@ public class ClassScheduleMatchingUseCase {
   private final ClassManagementQueryService classManagementQueryService;
 
   private final SheetApi sheetApi;
+
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
@@ -391,6 +394,14 @@ public class ClassScheduleMatchingUseCase {
                 Optional.ofNullable(session.getUnderstanding()).orElse("")
                 ))
         ,"data");
+
+    applicationEventPublisher.publishEvent(new ParentCompleteTalkNotifyEvent(
+        teacherInfo.getNickName(),
+        matching.getApplicationForm().getParents().getPhoneNumber(),
+        session.getRound(),
+        request.understanding(),
+        request.homework()
+    ));
   }
 
   private String roundNumber(ClassMatching matching, ClassSession session) {
