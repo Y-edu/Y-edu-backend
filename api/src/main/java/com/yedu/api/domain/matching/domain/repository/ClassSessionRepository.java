@@ -30,7 +30,7 @@ public interface ClassSessionRepository
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
-  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
+  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndTeacherRoundIsNotNullOrderBySessionDateDesc(
       ClassManagement classManagement, LocalDate sessionDate);
 
   @Query("""
@@ -93,5 +93,20 @@ public interface ClassSessionRepository
       @Param("classManagements") List<ClassManagement> classManagements,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate
+  );
+
+
+@Query("""
+  select cs 
+  from ClassSession cs 
+  where cs.classManagement.classManagementId = :classManagementId 
+    and cs.sessionDate between :startOfMonth and :endOfMonth
+    and IFNULL(cs.teacherRound, 0) != 0
+  order by cs.sessionDate asc
+""")
+List<ClassSession> findByClassManagementIdAndYearMonth(
+    @Param("classManagementId") Long classManagementId, 
+    @Param("startOfMonth") LocalDate startOfMonth,
+    @Param("endOfMonth") LocalDate endOfMonth
   );
 }
