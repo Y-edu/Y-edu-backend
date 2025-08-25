@@ -19,7 +19,9 @@ import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.api.domain.parents.domain.entity.Goal;
 import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.parents.domain.entity.SessionChangeForm;
+import com.yedu.api.domain.parents.domain.entity.constant.SessionChangeType;
 import com.yedu.api.domain.parents.domain.repository.ApplicationFormRepository;
+import com.yedu.api.domain.parents.domain.repository.SessionChangeFormRepository;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableCommandService;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableQueryService;
 import com.yedu.api.domain.parents.domain.service.ParentsGetService;
@@ -29,8 +31,10 @@ import com.yedu.api.domain.parents.domain.service.SessionChangeFormCommandServic
 import com.yedu.api.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.api.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.api.domain.teacher.domain.aggregate.TeacherWithAvailable;
+import com.yedu.api.domain.teacher.domain.entity.constant.District;
 import com.yedu.cache.support.RedisRepository;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +63,7 @@ public class ParentsManageUseCase {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassSessionQueryService classSessionQueryService;
   private final SessionChangeFormCommandService sessionChangeFormCommandService;
+  private final SessionChangeFormRepository sessionChangeFormRepository;
 
 
   public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend) {
@@ -166,5 +171,42 @@ public class ParentsManageUseCase {
 
   public void changeApplication(ApplicationFormChangeRequest request) {
     log.info(">>> 선생님 교체 신청 :{}" , request);
+
+    SessionChangeForm changeForm = sessionChangeFormRepository.findFirstByParents_PhoneNumberAndChangeType(request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
+        .orElseThrow(()-> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
+
+    ApplicationForm previousApplicationForm = changeForm.getLastSessionBeforeChange().getClassManagement()
+        .getClassMatching().getApplicationForm();
+
+    District previousDistrict = previousApplicationForm.getDistrict();
+
+    if (previousDistrict.equals(request.district())) {
+      // TODO 선생님 교체만 진행하는 경우 개발
+      return;
+    }
+      //신규 과외 생성
+    List<String> classGoals = parentsGetService.goalsByApplicationForm(previousApplicationForm)
+        .stream().map(Goal::getClassGoal)
+        .toList();
+
+    saveParentsAndApplication(
+        ApplicationFormRequest.builder()
+            .phoneNumber(request.phoneNumber())
+            .age(previousApplicationForm.getAge())
+            .wantedSubject(previousApplicationForm.getWantedSubject())
+            .wantedTime(request.wantedTime())
+            .classGoals(classGoals)
+            .favoriteGender(request.favoriteGender())
+            .favoriteStyle(request.favoriteStyle())
+            .online(previousApplicationForm.getOnline())
+            .classCount(request.classCount())
+            .classTime(request.classTime())
+            .district(request.district())
+            .dong(request.dong())
+            .source(previousApplicationForm.getSource())
+            .dayTimes(Collections.emptyList())
+            .build(),
+        false);
+
   }
 }

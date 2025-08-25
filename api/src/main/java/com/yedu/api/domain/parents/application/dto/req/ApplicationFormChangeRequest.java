@@ -11,5 +11,6 @@ public record ApplicationFormChangeRequest(
     Boolean useSameClassCount,
     String classCount,
     String classTime,
+    String district,
     String dong
 ) {}

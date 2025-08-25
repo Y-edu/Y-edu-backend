@@ -5,7 +5,9 @@ import com.yedu.api.domain.parents.domain.entity.constant.Online;
 import com.yedu.api.domain.parents.domain.vo.DayTime;
 import com.yedu.common.type.ClassType;
 import java.util.List;
+import lombok.Builder;
 
+@Builder
 public record ApplicationFormRequest(
     String phoneNumber,
     String age,
