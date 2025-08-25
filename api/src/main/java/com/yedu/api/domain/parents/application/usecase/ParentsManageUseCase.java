@@ -8,6 +8,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
+import com.yedu.api.domain.parents.application.dto.req.ApplicationFormChangeRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
@@ -161,5 +162,9 @@ public class ParentsManageUseCase {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
     sessionChangeFormCommandService.save(parent, request);
+  }
+
+  public void changeApplication(ApplicationFormChangeRequest request) {
+    log.info(">>> 선생님 교체 신청 :{}" , request);
   }
 }
