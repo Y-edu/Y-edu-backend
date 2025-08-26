@@ -191,9 +191,9 @@ public class ClassSessionCommandService {
   }
 
   public void deleteSession(ClassManagement classManagement, LocalDate changeStartDate) {
-    classSessionRepository
-        .deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(
-            classManagement, changeStartDate);
+    classSessionRepository  
+        .deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqualAndTeacherRoundNot(
+            classManagement, changeStartDate, 0);
   }
 
   public List<ClassMatching> createSessionOf(
@@ -313,8 +313,6 @@ public class ClassSessionCommandService {
             }
         }
     }
-    
-    // 4. teacherRound가 0이 아닌 해당 월의 세션만 조회하여 순차적으로 1부터 업데이트
     List<ClassSession> allClassSessions = classSessionRepository.findByClassManagementIdAndYearMonth(
         classManagementId, startOfMonth, endOfMonth);
     
