@@ -274,7 +274,7 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> pausedMatching = classMatchingGetService.getPaused(teacher);
 
     List<ClassMatching> merged = Stream.of(matchings, pausedMatching)
-        .flatMap(List::stream)
+        .flatMap(List::stream) 
         .toList();
 
     return classSessionQueryService.query(matching, merged, isComplete, pageable);
@@ -291,7 +291,7 @@ public class ClassScheduleMatchingUseCase {
     if (session.isCancel() || session.isTodayCancel()) {
       throw new IllegalStateException("휴강되거나 당일 취소된 세션은 날짜를 변경할 수 없습니다");
     }
-    
+
     // 날짜 변경 후 회차 순차 업데이트
     classSessionCommandService.updateDateAndReorderRounds(sessionId);
 
@@ -318,8 +318,8 @@ public class ClassScheduleMatchingUseCase {
   public void cancelSession(Long sessionId, CancelSessionRequest cancelSessionRequest) {
     ClassSession session = classSessionCommandService.cancel(sessionId, cancelSessionRequest.cancelReason(), cancelSessionRequest.isTodayCancel());
     
-    // Teacher 당일 취소인 경우 무로보강
-    if ( cancelSessionRequest.isTodayCancel()) {
+    // 당일 취소인 경우
+    if (cancelSessionRequest.isTodayCancel()) {
       classSessionCommandService.updateRoundSequentially(sessionId);
     } else {
       // 그 외는 모두 횟수 차감
@@ -443,7 +443,7 @@ public class ClassScheduleMatchingUseCase {
               if (matchingId == null) {
                 throw new IllegalArgumentException("잘못된 토큰값입니다");
               }
-
+              
               return classMatchingGetService.getById(matchingId);
             });
   }

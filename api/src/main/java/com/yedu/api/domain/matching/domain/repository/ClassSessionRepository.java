@@ -25,8 +25,8 @@ public interface ClassSessionRepository
   List<ClassSession> findByClassManagementAndSessionDateBetween(
       ClassManagement classManagement, LocalDate startDate, LocalDate endDate);
 
-  void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqual(
-      ClassManagement classManagement, LocalDate changeStartDate);
+  void deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqualAndTeacherRoundNot(
+      ClassManagement classManagement, LocalDate changeStartDate, int teacherRound);
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
@@ -104,9 +104,10 @@ public interface ClassSessionRepository
     and IFNULL(cs.teacherRound, 0) != 0
   order by cs.sessionDate asc
 """)
-List<ClassSession> findByClassManagementIdAndYearMonth(
+  List<ClassSession> findByClassManagementIdAndYearMonth(
     @Param("classManagementId") Long classManagementId, 
     @Param("startOfMonth") LocalDate startOfMonth,
     @Param("endOfMonth") LocalDate endOfMonth
   );
+
 }

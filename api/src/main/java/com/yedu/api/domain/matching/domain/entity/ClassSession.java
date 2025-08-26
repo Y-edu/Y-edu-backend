@@ -85,9 +85,10 @@ public class ClassSession extends BaseEntity {
     }
 
     cancel = true;
+    this.completed = isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? true : false;
     this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
-    this.teacherRound = 0;
+    this.teacherRound = cancelReason.equals(CancelReason.PARENT.name()) ? teacherRound : 0;
   }
 
   public void revertCancel() {
