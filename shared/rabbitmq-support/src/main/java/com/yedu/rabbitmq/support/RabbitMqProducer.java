@@ -10,6 +10,7 @@ import com.yedu.common.event.bizppurio.MatchingRefuseCaseEvent;
 import com.yedu.common.event.bizppurio.MatchingRefuseCaseNowEvent;
 import com.yedu.common.event.bizppurio.NotifyCallingEvent;
 import com.yedu.common.event.bizppurio.NotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.ParentCompleteTalkNotifyEvent;
 import com.yedu.common.event.bizppurio.ParentsClassInfoEvent;
 import com.yedu.common.event.bizppurio.ParentsClassNoticeEvent;
 import com.yedu.common.event.bizppurio.ParentsExchangeEvent;
@@ -163,6 +164,12 @@ public class RabbitMqProducer {
   @Async
   public void handle(ResumeClassEvent event) {
     log.info("event : {}", event.token());
+  }
+
+  @EventListener
+  @Async
+  public void handle(ParentCompleteTalkNotifyEvent event) {
+    produceParentMessage(event);
   }
 
   @EventListener

@@ -1,6 +1,7 @@
 package com.yedu.api.domain.parents.presentation;
 
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
+import com.yedu.api.domain.parents.application.dto.req.ApplicationFormChangeRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
@@ -31,6 +32,14 @@ public class ParentsController {
   @Operation(summary = "Tally 제출 - 학부모 신청건 API")
   public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
     parentsManageUseCase.saveParentsAndApplication(request, false);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/change/application")
+  @Operation(summary = "Tally 제출 - 학부모 선생님 교체 신청건 API")
+  public ResponseEntity<?> changeApplication(@RequestBody ApplicationFormChangeRequest request) {
+    parentsManageUseCase.changeApplication(request);
+
     return ResponseEntity.ok().build();
   }
 

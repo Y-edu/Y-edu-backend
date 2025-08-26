@@ -114,6 +114,7 @@ public class ClassMatchingInfoUseCase {
         .applicationFormId(applicationForm.getApplicationFormId())
         .matchingId(matching.getClassMatchingId())
         .classCount(applicationForm.getClassCount())
+        .classTime(applicationForm.getClassTime())
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
         .pay(applicationForm.getPay())
