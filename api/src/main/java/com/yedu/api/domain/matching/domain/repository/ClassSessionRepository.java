@@ -38,10 +38,12 @@ public interface ClassSessionRepository
     where cs.classManagement.classMatching.classMatchingId = :matchingId 
       and cs.cancel is false 
       and cs.completed is true 
-      and cs.isTodayCancel is false
+      and (cs.isTodayCancel = true and cs.cancelReason = :cancelReason)
       and cs.sessionDate between :startDate and :endDate
   """)
-  Integer sumClassTime(@Param("matchingId") Long matchingId,
+  Integer sumClassTime(
+      @Param("cancelReason") String cancelReason,
+      @Param("matchingId") Long matchingId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
 
