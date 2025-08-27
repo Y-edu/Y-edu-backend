@@ -37,8 +37,7 @@ public interface ClassSessionRepository
     select sum(cs.realClassTime) from ClassSession cs 
     where cs.classManagement.classMatching.classMatchingId = :matchingId 
       and cs.cancel is false 
-      and cs.completed is true 
-      and (cs.isTodayCancel = true and cs.cancelReason = :cancelReason)
+      and ((cs.completed is true) or (cs.isTodayCancel = true and cs.cancelReason = :cancelReason))
       and cs.sessionDate between :startDate and :endDate
   """)
   Integer sumClassTime(
