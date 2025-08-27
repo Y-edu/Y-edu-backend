@@ -85,6 +85,7 @@ public class ClassSession extends BaseEntity {
     }
 
     cancel = true;
+    this.realClassTime = isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? classTime.getClassMinute() : null;
     this.completed = isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? true : false;
     this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
