@@ -152,11 +152,11 @@ public class ClassSessionCommandService {
    Long classManagementId = currentSession.getClassManagement().getClassManagementId();
    List<ClassSession> allClassSessions = classSessionRepository.findByClassManagementIdAndYearMonth(classManagementId, startOfMonth, endOfMonth);
    
-      // 4. 순서대로 teacherRound 인덱스로 업데이트
+   // 4. 순서대로 teacherRound 인덱스로 업데이트
    for (int i = 0; i < allClassSessions.size(); i++) {
     ClassSession session = allClassSessions.get(i);
     classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), i + 1);
-   }
+  }
 
     return currentSession;
   }
@@ -191,7 +191,7 @@ public class ClassSessionCommandService {
   }
 
   public void deleteSession(ClassManagement classManagement, LocalDate changeStartDate) {
-    classSessionRepository  
+    classSessionRepository
         .deleteByClassManagementAndCancelIsFalseAndCompletedIsFalseAndSessionDateIsGreaterThanEqualAndTeacherRoundNot(
             classManagement, changeStartDate, 0);
   }
@@ -253,7 +253,7 @@ public class ClassSessionCommandService {
     if (currentSessions.isEmpty() || currentSession == null) {
       return;
     }
-  
+
     if (currentSession.getCancelReason() == CancelReason.TEACHER.name()) {
       // 현재 세션의 인덱스 찾기
       int currentIndex = -1;
@@ -339,7 +339,7 @@ public class ClassSessionCommandService {
     if (sessions.isEmpty()) {
       return;
     }
-
+  
     ClassSession currentSession = classSessionRepository.findById(sessionId).orElse(null);
     if (currentSession == null) {
       return;
@@ -405,11 +405,11 @@ public class ClassSessionCommandService {
   // 일반 휴강은 teacherRound 현재 회차만 0으로 처리하고, 그뒤 회차들은 +1씩 증가하고, maxRound보다 커지면 1로 초기화
   public void updateRoundForGeneralCancel(Long sessionId) {
     List<ClassSession> sessions = classSessionRepository.findBySameClassManagementId(sessionId);
-        
+    
     if (sessions.isEmpty()) {
       return;
     }
-    
+
     ClassSession currentSession = classSessionRepository.findById(sessionId).orElse(null);
     if (currentSession == null) {
       return;
@@ -448,7 +448,7 @@ public class ClassSessionCommandService {
             classSessionRepository.updateRoundBySessionId(session.getClassSessionId(), currentTeacherRound);
             System.out.println("정상 세션 teacherRound 설정: " + session.getClassSessionId() + " -> " + currentTeacherRound);
             currentTeacherRound++;
-        }
+      }
     }
   }
 }
