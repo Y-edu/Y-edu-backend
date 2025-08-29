@@ -67,6 +67,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import com.yedu.api.domain.matching.domain.service.PaymentRequestService;
 
 @RequiredArgsConstructor
 @Component
@@ -103,6 +104,8 @@ public class ClassScheduleMatchingUseCase {
   private final SheetApi sheetApi;
 
   private final ApplicationEventPublisher applicationEventPublisher;
+
+  private final PaymentRequestService paymentRequestService;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
@@ -372,6 +375,9 @@ public class ClassScheduleMatchingUseCase {
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = classSessionCommandService.complete(sessionId, request);
+    //결제 요청
+    paymentRequestService.requestPayment(sessionId);
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
