@@ -7,6 +7,7 @@ import com.yedu.api.domain.matching.application.dto.res.SessionResponse.Schedule
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
@@ -116,7 +117,7 @@ public class ClassSessionQueryService {
 
   @Async
   public CompletableFuture<Integer> sumClassTimeAsync(ClassMatching matching, LocalDate startDate, LocalDate endDate) {
-    Integer sum = classSessionRepository.sumClassTime(matching.getClassMatchingId(), startDate, endDate);
+    Integer sum = classSessionRepository.sumClassTime(CancelReason.PARENT.name(), matching.getClassMatchingId(), startDate, endDate);
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
   }
 
