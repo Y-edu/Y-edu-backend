@@ -1,6 +1,5 @@
 package com.yedu.api.domain.matching.application.dto.res;
 
-import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,19 +9,14 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
-public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, MatchingStatus> matchingStatuses) {
+public record SessionResponse(
+    Map<String, ScheduleInfo> schedules, Map<String, MatchingStatus> matchingStatuses) {
 
-  public record ScheduleInfo(
-      Page<Schedule> schedules,
-      boolean send
-  ){
-
-  }
+  public record ScheduleInfo(Page<Schedule> schedules, boolean send) {}
 
   @Builder(access = AccessLevel.PRIVATE)
   public record Schedule(
@@ -41,10 +35,11 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
 
   public static Page<SessionResponse.Schedule> from(Page<ClassSession> sessions, Integer maxRound) {
     List<ClassSession> sessionList = sessions.getContent();
-    List<ClassSession> activeSessions = sessionList.stream()
-        .filter(s -> !s.isCancel())
-        .sorted(Comparator.comparing(ClassSession::getSessionDate))
-        .toList();
+    List<ClassSession> activeSessions =
+        sessionList.stream()
+            .filter(s -> !s.isCancel())
+            .sorted(Comparator.comparing(ClassSession::getSessionDate))
+            .toList();
 
     Map<Long, Integer> roundMap = new LinkedHashMap<>();
     int round = 1;
@@ -58,8 +53,7 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
       if (round > maxRound) round = 1;
     }
 
-    return sessions
-        .map(
+    return sessions.map(
         it ->
             Schedule.builder()
                 .classSessionId(it.getClassSessionId())
@@ -73,7 +67,8 @@ public record SessionResponse(Map<String, ScheduleInfo> schedules, Map<String, M
                 .homework(it.getHomework())
                 .currentRound(it.getTeacherRound())
                 .maxRound(it.getMaxRound())
-                .classMinute(it.isCompleted() ? it.getRealClassTime() : it.getClassTime().getClassMinute())
+                .classMinute(
+                    it.isCompleted() ? it.getRealClassTime() : it.getClassTime().getClassMinute())
                 .build());
   }
 

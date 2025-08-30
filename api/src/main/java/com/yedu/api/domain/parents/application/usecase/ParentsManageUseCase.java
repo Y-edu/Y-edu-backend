@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.math3.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -65,9 +64,8 @@ public class ParentsManageUseCase {
   private final SessionChangeFormCommandService sessionChangeFormCommandService;
   private final SessionChangeFormRepository sessionChangeFormRepository;
 
-
   public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend) {
-    
+
     Parents parents =
         parentsGetService
             .optionalParentsByPhoneNumber(request.phoneNumber())
@@ -81,37 +79,49 @@ public class ParentsManageUseCase {
       return;
     }
 
-    if (applicationFormRepository.findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(applicationForm.getParents(), applicationForm.getDistrict(), applicationForm.getWantedSubject(),
-        applicationForm.getAge(), applicationForm.getClassCount(), LocalDateTime.now().minusMinutes(1)).isPresent()) {
+    if (applicationFormRepository
+        .findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(
+            applicationForm.getParents(),
+            applicationForm.getDistrict(),
+            applicationForm.getWantedSubject(),
+            applicationForm.getAge(),
+            applicationForm.getClassCount(),
+            LocalDateTime.now().minusMinutes(1))
+        .isPresent()) {
       log.warn("중복 제출- 과외 식별자 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
       return;
     }
 
-     //  applicationFormId를 제외한 모든 필드가 동일한 중복 신청서 체크 (최초발송)
-    if (!isResend &&
-        applicationFormRepository.findByAllFieldsExceptId(
-            applicationForm.getParents(),
-            applicationForm.getAge(),
-            applicationForm.getOnline(),
-            applicationForm.getDistrict(),
-            applicationForm.getDong(),
-            applicationForm.getWantedSubject(),
-            applicationForm.getLevel(),
-            applicationForm.getFavoriteCondition(),
-            applicationForm.getEducationImportance(),
-            applicationForm.getFavoriteStyle(),
-            applicationForm.getFavoriteGender(),
-            applicationForm.getFavoriteDirection(),
-            applicationForm.getWantTime(),
-            applicationForm.getClassCount(),
-            applicationForm.getClassTime(),
-            applicationForm.getSource(),
-            applicationForm.isProceedStatus(),
-            applicationForm.getPay()).isPresent()) {
-      log.warn("중복 제출- 모든 필드 동일한 신청서 발견 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
+    //  applicationFormId를 제외한 모든 필드가 동일한 중복 신청서 체크 (최초발송)
+    if (!isResend
+        && applicationFormRepository
+            .findByAllFieldsExceptId(
+                applicationForm.getParents(),
+                applicationForm.getAge(),
+                applicationForm.getOnline(),
+                applicationForm.getDistrict(),
+                applicationForm.getDong(),
+                applicationForm.getWantedSubject(),
+                applicationForm.getLevel(),
+                applicationForm.getFavoriteCondition(),
+                applicationForm.getEducationImportance(),
+                applicationForm.getFavoriteStyle(),
+                applicationForm.getFavoriteGender(),
+                applicationForm.getFavoriteDirection(),
+                applicationForm.getWantTime(),
+                applicationForm.getClassCount(),
+                applicationForm.getClassTime(),
+                applicationForm.getSource(),
+                applicationForm.isProceedStatus(),
+                applicationForm.getPay())
+            .isPresent()) {
+      log.warn(
+          "중복 제출- 모든 필드 동일한 신청서 발견 {}, {}",
+          applicationForm.getApplicationFormId(),
+          applicationForm);
       return;
     }
-   
+
     List<Goal> goals =
         request.classGoals().stream().map(goal -> mapToGoal(applicationForm, goal)).toList();
     parentsSaveService.saveApplication(applicationForm, goals);
@@ -147,14 +157,15 @@ public class ParentsManageUseCase {
         .orElseGet(ApplicationFormTimeTableResponse::empty);
   }
 
-
   public void resendParentsAndApplication(ApplicationFormRequest request) {
     saveParentsAndApplication(request, true);
   }
 
   public List<ParentSessionResponse> retrieveSessions(String phoneNumber) {
-    Parents parent = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
+    Parents parent =
+        parentsGetService
+            .optionalParentsByPhoneNumber(phoneNumber)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
     List<ClassMatching> matchings = classMatchingGetService.getMatched(parent);
     Map<ClassSession, List<SessionChangeForm>> sessions = classSessionQueryService.query(matchings);
@@ -163,20 +174,29 @@ public class ParentsManageUseCase {
   }
 
   public void acceptChangeSessionForm(String phoneNumber, AcceptChangeSessionRequest request) {
-    Parents parent = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
+    Parents parent =
+        parentsGetService
+            .optionalParentsByPhoneNumber(phoneNumber)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
     sessionChangeFormCommandService.save(parent, request);
   }
 
   public void changeApplication(ApplicationFormChangeRequest request) {
-    log.info(">>> 선생님 교체 신청 :{}" , request);
+    log.info(">>> 선생님 교체 신청 :{}", request);
 
-    SessionChangeForm changeForm = sessionChangeFormRepository.findFirstByParents_PhoneNumberAndChangeType(request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
-        .orElseThrow(()-> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
+    SessionChangeForm changeForm =
+        sessionChangeFormRepository
+            .findFirstByParents_PhoneNumberAndChangeType(
+                request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
+            .orElseThrow(() -> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
 
-    ApplicationForm previousApplicationForm = changeForm.getLastSessionBeforeChange().getClassManagement()
-        .getClassMatching().getApplicationForm();
+    ApplicationForm previousApplicationForm =
+        changeForm
+            .getLastSessionBeforeChange()
+            .getClassManagement()
+            .getClassMatching()
+            .getApplicationForm();
 
     District previousDistrict = previousApplicationForm.getDistrict();
 
@@ -184,10 +204,11 @@ public class ParentsManageUseCase {
       // TODO 선생님 교체만 진행하는 경우 개발
       return;
     }
-      //신규 과외 생성
-    List<String> classGoals = parentsGetService.goalsByApplicationForm(previousApplicationForm)
-        .stream().map(Goal::getClassGoal)
-        .toList();
+    // 신규 과외 생성
+    List<String> classGoals =
+        parentsGetService.goalsByApplicationForm(previousApplicationForm).stream()
+            .map(Goal::getClassGoal)
+            .toList();
 
     saveParentsAndApplication(
         ApplicationFormRequest.builder()
@@ -207,6 +228,5 @@ public class ParentsManageUseCase {
             .dayTimes(Collections.emptyList())
             .build(),
         false);
-
   }
 }

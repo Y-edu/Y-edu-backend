@@ -7,7 +7,6 @@ import com.yedu.api.domain.teacher.domain.entity.TeacherAvailable;
 import com.yedu.api.domain.teacher.domain.entity.TeacherDistrict;
 import com.yedu.api.domain.teacher.domain.entity.TeacherEnglish;
 import com.yedu.api.domain.teacher.domain.entity.TeacherMath;
-import com.yedu.api.domain.teacher.domain.entity.constant.TeacherStatus;
 import com.yedu.api.domain.teacher.domain.repository.TeacherAvailableRepository;
 import com.yedu.api.domain.teacher.domain.repository.TeacherDistrictRepository;
 import com.yedu.api.domain.teacher.domain.repository.TeacherEnglishRepository;

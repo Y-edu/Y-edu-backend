@@ -4,7 +4,6 @@ import com.yedu.api.domain.teacher.application.dto.req.CompleteTalkNoticeRequest
 import com.yedu.api.domain.teacher.application.usecase.TeacherBatchUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

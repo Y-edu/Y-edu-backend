@@ -95,9 +95,7 @@ public class AdminManageUseCase {
 
     MatchingTimeTableDto key = new MatchingTimeTableDto(teacherId, classMatchingId, wantedSubject);
 
-    return Pair.of(
-        matchingTimetableKeyStorage.storeAndGet(key),
-        wantedSubject);
+    return Pair.of(matchingTimetableKeyStorage.storeAndGet(key), wantedSubject);
   }
 
   private String createMatchingTimeTableToken(ClassMatching classMatching) {

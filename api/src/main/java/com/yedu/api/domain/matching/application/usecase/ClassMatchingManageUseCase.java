@@ -131,23 +131,27 @@ public class ClassMatchingManageUseCase {
   public void updateMatching(List<Long> matchingIds, MatchingStatus matchingStatus) {
     List<ClassMatching> matchings = classMatchingRepository.findAllById(matchingIds);
 
-    matchings.forEach(it -> {
-      MatchingStatus before = it.getMatchStatus();
-      it.update(matchingStatus);
-      MatchingStatus after = it.getMatchStatus();
+    matchings.forEach(
+        it -> {
+          MatchingStatus before = it.getMatchStatus();
+          it.update(matchingStatus);
+          MatchingStatus after = it.getMatchStatus();
 
-      if (before.equals(MatchingStatus.일시중단) && after.equals(MatchingStatus.최종매칭)) {
-        String teacherPhoneNumber = it.getTeacher().getTeacherInfo().getPhoneNumber();
+          if (before.equals(MatchingStatus.일시중단) && after.equals(MatchingStatus.최종매칭)) {
+            String teacherPhoneNumber = it.getTeacher().getTeacherInfo().getPhoneNumber();
 
-        ClassManagement classManagement = classManagementQueryService.query(it.getClassMatchingId())
-            .orElseThrow(()-> new IllegalArgumentException("매칭 정보를 찾을 수 없습니다"));
+            ClassManagement classManagement =
+                classManagementQueryService
+                    .query(it.getClassMatchingId())
+                    .orElseThrow(() -> new IllegalArgumentException("매칭 정보를 찾을 수 없습니다"));
 
-        String classManagementToken = classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+            String classManagementToken =
+                classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
 
-        eventPublisher.publishEvent(new ResumeClassEvent(teacherPhoneNumber, classManagementToken));
-      }
-    });
-
+            eventPublisher.publishEvent(
+                new ResumeClassEvent(teacherPhoneNumber, classManagementToken));
+          }
+        });
   }
 
   public void changeTeacher(Long matchingId, Long newTeacherId) {

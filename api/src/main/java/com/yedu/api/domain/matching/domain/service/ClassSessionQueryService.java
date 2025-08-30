@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.math3.util.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -45,7 +44,9 @@ public class ClassSessionQueryService {
 
   public SessionResponse query(
       ClassMatching tokenClassMatching,
-      List<ClassMatching> classMatchings, Boolean isComplete, Pageable pageable) {
+      List<ClassMatching> classMatchings,
+      Boolean isComplete,
+      Pageable pageable) {
     LocalDate now = LocalDate.now();
     LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).minusMonths(1L);
     LocalDate endOfMonth = now.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
@@ -67,29 +68,37 @@ public class ClassSessionQueryService {
                   Page<ClassSession> sessions =
                       Optional.ofNullable(isComplete)
                           .map(
-                              complete -> classSessionRepository
-                                  .findByClassManagementAndSessionDateBetweenAndCompleted(
-                                      cm, startOfMonth, endOfMonth, isComplete, pageable)
-                          )
+                              complete ->
+                                  classSessionRepository
+                                      .findByClassManagementAndSessionDateBetweenAndCompleted(
+                                          cm, startOfMonth, endOfMonth, isComplete, pageable))
                           .orElseGet(
                               () ->
                                   classSessionRepository.findByClassManagementAndSessionDateBetween(
                                       cm, startOfMonth, endOfMonth, pageable));
 
                   // Page<ClassSession> → Page<Schedule>
-                  Page<Schedule> schedulePage = SessionResponse.from(sessions, applicationForm.maxRoundNumber());
+                  Page<Schedule> schedulePage =
+                      SessionResponse.from(sessions, applicationForm.maxRoundNumber());
 
-                  return Map.entry(applicationForm.getApplicationFormId(), new ScheduleInfo(schedulePage, matching.getClassMatchingId() == tokenClassMatching.getClassMatchingId()));
+                  return Map.entry(
+                      applicationForm.getApplicationFormId(),
+                      new ScheduleInfo(
+                          schedulePage,
+                          matching.getClassMatchingId()
+                              == tokenClassMatching.getClassMatchingId()));
                 })
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    Map<String, MatchingStatus> matchingStatusesMap = classMatchings.stream()
-        .map(matching -> {
-          String applicationFormId = matching.getApplicationForm().getApplicationFormId();
-          return Map.entry(applicationFormId, matching.getMatchStatus());
-        })
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    Map<String, MatchingStatus> matchingStatusesMap =
+        classMatchings.stream()
+            .map(
+                matching -> {
+                  String applicationFormId = matching.getApplicationForm().getApplicationFormId();
+                  return Map.entry(applicationFormId, matching.getMatchStatus());
+                })
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
     return new SessionResponse(scheduleMap, matchingStatusesMap);
   }
@@ -116,9 +125,17 @@ public class ClassSessionQueryService {
   }
 
   @Async
-  public CompletableFuture<Integer> sumClassTimeAsync(ClassMatching matching, LocalDate startDate, LocalDate endDate) {
-    Integer sum = classSessionRepository.sumClassTime(CancelReason.PARENT.name(), matching.getClassMatchingId(), startDate, endDate);
+  public CompletableFuture<Integer> sumClassTimeAsync(
+      ClassMatching matching, LocalDate startDate, LocalDate endDate) {
+    Integer sum =
+        classSessionRepository.sumClassTime(
+            CancelReason.PARENT.name(), matching.getClassMatchingId(), startDate, endDate);
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
+  }
+
+  public Integer sumTotalClassTime(Long matchingId) {
+    Integer sum = classSessionRepository.sumTotalClassTime(CancelReason.PARENT.name(), matchingId);
+    return sum != null ? sum : 0;
   }
 
   public Map<ClassSession, List<SessionChangeForm>> query(List<ClassMatching> matchings) {
@@ -129,8 +146,8 @@ public class ClassSessionQueryService {
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 
-    List<ClassSession> sessions = classSessionRepository.findSession(
-        managements, startDate, endDate);
+    List<ClassSession> sessions =
+        classSessionRepository.findSession(managements, startDate, endDate);
 
     if (sessions.isEmpty()) {
       return Collections.emptyMap();
@@ -138,8 +155,9 @@ public class ClassSessionQueryService {
 
     List<SessionChangeForm> sessionChangeForms =
         sessionChangeFormRepository.findByLastSessionBeforeChangeIn(sessions);
-    Map<ClassSession, List<SessionChangeForm>> forms = sessionChangeForms.stream()
-        .collect(Collectors.groupingBy(SessionChangeForm::getLastSessionBeforeChange));
+    Map<ClassSession, List<SessionChangeForm>> forms =
+        sessionChangeForms.stream()
+            .collect(Collectors.groupingBy(SessionChangeForm::getLastSessionBeforeChange));
 
     Map<ClassSession, List<SessionChangeForm>> result = new LinkedHashMap<>();
     for (ClassSession session : sessions) {
@@ -147,5 +165,4 @@ public class ClassSessionQueryService {
     }
     return result;
   }
-
 }

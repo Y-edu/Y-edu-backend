@@ -130,9 +130,11 @@ public class AdminController {
   @GetMapping("/details/matching/recommend")
   @Operation(summary = "학부모에게 선생님 제안 알림톡 링크 조회", description = "학부모에게 선생님 제안 알림톡 링크 조회 API")
   public ResponseEntity<String> retrieveRecommendTeacherToken(@RequestParam Long classMatchingId) {
-    Pair<String, ClassType> tokenWithClassType = adminManageUseCase.retrieveRecommendTeacherToken(classMatchingId);
+    Pair<String, ClassType> tokenWithClassType =
+        adminManageUseCase.retrieveRecommendTeacherToken(classMatchingId);
 
-    return ResponseEntity.ok(tokenWithClassType.getLeft() + "?subject=" + tokenWithClassType.getRight());
+    return ResponseEntity.ok(
+        tokenWithClassType.getLeft() + "?subject=" + tokenWithClassType.getRight());
   }
 
   @PostMapping("/details/matching/proposal/{applicationFormId}")

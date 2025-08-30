@@ -17,7 +17,10 @@ public class ParentsMapper {
       Parents parents, ApplicationFormRequest request) {
     // 가격 계산식 = 4주 기준 분 * 600
 
-    char total = (char) ((parents.getCount() == 0 ? 1 : parents.getCount()) + 96); // todo 과외식별자번호 알파벳 생성이 보장되지 않음
+    char total =
+        (char)
+            ((parents.getCount() == 0 ? 1 : parents.getCount())
+                + 96); // todo 과외식별자번호 알파벳 생성이 보장되지 않음
     int classCount = getClassCount(request.classCount().trim());
     log.info("classCount : {}", classCount);
     int classTime = getClassTime(request.classTime().trim());

@@ -16,28 +16,35 @@ import org.springframework.data.repository.query.Param;
 public interface ApplicationFormRepository extends JpaRepository<ApplicationForm, String> {
   void deleteAllByParents_PhoneNumber(String phoneNumber);
 
-  Optional<ApplicationForm> findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(Parents parents, District district, ClassType wantedSubject,
-      String age, String classCount, LocalDateTime before);
+  Optional<ApplicationForm>
+      findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(
+          Parents parents,
+          District district,
+          ClassType wantedSubject,
+          String age,
+          String classCount,
+          LocalDateTime before);
 
-  @Query("SELECT af FROM ApplicationForm af WHERE " +
-         "af.parents = :parents AND " +
-         "af.age = :age AND " +
-         "af.online = :online AND " +
-         "af.district = :district AND " +
-         "af.dong = :dong AND " +
-         "af.wantedSubject = :wantedSubject AND " +
-         "af.level = :level AND " +
-         "af.favoriteCondition = :favoriteCondition AND " +
-         "af.educationImportance = :educationImportance AND " +
-         "af.favoriteStyle = :favoriteStyle AND " +
-         "af.favoriteGender = :favoriteGender AND " +
-         "af.favoriteDirection = :favoriteDirection AND " +
-         "af.wantTime = :wantTime AND " +
-         "af.classCount = :classCount AND " +
-         "af.classTime = :classTime AND " +
-         "af.source = :source AND " +
-         "af.proceedStatus = :proceedStatus AND " +
-         "af.pay = :pay")
+  @Query(
+      "SELECT af FROM ApplicationForm af WHERE "
+          + "af.parents = :parents AND "
+          + "af.age = :age AND "
+          + "af.online = :online AND "
+          + "af.district = :district AND "
+          + "af.dong = :dong AND "
+          + "af.wantedSubject = :wantedSubject AND "
+          + "af.level = :level AND "
+          + "af.favoriteCondition = :favoriteCondition AND "
+          + "af.educationImportance = :educationImportance AND "
+          + "af.favoriteStyle = :favoriteStyle AND "
+          + "af.favoriteGender = :favoriteGender AND "
+          + "af.favoriteDirection = :favoriteDirection AND "
+          + "af.wantTime = :wantTime AND "
+          + "af.classCount = :classCount AND "
+          + "af.classTime = :classTime AND "
+          + "af.source = :source AND "
+          + "af.proceedStatus = :proceedStatus AND "
+          + "af.pay = :pay")
   Optional<ApplicationForm> findByAllFieldsExceptId(
       @Param("parents") Parents parents,
       @Param("age") String age,

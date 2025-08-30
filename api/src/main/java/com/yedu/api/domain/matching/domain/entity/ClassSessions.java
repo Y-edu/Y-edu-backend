@@ -5,23 +5,21 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
-/**
- * 과외 일정 일급 collection
- */
+/** 과외 일정 일급 collection */
 @RequiredArgsConstructor
-public class ClassSessions  {
+public class ClassSessions {
 
   private final List<ClassSession> sessions;
 
   /**
    * 회차 정보 계산
+   *
    * @param maxRound 최대 회차
    * @return 회차 정보가 추가된 과외 일정
    */
   public List<ClassSession> calculateRoundWithReset(Integer maxRound) {
-    List<ClassSession> sorted = sessions.stream()
-        .sorted(Comparator.comparing(ClassSession::getSessionDate))
-        .toList();
+    List<ClassSession> sorted =
+        sessions.stream().sorted(Comparator.comparing(ClassSession::getSessionDate)).toList();
 
     List<ClassSession> sessionWithRound = new ArrayList<>();
     // todo 리팩토링

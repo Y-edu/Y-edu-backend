@@ -2,7 +2,6 @@ package com.yedu.api.domain.parents.application.dto.req;
 
 import com.yedu.api.domain.parents.domain.entity.constant.Gender;
 
-
 public record ApplicationFormChangeRequest(
     String phoneNumber,
     String wantedTime,
@@ -12,5 +11,4 @@ public record ApplicationFormChangeRequest(
     String classCount,
     String classTime,
     String district,
-    String dong
-) {}
+    String dong) {}

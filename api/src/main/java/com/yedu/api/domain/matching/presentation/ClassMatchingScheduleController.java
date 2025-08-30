@@ -16,11 +16,9 @@ import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
-import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
@@ -136,8 +134,7 @@ public class ClassMatchingScheduleController {
       description = "sessionId로 과외를 휴강 처리합니다",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<Void> cancelSession(
-      @PathVariable Long sessionId,
-      @RequestBody CancelSessionRequest cancelSessionRequest) {
+      @PathVariable Long sessionId, @RequestBody CancelSessionRequest cancelSessionRequest) {
 
     scheduleMatchingUseCase.cancelSession(sessionId, cancelSessionRequest);
 
@@ -213,13 +210,13 @@ public class ClassMatchingScheduleController {
   public ResponseEntity<RetrieveMonthlyClassTimeResponse> retrieveMonthlyClassTime(
       @RequestParam(required = false) String token,
       @RequestParam(required = false) Long classMatchingId,
-      @RequestParam(required = false, defaultValue = "2") Integer monthCount
-  ) {
-    if (!StringUtils.hasText(token) && classMatchingId == null){
+      @RequestParam(required = false, defaultValue = "2") Integer monthCount) {
+    if (!StringUtils.hasText(token) && classMatchingId == null) {
       throw new IllegalArgumentException("token 또는 matchingId 중 하나는 필수 값입니다");
     }
 
-    RetrieveMonthlyClassTimeResponse response = scheduleMatchingUseCase.retrieveMonthlyClassTime(token, classMatchingId, monthCount);
+    RetrieveMonthlyClassTimeResponse response =
+        scheduleMatchingUseCase.retrieveMonthlyClassTime(token, classMatchingId, monthCount);
 
     return ResponseEntity.ok(response);
   }

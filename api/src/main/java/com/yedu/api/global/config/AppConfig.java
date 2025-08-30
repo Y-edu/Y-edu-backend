@@ -25,28 +25,30 @@ public class AppConfig {
   public WebClient paymentWebClient(PaymentConfig config) {
     WebClientProperties props = config.webClientProperties;
 
-    HttpClient httpClient = HttpClient.create()
-        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, props.connectionTimeOut() * 1000)
-        .doOnConnected(conn -> conn
-            .addHandlerLast(new ReadTimeoutHandler(props.readTimeOut(), TimeUnit.SECONDS))
-            .addHandlerLast(new WriteTimeoutHandler(props.writeTimeOut(), TimeUnit.SECONDS)));
+    HttpClient httpClient =
+        HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, props.connectionTimeOut() * 1000)
+            .doOnConnected(
+                conn ->
+                    conn.addHandlerLast(
+                            new ReadTimeoutHandler(props.readTimeOut(), TimeUnit.SECONDS))
+                        .addHandlerLast(
+                            new WriteTimeoutHandler(props.writeTimeOut(), TimeUnit.SECONDS)));
 
-    return WebClient.builder()
-        .clientConnector(new ReactorClientHttpConnector(httpClient))
-        .build();
+    return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
   }
 
   @Bean
   public WebClient paymentRequestWebClient() {
-    HttpClient httpClient = HttpClient.create()
-        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 5초
-        .doOnConnected(conn -> conn
-            .addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))
-            .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS)));
+    HttpClient httpClient =
+        HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // 5초
+            .doOnConnected(
+                conn ->
+                    conn.addHandlerLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS))
+                        .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS)));
 
-    return WebClient.builder()
-        .clientConnector(new ReactorClientHttpConnector(httpClient))
-        .build();
+    return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
   }
 
   @Bean

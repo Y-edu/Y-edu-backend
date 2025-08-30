@@ -90,9 +90,9 @@ public class ApplicationForm extends BaseEntity {
     proceedStatus = !proceedStatus;
   }
 
-  public Integer maxRoundNumber(){
+  public Integer maxRoundNumber() {
     // FIXME : T-16 과외만 최대 6회차로 고정되야함
-    if (applicationFormId.equals("T-16")){
+    if (applicationFormId.equals("T-16")) {
       return 6;
     }
 
@@ -102,5 +102,4 @@ public class ApplicationForm extends BaseEntity {
     }
     return null;
   }
-
 }
