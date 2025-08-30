@@ -27,6 +27,9 @@ public class ApplicationFormResponse {
   private String matchingStatus;
   private String matchingRefuseReason;
   private ClassManagement classManagement;
+  private Integer payPendingSessionCount;
+  private Integer maxRound;
+  private Integer totalClassTime;
 
   @Builder
   public static class AvailableTime {

@@ -1,111 +1,114 @@
 type Query {
-    applicationFormByMatchingId(matchingIds: [Int], matchingStatus :[String]): [ApplicationForm]
+  applicationFormByMatchingId(
+    matchingIds: [Int]
+    matchingStatus: [String]
+  ): [ApplicationForm]
 }
 type Mutation {
-    updateMatching(matchingIds: [Int], matchingStatus:String): Boolean
-    changeTeacher(matchingId: Int, newTeacherId: Int): Boolean
+  updateMatching(matchingIds: [Int], matchingStatus: String): Boolean
+  changeTeacher(matchingId: Int, newTeacherId: Int): Boolean
 }
 
 type ApplicationForm {
-    applicationFormId: String
-    matchingId: Int
-    childAge: String
-    isOnline: Boolean
-    district: String
-    dong: String
-    subject: String
-    favoriteStyle: String
-    favoriteGender: String
-    source: String
-    classCount: String
-    classTime: String
-    pay: Int
-    availableTimes: [AvailableTime]
-    parent: Parents
-    teacher: Teacher
-    matchingStatus: String
-    matchingRefuseReason: String
-    classManagement: ClassManagement
+  applicationFormId: String
+  matchingId: Int
+  childAge: String
+  isOnline: Boolean
+  district: String
+  dong: String
+  subject: String
+  favoriteStyle: String
+  favoriteGender: String
+  source: String
+  classCount: String
+  classTime: String
+  pay: Int
+  availableTimes: [AvailableTime]
+  parent: Parents
+  teacher: Teacher
+  matchingStatus: String
+  matchingRefuseReason: String
+  classManagement: ClassManagement
+  payPendingSessionCount: Int
+  maxRound: Int
+  totalClassTime: Int
 }
 
-
 type AvailableTime {
-    availableId: Int
-    day: String
-    time: String
+  availableId: Int
+  day: String
+  time: String
 }
 
 type Parents {
-    parentId: Int
-    kakaoName: String
-    phoneNumber: String
-    marketingAgree: Boolean
+  parentId: Int
+  kakaoName: String
+  phoneNumber: String
+  marketingAgree: Boolean
 }
 
-
 type Teacher {
-    teacherId: Int
-    realName: String
-    nickName: String
-    email: String
-    phoneNumber: String
-    university: String
-    major: String
-    highSchool: String
-    birth: String
-    gender: String
-    profileImage: String
-    video: String
-    introduce: String
-    comment: String
-    teachingStyle: [String]
-    teachingStyleDescription: [String]
-    english: TeacherEnglish
-    math: TeacherMath
+  teacherId: Int
+  realName: String
+  nickName: String
+  email: String
+  phoneNumber: String
+  university: String
+  major: String
+  highSchool: String
+  birth: String
+  gender: String
+  profileImage: String
+  video: String
+  introduce: String
+  comment: String
+  teachingStyle: [String]
+  teachingStyleDescription: [String]
+  english: TeacherEnglish
+  math: TeacherMath
 }
 
 type TeacherEnglish {
-    possible:Boolean
-    experience: String
-    foreignExperience :String
-    teachingStyle: String
-    teachingHistory: Int
+  possible: Boolean
+  experience: String
+  foreignExperience: String
+  teachingStyle: String
+  teachingHistory: Int
 }
 
 type TeacherMath {
-    possible:Boolean
-    experience: String
-    teachingStyle: String
-    teachingHistory: Int
+  possible: Boolean
+  experience: String
+  teachingStyle: String
+  teachingHistory: Int
 }
 
-
 type ClassManagement {
-    classManagementId: Int
-    textBook: String
-    firstDay: String
-    schedule: [Schedule]
-    sessions: [Session]
+  classManagementId: Int
+  textBook: String
+  firstDay: String
+  schedule: [Schedule]
+  sessions: [Session]
 }
 
 type Schedule {
-    classScheduleId: Int
-    day: String
-    start: String
-    classMinute: Int
+  classScheduleId: Int
+  day: String
+  start: String
+  classMinute: Int
 }
 
 type Session {
-    classSessionId: Int
-    date: String
-    currentRound: Int
-    maxRound: Int
-    start: String
-    classMinute: Int
-    realClassMinute: Int
-    understanding: String
-    homeworkPercentage: Int
-    cancel: Boolean
-    cancelReason: String
-    completed: Boolean
+  classSessionId: Int
+  date: String
+  currentRound: Int
+  maxRound: Int
+  start: String
+  classMinute: Int
+  realClassMinute: Int
+  understanding: String
+  homeworkPercentage: Int
+  cancel: Boolean
+  cancelReason: String
+  completed: Boolean
 }
