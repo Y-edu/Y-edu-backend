@@ -15,6 +15,8 @@ import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingSaveService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingUpdateService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
+import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
@@ -41,6 +43,8 @@ public class ClassMatchingManageUseCase {
   private final ClassMatchingUpdateService classMatchingUpdateService;
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassManagementCommandService classManagementCommandService;
+  private final ClassSessionCommandService classSessionCommandService;
+  private final ClassSessionQueryService classSessionQueryService;
   private final ResponseRateStorage responseRateStorage;
   private final TeacherUpdateService teacherUpdateService;
   private final ApplicationEventPublisher eventPublisher;
@@ -160,4 +164,6 @@ public class ClassMatchingManageUseCase {
 
     matching.changeTeacher(newTeacher);
   }
+
+  
 }
