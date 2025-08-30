@@ -17,5 +17,5 @@ public interface SessionChangeFormRepository extends JpaRepository<SessionChange
 
   List<SessionChangeForm> findByLastSessionBeforeChange_ClassManagementAndChangeType(ClassManagement lastSessionBeforeChangeClassManagement, SessionChangeType changeType);
 
-  Optional<SessionChangeForm> findFirstByParents_PhoneNumberAndChangeType(String parentsPhoneNumber, SessionChangeType changeType);
+  Optional<SessionChangeForm> findFirstByParents_PhoneNumberAndChangeTypeOrderByCreatedAtDesc(String parentsPhoneNumber, SessionChangeType changeType);
 }

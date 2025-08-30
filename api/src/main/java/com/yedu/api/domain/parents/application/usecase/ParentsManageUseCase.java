@@ -172,7 +172,7 @@ public class ParentsManageUseCase {
   public void changeApplication(ApplicationFormChangeRequest request) {
     log.info(">>> 선생님 교체 신청 :{}" , request);
 
-    SessionChangeForm changeForm = sessionChangeFormRepository.findFirstByParents_PhoneNumberAndChangeType(request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
+    SessionChangeForm changeForm = sessionChangeFormRepository.findFirstByParents_PhoneNumberAndChangeTypeOrderByCreatedAtDesc(request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
         .orElseThrow(()-> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
 
     ApplicationForm previousApplicationForm = changeForm.getLastSessionBeforeChange().getClassManagement()
@@ -181,10 +181,10 @@ public class ParentsManageUseCase {
     District previousDistrict = previousApplicationForm.getDistrict();
 
     if (previousDistrict.equals(request.district())) {
-      // TODO 선생님 교체만 진행하는 경우 개발
       return;
     }
-      //신규 과외 생성
+
+    log.info(">>> 지역 변경으로 인한 신규 과외 생성 :{}" , request.district());
     List<String> classGoals = parentsGetService.goalsByApplicationForm(previousApplicationForm)
         .stream().map(Goal::getClassGoal)
         .toList();
@@ -199,8 +199,8 @@ public class ParentsManageUseCase {
             .favoriteGender(request.favoriteGender())
             .favoriteStyle(request.favoriteStyle())
             .online(previousApplicationForm.getOnline())
-            .classCount(request.classCount())
-            .classTime(request.classTime())
+            .classCount(request.useSameClassCount() ? previousApplicationForm.getClassCount() : request.classCount())
+            .classTime(request.useSameClassCount() ? previousApplicationForm.getClassTime() : request.classTime())
             .district(request.district())
             .dong(request.dong())
             .source(previousApplicationForm.getSource())
