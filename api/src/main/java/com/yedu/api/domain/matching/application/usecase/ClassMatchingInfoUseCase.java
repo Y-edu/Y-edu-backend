@@ -284,7 +284,7 @@ public class ClassMatchingInfoUseCase {
     ClassManagement classManagement = classManagementQueryService.query(matchingId).orElseThrow();
     int payPendingSessionCount =
           classSessionCommandService.getSessionCountPendingPayStatusAndCompleted(
-              classManagement.getClassMatching().getClassMatchingId());
+             classManagement.getClassManagementId());
     return payPendingSessionCount;
   }
 
