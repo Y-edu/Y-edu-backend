@@ -13,12 +13,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SessionChangeFormRepository extends JpaRepository<SessionChangeForm, Long> {
 
-  List<SessionChangeForm> findByLastSessionBeforeChangeIn(
-      Collection<ClassSession> lastSessionBeforeChanges);
+  List<SessionChangeForm> findByLastSessionBeforeChangeIn(Collection<ClassSession> lastSessionBeforeChanges);
 
-  List<SessionChangeForm> findByLastSessionBeforeChange_ClassManagementAndChangeType(
-      ClassManagement lastSessionBeforeChangeClassManagement, SessionChangeType changeType);
+  List<SessionChangeForm> findByLastSessionBeforeChange_ClassManagementAndChangeType(ClassManagement lastSessionBeforeChangeClassManagement, SessionChangeType changeType);
 
-  Optional<SessionChangeForm> findFirstByParents_PhoneNumberAndChangeType(
-      String parentsPhoneNumber, SessionChangeType changeType);
+  Optional<SessionChangeForm> findFirstByParents_PhoneNumberAndChangeType(String parentsPhoneNumber, SessionChangeType changeType);
 }
