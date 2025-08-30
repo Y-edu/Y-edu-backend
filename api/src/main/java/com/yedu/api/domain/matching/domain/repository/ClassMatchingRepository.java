@@ -42,9 +42,11 @@ public interface ClassMatchingRepository
 
   void deleteAllByTeacher_TeacherInfo_PhoneNumber(String phoneNumber);
 
-  List<ClassMatching> findByTeacherAndMatchStatusIn(Teacher teacher, Collection<MatchingStatus> matchStatuses);
+  List<ClassMatching> findByTeacherAndMatchStatusIn(
+      Teacher teacher, Collection<MatchingStatus> matchStatuses);
 
-  @Query("""
+  @Query(
+      """
     select cm from ClassMatching cm
       where cm.matchStatus = '최종매칭'
         and cm.applicationForm.parents = :parents

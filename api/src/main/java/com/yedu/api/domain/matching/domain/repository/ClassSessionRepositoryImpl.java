@@ -77,54 +77,59 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
   }
 
-
   private Predicate searchCondition(
       ClassManagement classManagement,
       Boolean completed,
       LocalDate now,
       LocalDate startDate,
-      LocalDate endDate
-  ) {
-    BooleanExpression predicate = classSession.classManagement.eq(classManagement)
-        .and(
-            classSession.sessionDate.goe(now)
-                .and(classSession.sessionDate.between(startDate, endDate))
-                .or(
-                    classSession.sessionDate.before(now)
-                        .and(classSession.sessionDate.between(startDate, endDate))
-                        .and(classSession.cancel.isFalse())
-                )
-                .or(
-                    classSession.sessionDate.between(now.minusDays(14), endDate)
-                )
-        )
-        .and(
-            classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.일시중단)
-                .and(classSession.classManagement.classMatching.matchStatus.ne(MatchingStatus.중단))
-                .or(
-                    (classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.일시중단)
-                        .or(classSession.classManagement.classMatching.matchStatus.eq(MatchingStatus.중단)))
-                        .and(
-                            classSession.sessionDate.loe(
-                                Expressions.dateTemplate(
-                                    LocalDate.class,
-                                    "date({0})",
-                                    classSession.classManagement.classMatching.pausedAt
-                                )
-                            )
-                        )
-                )
-        );
+      LocalDate endDate) {
+    BooleanExpression predicate =
+        classSession
+            .classManagement
+            .eq(classManagement)
+            .and(
+                classSession
+                    .sessionDate
+                    .goe(now)
+                    .and(classSession.sessionDate.between(startDate, endDate))
+                    .or(
+                        classSession
+                            .sessionDate
+                            .before(now)
+                            .and(classSession.sessionDate.between(startDate, endDate))
+                            .and(classSession.cancel.isFalse()))
+                    .or(classSession.sessionDate.between(now.minusDays(14), endDate)))
+            .and(
+                classSession
+                    .classManagement
+                    .classMatching
+                    .matchStatus
+                    .ne(MatchingStatus.일시중단)
+                    .and(
+                        classSession.classManagement.classMatching.matchStatus.ne(
+                            MatchingStatus.중단))
+                    .or(
+                        (classSession
+                                .classManagement
+                                .classMatching
+                                .matchStatus
+                                .eq(MatchingStatus.일시중단)
+                                .or(
+                                    classSession.classManagement.classMatching.matchStatus.eq(
+                                        MatchingStatus.중단)))
+                            .and(
+                                classSession.sessionDate.loe(
+                                    Expressions.dateTemplate(
+                                        LocalDate.class,
+                                        "date({0})",
+                                        classSession.classManagement.classMatching.pausedAt)))));
 
     if (completed == null) {
       return predicate;
     }
 
-    return predicate
-        .and(classSession.completed.eq(completed));
-
+    return predicate.and(classSession.completed.eq(completed));
   }
-
 
   private OrderSpecifier<?>[] getOrderSpecifiers(Sort sort) {
     PathBuilder<ClassSession> pathBuilder = new PathBuilder<>(ClassSession.class, "classSession");

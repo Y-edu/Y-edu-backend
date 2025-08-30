@@ -26,10 +26,20 @@ public class AdminMapper {
       ApplicationForm applicationForm,
       int accept,
       int total,
-      Optional<ClassManagement> classManagement) {
+      Optional<ClassManagement> classManagement,
+      int payPendingSessionCount,
+      Integer totalClassTime,
+      Long classMatchingId) {
     Parents parents = applicationForm.getParents();
     String kakaoName = Optional.ofNullable(parents.getKakaoName()).orElse(null);
     List<ScheduledClass> scheduledClasses = getScheduledClasses(classManagement);
+
+    int maxRound =
+        classManagement
+            .map(ClassManagement::getClassMatching)
+            .map(ClassMatching::getApplicationForm)
+            .map(ApplicationForm::maxRoundNumber)
+            .orElse(1);
 
     return new ApplicationResponse(
         applicationForm.getApplicationFormId(),
@@ -44,7 +54,11 @@ public class AdminMapper {
         accept,
         total,
         parents.getPhoneNumber(),
-        applicationForm.isProceedStatus());
+        applicationForm.isProceedStatus(),
+        payPendingSessionCount,
+        maxRound,
+        totalClassTime,
+        classMatchingId);
   }
 
   public static CommonParentsResponse mapToCommonParentsResponse(ApplicationForm applicationForm) {

@@ -63,20 +63,21 @@ public class TeacherBatchUseCase {
   }
 
   public void completeTalkNotice(Set<Long> teacherIds) {
-    teacherIds.forEach(it -> {
-      Teacher teacher;
-      try{
-         teacher = teacherGetService.byId(it);
-      }catch (Exception e){
-        log.error("선생님 찾기 중 오류 발생 : {} , id : {}", e.getMessage(), it);
-        return;
-      }
-      String phoneNumber = teacher.getTeacherInfo().getPhoneNumber();
-      TeacherCompleteTalkChangeNoticeEvent event = new TeacherCompleteTalkChangeNoticeEvent(phoneNumber);
-      eventPublisher.publishEvent(event);
-    });
+    teacherIds.forEach(
+        it -> {
+          Teacher teacher;
+          try {
+            teacher = teacherGetService.byId(it);
+          } catch (Exception e) {
+            log.error("선생님 찾기 중 오류 발생 : {} , id : {}", e.getMessage(), it);
+            return;
+          }
+          String phoneNumber = teacher.getTeacherInfo().getPhoneNumber();
+          TeacherCompleteTalkChangeNoticeEvent event =
+              new TeacherCompleteTalkChangeNoticeEvent(phoneNumber);
+          eventPublisher.publishEvent(event);
+        });
   }
-
 
   public void remind() {
     sendCompleteTalkEvent(true);
@@ -87,9 +88,7 @@ public class TeacherBatchUseCase {
   }
 
   private void sendCompleteTalkEvent(boolean isRemind) {
-    teacherGetService
-        .activeTeachers()
-        .stream()
+    teacherGetService.activeTeachers().stream()
         .forEach(
             teacher -> {
               List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher);
@@ -102,11 +101,14 @@ public class TeacherBatchUseCase {
                   .map(Optional::get)
                   .filter(ClassManagement::hasSchedule)
                   .filter(it -> !classSessionRepository.existsClassSessionByClassManagement(it))
-                  .filter(it-> !isRemind) // remind가 아닌 경우에만 세션 생성
-                  .forEach(it -> {
-                    log.info(" >>> 배치 과외 일정 생성 시작 - classManagementId: {}", it.getClassManagementId());
-                    classSessionCommandService.createSingleSessions(it, false, null);
-                  });
+                  .filter(it -> !isRemind) // remind가 아닌 경우에만 세션 생성
+                  .forEach(
+                      it -> {
+                        log.info(
+                            " >>> 배치 과외 일정 생성 시작 - classManagementId: {}",
+                            it.getClassManagementId());
+                        classSessionCommandService.createSingleSessions(it, false, null);
+                      });
             });
 
     LocalDateTime now = LocalDateTime.now();
@@ -134,7 +136,13 @@ public class TeacherBatchUseCase {
           String changeSessionToken =
               classMatchingKeyStorage.storeAndGet(matching.getClassMatchingId());
 
-          log.info(">>>> 이벤트 발행 session Id : {} / 리마인드 여부 : {} / 선생님 ID : {} / 닉네임 : {} / 과외 일정 : {}", it.getClassSessionId(), isRemind, teacher.getTeacherId(), teacher.getTeacherInfo().getNickName(), it);
+          log.info(
+              ">>>> 이벤트 발행 session Id : {} / 리마인드 여부 : {} / 선생님 ID : {} / 닉네임 : {} / 과외 일정 : {}",
+              it.getClassSessionId(),
+              isRemind,
+              teacher.getTeacherId(),
+              teacher.getTeacherInfo().getNickName(),
+              it);
           if (isRemind) {
             it.remind();
             eventPublisher.publishEvent(

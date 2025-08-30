@@ -1,11 +1,14 @@
 package com.yedu.api.domain.matching.domain.entity;
 
-import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
+import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.entity.BaseEntity;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -56,14 +59,16 @@ public class ClassSession extends BaseEntity {
 
   private Integer realClassTime;
 
-  @With
-  private Integer round; // 회차
+  @With private Integer round; // 회차
 
   private boolean isTodayCancel;
 
   private Integer teacherRound;
 
   private Integer maxRound;
+
+  @Enumerated(EnumType.STRING)
+  private PayStatus payStatus;
 
   public void cancel(String cancelReason, boolean isTodayCancel) {
     if (cancel) {
@@ -85,8 +90,12 @@ public class ClassSession extends BaseEntity {
     }
 
     cancel = true;
-    this.realClassTime = isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? classTime.getClassMinute() : null;
-    this.completed = isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? true : false;
+    this.realClassTime =
+        isTodayCancel && cancelReason.equals(CancelReason.PARENT.name())
+            ? classTime.getClassMinute()
+            : null;
+    this.completed =
+        isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? true : false;
     this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
     this.teacherRound = cancelReason.equals(CancelReason.PARENT.name()) ? teacherRound : 0;
@@ -149,8 +158,9 @@ public class ClassSession extends BaseEntity {
     this.remind = true;
   }
 
-  public void complete(Integer realClassMinute, String understanding, String homework, Integer round) {
-    if (round != null){
+  public void complete(
+      Integer realClassMinute, String understanding, String homework, Integer round) {
+    if (round != null) {
       this.round = round;
     }
     this.complete(realClassMinute, understanding, homework);

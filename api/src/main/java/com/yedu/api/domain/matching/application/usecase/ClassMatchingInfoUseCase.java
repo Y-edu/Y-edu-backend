@@ -221,8 +221,10 @@ public class ClassMatchingInfoUseCase {
     Optional<ClassManagement> management =
         classManagementQueryService.queryWithSchedule(applicationFormResponse.getMatchingId());
 
-    Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
-        .orElse(null);
+    Integer maxRoundNumber =
+        management
+            .map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
+            .orElse(null);
 
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))

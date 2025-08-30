@@ -40,6 +40,4 @@ public class SessionChangeForm extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private SessionChangeType changeType;
-
-
 }

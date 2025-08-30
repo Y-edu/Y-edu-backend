@@ -59,10 +59,10 @@ public class ParentsController {
     return ResponseEntity.ok().body(response);
   }
 
-
   @GetMapping("/{phoneNumber}/sessions")
   @Operation(summary = "학부모의 과외 일정 조회")
-  public ResponseEntity<List<ParentSessionResponse>> retrieveSessions(@PathVariable String phoneNumber) {
+  public ResponseEntity<List<ParentSessionResponse>> retrieveSessions(
+      @PathVariable String phoneNumber) {
     List<ParentSessionResponse> response = parentsManageUseCase.retrieveSessions(phoneNumber);
 
     return ResponseEntity.ok().body(response);
@@ -70,7 +70,9 @@ public class ParentsController {
 
   @PostMapping("/{phoneNumber}/sessions/change-form")
   @Operation(summary = "학부모의 과외 일시정지/교체 신청 접수")
-  public ResponseEntity<Void> acceptChangeSessionForm(@PathVariable String phoneNumber, @RequestBody AcceptChangeSessionRequest acceptChangeSessionRequest) {
+  public ResponseEntity<Void> acceptChangeSessionForm(
+      @PathVariable String phoneNumber,
+      @RequestBody AcceptChangeSessionRequest acceptChangeSessionRequest) {
     parentsManageUseCase.acceptChangeSessionForm(phoneNumber, acceptChangeSessionRequest);
 
     return ResponseEntity.noContent().build();

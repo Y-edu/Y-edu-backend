@@ -47,6 +47,6 @@ public class ClassManagementQueryService {
   }
 
   public List<ClassManagement> query(List<ClassMatching> matchings) {
-     return classManagementRepository.findAllByClassMatchingIn(matchings);
+    return classManagementRepository.findAllByClassMatchingIn(matchings);
   }
 }
