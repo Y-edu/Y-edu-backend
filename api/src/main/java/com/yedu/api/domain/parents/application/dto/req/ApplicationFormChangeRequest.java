@@ -1,9 +1,10 @@
 package com.yedu.api.domain.parents.application.dto.req;
 
 import com.yedu.api.domain.parents.domain.entity.constant.Gender;
+import java.io.Serializable;
 
 
-public record ApplicationFormChangeRequest(
+public record ApplicationFormChangeRequest (
     String phoneNumber,
     String wantedTime,
     Gender favoriteGender,
@@ -13,4 +14,4 @@ public record ApplicationFormChangeRequest(
     String classTime,
     String district,
     String dong
-) {}
+) implements Serializable {}

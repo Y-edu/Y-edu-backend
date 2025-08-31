@@ -909,6 +909,32 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
+  public CommonRequest mapToTeacherClassPauseEvent(TeacherClassPauseEvent event) {
+    String message =
+        """
+☑️ #{applicationFormId} 수업 중단 안내
+
+선생님 안녕하세요 Y-Edu입니다.\s
+#{applicationFormId} 어머니께서 수업 중단을 요청해주셔 전달 드립니다.\s
+
+#{classSessionText} 수업을 마지막으로 수업을 진행해주지 않으셔도 됩니다.\s
+
+선생님이 다른 수업으로 활동을 이어가실 수 있도록, 더욱 신경쓰며 과외 공지를 전달 드리겠습니다.
+       """
+            .strip()
+            .replace("#{applicationFormId}", event.applicationFormId())
+            .replace("#{classSessionText}", event.sessionDate().format(DateTimeFormatter.ofPattern("mm/dd")) + event.teacherRoundId()+ "회차")
+        ;
+
+
+    Message messageBody =
+        new TextMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_PAUSE),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_PAUSE.getCode());
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
   private CommonRequest<ContentRequest> createCommonRequest(
       Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
@@ -924,5 +950,4 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return new CommonRequest(
         properties.id(), "ai", properties.number(), phoneNumber, contentRequest, refKey);
   }
-
 }

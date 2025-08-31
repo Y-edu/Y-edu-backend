@@ -7,6 +7,7 @@ import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableR
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
 import com.yedu.api.domain.parents.application.dto.res.ParentSessionResponse;
 import com.yedu.api.domain.parents.application.usecase.ParentsManageUseCase;
+import com.yedu.api.domain.teacher.application.usecase.TeacherChangeUsecase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,18 +28,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "PARENTS Controller")
 public class ParentsController {
   private final ParentsManageUseCase parentsManageUseCase;
+  private final TeacherChangeUsecase teacherChangeUsecase;
 
   @PostMapping("/save/application")
   @Operation(summary = "Tally 제출 - 학부모 신청건 API")
   public ResponseEntity saveApplication(@RequestBody ApplicationFormRequest request) {
-    parentsManageUseCase.saveParentsAndApplication(request, false);
+    parentsManageUseCase.saveParentsAndApplication(request, false, null);
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("/change/application")
   @Operation(summary = "Tally 제출 - 학부모 선생님 교체 신청건 API")
   public ResponseEntity<?> changeApplication(@RequestBody ApplicationFormChangeRequest request) {
-    parentsManageUseCase.changeApplication(request);
+    teacherChangeUsecase.change(request);
 
     return ResponseEntity.ok().build();
   }

@@ -17,13 +17,21 @@ public class TeacherWithAvailable {
   /**
    * 주 n회차일때, 과외/선생님 가능한 시간 중 n회가 겹치면 가능한 선생님으로 분류
    *
-   * @param classCount n회차
+   * @param classCount     n회차
    * @param formAvailables 과외 가능한 시간
    * @return 가능한 선생님 리스트
    */
   public List<Teacher> availableTeacher(
-      Integer classCount, List<ApplicationFormAvailable> formAvailables) {
-    return teachers.keySet().stream().toList(); // 시간 매칭 제외
+      Integer classCount, List<ApplicationFormAvailable> formAvailables, Long exceptTeacherId) {
+    if (exceptTeacherId == null) {
+      return teachers.keySet()
+          .stream()
+          .toList();
+    }
+
+    return teachers.keySet().stream()
+        .filter(it -> it.getTeacherId() != exceptTeacherId)
+        .toList();
 
     //    return teachers.entrySet().stream()
     //        .filter(

@@ -1,6 +1,9 @@
 package com.yedu.api.domain.parents.application.usecase;
 
-import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.*;
+import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.getClassCount;
+import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.mapToApplicationForm;
+import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.mapToGoal;
+import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.mapToParents;
 
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
@@ -8,7 +11,6 @@ import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
-import com.yedu.api.domain.parents.application.dto.req.ApplicationFormChangeRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormRequest;
 import com.yedu.api.domain.parents.application.dto.req.ApplicationFormTimeTableRequest;
 import com.yedu.api.domain.parents.application.dto.res.ApplicationFormTimeTableResponse;
@@ -19,9 +21,7 @@ import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.api.domain.parents.domain.entity.Goal;
 import com.yedu.api.domain.parents.domain.entity.Parents;
 import com.yedu.api.domain.parents.domain.entity.SessionChangeForm;
-import com.yedu.api.domain.parents.domain.entity.constant.SessionChangeType;
 import com.yedu.api.domain.parents.domain.repository.ApplicationFormRepository;
-import com.yedu.api.domain.parents.domain.repository.SessionChangeFormRepository;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableCommandService;
 import com.yedu.api.domain.parents.domain.service.ApplicationFormAvailableQueryService;
 import com.yedu.api.domain.parents.domain.service.ParentsGetService;
@@ -31,16 +31,15 @@ import com.yedu.api.domain.parents.domain.service.SessionChangeFormCommandServic
 import com.yedu.api.domain.teacher.application.usecase.TeacherInfoUseCase;
 import com.yedu.api.domain.teacher.application.usecase.TeacherManageUseCase;
 import com.yedu.api.domain.teacher.domain.aggregate.TeacherWithAvailable;
-import com.yedu.api.domain.teacher.domain.entity.constant.District;
 import com.yedu.cache.support.RedisRepository;
+import com.yedu.common.event.bizppurio.TeacherClassPauseEvent;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.math3.util.Pair;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -50,6 +49,7 @@ import org.springframework.util.StringUtils;
 @Service
 @Transactional
 public class ParentsManageUseCase {
+
   private final ParentsGetService parentsGetService;
   private final ParentsSaveService parentsSaveService;
   private final ParentsUpdateService parentsUpdateService;
@@ -63,11 +63,10 @@ public class ParentsManageUseCase {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassSessionQueryService classSessionQueryService;
   private final SessionChangeFormCommandService sessionChangeFormCommandService;
-  private final SessionChangeFormRepository sessionChangeFormRepository;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
 
-  public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend) {
-    
+  public void saveParentsAndApplication(ApplicationFormRequest request, boolean isResend, Long exceptTeacherId) {
     Parents parents =
         parentsGetService
             .optionalParentsByPhoneNumber(request.phoneNumber())
@@ -81,13 +80,16 @@ public class ParentsManageUseCase {
       return;
     }
 
-    if (applicationFormRepository.findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(applicationForm.getParents(), applicationForm.getDistrict(), applicationForm.getWantedSubject(),
-        applicationForm.getAge(), applicationForm.getClassCount(), LocalDateTime.now().minusMinutes(1)).isPresent()) {
+    if (applicationFormRepository.findByParentsAndDistrictAndWantedSubjectAndAgeAndClassCountAndCreatedAtAfter(
+        applicationForm.getParents(), applicationForm.getDistrict(),
+        applicationForm.getWantedSubject(),
+        applicationForm.getAge(), applicationForm.getClassCount(),
+        LocalDateTime.now().minusMinutes(1)).isPresent()) {
       log.warn("중복 제출- 과외 식별자 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
       return;
     }
 
-     //  applicationFormId를 제외한 모든 필드가 동일한 중복 신청서 체크 (최초발송)
+    //  applicationFormId를 제외한 모든 필드가 동일한 중복 신청서 체크 (최초발송)
     if (!isResend &&
         applicationFormRepository.findByAllFieldsExceptId(
             applicationForm.getParents(),
@@ -108,10 +110,11 @@ public class ParentsManageUseCase {
             applicationForm.getSource(),
             applicationForm.isProceedStatus(),
             applicationForm.getPay()).isPresent()) {
-      log.warn("중복 제출- 모든 필드 동일한 신청서 발견 {}, {}", applicationForm.getApplicationFormId(), applicationForm);
+      log.warn("중복 제출- 모든 필드 동일한 신청서 발견 {}, {}", applicationForm.getApplicationFormId(),
+          applicationForm);
       return;
     }
-   
+
     List<Goal> goals =
         request.classGoals().stream().map(goal -> mapToGoal(applicationForm, goal)).toList();
     parentsSaveService.saveApplication(applicationForm, goals);
@@ -121,12 +124,18 @@ public class ParentsManageUseCase {
             request.dayTimes(), applicationForm.getApplicationFormId());
     applicationFormAvailableCommandService.saveAll(applicationFormAvailables);
 
+    sendAlarmTalk(applicationForm, applicationFormAvailables, exceptTeacherId);
+  }
+
+  public void sendAlarmTalk(ApplicationForm applicationForm,
+      List<ApplicationFormAvailable> applicationFormAvailables, Long exceptTeacherId) {
     TeacherWithAvailable teacherWithAvailable =
         teacherInfoUseCase.allApplicationFormTeacher(applicationForm);
     int classCount = getClassCount(applicationForm.getClassCount());
     List<ClassMatching> classMatchings =
         classMatchingManageUseCase.saveAllClassMatching(
-            teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables),
+            teacherWithAvailable.availableTeacher(classCount, applicationFormAvailables,
+                exceptTeacherId),
             applicationForm); // 매칭 저장
     teacherManageUseCase.notifyClass(
         classMatchings, applicationForm.getApplicationFormId()); // 선생님한테 알림톡 전송
@@ -149,7 +158,7 @@ public class ParentsManageUseCase {
 
 
   public void resendParentsAndApplication(ApplicationFormRequest request) {
-    saveParentsAndApplication(request, true);
+    saveParentsAndApplication(request, true, null);
   }
 
   public List<ParentSessionResponse> retrieveSessions(String phoneNumber) {
@@ -166,47 +175,16 @@ public class ParentsManageUseCase {
     Parents parent = parentsGetService.optionalParentsByPhoneNumber(phoneNumber)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
-    sessionChangeFormCommandService.save(parent, request);
+    ClassSession session = sessionChangeFormCommandService.save(parent, request);
+    ClassMatching matching = session.getClassManagement().getClassMatching();
+
+    applicationEventPublisher.publishEvent(
+        new TeacherClassPauseEvent(
+            matching.getTeacher().getTeacherInfo().getPhoneNumber(),
+            matching.getApplicationForm().getApplicationFormId(),
+            session.getSessionDate(),
+            session.getTeacherRound()
+        ));
   }
 
-  public void changeApplication(ApplicationFormChangeRequest request) {
-    log.info(">>> 선생님 교체 신청 :{}" , request);
-
-    SessionChangeForm changeForm = sessionChangeFormRepository.findFirstByParents_PhoneNumberAndChangeTypeOrderByCreatedAtDesc(request.phoneNumber(), SessionChangeType.CHANGE_TEACHER)
-        .orElseThrow(()-> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
-
-    ApplicationForm previousApplicationForm = changeForm.getLastSessionBeforeChange().getClassManagement()
-        .getClassMatching().getApplicationForm();
-
-    District previousDistrict = previousApplicationForm.getDistrict();
-
-    if (previousDistrict.equals(request.district())) {
-      return;
-    }
-
-    log.info(">>> 지역 변경으로 인한 신규 과외 생성 :{}" , request.district());
-    List<String> classGoals = parentsGetService.goalsByApplicationForm(previousApplicationForm)
-        .stream().map(Goal::getClassGoal)
-        .toList();
-
-    saveParentsAndApplication(
-        ApplicationFormRequest.builder()
-            .phoneNumber(request.phoneNumber())
-            .age(previousApplicationForm.getAge())
-            .wantedSubject(previousApplicationForm.getWantedSubject())
-            .wantedTime(request.wantedTime())
-            .classGoals(classGoals)
-            .favoriteGender(request.favoriteGender())
-            .favoriteStyle(request.favoriteStyle())
-            .online(previousApplicationForm.getOnline())
-            .classCount(request.useSameClassCount() ? previousApplicationForm.getClassCount() : request.classCount())
-            .classTime(request.useSameClassCount() ? previousApplicationForm.getClassTime() : request.classTime())
-            .district(request.district())
-            .dong(request.dong())
-            .source(previousApplicationForm.getSource())
-            .dayTimes(Collections.emptyList())
-            .build(),
-        false);
-
-  }
 }

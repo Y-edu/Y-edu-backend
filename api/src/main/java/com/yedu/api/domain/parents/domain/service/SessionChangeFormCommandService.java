@@ -1,5 +1,6 @@
 package com.yedu.api.domain.parents.domain.service;
 
+import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
@@ -28,7 +29,7 @@ public class SessionChangeFormCommandService {
   private final ClassSessionRepository classSessionRepository;
   private final ScheduleService scheduleService;
 
-  public void save(Parents parents, AcceptChangeSessionRequest request) {
+  public ClassSession save(Parents parents, AcceptChangeSessionRequest request) {
     ClassSession lastSession = classSessionRepository.findById(request.sessionId()).orElseThrow();
 
     List<SessionChangeForm> previousForm =
@@ -60,5 +61,7 @@ public class SessionChangeFormCommandService {
           new JobDataMap(Map.of("id", classMatchingId)),
           jobName);
     }
+
+    return lastSession;
   }
 }
