@@ -880,6 +880,62 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
+  public CommonRequest mapToTeacherWithScheduleCompleteTalkWeeklyRemindEvent(
+      TeacherWithScheduleCompleteTalkWeeklyRemindEvent event) {
+    String message =
+        """
+🔸️ 수업 한 줄 리뷰를 작성해주세요 🔸
+
+선생님이 이번주 진행하신 수업 중, 한 줄 리뷰가 작성되지 않은 수업이 있습니다.\s
+
+한 줄 리뷰를 작성해주셔야 해당 수업에 대한 정산이 가능하다는 점 참고해주세요!\s
+
+만약 수업을 진행하지 않았는데 리뷰 작성 요청이 발송된 경우, 휴강이라면 휴강 처리를, 수업 날짜가 변경되었다면 날짜 변경을 꼭 진행해주세요! 🙏
+       """
+            .strip();
+
+
+    String url = "https://" + properties.landingUrl() + "/teacher/session-complete?token=" + event.token();
+    CommonButton webButton =
+        new WebButton("수업 관리 페이지", WEB_LINK, url, url);
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND_WEEKLY),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND_WEEKLY.getCode(),
+            new CommonButton[] {webButton});
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
+  public CommonRequest mapToTeacherWithScheduleCompleteTalkMonthlyRemindEvent(
+      TeacherWithScheduleCompleteTalkMonthlyRemindEvent event) {
+    String message =
+        """
+🔸️ 수업 한 줄 리뷰를 작성해주세요 🔸
+
+곧 밤 12시에 이번달 보수 정산을 위한 수업 리뷰 작성이 마감됩니다.\s
+
+혹시 아직 작성하지 않은 수업 리뷰가 있다면 꼭 금일 밤 12시까지 작성해주세요!\s
+
+만약 수업을 진행하지 않았는데 리뷰 작성 요청이 발송된 경우, 휴강이라면 휴강 처리를, 수업 날짜가 변경되었다면 날짜 변경을 꼭 진행해주세요! 🙏
+       """
+            .strip();
+
+
+    String url = "https://" + properties.landingUrl() + "/teacher/session-complete?token=" + event.token();
+    CommonButton webButton =
+        new WebButton("수업 관리 페이지", WEB_LINK, url, url);
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND_MONTHLY),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_WITH_SCHEDULE_COMPLETE_TALK_REMIND_MONTHLY.getCode(),
+            new CommonButton[] {webButton});
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
   private CommonRequest<ContentRequest> createCommonRequest(
       Message messageBody, String phoneNumber) {
     String refKey = UUID.randomUUID().toString().replace("-", "");
@@ -895,4 +951,5 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return new CommonRequest(
         properties.id(), "ai", properties.number(), phoneNumber, contentRequest, refKey);
   }
+
 }

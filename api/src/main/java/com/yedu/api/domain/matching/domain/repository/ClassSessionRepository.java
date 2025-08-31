@@ -28,4 +28,5 @@ public interface ClassSessionRepository
   Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeAndCompletedTrueAndCancelFalseAndRoundIsNotNullOrderBySessionDateDesc(
       ClassManagement classManagement, LocalDate sessionDate);
 
+  List<ClassSession> findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse();
 }
