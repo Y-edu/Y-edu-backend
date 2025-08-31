@@ -21,6 +21,7 @@ import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEven
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkWeeklyRemindEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -207,27 +208,30 @@ public class TeacherBatchUseCase {
   @Scheduled(cron = "0 */5 * * * *")
   public void remindCompleteTalkWeekly() {
     log.info(">>> 주간 리마인드 알림톡 전송 시작");
-    LocalDate now = LocalDate.now();
+    LocalDateTime now = LocalDateTime.now();
 
-    Map<String, ClassSession> sessionsByToken = classSessionRepository
+    Map<String, String> teacherPhoneNumberByToken = classSessionRepository
         .findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse()
         .stream()
         .filter(it -> {
           LocalDate weekLater = it.getSessionDate().plusDays(7);
-          return weekLater.isEqual(now) || weekLater.isBefore(now);
+          LocalTime finishTime = it.getClassTime().finishTime();
+
+          LocalDateTime remindTime = LocalDateTime.of(weekLater, finishTime);
+
+          return now.isAfter(remindTime) && now.isBefore(remindTime.plusMinutes(5));
         })
         .collect(Collectors.toMap(
             session -> classMatchingKeyStorage.storeAndGet(
                 session.getClassManagement().getClassMatching().getClassMatchingId()
             ),
-            session -> session,
+            session -> session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo().getPhoneNumber(),
             (existing, replacement) -> existing
         ));
 
-    sessionsByToken.forEach((String token, ClassSession session) -> applicationEventPublisher.publishEvent(
+    teacherPhoneNumberByToken.forEach((String token, String phoneNumber) -> applicationEventPublisher.publishEvent(
         new TeacherWithScheduleCompleteTalkWeeklyRemindEvent(
-            session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo()
-                .getPhoneNumber(),
+            phoneNumber,
             token
         )
     ));
@@ -238,21 +242,20 @@ public class TeacherBatchUseCase {
   public void remindCompleteTalkMontly() {
     log.info(">>> 월간 리마인드 알림톡 전송 시작");
 
-    Map<String, ClassSession> sessionsByToken = classSessionRepository
+    Map<String, String> teacherPhoneNumberByToken = classSessionRepository
         .findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse()
         .stream()
         .collect(Collectors.toMap(
             session -> classMatchingKeyStorage.storeAndGet(
                 session.getClassManagement().getClassMatching().getClassMatchingId()
             ),
-            session -> session,
+            session -> session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo().getPhoneNumber(),
             (existing, replacement) -> existing
         ));
 
-    sessionsByToken.forEach((String token, ClassSession session) -> applicationEventPublisher.publishEvent(
+    teacherPhoneNumberByToken.forEach((String token, String phoneNumber) -> applicationEventPublisher.publishEvent(
         new TeacherWithScheduleCompleteTalkMonthlyRemindEvent(
-            session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo()
-                .getPhoneNumber(),
+            phoneNumber,
             token
         )
     ));
