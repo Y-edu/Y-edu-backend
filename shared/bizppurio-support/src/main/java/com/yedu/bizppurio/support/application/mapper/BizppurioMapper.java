@@ -942,6 +942,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
 일시정지 되었던, #{applicationFormId} 가 재개되었다고 공유받았습니다.\s
 
 혹시나 수업 일정과 내용등이 변경되지 않을지, 학부모님에게 가벼운 전화상담을 진행해주세요.\s
+
+상담 이후, ☝🏻 꼭 ☝🏻아래 버튼을 눌러 수업을 진행하게 된 ‘요일'과 ‘시간'을 알려주세요.
        """
             .strip()
             .replace("#{applicationFormId}", event.applicationFormId())
