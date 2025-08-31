@@ -924,7 +924,6 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .strip()
             .replace("#{applicationFormId}", event.applicationFormId())
             .replace("#{classSessionText}", event.sessionDate().format(DateTimeFormatter.ofPattern("MM/dd")) + " " + event.teacherRoundId() + "회차");
-        ;
 
 
     Message messageBody =
@@ -932,6 +931,33 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             message,
             properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_PAUSE),
             BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_PAUSE.getCode());
+    return createCommonRequest(messageBody, event.teacherPhoneNumber());
+  }
+
+  public CommonRequest mapToTeacherResumeClassEvent(TeacherResumeClassEvent event) {
+    String message =
+        """
+⭐️️일시정지 수업 재개 관련 안내⭐️
+
+일시정지 되었던, #{applicationFormId} 가 재개되었다고 공유받았습니다.\s
+
+혹시나 수업 일정과 내용등이 변경되지 않을지, 학부모님에게 가벼운 전화상담을 진행해주세요.\s
+       """
+            .strip()
+            .replace("#{applicationFormId}", event.applicationFormId())
+        ;
+
+
+    String url = "https://" + properties.landingUrl() + "/result/" + event.token();
+    CommonButton webButton =
+        new WebButton("진행할 수업 일시 공유하기", WEB_LINK, url, url);
+
+    Message messageBody =
+        new ButtonMessage(
+            message,
+            properties.getKey(BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_RESUME),
+            BizpurrioTemplate.YEDU_TUTOR_TEACHER_CLASS_RESUME.getCode(),
+            new CommonButton[] {webButton});
     return createCommonRequest(messageBody, event.teacherPhoneNumber());
   }
 
@@ -950,4 +976,5 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     return new CommonRequest(
         properties.id(), "ai", properties.number(), phoneNumber, contentRequest, refKey);
   }
+
 }

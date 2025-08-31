@@ -19,13 +19,13 @@ import com.yedu.common.event.bizppurio.PhotoHurryEvent;
 import com.yedu.common.event.bizppurio.PhotoSubmitEvent;
 import com.yedu.common.event.bizppurio.RecommendGuideEvent;
 import com.yedu.common.event.bizppurio.RecommendTeacherEvent;
-import com.yedu.common.event.bizppurio.ResumeClassEvent;
 import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherClassPauseEvent;
 import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeWithGuidelineEvent;
 import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
 import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
@@ -169,8 +169,8 @@ public class RabbitMqProducer {
 
   @EventListener
   @Async
-  public void handle(ResumeClassEvent event) {
-    log.info("event : {}", event.token());
+  public void handle(TeacherResumeClassEvent event) {
+    produceTeacherMessage(event);
   }
 
   @EventListener

@@ -20,6 +20,7 @@ import com.yedu.common.event.bizppurio.TeacherClassRemindEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeWithGuidelineEvent;
 import com.yedu.common.event.bizppurio.TeacherNotifyClassInfoEvent;
+import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
 import com.yedu.common.event.bizppurio.TeacherScheduleEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
@@ -96,6 +97,9 @@ public class TeacherMessageConsumer extends AbstractConsumer {
     registerParser(
         TeacherClassPauseEvent.class,
         mapper::mapToTeacherClassPauseEvent);
+    registerParser(
+        TeacherResumeClassEvent.class,
+        mapper::mapToTeacherResumeClassEvent);
     registerParser(TeacherNotifyClassInfoEvent.class, mapper::mapToTeacherNotifyClassInfo);
     registerParser(TeacherScheduleEvent.class, mapper::mapToTeacherSchedule);
     registerParser(ClassGuideEvent.class, mapper::mapToClassGuide);

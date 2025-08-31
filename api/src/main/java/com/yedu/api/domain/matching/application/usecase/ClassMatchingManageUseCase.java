@@ -27,7 +27,7 @@ import com.yedu.cache.support.storage.ClassManagementKeyStorage;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
-import com.yedu.common.event.bizppurio.ResumeClassEvent;
+import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -153,7 +153,7 @@ public class ClassMatchingManageUseCase {
                 classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
 
             eventPublisher.publishEvent(
-                new ResumeClassEvent(teacherPhoneNumber, classManagementToken));
+                new TeacherResumeClassEvent(teacherPhoneNumber, it.getApplicationForm().getApplicationFormId(), classManagementToken));
           }
         });
   }

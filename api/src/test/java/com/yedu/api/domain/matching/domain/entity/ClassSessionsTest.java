@@ -3,9 +3,11 @@ package com.yedu.api.domain.matching.domain.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -75,4 +77,10 @@ class ClassSessionsTest {
   }
 
   record TestCase(List<ClassSession> sessions, int maxRound, List<Integer> expectedRounds) {}
+
+  @Test
+  void foo(){
+    String format = LocalDate.now().format(DateTimeFormatter.ofPattern("mm/dd"));
+    System.out.println("format = " + format);
+  }
 }
