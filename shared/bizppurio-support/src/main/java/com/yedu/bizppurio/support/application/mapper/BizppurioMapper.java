@@ -923,7 +923,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
        """
             .strip()
             .replace("#{applicationFormId}", event.applicationFormId())
-            .replace("#{classSessionText}", event.sessionDate().format(DateTimeFormatter.ofPattern("mm/dd")) + event.teacherRoundId()+ "회차")
+            .replace("#{classSessionText}", event.sessionDate().format(DateTimeFormatter.ofPattern("MM/dd")) + " " + event.teacherRoundId() + "회차");
         ;
 
 
