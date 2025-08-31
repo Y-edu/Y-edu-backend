@@ -202,34 +202,38 @@ public class TeacherBatchUseCase {
     log.info(">>> 주간 리마인드 알림톡 전송 시작");
     LocalDateTime now = LocalDateTime.now();
 
-    Map<String, String> teacherPhoneNumberByToken = classSessionRepository
+    List<ClassSession> sessionsToSend = classSessionRepository
         .findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse()
         .stream()
         .filter(it -> {
-          LocalDate weekLater = it.getSessionDate().plusDays(7);
-          LocalTime finishTime = it.getClassTime().finishTime();
-
-          LocalDateTime remindTime = LocalDateTime.of(weekLater, finishTime);
-
-          return now.isAfter(remindTime) && now.isBefore(remindTime.plusMinutes(5));
+          LocalDateTime remindTime = LocalDateTime.of(it.getSessionDate().plusDays(7), it.getClassTime().finishTime());
+          return now.isAfter(remindTime) && !it.isWeeklyRemind();
         })
-        .collect(Collectors.toMap(
-            session -> classMatchingKeyStorage.storeAndGet(
-                session.getClassManagement().getClassMatching().getClassMatchingId()
-            ),
-            session -> session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo().getPhoneNumber(),
-            (existing, replacement) -> existing
+        .toList();
+
+    Map<String, List<ClassSession>> sessionsByPhoneNumber = sessionsToSend.stream()
+        .collect(Collectors.groupingBy(
+            session -> session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo().getPhoneNumber()
         ));
 
-    teacherPhoneNumberByToken.forEach((String token, String phoneNumber) -> applicationEventPublisher.publishEvent(
-        new TeacherWithScheduleCompleteTalkWeeklyRemindEvent(
-            phoneNumber,
-            token
-        )
-    ));
+    sessionsByPhoneNumber.forEach((phoneNumber, sessions) -> {
+      try {
+        String token = classMatchingKeyStorage.storeAndGet(
+            sessions.get(0).getClassManagement().getClassMatching().getClassMatchingId()
+        );
+        applicationEventPublisher.publishEvent(
+            new TeacherWithScheduleCompleteTalkWeeklyRemindEvent(phoneNumber, token)
+        );
+        sessions.forEach(ClassSession::weeklyRemind);
+
+      } catch (Exception e) {
+        log.error("알림톡 발송 실패: phoneNumber={}, error={}", phoneNumber, e.getMessage());
+      }
+    });
 
     log.info(">>> 주간 리마인드 알림톡 전송 완료");
   }
+
   @Scheduled(cron = "0 0 20 L * ?")
   public void remindCompleteTalkMontly() {
     log.info(">>> 월간 리마인드 알림톡 전송 시작");
