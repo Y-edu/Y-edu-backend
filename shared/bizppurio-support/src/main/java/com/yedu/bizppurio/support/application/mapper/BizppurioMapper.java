@@ -978,7 +978,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .strip();
 
 
-    String url = "https://" + properties.landingUrl() + "/teacher/session-complete?token=" + event.token();
+    String url = "https://" + properties.landingUrl() + "/teacher/session-schedule?token=" + event.token();
     CommonButton webButton =
         new WebButton("수업 관리 페이지", WEB_LINK, url, url);
 
@@ -1006,7 +1006,7 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
             .strip();
 
 
-    String url = "https://" + properties.landingUrl() + "/teacher/session-complete?token=" + event.token();
+    String url = "https://" + properties.landingUrl() + "/teacher/session-schedule?token=" + event.token();
     CommonButton webButton =
         new WebButton("수업 관리 페이지", WEB_LINK, url, url);
 

@@ -55,6 +55,8 @@ public class ClassSession extends BaseEntity {
 
   private boolean remind;
 
+  private boolean weeklyRemind;
+
   @Embedded private ClassTime classTime;
 
   private Integer realClassTime;
@@ -165,4 +167,9 @@ public class ClassSession extends BaseEntity {
     }
     this.complete(realClassMinute, understanding, homework);
   }
+
+  public void weeklyRemind() {
+    this.weeklyRemind = true;
+  }
+
 }
