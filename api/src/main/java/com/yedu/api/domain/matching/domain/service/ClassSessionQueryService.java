@@ -127,9 +127,7 @@ public class ClassSessionQueryService {
   @Async
   public CompletableFuture<Integer> sumClassTimeAsync(
       ClassMatching matching, LocalDate startDate, LocalDate endDate) {
-    Integer sum =
-        classSessionRepository.sumClassTime(
-            CancelReason.PARENT.name(), matching.getClassMatchingId(), startDate, endDate);
+    Integer sum = classSessionRepository.sumClassTime(matching.getClassMatchingId(), startDate, endDate);
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
   }
 
