@@ -136,7 +136,8 @@ public interface ClassSessionRepository
       and ((cs.completed = true) or (cs.isTodayCancel = true and cs.cancelReason = :cancelReason))
   """)
   Integer findCountByClassManagementIdPendingPayStatusAndCompleted(
-      @Param("classManagementId") Long classManagementId, 
+      @Param("classManagementId") Long classManagementId,
       @Param("payStatus") PayStatus payStatus,
       @Param("cancelReason") String cancelReason);
+  List<ClassSession> findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse();
 }

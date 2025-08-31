@@ -16,15 +16,21 @@ import com.yedu.common.event.bizppurio.TeacherAvailableTimeUpdateRequestEvent;
 import com.yedu.common.event.bizppurio.TeacherCompleteTalkChangeNoticeEvent;
 import com.yedu.common.event.bizppurio.TeacherWithNoScheduleCompleteTalkEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkEvent;
+import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkMonthlyRemindEvent;
 import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkRemindEvent;
+import com.yedu.common.event.bizppurio.TeacherWithScheduleCompleteTalkWeeklyRemindEvent;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +56,7 @@ public class TeacherBatchUseCase {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassSessionCommandService classSessionCommandService;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public void remindAvailableTime() {
     teacherGetService.emptyAvailableTime().stream()
@@ -194,5 +201,61 @@ public class TeacherBatchUseCase {
             })
         .filter(Objects::nonNull)
         .forEach(eventPublisher::publishEvent);
+  }
+
+
+  @Scheduled(cron = "0 */5 * * * *")
+  public void remindCompleteTalkWeekly() {
+    log.info(">>> 주간 리마인드 알림톡 전송 시작");
+    LocalDate now = LocalDate.now();
+
+    Map<String, ClassSession> sessionsByToken = classSessionRepository
+        .findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse()
+        .stream()
+        .filter(it -> {
+          LocalDate weekLater = it.getSessionDate().plusDays(7);
+          return weekLater.isEqual(now) || weekLater.isBefore(now);
+        })
+        .collect(Collectors.toMap(
+            session -> classMatchingKeyStorage.storeAndGet(
+                session.getClassManagement().getClassMatching().getClassMatchingId()
+            ),
+            session -> session,
+            (existing, replacement) -> existing
+        ));
+
+    sessionsByToken.forEach((String token, ClassSession session) -> applicationEventPublisher.publishEvent(
+        new TeacherWithScheduleCompleteTalkWeeklyRemindEvent(
+            session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo()
+                .getPhoneNumber(),
+            token
+        )
+    ));
+
+    log.info(">>> 주간 리마인드 알림톡 전송 완료");
+  }
+  @Scheduled(cron = "0 0 20 L * ?")
+  public void remindCompleteTalkMontly() {
+    log.info(">>> 월간 리마인드 알림톡 전송 시작");
+
+    Map<String, ClassSession> sessionsByToken = classSessionRepository
+        .findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse()
+        .stream()
+        .collect(Collectors.toMap(
+            session -> classMatchingKeyStorage.storeAndGet(
+                session.getClassManagement().getClassMatching().getClassMatchingId()
+            ),
+            session -> session,
+            (existing, replacement) -> existing
+        ));
+
+    sessionsByToken.forEach((String token, ClassSession session) -> applicationEventPublisher.publishEvent(
+        new TeacherWithScheduleCompleteTalkMonthlyRemindEvent(
+            session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo()
+                .getPhoneNumber(),
+            token
+        )
+    ));
+    log.info(">>> 월간 리마인드 알림톡 전송 완료");
   }
 }
