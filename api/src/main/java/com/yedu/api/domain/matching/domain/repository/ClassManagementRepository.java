@@ -4,11 +4,13 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +28,8 @@ public interface ClassManagementRepository extends JpaRepository<ClassManagement
   Optional<ClassManagement> findWithSchedule(@Param("classMatchingId") Long classMatchingId);
 
   List<ClassManagement> findAllByClassMatchingIn(Collection<ClassMatching> classMatchings);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  Optional<ClassManagement> findById(Long id);
+
 }

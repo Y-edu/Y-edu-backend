@@ -43,12 +43,6 @@ public class ClassSchedule extends BaseEntity {
 
   @Embedded private ClassTime classTime;
 
-  public boolean contains(ClassSession session) {
-    Day day = Day.byDate(session.getSessionDate());
-
-    return session.getClassTime().equals(this.classTime) && day.equals(this.day);
-  }
-
   /***
    * 이번달에 해당되는 새로운 과외 일정을 생성합니다.
    */
