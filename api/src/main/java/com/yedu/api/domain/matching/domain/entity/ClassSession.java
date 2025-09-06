@@ -160,4 +160,11 @@ public class ClassSession extends BaseEntity {
     this.weeklyRemind = true;
   }
 
+  public void increaseRound(Integer maxRound) {
+    if (this.round >= maxRound) {
+      this.round = 1;
+      return;
+    }
+    this.round+=1;
+  }
 }

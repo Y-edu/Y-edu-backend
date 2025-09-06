@@ -80,10 +80,10 @@ public class ClassSessionCommandService {
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
 
-    // FIXME :: 결제 선생 연동 후 입금날짜 기준으로 회차 다시 기록해야함, 현재로직은 이전과외일정 기준으로 회차를 설정하는데, 이전 과외 일정이 없거나 신규 과외는 회차가 기록되지 않는 이슈가 있음
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
-
+    Integer maxRound = classManagement.getClassMatching().getApplicationForm()
+        .maxRoundNumber();
     classSessionRepository
         .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
             session.getClassManagement(), session.getSessionDate()
@@ -95,6 +95,11 @@ public class ClassSessionCommandService {
           session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
         },
         ()-> session.complete(request.classMinute(), request.understanding(), request.homework(), 1));
+
+    classSessionRepository
+        .findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
+            session.getClassManagement(), session.getSessionDate())
+        .forEach(afterSession -> afterSession.increaseRound(maxRound));
 
 
     Hibernate.initialize(

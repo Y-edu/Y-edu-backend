@@ -69,4 +69,7 @@ public interface ClassSessionRepository
       @Param("endDate") LocalDate endDate);
 
   List<ClassSession> findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse();
+
+  List<ClassSession> findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
+      ClassManagement classManagement, LocalDate sessionDate);
 }
