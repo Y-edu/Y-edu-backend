@@ -29,7 +29,7 @@ public interface ClassManagementRepository extends JpaRepository<ClassManagement
 
   List<ClassManagement> findAllByClassMatchingIn(Collection<ClassMatching> classMatchings);
 
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Lock(LockModeType.PESSIMISTIC_READ)
   Optional<ClassManagement> findById(Long id);
 
 }
