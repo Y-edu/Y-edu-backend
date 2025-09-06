@@ -167,4 +167,8 @@ public class ClassSession extends BaseEntity {
     }
     this.round+=1;
   }
+
+  public boolean shouldPay(Integer maxRound) {
+    return this.round >= maxRound;
+  }
 }

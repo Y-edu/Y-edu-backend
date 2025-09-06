@@ -8,7 +8,11 @@ import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
+import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
+import com.yedu.payment.api.PaymentTemplate;
+import com.yedu.payment.api.dto.SendBillRequest;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
@@ -34,6 +38,7 @@ public class ClassSessionCommandService {
   private final ClassSessionRepository classSessionRepository;
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementRepository classManagementRepository;
+  private final PaymentTemplate paymentTemplate;
 
   private Map<LocalDate, ClassSession> mapSessionsByDate(List<ClassSession> sessions) {
     return sessions.stream()
@@ -79,11 +84,11 @@ public class ClassSessionCommandService {
 
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
-
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
-    Integer maxRound = classManagement.getClassMatching().getApplicationForm()
-        .maxRoundNumber();
+    ApplicationForm applicationForm = classMatching.getApplicationForm();
+    Integer maxRound = applicationForm.maxRoundNumber();
+
     classSessionRepository
         .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
             session.getClassManagement(), session.getSessionDate()
@@ -101,6 +106,26 @@ public class ClassSessionCommandService {
             session.getClassManagement(), session.getSessionDate())
         .forEach(afterSession -> afterSession.increaseRound(maxRound));
 
+    if (session.shouldPay(maxRound)){
+      // TODO 결제 내역 연동 필요
+      SendBillRequest sendBillRequest = new SendBillRequest(
+          "학부모",
+          applicationForm.getParents().getPhoneNumber(),
+          """
+          {name} 선생님 수업료
+          """
+            .replace("{name}", classMatching.getTeacher().getTeacherInfo().getNickName()),
+          """
+          현재까지의 수업완료 내역입니다.
+          
+          {completeHistories}
+          
+          다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
+          """.replace("{completeHistories}","test"),
+          BigDecimal.valueOf(applicationForm.getPay())
+      );
+      paymentTemplate.sendBill(sendBillRequest);
+    }
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
