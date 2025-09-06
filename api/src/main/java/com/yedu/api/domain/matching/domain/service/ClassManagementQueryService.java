@@ -4,13 +4,9 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveReq
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
-import com.yedu.payment.PaymentOperationWrapper;
-import com.yedu.payment.dto.SendBillRequest;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClassManagementQueryService {
 
   private final ClassManagementRepository classManagementRepository;
-
-  private final PaymentOperationWrapper paymentOperation;
 
   public Optional<ClassManagement> query(ClassScheduleRetrieveRequest request, Long id) {
     if (id != null) {
