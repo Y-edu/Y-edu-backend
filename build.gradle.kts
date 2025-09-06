@@ -43,44 +43,7 @@ allprojects {
 		}
 	}
 
-	val localProps = Properties().apply {
-		val localFile = rootProject.file("gradle-secret.properties")
-		if (localFile.exists()) {
-			localFile.inputStream().use { load(it) }
-		}
-	}
-	val nexusUsername = localProps.getProperty("nexusUsername") as String
-	val nexusPassword = localProps.getProperty("nexusPassword") as String
-	val nexusUrl = localProps.getProperty("nexusUrl") as String
-
 	repositories {
-		maven {
-			name = "nexusSnapshots"
-
-			credentials {
-				username = nexusUsername
-				password = nexusPassword
-			}
-			url = uri("$nexusUrl/repository/maven-snapshots/")
-			isAllowInsecureProtocol = true
-			content {
-				includeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
-			}
-		}
-
-		maven {
-			name = "nexusReleases"
-			credentials {
-				username = nexusUsername
-				password = nexusPassword
-			}
-			url = uri("$nexusUrl/repository/maven-releases/")
-			isAllowInsecureProtocol = true
-			content {
-				excludeVersionByRegex(".*", ".*", ".*-SNAPSHOT")
-			}
-		}
-
 		mavenCentral()
 	}
 }

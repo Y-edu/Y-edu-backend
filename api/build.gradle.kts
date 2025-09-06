@@ -1,32 +1,4 @@
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.core.type.TypeReference
-
 version = "1.0.0"
-
-
-openApiGenerate {
-    generatorName.set("typescript-fetch")
-    inputSpec.set("$projectDir/openapi.json")
-    outputDir.set("$projectDir/generated-sources/typescript")
-    apiPackage.set("api")
-    modelPackage.set("model")
-    configOptions.set(
-        mapOf(
-            "supportsES6" to "true",
-            "npmName" to "y-edu-client",
-            "withInterfaces" to "true",
-            "stringEnums" to "true",
-        )
-    )
-}
-
-tasks.register<Exec>("downloadOpenApiSpec") {
-    commandLine("curl", "-o", "openapi.json", "http://localhost:8080/v3/api-docs")
-}
-
-tasks.register("generateTypeScriptClient") {
-    dependsOn("downloadOpenApiSpec", "openApiGenerate")
-}
 
 
 
@@ -61,8 +33,7 @@ dependencies {
     implementation(project(":shared:discord-support"))
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
-    api(project(":shared:scheduling-support"))
-    implementation("com.yedu:payment-interface:1.0.0")
+    implementation(project(":shared:scheduling-support"))
 
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation ("org.springframework.boot:spring-boot-starter-validation")

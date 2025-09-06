@@ -1,6 +1,5 @@
 package com.yedu.api.domain.parents.domain.service;
 
-import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.application.dto.req.AcceptChangeSessionRequest;
