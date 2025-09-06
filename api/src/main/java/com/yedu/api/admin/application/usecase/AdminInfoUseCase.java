@@ -15,8 +15,6 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
-import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
-import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.Goal;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
@@ -25,8 +23,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +34,6 @@ public class AdminInfoUseCase {
   private final AdminGetService adminGetService;
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassMatchingGetService classMatchingGetService;
-  private final ClassSessionCommandService classSessionService;
-  private final ClassSessionQueryService classSessionQueryService;
 
   public AllApplicationResponse getAllApplication() {
     List<ApplicationForm> applicationForms = adminGetService.allApplication();
@@ -53,22 +47,9 @@ public class AdminInfoUseCase {
 
                   Optional<ClassManagement> classManagement =
                       findFirstScheduleConfirmClassManagement(classMatchings);
-                  int payPendingSessionCount =
-                      classSessionService.getSessionCountPendingPayStatusAndCompleted(
-                          classManagement.map(ClassManagement::getClassManagementId).orElse(null));
-                  Long classMatchingId = classMatchings.stream().filter(ClassMatching::isAcceptStatus).findFirst().map(ClassMatching::getClassMatchingId).orElse(null);
-
-                  Integer totalClassTime = classSessionQueryService.sumTotalClassTime(classMatchingId);
 
                   return mapToApplicationResponse(
-                      applicationForm,
-                      accept,
-                      classMatchings.size(),
-                      classManagement,
-                      payPendingSessionCount,
-                      totalClassTime,
-                      classMatchingId
-                    );
+                      applicationForm, accept, classMatchings.size(), classManagement);
                 })
             .toList());
   }

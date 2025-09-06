@@ -17,6 +17,7 @@ import com.yedu.api.domain.matching.application.dto.res.RetrieveMonthlyClassTime
 import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
 import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
 import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
@@ -28,7 +29,6 @@ import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.matching.domain.service.MatchingTimetableQueryService;
-import com.yedu.api.domain.matching.domain.service.PaymentRequestService;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
@@ -101,10 +101,7 @@ public class ClassScheduleMatchingUseCase {
   private final ClassManagementQueryService classManagementQueryService;
 
   private final SheetApi sheetApi;
-
   private final ApplicationEventPublisher applicationEventPublisher;
-
-  private final PaymentRequestService paymentRequestService;
 
   public String schedule(ClassScheduleMatchingRequest request) {
     String classNotifyToken = matchingIdApplicationNotifyKeyStorage.get(request.classMatchingId());
@@ -275,26 +272,18 @@ public class ClassScheduleMatchingUseCase {
 
     List<ClassMatching> pausedMatching = classMatchingGetService.getPaused(teacher);
 
-    List<ClassMatching> merged =
-        Stream.of(matchings, pausedMatching).flatMap(List::stream).toList();
+    List<ClassMatching> merged = Stream.of(matchings, pausedMatching)
+        .flatMap(List::stream)
+        .toList();
 
     return classSessionQueryService.query(matching, merged, isComplete, pageable);
   }
 
   public void changeSessionDate(Long sessionId, ChangeSessionDateRequest request) {
-
-    Pair<ClassSession, LocalDate> changeInfo =
-        classSessionCommandService.change(sessionId, request.sessionDate(), request.start());
+    Pair<ClassSession, LocalDate> changeInfo = classSessionCommandService.change(sessionId,
+        request.sessionDate(),
+        request.start());
     ClassSession session = changeInfo.getKey();
-
-    // 휴강된 세션이거나 당일 취소된 세션인 경우 에러 발생
-    if (session.isCancel() || session.isTodayCancel()) {
-      throw new IllegalStateException("휴강되거나 당일 취소된 세션은 날짜를 변경할 수 없습니다");
-    }
-
-    // 날짜 변경 후 회차 순차 업데이트
-    classSessionCommandService.updateDateAndReorderRounds(sessionId);
-
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -311,23 +300,12 @@ public class ClassScheduleMatchingUseCase {
                 session.getSessionDate().toString(), // 변경한 날짜
                 session.getClassTime().getStart().toString(),
                 session.getClassTime().getClassMinute().toString(),
-                LocalDateTime.now().toString())),
-        "change");
+                LocalDateTime.now().toString())), "change"
+    );
   }
 
   public void cancelSession(Long sessionId, CancelSessionRequest cancelSessionRequest) {
-    ClassSession session =
-        classSessionCommandService.cancel(
-            sessionId, cancelSessionRequest.cancelReason(), cancelSessionRequest.isTodayCancel());
-
-    // 당일 취소인 경우
-    if (cancelSessionRequest.isTodayCancel()) {
-      classSessionCommandService.updateRoundSequentially(sessionId);
-    } else {
-      // 그 외는 모두 횟수 차감
-      classSessionCommandService.updateRoundForGeneralCancel(sessionId);
-    }
-
+    ClassSession session = classSessionCommandService.cancel(sessionId, cancelSessionRequest.cancelReason(), cancelSessionRequest.isTodayCancel());
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -344,13 +322,12 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getClassMinute().toString(),
                 "휴강",
                 Optional.ofNullable(session.getCancelReason()).orElse(""),
-                LocalDateTime.now().toString())),
-        "cancel");
+                LocalDateTime.now().toString())), "cancel"
+        );
   }
 
   public void revertCancelSession(Long sessionId) {
     ClassSession session = classSessionCommandService.revertCancel(sessionId);
-
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -367,15 +344,11 @@ public class ClassScheduleMatchingUseCase {
                 session.getClassTime().getClassMinute().toString(),
                 "휴강 취소",
                 "",
-                LocalDateTime.now().toString())),
-        "cancel");
+                LocalDateTime.now().toString())), "cancel");
   }
 
   public void completeSession(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = classSessionCommandService.complete(sessionId, request);
-    // 결제 요청
-    paymentRequestService.requestPayment(sessionId);
-
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching matching = classManagement.getClassMatching();
     TeacherInfo teacherInfo = matching.getTeacher().getTeacherInfo();
@@ -395,29 +368,31 @@ public class ClassScheduleMatchingUseCase {
                 Optional.ofNullable(session.getRealClassTime()).map(String::valueOf).orElse(""),
                 Optional.ofNullable(session.getHomework()).orElse(""),
                 LocalDateTime.now().toString(),
-                Optional.ofNullable(session.getUnderstanding()).orElse(""))),
-        "data");
+                Optional.ofNullable(session.getUnderstanding()).orElse("")
+                ))
+        ,"data");
 
-    applicationEventPublisher.publishEvent(
-        new ParentCompleteTalkNotifyEvent(
-            teacherInfo.getNickName(),
-            matching.getApplicationForm().getParents().getPhoneNumber(),
-            session.getRound(),
-            request.understanding(),
-            request.homework()));
+
+
+    applicationEventPublisher.publishEvent(new ParentCompleteTalkNotifyEvent(
+        teacherInfo.getNickName(),
+        matching.getApplicationForm().getParents().getPhoneNumber(),
+        session.getRound(),
+        request.understanding(),
+        request.homework()
+    ));
   }
 
   private String roundNumber(ClassMatching matching, ClassSession session) {
-    if (matching.getApplicationForm().getApplicationFormId().equals("T-16")) {
+    if (matching.getApplicationForm().getApplicationFormId().equals("T-16")){
       return Optional.ofNullable(session.getRound())
-          .map(
-              it -> {
-                int count = it * 2;
-                return (count - 1) + "," + count;
-              })
-          .orElse("");
+          .map(it-> {
+            int count = it * 2;
+            return (count - 1) + "," + count;
+          }).orElse("");
     }
-    return Optional.ofNullable(session.getRound()).map(String::valueOf).orElse("");
+     return Optional.ofNullable(session.getRound())
+          .map(String::valueOf).orElse("");
   }
 
   public void completeSessionByToken(CompleteSessionTokenRequest request) {
@@ -447,39 +422,40 @@ public class ClassScheduleMatchingUseCase {
               if (matchingId == null) {
                 throw new IllegalArgumentException("잘못된 토큰값입니다");
               }
-
               return classMatchingGetService.getById(matchingId);
             });
   }
 
-  public RetrieveMonthlyClassTimeResponse retrieveMonthlyClassTime(
-      String token, Long classMatchingId, int monthsCount) {
-    ClassMatching matching =
-        StringUtils.hasText(token)
-            ? getClassMatchingByToken(token)
-            : classMatchingGetService.getById(classMatchingId);
+  public RetrieveMonthlyClassTimeResponse retrieveMonthlyClassTime(String token, Long classMatchingId, int monthsCount) {
+    ClassMatching matching = StringUtils.hasText(token)
+        ? getClassMatchingByToken(token)
+        : classMatchingGetService.getById(classMatchingId);
 
     LocalDate now = LocalDate.now();
     LocalDate thisMonthStart = now.withDayOfMonth(1);
 
-    List<LocalDate> monthStarts =
-        IntStream.range(0, monthsCount).mapToObj(thisMonthStart::minusMonths).toList();
-    Map<Integer, CompletableFuture<Integer>> futureMap =
-        monthStarts.stream()
-            .collect(
-                Collectors.toMap(
-                    LocalDate::getMonthValue,
-                    start -> {
-                      LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
-                      return classSessionQueryService.sumClassTimeAsync(matching, start, end);
-                    }));
+    List<LocalDate> monthStarts = IntStream.range(0, monthsCount)
+        .mapToObj(thisMonthStart::minusMonths)
+        .toList();
+    Map<Integer, CompletableFuture<Integer>> futureMap = monthStarts.stream()
+        .collect(Collectors.toMap(
+            LocalDate::getMonthValue,
+            start -> {
+              LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+              return classSessionQueryService.sumClassTimeAsync(matching, start, end);
+            }
+        ));
 
     CompletableFuture.allOf(futureMap.values().toArray(new CompletableFuture[0])).join();
 
-    Map<Integer, Integer> result =
-        futureMap.entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().join()));
+    Map<Integer, Integer> result = futureMap.entrySet().stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            e -> e.getValue().join()
+        ));
 
     return new RetrieveMonthlyClassTimeResponse(result);
   }
+
+
 }

@@ -16,9 +16,5 @@ public record AllApplicationResponse(List<ApplicationResponse> applicationRespon
       int accept,
       int total,
       String phoneNumber,
-      boolean status,
-      int payPendingSessionCount,
-      int maxRound,
-      Integer totalClassTime,
-      Long classMatchingId) {}
+      boolean status) {}
 }

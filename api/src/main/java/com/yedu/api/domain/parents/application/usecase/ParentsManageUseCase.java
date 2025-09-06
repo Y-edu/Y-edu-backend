@@ -182,8 +182,7 @@ public class ParentsManageUseCase {
         new TeacherClassPauseEvent(
             matching.getTeacher().getTeacherInfo().getPhoneNumber(),
             matching.getApplicationForm().getApplicationFormId(),
-            session.getSessionDate(),
-            session.getTeacherRound()
+            session.getSessionDate()
         ));
   }
 

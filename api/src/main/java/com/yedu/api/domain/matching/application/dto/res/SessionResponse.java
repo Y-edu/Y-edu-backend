@@ -65,8 +65,6 @@ public record SessionResponse(
                 .classStart(it.getClassTime().getStart())
                 .understanding(it.getUnderstanding())
                 .homework(it.getHomework())
-                .currentRound(it.getTeacherRound())
-                .maxRound(it.getMaxRound())
                 .classMinute(
                     it.isCompleted() ? it.getRealClassTime() : it.getClassTime().getClassMinute())
                 .build());

@@ -2,13 +2,10 @@ package com.yedu.api.domain.matching.domain.entity;
 
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
-import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.entity.BaseEntity;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -65,13 +62,6 @@ public class ClassSession extends BaseEntity {
 
   private boolean isTodayCancel;
 
-  private Integer teacherRound;
-
-  private Integer maxRound;
-
-  @Enumerated(EnumType.STRING)
-  private PayStatus payStatus;
-
   public void cancel(String cancelReason, boolean isTodayCancel) {
     if (cancel) {
       throw new IllegalStateException("이미 취소된 일정입니다");
@@ -100,7 +90,6 @@ public class ClassSession extends BaseEntity {
         isTodayCancel && cancelReason.equals(CancelReason.PARENT.name()) ? true : false;
     this.isTodayCancel = isTodayCancel || false;
     this.cancelReason = cancelReason;
-    this.teacherRound = cancelReason.equals(CancelReason.PARENT.name()) ? teacherRound : 0;
   }
 
   public void revertCancel() {
@@ -109,7 +98,6 @@ public class ClassSession extends BaseEntity {
     }
     cancel = false;
     this.cancelReason = null;
-    this.teacherRound = 1;
   }
 
   public void complete(Integer realClassMinute, String understanding, String homework) {

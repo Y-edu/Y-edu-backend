@@ -11,7 +11,6 @@ import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
-import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
@@ -58,7 +57,6 @@ public class ClassMatchingInfoUseCase {
   private final TeacherMathRepository teacherMathRepository;
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassSessionQueryService classSessionQueryService;
-  private final ClassSessionCommandService classSessionCommandService;
   private final ClassMatchingRepository classMatchingRepository;
 
   public ClassMatchingForTeacherResponse applicationFormToTeacher(String token) {
@@ -129,9 +127,6 @@ public class ClassMatchingInfoUseCase {
         .subject(applicationForm.getWantedSubject().toString())
         .favoriteStyle(applicationForm.getFavoriteStyle())
         .matchingRefuseReason(matching.getRefuseReason())
-        .payPendingSessionCount(this.getPayPendingSessionCount(matching.getClassMatchingId()))
-        .maxRound(applicationForm.maxRoundNumber())
-        .totalClassTime(this.getTotalClassTime(matching.getClassMatchingId()))
         .teacher(
             ApplicationFormResponse.Teacher.builder()
                 .teacherId(teacher.getTeacherId())
@@ -226,10 +221,8 @@ public class ClassMatchingInfoUseCase {
     Optional<ClassManagement> management =
         classManagementQueryService.queryWithSchedule(applicationFormResponse.getMatchingId());
 
-    Integer maxRoundNumber =
-        management
-            .map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
-            .orElse(null);
+    Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
+        .orElse(null);
 
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
@@ -278,19 +271,4 @@ public class ClassMatchingInfoUseCase {
                 .orElse(null))
         .build();
   }
-
-
-  public int getPayPendingSessionCount(Long matchingId) {
-    ClassManagement classManagement = classManagementQueryService.query(matchingId).orElseThrow();
-    int payPendingSessionCount =
-          classSessionCommandService.getSessionCountPendingPayStatusAndCompleted(
-             classManagement.getClassManagementId());
-    return payPendingSessionCount;
-  }
-
-    public Integer getTotalClassTime(Long matchingId) {
-      ClassMatching matching = classMatchingRepository.findById(matchingId).orElseThrow();
-      return classSessionQueryService.sumTotalClassTime(matching.getClassMatchingId());
-  
-    }
 }
