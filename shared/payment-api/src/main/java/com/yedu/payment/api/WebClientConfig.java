@@ -1,6 +1,6 @@
-package com.yedu.api.global.config;
+package com.yedu.payment.api;
 
-import com.yedu.api.global.config.AppConfig.PaymentConfig;
+import com.yedu.payment.api.WebClientConfig.PaymentConfig;
 import com.yedu.common.webclient.WebClientProperties;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -17,7 +17,7 @@ import reactor.netty.http.client.HttpClient;
 
 @EnableConfigurationProperties(PaymentConfig.class)
 @Configuration
-public class AppConfig {
+class WebClientConfig {
 
   @Bean
   public WebClient paymentWebClient(PaymentConfig config) {
@@ -33,7 +33,10 @@ public class AppConfig {
                         .addHandlerLast(
                             new WriteTimeoutHandler(props.writeTimeOut(), TimeUnit.SECONDS)));
 
-    return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+    return WebClient.builder()
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
+        .baseUrl(props.baseUrl())
+        .build();
   }
 
   @RequiredArgsConstructor

@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":shared:rabbitmq-support"))
     implementation(project(":shared:sheet-support"))
     implementation(project(":shared:scheduling-support"))
+    implementation(project(":shared:payment-api"))
 
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation ("org.springframework.boot:spring-boot-starter-validation")

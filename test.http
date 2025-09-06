@@ -1,0 +1,15 @@
+### dev.yedu-develop.com:8181
+POST http://localhost:8080/parents/change/application
+content-type: application/json
+
+{
+  "phoneNumber": "01059367332",
+  "wantedTime": "월화수1시",
+  "favoriteGender": "남",
+  "favoriteStyle": "착하신분",
+  "useSameClassCount": true,
+  "classCount": null,
+  "classTime": null,
+  "dong": "강남동",
+  "district": "강남구"
+}
