@@ -122,7 +122,8 @@ public class ClassSessionCommandService {
           
           다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
           """.replace("{completeHistories}","test"),
-          BigDecimal.valueOf(applicationForm.getPay())
+          BigDecimal.valueOf(applicationForm.getPay()),
+          null
       );
       paymentTemplate.sendBill(sendBillRequest);
     }

@@ -17,6 +17,7 @@ import com.yedu.payment.api.dto.SendBillRequest;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,9 @@ public class ClassManagementCommandService {
   private final ClassSessionCommandService classSessionCommandService;
 
   private final PaymentTemplate paymentTemplate;
+
+  @Value("${app.yedu.url}")
+  public String serverUrl;
 
   public ClassManagement schedule(ClassScheduleMatchingRequest request) {
     ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
@@ -84,7 +88,9 @@ public class ClassManagementCommandService {
         문의사항이 있으시다면 언제든 Y-Edu 채널을 통해 문의사항 말씀해주세요.   감사합니다!\s
         """
         .replace("{name}", teacherNickname),
-        BigDecimal.valueOf(applicationForm.getPay()));
+        BigDecimal.valueOf(applicationForm.getPay()),
+        serverUrl + "/matchings/"+matching.getClassMatchingId()+ "/pay"
+        );
 
     paymentTemplate.sendBill(sendBillRequest);
     return classManagement;

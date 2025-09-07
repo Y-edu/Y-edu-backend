@@ -44,19 +44,14 @@ public abstract class AbstractKeyStorage<T> implements KeyStorage<T> {
 
     Optional.ofNullable(value)
         .ifPresentOrElse(
-            foundValue -> {
-              try {
-                consumer.accept(foundValue);
-              } finally {
-                redisRepository.deleteValues(key);
-              }
-            },
+            consumer,
             () -> {
               log.error("존재하지 않는 key [{}]", key);
               // todo custom exception 정의 예정
               throw new IllegalArgumentException("존재하지 않는 key: " + key);
             });
 
+    redisRepository.deleteValues(key);
     return value;
   }
 

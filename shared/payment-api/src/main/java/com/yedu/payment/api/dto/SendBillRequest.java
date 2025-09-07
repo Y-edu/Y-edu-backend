@@ -7,5 +7,6 @@ public record SendBillRequest(
     String receiverPhoneNumber,
     String title,
     String message,
-    BigDecimal price
+    BigDecimal price,
+    String callBackUrl
 ) {}
