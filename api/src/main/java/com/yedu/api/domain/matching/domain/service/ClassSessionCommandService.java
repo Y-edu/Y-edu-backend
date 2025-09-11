@@ -6,6 +6,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
 import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
@@ -14,18 +15,20 @@ import com.yedu.payment.api.PaymentTemplate;
 import com.yedu.payment.api.dto.SendBillRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +42,8 @@ public class ClassSessionCommandService {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementRepository classManagementRepository;
   private final PaymentTemplate paymentTemplate;
+  @Value("${app.yedu.url}")
+  public String serverUrl;
 
   private Map<LocalDate, ClassSession> mapSessionsByDate(List<ClassSession> sessions) {
     return sessions.stream()
@@ -106,8 +111,27 @@ public class ClassSessionCommandService {
             session.getClassManagement(), session.getSessionDate())
         .forEach(afterSession -> afterSession.increaseRound(maxRound));
 
-    if (session.shouldPay(maxRound)){
-      // TODO 결제 내역 연동 필요
+    List<ClassSession> sessionsToPay = classSessionRepository.
+        findAllByClassManagementAndCompletedIsTrueAndPayStatus(classManagement, PayStatus.WAITING);
+
+    int classMinute = sessionsToPay.stream().mapToInt(ClassSession::getRealClassTime).sum();
+    Integer payClassMinute = applicationForm.classMinute();
+
+    if (payClassMinute == null){
+      return session;
+    }
+
+    if (classMinute >= (maxRound * payClassMinute)){
+      String histories = sessionsToPay.stream()
+          .sorted(Comparator.comparing(ClassSession::getSessionDate))
+          .map(it ->
+              it.getSessionDate().format(DateTimeFormatter.ofPattern("MM/dd")) +
+                  " " + it.getRealClassTime() +
+                  " 분 " +
+                  it.getRound() +
+                  " 회차 완료"
+          )
+          .collect(Collectors.joining("\n"));
       SendBillRequest sendBillRequest = new SendBillRequest(
           "학부모",
           applicationForm.getParents().getPhoneNumber(),
@@ -121,11 +145,16 @@ public class ClassSessionCommandService {
           {completeHistories}
           
           다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
-          """.replace("{completeHistories}","test"),
+          """.replace("{completeHistories}", histories),
           BigDecimal.valueOf(applicationForm.getPay()),
-          null
+          serverUrl + "/sessions/" + sessionsToPay.stream()
+              .map(ClassSession::getClassSessionId)
+              .map(String::valueOf)
+              .collect(Collectors.joining(",")) + "/pay"
       );
       paymentTemplate.sendBill(sendBillRequest);
+      sessionsToPay
+          .forEach(ClassSession::payRequest);
     }
 
     Hibernate.initialize(
@@ -202,4 +231,8 @@ public class ClassSessionCommandService {
     classSessionRepository.saveAll(newSessions);
   }
 
+  public void pay(List<Long> sessionIds) {
+    LocalDateTime paidAt = LocalDateTime.now();
+    classSessionRepository.findAllById(sessionIds).forEach(session-> session.payApprove(paidAt));
+  }
 }

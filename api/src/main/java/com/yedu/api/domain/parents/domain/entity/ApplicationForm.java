@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 
 @ToString
 @Entity
@@ -99,6 +100,13 @@ public class ApplicationForm extends BaseEntity {
     Matcher matcher = Pattern.compile("\\d+").matcher(classCount);
     if (matcher.find()) {
       return Integer.parseInt(matcher.group()) * ROUND_TIMES;
+    }
+    return null;
+  }
+
+  public Integer classMinute(){
+    if (StringUtils.hasText(classTime)) {
+      return Integer.parseInt(classTime.trim().replace("분",""));
     }
     return null;
   }

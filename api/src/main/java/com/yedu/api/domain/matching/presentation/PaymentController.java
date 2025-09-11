@@ -3,6 +3,7 @@ package com.yedu.api.domain.matching.presentation;
 import com.yedu.api.domain.matching.application.usecase.PaymentUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,16 @@ public class PaymentController {
       log.info(">>> matchingId: {} 결제 승인 완료", matchingId);
 
       paymentUseCase.approve(matchingId);
+
+      return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/sessions/{sessionIds}/pay")
+  @Operation(hidden = true)
+  public ResponseEntity<?> approve(@PathVariable List<Long> sessionIds) {
+      log.info(">>> sessionIds: {} 결제 승인 완료", sessionIds);
+
+      paymentUseCase.approveSessions(sessionIds);
 
       return ResponseEntity.noContent().build();
   }

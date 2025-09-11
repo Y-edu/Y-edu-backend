@@ -2,6 +2,7 @@ package com.yedu.api.domain.matching.domain.repository;
 
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import io.lettuce.core.dynamic.annotation.Param;
 import io.micrometer.common.KeyValues;
 import java.time.LocalDate;
@@ -72,4 +73,6 @@ public interface ClassSessionRepository
 
   List<ClassSession> findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
       ClassManagement classManagement, LocalDate sessionDate);
+
+  List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatus(ClassManagement classManagement, PayStatus payStatus);
 }

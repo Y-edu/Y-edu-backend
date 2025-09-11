@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.domain.entity;
 
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
 import com.yedu.api.global.entity.BaseEntity;
@@ -72,6 +73,7 @@ public class ClassSchedule extends BaseEntity {
                     .completed(false)
                     .cancel(false)
                     .remind(false)
+                    .payStatus(PayStatus.WAITING)
                     .build())
         .toList();
   }

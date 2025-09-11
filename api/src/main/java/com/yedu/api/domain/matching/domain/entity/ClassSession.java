@@ -2,10 +2,13 @@ package com.yedu.api.domain.matching.domain.entity;
 
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.global.entity.BaseEntity;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +43,8 @@ public class ClassSession extends BaseEntity {
 
   private LocalDate sessionDate;
 
+  private LocalDateTime paidAt;
+
   private String understanding;
 
   private String homework;
@@ -57,6 +62,9 @@ public class ClassSession extends BaseEntity {
   @Embedded private ClassTime classTime;
 
   private Integer realClassTime;
+
+  @Enumerated(EnumType.STRING)
+  private PayStatus payStatus;
 
   @With private Integer round; // 회차
 
@@ -168,7 +176,12 @@ public class ClassSession extends BaseEntity {
     this.round+=1;
   }
 
-  public boolean shouldPay(Integer maxRound) {
-    return this.round >= maxRound;
+  public void payRequest() {
+    this.payStatus = PayStatus.PENDING;
+  }
+
+  public void payApprove(LocalDateTime paidAt) {
+    this.payStatus = PayStatus.APPROVE;
+    this.paidAt = paidAt;
   }
 }
