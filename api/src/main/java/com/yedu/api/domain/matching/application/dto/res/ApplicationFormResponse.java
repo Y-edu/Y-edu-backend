@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.application.dto.res;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -93,6 +94,13 @@ public class ApplicationFormResponse {
     private String firstDay;
     private List<Schedule> schedule;
     private List<Session> sessions;
+    private Integer notPaidRoundNumber;
+    private Integer maxRoundNumber;
+    private Integer realClassMinute;
+    private LocalDateTime paidAt;
+    private Long parentPay;
+    private Long teacherPay;
+    private Long yEduCommission;
   }
 
   @Builder
@@ -116,6 +124,5 @@ public class ApplicationFormResponse {
     private String cancelReason;
     private Boolean completed;
     private Integer currentRound;
-    private Integer maxRound;
   }
 }

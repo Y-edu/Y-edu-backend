@@ -682,17 +682,13 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
   public CommonRequest mapToPayNotification(PayNotificationEvent event) {
     String message =
         """
-어머님 안녕하세요
-#{name} 선생님과 매칭이 완료되어 수업료 안내드립니다.
+☑️ #{name} 선생님 수업 결제 안내
 
-수업료: #{pay}만원
-입금계좌: 신한 110-149-528751 조현숙 (YEdu)
-입금자명: 어머님 전화번호 뒷자리 4자리로 기입 부탁드립니다
+어머님 안녕하세요. 선생님과 수업 진행을 위한 결제 안내 드립니다. 결제 진행 후, 선생님과 전화 상담이 진행되며, 전화상담으로 교재, 수업시간을 확정 후 수업이 진행됩니다.
 
-입금이 확인되면 선생님께서 구체적인 수업 일정 관련해 연락드릴 예정입니다.
+수업료 : #{pay}만원 결제방법 : “결제선생"이라는 카카오톡 친구 메세지로 결제 요청이 전송됩니다. 📍”결제선생"이라는 이름으로 전송된 카카오톡 메세지를 찾아 ‘청구서'를 통해 결제해 주세요.
 
-문의사항이 있으신 경우 언제든 본 채팅방을 통해 남겨주시기 바랍니다.
-감사합니다!
+문의사항이 있으시다면 언제든 Y-Edu 채널을 통해 문의사항 말씀해주세요. 감사합니다!
         """
             .strip()
             .replace("#{name}", event.nickName())
@@ -701,8 +697,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION),
-            BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION.getCode());
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION_V2),
+            BizpurrioTemplate.YEDU_OFFICIAL_PAY_NOTIFICATION_V2.getCode());
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 

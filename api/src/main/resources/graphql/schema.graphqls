@@ -89,6 +89,12 @@ type ClassManagement {
   firstDay: String
   schedule: [Schedule]
   sessions: [Session]
+  notPaidRoundNumber: Int
+  maxRoundNumber: Int
+  realClassMinute: Int
+  paidAt: String
+  parentPay: Int
+  teacherPay: Int
 }
 
 type Schedule {
@@ -101,8 +107,6 @@ type Schedule {
 type Session {
   classSessionId: Int
   date: String
-  currentRound: Int
-  maxRound: Int
   start: String
   classMinute: Int
   realClassMinute: Int

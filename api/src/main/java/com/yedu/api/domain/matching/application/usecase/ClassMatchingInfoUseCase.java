@@ -7,7 +7,9 @@ import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
@@ -33,6 +35,7 @@ import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -221,8 +224,29 @@ public class ClassMatchingInfoUseCase {
     Optional<ClassManagement> management =
         classManagementQueryService.queryWithSchedule(applicationFormResponse.getMatchingId());
 
+    if (management.isEmpty()) {
+      return ApplicationFormResponse.ClassManagement.builder().build();
+    }
+
     Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
         .orElse(null);
+
+    List<ClassSession> sessions = classSessionQueryService.query(management.get());
+
+    List<ClassSession> paidSessions = sessions.stream()
+        .filter(ClassSession::isCompleted)
+        .filter(it-> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.APPROVE))
+        .toList();
+
+    List<ClassSession> notPaidSessions = sessions.stream()
+        .filter(ClassSession::isCompleted)
+        .filter(it -> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.PENDING))
+        .toList();
+
+    int teacherClassMinute = notPaidSessions.stream().mapToInt(ClassSession::getRealClassTime).sum();
+    Long teacherPay = teacherClassMinute * 500L;
+    Long parentPay = teacherClassMinute * 600L;
+    Long yEduCommission = parentPay - teacherPay;
 
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
@@ -246,11 +270,9 @@ public class ClassMatchingInfoUseCase {
                             .toList())
                 .orElse(null))
         .sessions(
-            management
-                .map(classSessionQueryService::query)
-                .map(
-                    sessions ->
                         sessions.stream()
+                            .filter(ClassSession::isCompleted)
+                            .sorted(Comparator.comparing(ClassSession::getSessionDate).reversed())
                             .map(
                                 it ->
                                     ApplicationFormResponse.Session.builder()
@@ -264,11 +286,24 @@ public class ClassMatchingInfoUseCase {
                                         .cancel(it.isCancel())
                                         .cancelReason(it.getCancelReason())
                                         .completed(it.isCompleted())
-                                        .currentRound(it.getRound())
-                                        .maxRound(maxRoundNumber)
                                         .build())
                             .toList())
-                .orElse(null))
-        .build();
+        .notPaidRoundNumber(
+            notPaidSessions.size()
+        )
+        .maxRoundNumber(maxRoundNumber)
+        .realClassMinute(teacherClassMinute)
+        .paidAt(
+            paidSessions.stream()
+                .filter(it-> it.getPaidAt() != null)
+                .max(Comparator.comparing(ClassSession::getPaidAt))
+                .map(ClassSession::getPaidAt)
+                .orElse(null)
+        )
+        .parentPay(parentPay)
+        .teacherPay(teacherPay)
+        .yEduCommission(yEduCommission)
+        .build()
+        ;
   }
 }

@@ -121,6 +121,8 @@ public class ClassSessionCommandService {
       return session;
     }
 
+
+    // 200 >= 4 * 50
     if (classMinute >= (maxRound * payClassMinute)){
       String histories = sessionsToPay.stream()
           .sorted(Comparator.comparing(ClassSession::getSessionDate))
@@ -146,7 +148,7 @@ public class ClassSessionCommandService {
           
           다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
           """.replace("{completeHistories}", histories),
-          BigDecimal.valueOf(applicationForm.getPay()),
+          BigDecimal.valueOf(classMinute * 600L),
           serverUrl + "/sessions/" + sessionsToPay.stream()
               .map(ClassSession::getClassSessionId)
               .map(String::valueOf)
