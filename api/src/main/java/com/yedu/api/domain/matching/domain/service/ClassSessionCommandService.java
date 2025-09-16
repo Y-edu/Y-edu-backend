@@ -5,6 +5,7 @@ import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.ClassSessions;
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassManagementRepository;
@@ -111,29 +112,17 @@ public class ClassSessionCommandService {
             session.getClassManagement(), session.getSessionDate())
         .forEach(afterSession -> afterSession.increaseRound(maxRound));
 
-    List<ClassSession> sessionsToPay = classSessionRepository.
-        findAllByClassManagementAndCompletedIsTrueAndPayStatus(classManagement, PayStatus.WAITING);
+    ClassSessions sessionsToPay = new ClassSessions(classSessionRepository.
+        findAllByClassManagementAndCompletedIsTrueAndPayStatus(classManagement, PayStatus.WAITING));
 
-    int classMinute = sessionsToPay.stream().mapToInt(ClassSession::getRealClassTime).sum();
+    int classMinute = sessionsToPay.sumClassMinutes();
     Integer payClassMinute = applicationForm.classMinute();
 
     if (payClassMinute == null){
       return session;
     }
 
-
-    // 200 >= 4 * 50
     if (classMinute >= (maxRound * payClassMinute)){
-      String histories = sessionsToPay.stream()
-          .sorted(Comparator.comparing(ClassSession::getSessionDate))
-          .map(it ->
-              it.getSessionDate().format(DateTimeFormatter.ofPattern("MM/dd")) +
-                  " " + it.getRealClassTime() +
-                  " 분 " +
-                  it.getRound() +
-                  " 회차 완료"
-          )
-          .collect(Collectors.joining("\n"));
       SendBillRequest sendBillRequest = new SendBillRequest(
           "학부모",
           applicationForm.getParents().getPhoneNumber(),
@@ -147,16 +136,12 @@ public class ClassSessionCommandService {
           {completeHistories}
           
           다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
-          """.replace("{completeHistories}", histories),
-          BigDecimal.valueOf(classMinute * 600L),
-          serverUrl + "/sessions/" + sessionsToPay.stream()
-              .map(ClassSession::getClassSessionId)
-              .map(String::valueOf)
-              .collect(Collectors.joining(",")) + "/pay"
+          """.replace("{completeHistories}", sessionsToPay.historyMessage()),
+          sessionsToPay.fee(),
+          sessionsToPay.paymentCallbackUrl(serverUrl)
       );
       paymentTemplate.sendBill(sendBillRequest);
-      sessionsToPay
-          .forEach(ClassSession::payRequest);
+      sessionsToPay.payPending();
     }
 
     Hibernate.initialize(

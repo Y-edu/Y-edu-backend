@@ -176,7 +176,7 @@ public class ClassSession extends BaseEntity {
     this.round+=1;
   }
 
-  public void payRequest() {
+  public void payPending() {
     this.payStatus = PayStatus.PENDING;
   }
 

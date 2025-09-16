@@ -6,6 +6,7 @@ type Query {
 }
 type Mutation {
   updateMatching(matchingIds: [Int], matchingStatus: String): Boolean
+  payRequest(matchingIds: [Int]) :Boolean
   changeTeacher(matchingId: Int, newTeacherId: Int): Boolean
 }
 
@@ -91,8 +92,10 @@ type ClassManagement {
   sessions: [Session]
   notPaidRoundNumber: Int
   maxRoundNumber: Int
-  realClassMinute: Int
+  parentClassMinute: Int
+  teacherClassMinute: Int
   paidAt: String
+  yEduCommission: Int
   parentPay: Int
   teacherPay: Int
 }
@@ -115,4 +118,5 @@ type Session {
   cancel: Boolean
   cancelReason: String
   completed: Boolean
+  roundNumber: Int
 }

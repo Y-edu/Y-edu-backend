@@ -80,6 +80,18 @@ public class ClassMatchingController {
     return Boolean.TRUE;
   }
 
+  /**
+   * com.yedu.api.domain.matching.domain.entity.constant.PayStatus.PENDING 상태 재발송
+   * @param matchingIds 결제요청할 matchingId 리스트
+   * @return
+   */
+  @MutationMapping
+  public Boolean payRequest(@Argument List<Long> matchingIds) {
+    matchingManageUseCase.payRequest(matchingIds);
+
+    return Boolean.TRUE;
+  }
+
   @SchemaMapping(typeName = "ApplicationForm", field = "parent")
   public ApplicationFormResponse.Parents parent(final ApplicationFormResponse applicationForm) {
     return matchingInfoUseCase.parents(applicationForm);

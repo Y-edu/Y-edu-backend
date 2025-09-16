@@ -75,4 +75,6 @@ public interface ClassSessionRepository
       ClassManagement classManagement, LocalDate sessionDate);
 
   List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatus(ClassManagement classManagement, PayStatus payStatus);
+
+  List<ClassSession> findAllByClassManagement(ClassManagement management);
 }

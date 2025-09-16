@@ -124,16 +124,15 @@ public class ClassSessionQueryService {
         now.with(TemporalAdjusters.lastDayOfMonth()));
   }
 
+  public List<ClassSession> queryAll(ClassManagement management) {
+    return classSessionRepository.findAllByClassManagement(management);
+  }
+
   @Async
   public CompletableFuture<Integer> sumClassTimeAsync(
       ClassMatching matching, LocalDate startDate, LocalDate endDate) {
     Integer sum = classSessionRepository.sumClassTime(matching.getClassMatchingId(), startDate, endDate);
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
-  }
-
-  public Integer sumTotalClassTime(Long matchingId) {
-    Integer sum = classSessionRepository.sumTotalClassTime(CancelReason.PARENT.name(), matchingId);
-    return sum != null ? sum : 0;
   }
 
   public Map<ClassSession, List<SessionChangeForm>> query(List<ClassMatching> matchings) {

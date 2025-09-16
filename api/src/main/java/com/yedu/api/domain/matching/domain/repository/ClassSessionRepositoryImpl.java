@@ -10,8 +10,10 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
+import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +77,18 @@ public class ClassSessionRepositoryImpl implements CustomClassSessionRepository 
             .fetchOne();
 
     return new PageImpl<>(results, pageable, total != null ? total : 0);
+  }
+
+  @Override
+  public List<ClassSession> findByClassMatchingAndPayStatus(List<Long> matchingIds,
+      PayStatus payStatus) {
+    return queryFactory.selectFrom(classSession)
+        .where(
+            classSession.classManagement.classMatching.classMatchingId.in(matchingIds)
+                .and(classSession.payStatus.eq(payStatus))
+                .and(classSession.completed.isTrue())
+        )
+        .fetch();
   }
 
   private Predicate searchCondition(

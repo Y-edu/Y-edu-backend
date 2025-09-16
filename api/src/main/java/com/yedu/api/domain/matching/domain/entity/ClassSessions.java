@@ -1,13 +1,18 @@
 package com.yedu.api.domain.matching.domain.entity;
 
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /** 과외 일정 일급 collection */
 @RequiredArgsConstructor
 public class ClassSessions {
+
+  private static final long TEACHER_PER_MINUTE_FEE = 600L;
 
   private final List<ClassSession> sessions;
 
@@ -51,5 +56,47 @@ public class ClassSessions {
     }
 
     return sessionWithRound;
+  }
+
+  public String historyMessage() {
+    String histories = sessions.stream()
+        .sorted(Comparator.comparing(ClassSession::getSessionDate))
+        .map(it ->
+            it.getSessionDate().format(DateTimeFormatter.ofPattern("MM/dd")) +
+                " " + it.getRealClassTime() +
+                " 분 " +
+                it.getRound() +
+                " 회차 완료"
+        )
+        .collect(Collectors.joining("\n"));
+
+    return
+          """
+          현재까지의 수업완료 내역입니다.
+          
+          {completeHistories}
+          
+          다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
+          """.replace("{completeHistories}", histories);
+  }
+
+  public Integer sumClassMinutes(){
+    return sessions.stream().mapToInt(ClassSession::getRealClassTime).sum();
+  }
+
+  public BigDecimal fee(){
+    return BigDecimal.valueOf(sumClassMinutes() * TEACHER_PER_MINUTE_FEE);
+  }
+
+
+  public String paymentCallbackUrl(String serverUrl){
+    return serverUrl + "/sessions/" + sessions.stream()
+        .map(ClassSession::getClassSessionId)
+        .map(String::valueOf)
+        .collect(Collectors.joining(",")) + "/pay";
+  }
+
+  public void payPending() {
+    sessions.forEach(ClassSession::payPending);
   }
 }

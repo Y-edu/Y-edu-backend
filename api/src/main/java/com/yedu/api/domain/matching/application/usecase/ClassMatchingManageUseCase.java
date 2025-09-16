@@ -8,15 +8,18 @@ import com.yedu.api.domain.matching.application.dto.req.ClassMatchingRefuseReque
 import com.yedu.api.domain.matching.application.mapper.ClassMatchingMapper;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSession;
+import com.yedu.api.domain.matching.domain.entity.ClassSessions;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
+import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
+import com.yedu.api.domain.matching.domain.repository.ClassSessionRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementCommandService;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingSaveService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingUpdateService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionCommandService;
-import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
@@ -28,9 +31,14 @@ import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
+import com.yedu.payment.api.PaymentTemplate;
+import com.yedu.payment.api.dto.SendBillRequest;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +53,6 @@ public class ClassMatchingManageUseCase {
   private final ClassManagementQueryService classManagementQueryService;
   private final ClassManagementCommandService classManagementCommandService;
   private final ClassSessionCommandService classSessionCommandService;
-  private final ClassSessionQueryService classSessionQueryService;
   private final ResponseRateStorage responseRateStorage;
   private final TeacherUpdateService teacherUpdateService;
   private final ApplicationEventPublisher eventPublisher;
@@ -54,6 +61,11 @@ public class ClassMatchingManageUseCase {
   private final ClassMatchingRepository classMatchingRepository;
   private final TeacherGetService teacherGetService;
   private final ClassManagementKeyStorage classManagementKeyStorage;
+  private final ClassSessionRepository classSessionRepository;
+  private final PaymentTemplate paymentTemplate;
+
+  @Value("${app.yedu.url}")
+  public String serverUrl;
 
   public List<ClassMatching> saveAllClassMatching(
       List<Teacher> teachers, ApplicationForm applicationForm) {
@@ -166,5 +178,29 @@ public class ClassMatchingManageUseCase {
     matching.changeTeacher(newTeacher);
   }
 
-  
+
+  public void payRequest(List<Long> matchingIds) {
+    Map<ClassMatching, List<ClassSession>> sessionsByMatching =
+        classSessionRepository.findByClassMatchingAndPayStatus(matchingIds, PayStatus.PENDING)
+            .stream()
+            .collect(Collectors.groupingBy(session -> session.getClassManagement().getClassMatching()));
+
+    sessionsByMatching.forEach((matching, value) -> {
+      ClassSessions sessions = new ClassSessions(value);
+
+      paymentTemplate.sendBill(
+          new SendBillRequest(
+              "학부모",
+              matching.getApplicationForm().getParents().getPhoneNumber(),
+              """
+                  {name} 선생님 수업료
+                  """.replace("{name}", matching.getTeacher().getTeacherInfo().getNickName()),
+              sessions.historyMessage(),
+              sessions.fee(),
+              sessions.paymentCallbackUrl(serverUrl)
+          )
+      );
+
+    });
+  }
 }

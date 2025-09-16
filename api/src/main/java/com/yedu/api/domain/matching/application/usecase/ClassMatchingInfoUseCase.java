@@ -33,7 +33,9 @@ import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.cache.support.dto.TeacherNotifyApplicationFormDto;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -231,7 +233,7 @@ public class ClassMatchingInfoUseCase {
     Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
         .orElse(null);
 
-    List<ClassSession> sessions = classSessionQueryService.query(management.get());
+    List<ClassSession> sessions = classSessionQueryService.queryAll(management.get());
 
     List<ClassSession> paidSessions = sessions.stream()
         .filter(ClassSession::isCompleted)
@@ -243,9 +245,24 @@ public class ClassMatchingInfoUseCase {
         .filter(it -> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.PENDING))
         .toList();
 
-    int teacherClassMinute = notPaidSessions.stream().mapToInt(ClassSession::getRealClassTime).sum();
-    Long teacherPay = teacherClassMinute * 500L;
-    Long parentPay = teacherClassMinute * 600L;
+    int parentClassMinute = notPaidSessions.stream().mapToInt(ClassSession::getRealClassTime).sum();
+
+    LocalDate now = LocalDate.now();
+    LocalDate firstDayOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
+    LocalDate lastDayOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
+    int teacherClassMinute = notPaidSessions.stream()
+        .filter(session -> {
+          LocalDate sessionDate = session.getSessionDate();
+          return (sessionDate != null &&
+              !sessionDate.isBefore(firstDayOfMonth) &&
+              !sessionDate.isAfter(lastDayOfMonth));
+        })
+        .mapToInt(ClassSession::getRealClassTime)
+        .sum();
+
+
+    Long teacherPay = parentClassMinute * 500L;
+    Long parentPay = parentClassMinute * 600L;
     Long yEduCommission = parentPay - teacherPay;
 
     return ApplicationFormResponse.ClassManagement.builder()
@@ -286,13 +303,15 @@ public class ClassMatchingInfoUseCase {
                                         .cancel(it.isCancel())
                                         .cancelReason(it.getCancelReason())
                                         .completed(it.isCompleted())
+                                        .roundNumber(it.getRound())
                                         .build())
                             .toList())
         .notPaidRoundNumber(
             notPaidSessions.size()
         )
         .maxRoundNumber(maxRoundNumber)
-        .realClassMinute(teacherClassMinute)
+        .parentClassMinute(parentClassMinute)
+        .teacherClassMinute(teacherClassMinute)
         .paidAt(
             paidSessions.stream()
                 .filter(it-> it.getPaidAt() != null)

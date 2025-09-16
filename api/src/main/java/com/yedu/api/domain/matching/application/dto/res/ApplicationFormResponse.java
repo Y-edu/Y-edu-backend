@@ -96,7 +96,8 @@ public class ApplicationFormResponse {
     private List<Session> sessions;
     private Integer notPaidRoundNumber;
     private Integer maxRoundNumber;
-    private Integer realClassMinute;
+    private Integer parentClassMinute;
+    private Integer teacherClassMinute;
     private LocalDateTime paidAt;
     private Long parentPay;
     private Long teacherPay;
@@ -123,6 +124,6 @@ public class ApplicationFormResponse {
     private Boolean cancel;
     private String cancelReason;
     private Boolean completed;
-    private Integer currentRound;
+    private Integer roundNumber;
   }
 }
