@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -920,7 +921,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
        """
             .strip()
             .replace("#{teacherNickName}", event.nickName())
-            .replace("#{round}", String.valueOf(event.parentRoundNumber()))
+            .replace("#{round}",
+                Optional.ofNullable(event.parentRoundNumber()).map(String::valueOf).orElse("-"))
             .replace("#{content}", event.reviewContent())
             .replace("#{homework}", event.homework())
         ;
