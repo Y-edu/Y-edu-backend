@@ -14,6 +14,7 @@ import com.yedu.api.domain.matching.domain.repository.ClassMatchingRepository;
 import com.yedu.api.domain.matching.domain.service.ClassManagementQueryService;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
 import com.yedu.api.domain.matching.domain.service.ClassSessionQueryService;
+import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.parents.domain.entity.ApplicationForm;
 import com.yedu.api.domain.parents.domain.entity.ApplicationFormAvailable;
 import com.yedu.api.domain.parents.domain.entity.Goal;
@@ -294,8 +295,15 @@ public class ClassMatchingInfoUseCase {
                                 it ->
                                     ApplicationFormResponse.Session.builder()
                                         .classSessionId(it.getClassSessionId())
-                                        .date(it.getSessionDate().toString())
-                                        .start(it.getClassTime().getStart().toString())
+                                        .date(Optional.ofNullable(it.getSessionDate())
+                                                .map(LocalDate::toString)
+                                                .orElse(null)
+                                        )
+                                        .start(Optional.ofNullable(it.getClassTime())
+                                                .map(ClassTime::getStart)
+                                                .map(LocalTime::toString)
+                                                .orElse(null)
+                                        )
                                         .classMinute(it.getClassTime().getClassMinute())
                                         .realClassMinute(it.getRealClassTime())
                                         .understanding(it.getUnderstanding())
