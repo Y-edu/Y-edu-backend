@@ -72,10 +72,10 @@ public class ClassSessionCommandService {
         .toList();
   }
 
-  public ClassSession cancel(Long sessionId, CancelReason cancelReason, Boolean isTodayCancel) {
+  public ClassSession cancel(Long sessionId, String cancelReason) {
     ClassSession session = findSessionById(sessionId);
 
-    session.cancel(cancelReason.name(), isTodayCancel);
+    session.cancel(cancelReason);
 
     return session;
   }
@@ -90,11 +90,11 @@ public class ClassSessionCommandService {
 
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
+
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
-    ApplicationForm applicationForm = classMatching.getApplicationForm();
-    Integer maxRound = applicationForm.maxRoundNumber();
-
+    Integer maxRound = classManagement.getClassMatching().getApplicationForm()
+        .maxRoundNumber();
     classSessionRepository
         .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
             session.getClassManagement(), session.getSessionDate()
@@ -112,37 +112,6 @@ public class ClassSessionCommandService {
             session.getClassManagement(), session.getSessionDate())
         .forEach(afterSession -> afterSession.increaseRound(maxRound));
 
-    ClassSessions sessionsToPay = new ClassSessions(classSessionRepository.
-        findAllByClassManagementAndCompletedIsTrueAndPayStatus(classManagement, PayStatus.WAITING));
-
-    int classMinute = sessionsToPay.sumClassMinutes();
-    Integer payClassMinute = applicationForm.classMinute();
-
-    if (payClassMinute == null){
-      return session;
-    }
-
-    if (classMinute >= (maxRound * payClassMinute)){
-      SendBillRequest sendBillRequest = new SendBillRequest(
-          "학부모",
-          applicationForm.getParents().getPhoneNumber(),
-          """
-          {name} 선생님 수업료
-          """
-            .replace("{name}", classMatching.getTeacher().getTeacherInfo().getNickName()),
-          """
-          현재까지의 수업완료 내역입니다.
-          
-          {completeHistories}
-          
-          다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
-          """.replace("{completeHistories}", sessionsToPay.historyMessage()),
-          sessionsToPay.fee(),
-          sessionsToPay.paymentCallbackUrl(serverUrl)
-      );
-      paymentTemplate.sendBill(sendBillRequest);
-      sessionsToPay.payPending();
-    }
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());

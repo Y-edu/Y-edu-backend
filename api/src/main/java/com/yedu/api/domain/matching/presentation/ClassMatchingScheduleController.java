@@ -134,9 +134,9 @@ public class ClassMatchingScheduleController {
       description = "sessionId로 과외를 휴강 처리합니다",
       tags = {"완료톡 관련 API"})
   public ResponseEntity<Void> cancelSession(
-      @PathVariable Long sessionId, @RequestBody CancelSessionRequest cancelSessionRequest) {
+      @PathVariable Long sessionId, @RequestParam String cancelReason) {
 
-    scheduleMatchingUseCase.cancelSession(sessionId, cancelSessionRequest);
+    scheduleMatchingUseCase.cancelSession(sessionId, cancelReason);
 
     return ResponseEntity.noContent().build();
   }

@@ -205,7 +205,7 @@ public class TeacherBatchUseCase {
   }
 
 
-  @Scheduled(cron = "0 */5 * * * *")
+//  @Scheduled(cron = "0 */5 * * * *") FIXME
   public void remindCompleteTalkWeekly() {
     log.info(">>> 주간 리마인드 알림톡 전송 시작");
     LocalDateTime now = LocalDateTime.now();
@@ -242,7 +242,7 @@ public class TeacherBatchUseCase {
     log.info(">>> 주간 리마인드 알림톡 전송 완료");
   }
 
-  @Scheduled(cron = "0 0 20 L * ?")
+//  @Scheduled(cron = "0 0 20 L * ?") FIXME
   public void remindCompleteTalkMontly() {
     log.info(">>> 월간 리마인드 알림톡 전송 시작");
 

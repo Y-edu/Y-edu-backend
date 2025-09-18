@@ -84,27 +84,5 @@ public class MatchingTimetableUseCase {
             applicationForm.getPay());
 
     eventPublisher.publishEvent(event);
-
-    String teacherNickname = classMatching.getTeacher().getTeacherInfo().getNickName();
-
-    SendBillRequest sendBillRequest = new SendBillRequest("학부모",
-        applicationForm.getParents().getPhoneNumber(),
-        """
-        {name} 선생님 수업료
-        """
-            .replace("{name}", teacherNickname),
-        """
-        ☑️ {name} 선생님 수업 결제 안내
-        
-        어머님 안녕하세요. 선생님과 수업 진행을 위한 결제 안내 드립니다.   결제 진행 후, 선생님과 전화 상담이 진행되며, 전화상담으로 교재, 수업시간을 확정 후 수업이 진행됩니다.
-       
-        문의사항이 있으시다면 언제든 Y-Edu 채널을 통해 문의사항 말씀해주세요.   감사합니다!\s
-        """
-            .replace("{name}", teacherNickname),
-        BigDecimal.valueOf(applicationForm.getPay()),
-        serverUrl + "/matchings/"+ classMatching.getClassMatchingId()+ "/pay"
-    );
-
-    paymentTemplate.sendBill(sendBillRequest);
   }
 }
