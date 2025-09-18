@@ -295,10 +295,7 @@ public class ClassMatchingInfoUseCase {
                                 it ->
                                     ApplicationFormResponse.Session.builder()
                                         .classSessionId(it.getClassSessionId())
-                                        .date(Optional.ofNullable(it.getSessionDate())
-                                                .map(LocalDate::toString)
-                                                .orElse(null)
-                                        )
+                                        .date(it.getSessionDate().toString())
                                         .start(Optional.ofNullable(it.getClassTime())
                                                 .map(ClassTime::getStart)
                                                 .map(LocalTime::toString)
