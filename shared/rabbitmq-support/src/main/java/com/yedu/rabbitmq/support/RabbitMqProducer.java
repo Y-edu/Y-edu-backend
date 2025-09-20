@@ -189,7 +189,7 @@ public class RabbitMqProducer {
   @EventListener
   @Async
   public void handle(ParentCompleteTalkNotifyEvent event) {
-//    produceParentMessage(event); FIXME
+    produceParentMessage(event);
   }
 
   @EventListener
