@@ -32,7 +32,6 @@ import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
 import com.yedu.payment.api.PaymentTemplate;
-import com.yedu.payment.api.dto.SendBillRequest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -186,21 +185,10 @@ public class ClassMatchingManageUseCase {
             .collect(Collectors.groupingBy(session -> session.getClassManagement().getClassMatching()));
 
     sessionsByMatching.forEach((matching, value) -> {
-      ClassSessions sessions = new ClassSessions(value);
-
-      paymentTemplate.sendBill(
-          new SendBillRequest(
-              "학부모",
-              matching.getApplicationForm().getParents().getPhoneNumber(),
-              """
-                  {name} 선생님 수업료
-                  """.replace("{name}", matching.getTeacher().getTeacherInfo().getNickName()),
-              sessions.historyMessage(),
-              sessions.fee(),
-              sessions.paymentCallbackUrl(serverUrl)
-          )
-      );
-
+      ClassSessions sessionsToPay = new ClassSessions(value);
+      classSessionCommandService.payRequest(sessionsToPay, matching);
     });
+
+
   }
 }
