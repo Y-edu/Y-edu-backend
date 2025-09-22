@@ -375,6 +375,7 @@ public class ClassScheduleMatchingUseCase {
 
 
     applicationEventPublisher.publishEvent(new ParentCompleteTalkNotifyEvent(
+        session.getSessionDate(),
         teacherInfo.getNickName(),
         matching.getApplicationForm().getParents().getPhoneNumber(),
         session.getRound(),

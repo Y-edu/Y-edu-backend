@@ -881,15 +881,19 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
       ParentCompleteTalkNotifyEvent event) {
     String message =
         """
-✅️ #{teacherNickName} #{round}회차 한줄 리뷰
+📘 #{sessionDate} 수업 한 줄 리뷰가 도착했어요!\s
 
-[리뷰 내용]\s
+✅ 진행 수업
+#{teacherNickName} 선생님 #{round}회차\s
+
+✅ 한 줄 수업 리뷰
 #{content}
 
-[아이 숙제 완료 정도]
+✅ 아이 숙제 완료도
 #{homework}
        """
             .strip()
+            .replace("#{sessionDate}", event.sessionDate().format(DateTimeFormatter.ofPattern("MM/dd")))
             .replace("#{teacherNickName}", event.nickName())
             .replace("#{round}", String.valueOf(event.parentRoundNumber()))
             .replace("#{content}", event.reviewContent())
@@ -900,8 +904,8 @@ Y-Edu가 상담 내용과 신청서를 꼼꼼히 살펴보고 추천드리는 �
     Message messageBody =
         new TextMessage(
             message,
-            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY),
-            BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY.getCode());
+            properties.getKey(BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY_V2),
+            BizpurrioTemplate.YEDU_OFFICIAL_PARENT_COMPLETE_TALK_NOTIFY_V2.getCode());
     return createCommonRequest(messageBody, event.parentPhoneNumber());
   }
 
