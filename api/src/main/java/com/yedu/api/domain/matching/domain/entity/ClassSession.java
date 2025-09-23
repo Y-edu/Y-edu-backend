@@ -156,24 +156,8 @@ public class ClassSession extends BaseEntity {
     this.remind = true;
   }
 
-  public void complete(
-      Integer realClassMinute, String understanding, String homework, Integer round) {
-    if (round != null) {
-      this.round = round;
-    }
-    this.complete(realClassMinute, understanding, homework);
-  }
-
   public void weeklyRemind() {
     this.weeklyRemind = true;
-  }
-
-  public void increaseRound(Integer maxRound) {
-    if (this.round >= maxRound) {
-      this.round = 1;
-      return;
-    }
-    this.round+=1;
   }
 
   public void payPending() {
@@ -183,5 +167,9 @@ public class ClassSession extends BaseEntity {
   public void payApprove(LocalDateTime paidAt) {
     this.payStatus = PayStatus.APPROVE;
     this.paidAt = paidAt;
+  }
+
+  public void updateRound(int round) {
+    this.round = round;
   }
 }

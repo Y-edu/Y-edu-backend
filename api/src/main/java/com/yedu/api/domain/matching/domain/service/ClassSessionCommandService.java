@@ -92,30 +92,16 @@ public class ClassSessionCommandService {
     ClassSession session = findSessionById(sessionId);
     ClassManagement classManagement = session.getClassManagement();
     ClassMatching classMatching = classManagement.getClassMatching();
-    ApplicationForm applicationForm = classMatching.getApplicationForm();
-    Integer maxRound = applicationForm.maxRoundNumber();
+    session.complete(request.classMinute(), request.understanding(), request.homework());
 
-    classSessionRepository
-        .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
-            session.getClassManagement(), session.getSessionDate()
-        )
-        .ifPresentOrElse((prevSession)-> {
-              Integer maxRoundNumber = classMatching.getApplicationForm().maxRoundNumber();
-              Integer prevRound = prevSession.getRound();
-              Integer newRound =  (prevRound >= maxRoundNumber) ? 1 : prevRound + 1;
-          session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
-        },
-        ()-> session.complete(request.classMinute(), request.understanding(), request.homework(), 1));
+    List<ClassSession> sessions = classSessionRepository.
+        findAllByClassManagementAndCompletedIsTrueAndPayStatusIn(classManagement, List.of(PayStatus.WAITING, PayStatus.PENDING));
 
-    classSessionRepository
-        .findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
-            session.getClassManagement(), session.getSessionDate())
-        .forEach(afterSession -> afterSession.increaseRound(maxRound));
+    ClassSessions notPaidSession = new ClassSessions(sessions); // 결제 요청했지만 미결제된 과외건들  + 결제요청도 안한 미결제된 과외건들
+    notPaidSession.numberRound();
 
-    ClassSessions sessionsToPay = new ClassSessions(classSessionRepository.
-        findAllByClassManagementAndCompletedIsTrueAndPayStatus(classManagement, PayStatus.WAITING));
-
-    payRequest(sessionsToPay, classMatching);
+    ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream().filter(it-> it.getPayStatus().equals(PayStatus.WAITING)).toList());
+    payRequest(sessionsToPayRequest, classMatching);
 
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());

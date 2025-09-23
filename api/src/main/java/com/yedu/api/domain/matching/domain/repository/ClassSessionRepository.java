@@ -71,10 +71,7 @@ public interface ClassSessionRepository
 
   List<ClassSession> findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse();
 
-  List<ClassSession> findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
-      ClassManagement classManagement, LocalDate sessionDate);
-
-  List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatus(ClassManagement classManagement, PayStatus payStatus);
+  List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatusIn(ClassManagement classManagement, List<PayStatus> payStatus);
 
   List<ClassSession> findAllByClassManagement(ClassManagement management);
 }
