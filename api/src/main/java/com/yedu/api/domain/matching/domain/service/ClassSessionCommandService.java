@@ -102,8 +102,7 @@ public class ClassSessionCommandService {
     notPaidSession.numberRound(maxRoundNumber);
 
     ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream()
-        .filter(Objects::nonNull)
-        .filter(it-> it.getPayStatus().equals(PayStatus.WAITING)).toList());
+        .filter(it-> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.WAITING)).toList());
 
 
     Hibernate.initialize(
