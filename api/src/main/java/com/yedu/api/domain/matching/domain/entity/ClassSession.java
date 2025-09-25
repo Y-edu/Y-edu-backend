@@ -1,6 +1,5 @@
 package com.yedu.api.domain.matching.domain.entity;
 
-import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
@@ -176,5 +175,13 @@ public class ClassSession extends BaseEntity {
   public void payApprove(LocalDateTime paidAt) {
     this.payStatus = PayStatus.APPROVE;
     this.paidAt = paidAt;
+  }
+
+  public void updateRound(int round, Integer maxRoundNumber) {
+    if (round > maxRoundNumber) {
+      this.round = 1;
+      return;
+    }
+    this.round = round;
   }
 }

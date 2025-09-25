@@ -90,27 +90,17 @@ public class ClassSessionCommandService {
 
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
-
     ClassManagement classManagement = session.getClassManagement();
-    ClassMatching classMatching = classManagement.getClassMatching();
-    Integer maxRound = classManagement.getClassMatching().getApplicationForm()
-        .maxRoundNumber();
-    classSessionRepository
-        .findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
-            session.getClassManagement(), session.getSessionDate()
-        )
-        .ifPresentOrElse((prevSession)-> {
-              Integer maxRoundNumber = classMatching.getApplicationForm().maxRoundNumber();
-              Integer prevRound = prevSession.getRound();
-              Integer newRound =  (prevRound >= maxRoundNumber) ? 1 : prevRound + 1;
-          session.complete(request.classMinute(), request.understanding(), request.homework(), newRound);
-        },
-        ()-> session.complete(request.classMinute(), request.understanding(), request.homework(), 1));
 
-    classSessionRepository
-        .findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
-            session.getClassManagement(), session.getSessionDate())
-        .forEach(afterSession -> afterSession.increaseRound(maxRound));
+    Integer maxRoundNumber = classManagement.getClassMatching().getApplicationForm().maxRoundNumber();
+    session.complete(request.classMinute(), request.understanding(), request.homework());
+
+    List<ClassSession> sessions = classSessionRepository.findAllByClassManagementAndCompletedIsTrueAndPayStatusInOrPayStatusIsNull(classManagement, List.of(PayStatus.WAITING, PayStatus.PENDING));
+
+    ClassSessions notPaidSession = new ClassSessions(sessions); // 결제 요청했지만 미결제된 과외건들  + 결제요청도 안한 미결제된 과외건들
+    notPaidSession.numberRound(maxRoundNumber);
+
+    ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream().filter(it-> it.getPayStatus().equals(PayStatus.WAITING)).toList());
 
 
     Hibernate.initialize(

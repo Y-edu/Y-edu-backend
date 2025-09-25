@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 
 /** 과외 일정 일급 collection */
@@ -98,5 +99,14 @@ public class ClassSessions {
 
   public void payPending() {
     sessions.forEach(ClassSession::payPending);
+  }
+
+  public void numberRound(Integer maxRoundNumber) {
+    List<ClassSession> orderedSessions = sessions.stream()
+        .sorted(Comparator.comparing(ClassSession::getSessionDate))
+        .toList();
+
+    IntStream.range(0, orderedSessions.size())
+        .forEach(i -> orderedSessions.get(i).updateRound(i + 1, maxRoundNumber));
   }
 }
