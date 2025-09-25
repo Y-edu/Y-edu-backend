@@ -374,13 +374,13 @@ public class ClassScheduleMatchingUseCase {
 
 
 
-    applicationEventPublisher.publishEvent(new ParentCompleteTalkNotifyEvent(
-        teacherInfo.getNickName(),
-        matching.getApplicationForm().getParents().getPhoneNumber(),
-        session.getRound(),
-        request.understanding(),
-        request.homework()
-    ));
+//    applicationEventPublisher.publishEvent(new ParentCompleteTalkNotifyEvent(
+//        teacherInfo.getNickName(),
+//        matching.getApplicationForm().getParents().getPhoneNumber(),
+//        session.getRound(),
+//        request.understanding(),
+//        request.homework()
+//    ));
   }
 
   private String roundNumber(ClassMatching matching, ClassSession session) {
