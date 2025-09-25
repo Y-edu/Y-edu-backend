@@ -96,7 +96,7 @@ public class ClassSessionCommandService {
     Integer maxRoundNumber = classManagement.getClassMatching().getApplicationForm().maxRoundNumber();
     session.complete(request.classMinute(), request.understanding(), request.homework());
 
-    List<ClassSession> sessions = classSessionRepository.findAllByClassManagementAndCompletedIsTrueAndPayStatusInOrPayStatusIsNull(classManagement, List.of(PayStatus.WAITING, PayStatus.PENDING));
+    List<ClassSession> sessions = classSessionRepository.findWithPayStatusOrNull(classManagement, List.of(PayStatus.WAITING, PayStatus.PENDING));
 
     ClassSessions notPaidSession = new ClassSessions(sessions); // 결제 요청했지만 미결제된 과외건들  + 결제요청도 안한 미결제된 과외건들
     notPaidSession.numberRound(maxRoundNumber);

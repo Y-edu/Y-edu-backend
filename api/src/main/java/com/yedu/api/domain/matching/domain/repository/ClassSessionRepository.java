@@ -78,5 +78,10 @@ public interface ClassSessionRepository
 
   List<ClassSession> findAllByClassManagement(ClassManagement management);
 
-  List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatusInOrPayStatusIsNull(ClassManagement classManagement, List<PayStatus> status);
+  @Query("SELECT c FROM ClassSession c WHERE c.classManagement = :classManagement AND c.completed = true AND (c.payStatus IN :payStatusList OR c.payStatus IS NULL)")
+  List<ClassSession> findWithPayStatusOrNull(
+      @Param("classManagement") ClassManagement classManagement,
+      @Param("payStatusList") List<PayStatus> payStatusList
+  );
+
 }
