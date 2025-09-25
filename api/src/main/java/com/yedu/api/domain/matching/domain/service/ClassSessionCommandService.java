@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -100,7 +101,9 @@ public class ClassSessionCommandService {
     ClassSessions notPaidSession = new ClassSessions(sessions); // 결제 요청했지만 미결제된 과외건들  + 결제요청도 안한 미결제된 과외건들
     notPaidSession.numberRound(maxRoundNumber);
 
-    ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream().filter(it-> it.getPayStatus().equals(PayStatus.WAITING)).toList());
+    ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream()
+        .filter(Objects::nonNull)
+        .filter(it-> it.getPayStatus().equals(PayStatus.WAITING)).toList());
 
 
     Hibernate.initialize(
