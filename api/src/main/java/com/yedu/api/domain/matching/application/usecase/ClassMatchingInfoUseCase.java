@@ -242,7 +242,7 @@ public class ClassMatchingInfoUseCase {
 
     List<ClassSession> notPaidSessions = sessions.stream()
         .filter(ClassSession::isCompleted)
-        .filter(it -> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.PENDING))
+        .filter(it -> it.getPayStatus() != null && (it.getPayStatus().equals(PayStatus.PENDING) || it.getPayStatus().equals(PayStatus.WAITING)))
         .toList();
 
     int parentClassMinute = notPaidSessions.stream().mapToInt(ClassSession::getRealClassTime).sum();

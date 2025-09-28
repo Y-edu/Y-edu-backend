@@ -29,9 +29,6 @@ public interface ClassSessionRepository
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
-  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
-          ClassManagement classManagement, LocalDate sessionDate);
-
   @Query(
       """
     select sum(cs.realClassTime) from ClassSession cs
@@ -44,15 +41,6 @@ public interface ClassSessionRepository
       @Param("matchingId") Long matchingId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
-
-  @Query(
-      """
-    select sum(cs.realClassTime) from ClassSession cs
-    where cs.classManagement.classMatching.classMatchingId = :matchingId
-      and cs.completed = true
-  """)
-  Integer sumTotalClassTime(
-      @Param("cancelReason") String cancelReason, @Param("matchingId") Long matchingId);
 
   @Query(
       """
