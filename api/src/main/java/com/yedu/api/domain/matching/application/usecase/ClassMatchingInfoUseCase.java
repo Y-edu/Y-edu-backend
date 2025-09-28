@@ -250,15 +250,27 @@ public class ClassMatchingInfoUseCase {
     LocalDate now = LocalDate.now();
     LocalDate firstDayOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
     LocalDate lastDayOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
-    int teacherClassMinute = notPaidSessions.stream()
-        .filter(session -> {
+    int teacherClassMinute = (
+        notPaidSessions.stream().filter(session -> {
           LocalDate sessionDate = session.getSessionDate();
           return (sessionDate != null &&
               !sessionDate.isBefore(firstDayOfMonth) &&
               !sessionDate.isAfter(lastDayOfMonth));
         })
         .mapToInt(ClassSession::getRealClassTime)
-        .sum();
+        .sum()
+    ) + (
+            paidSessions.stream()
+              .filter(session -> {
+                LocalDate sessionDate = session.getSessionDate();
+                return (sessionDate != null &&
+                    !sessionDate.isBefore(firstDayOfMonth) &&
+                    !sessionDate.isAfter(lastDayOfMonth));
+              })
+          .mapToInt(ClassSession::getRealClassTime)
+          .sum()
+    );
+
 
 
     Long teacherPay = parentClassMinute * 500L;
