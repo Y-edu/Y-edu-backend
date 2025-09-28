@@ -62,4 +62,6 @@ public interface ClassSessionRepository
   List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatusIn(ClassManagement classManagement, List<PayStatus> payStatus);
 
   List<ClassSession> findAllByClassManagement(ClassManagement management);
+
+  List<ClassSession> findByPayStatus(PayStatus payStatus);
 }
