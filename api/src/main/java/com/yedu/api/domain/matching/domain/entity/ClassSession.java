@@ -178,10 +178,6 @@ public class ClassSession extends BaseEntity {
   }
 
   public void updateRound(int round, Integer maxRoundNumber) {
-    if (round > maxRoundNumber) {
-      this.round = 1;
-      return;
-    }
-    this.round = round;
+    this.round = round % maxRoundNumber + 1;
   }
 }

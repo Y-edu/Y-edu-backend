@@ -107,6 +107,6 @@ public class ClassSessions {
         .toList();
 
     IntStream.range(0, orderedSessions.size())
-        .forEach(i -> orderedSessions.get(i).updateRound(i + 1, maxRoundNumber));
+        .forEach(i -> orderedSessions.get(i).updateRound(i, maxRoundNumber));
   }
 }
