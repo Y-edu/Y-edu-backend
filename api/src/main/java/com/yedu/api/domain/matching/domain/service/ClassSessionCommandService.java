@@ -219,7 +219,9 @@ public class ClassSessionCommandService {
           Set.of(
               YearMonth.from(today),
               YearMonth.from(today.plusMonths(1)),
-              YearMonth.from(today.plusMonths(2)));
+              YearMonth.from(today.plusMonths(2)),
+              YearMonth.from(today.plusMonths(3))
+              );
 
       Set<YearMonth> monthsWithExistingSessions =
           existingSessions.stream()
