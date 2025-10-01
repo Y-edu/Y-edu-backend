@@ -27,6 +27,7 @@ public class ScheduleService {
     JobDetail jobDetail = JobBuilder.newJob(jobClass)
         .withIdentity(jobName)
         .usingJobData(jobDataMap)
+        .storeDurably(true)
         .build();
 
     Trigger trigger = TriggerBuilder.newTrigger()
