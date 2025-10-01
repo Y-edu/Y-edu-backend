@@ -7,10 +7,19 @@ spring:
   quartz:
     job-store-type: jdbc
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
     properties:
-      org.quartz.jobStore.isClustered: true
-      org.quartz.jobStore.useProperties: false
+      org:
+        quartz:
+          jobStore:
+            tablePrefix: QRTZ_
+            isClustered: true
+            useProperties: false
+          threadPool:
+            threadCount: 10
+        scheduler:
+            instanceName: YeduScheduler
+            instanceId: AUTO
   graphql:
     graphiql:
       enabled: true

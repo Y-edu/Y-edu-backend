@@ -27,12 +27,16 @@ public class ScheduleService {
     JobDetail jobDetail = JobBuilder.newJob(jobClass)
         .withIdentity(jobName)
         .usingJobData(jobDataMap)
+        .requestRecovery(true)
         .storeDurably(true)
         .build();
 
     Trigger trigger = TriggerBuilder.newTrigger()
+        .withIdentity(jobName + "_trigger")
         .startAt(Date.from(executeTime.atZone(ZoneId.systemDefault()).toInstant()))
-        .withSchedule(SimpleScheduleBuilder.simpleSchedule())
+        .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+            .withMisfireHandlingInstructionFireNow()
+        )
         .build();
 
     scheduler.scheduleJob(jobDetail, trigger);
