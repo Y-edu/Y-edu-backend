@@ -13,8 +13,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +30,9 @@ import org.springframework.util.CollectionUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassManagement extends BaseEntity {
+
+  private static final int ROUND_TIMES = 4;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long classManagementId;
@@ -41,6 +47,13 @@ public class ClassManagement extends BaseEntity {
       orphanRemoval = true,
       mappedBy = "classManagement")
   private List<ClassSchedule> schedules = new ArrayList<>();
+
+  @OneToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST},
+      mappedBy = "classManagement")
+  private List<ClassScheduleHistory> scheduleHistories = new ArrayList<>();
+
 
   private String textbook;
 
@@ -72,14 +85,71 @@ public class ClassManagement extends BaseEntity {
     this.remind = true;
   }
 
-  public void resetSchedule() {
+  public void resetSchedule(LocalDate appliedAt) {
     if (CollectionUtils.isEmpty(schedules)) {
       return;
     }
-    this.schedules.clear();
+    for (ClassSchedule schedule : schedules) {
+      ClassScheduleHistory history = ClassScheduleHistory.builder()
+          .classManagement(this)
+          .day(schedule.getDay())
+          .classTime(schedule.getClassTime())
+          .appliedAt(appliedAt)
+          .build();
+      scheduleHistories.add(history);
+    }
+    schedules.clear();
   }
+
 
   public boolean hasSchedule() {
     return !CollectionUtils.isEmpty(schedules);
+  }
+
+
+  public int maxRoundNumber() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+    int currentMaxRounds = schedules.size() * ROUND_TIMES;
+    if (CollectionUtils.isEmpty(scheduleHistories)) {
+      return currentMaxRounds;
+    }
+    LocalDate now = LocalDate.now();
+
+    LocalDate upcomingAppliedAt = scheduleHistories.stream()
+        .filter(it-> it.getAppliedAt() != null)
+        .filter(it-> it.getAppliedAt().isEqual(now) || it.getAppliedAt().isAfter(now))
+        .min(Comparator.comparing(ClassScheduleHistory::getAppliedAt))
+        .map(ClassScheduleHistory::getAppliedAt)
+        .orElse(null);
+
+    if (upcomingAppliedAt == null) {
+      return currentMaxRounds;
+    }
+
+    long latestScheduleSize = scheduleHistories.stream()
+        .filter(h -> h.getAppliedAt().equals(upcomingAppliedAt))
+        .count();
+
+    return (int) latestScheduleSize * ROUND_TIMES;
+  }
+
+
+  public int totalClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+    return schedules.stream()
+        .mapToInt(schedule -> schedule.getClassTime().getClassMinute())
+        .sum();
+  }
+
+
+  public int monthClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+    return maxRoundNumber() * totalClassMinute();
   }
 }

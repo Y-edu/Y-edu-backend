@@ -73,6 +73,7 @@ public class ClassSchedule extends BaseEntity {
                     .completed(false)
                     .cancel(false)
                     .remind(false)
+                    .isTodayCancel(false)
                     .payStatus(PayStatus.WAITING)
                     .build())
         .toList();

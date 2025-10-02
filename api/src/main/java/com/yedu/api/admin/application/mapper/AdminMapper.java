@@ -34,7 +34,7 @@ public class AdminMapper {
     return new ApplicationResponse(
         applicationForm.getApplicationFormId(),
         kakaoName,
-        applicationForm.getClassCount(),
+        "주 "+ scheduledClasses.size()+"회",
         applicationForm.getClassTime(),
         scheduledClasses,
         applicationForm.getPay(),

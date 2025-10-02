@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -79,7 +80,7 @@ public class ClassSessionQueryService {
 
                   // Page<ClassSession> → Page<Schedule>
                   Page<Schedule> schedulePage =
-                      SessionResponse.from(sessions, applicationForm.maxRoundNumber());
+                      SessionResponse.from(sessions, cm.maxRoundNumber());
 
                   return Map.entry(
                       applicationForm.getApplicationFormId(),
@@ -135,13 +136,14 @@ public class ClassSessionQueryService {
     return CompletableFuture.completedFuture(sum != null ? sum : 0);
   }
 
-  public Map<ClassSession, List<SessionChangeForm>> query(List<ClassMatching> matchings) {
+  public Map<ClassSession, Pair<ClassManagement, List<SessionChangeForm>>> query(List<ClassMatching> matchings) {
     List<ClassManagement> managements = classManagementQueryService.query(matchings);
     if (managements.isEmpty()) {
       return Collections.emptyMap();
     }
+
     LocalDate startDate = LocalDate.now();
-    LocalDate endDate = startDate.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+    LocalDate endDate = startDate.plusMonths(3).with(TemporalAdjusters.lastDayOfMonth());
 
     List<ClassSession> sessions =
         classSessionRepository.findSession(managements, startDate, endDate);
@@ -150,16 +152,26 @@ public class ClassSessionQueryService {
       return Collections.emptyMap();
     }
 
+    Map<ClassSession, ClassManagement> sessionToManagement = sessions.stream()
+        .collect(Collectors.toMap(
+            session -> session,
+            ClassSession::getClassManagement
+        ));
+
     List<SessionChangeForm> sessionChangeForms =
         sessionChangeFormRepository.findByLastSessionBeforeChangeIn(sessions);
-    Map<ClassSession, List<SessionChangeForm>> forms =
+
+    Map<ClassSession, List<SessionChangeForm>> formsMap =
         sessionChangeForms.stream()
             .collect(Collectors.groupingBy(SessionChangeForm::getLastSessionBeforeChange));
 
-    Map<ClassSession, List<SessionChangeForm>> result = new LinkedHashMap<>();
+    Map<ClassSession, Pair<ClassManagement, List<SessionChangeForm>>> result = new LinkedHashMap<>();
     for (ClassSession session : sessions) {
-      result.put(session, forms.getOrDefault(session, new ArrayList<>()));
+      ClassManagement management = sessionToManagement.get(session);
+      List<SessionChangeForm> forms = formsMap.getOrDefault(session, new ArrayList<>());
+      result.put(session, Pair.of(management, forms));
     }
+
     return result;
   }
 }

@@ -230,7 +230,7 @@ public class ClassMatchingInfoUseCase {
       return ApplicationFormResponse.ClassManagement.builder().build();
     }
 
-    Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
+    Integer maxRoundNumber = management.map(it -> it.getSchedules().size())
         .orElse(null);
 
     List<ClassSession> sessions = classSessionQueryService.queryAll(management.get());
@@ -273,7 +273,7 @@ public class ClassMatchingInfoUseCase {
 
 
 
-    Long teacherPay = parentClassMinute * 500L;
+    Long teacherPay = teacherClassMinute * 500L;
     Long parentPay = parentClassMinute * 600L;
     Long yEduCommission = parentPay - teacherPay;
 

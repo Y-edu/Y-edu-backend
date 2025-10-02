@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class ClassSessionCommandService {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementRepository classManagementRepository;
   private final PaymentTemplate paymentTemplate;
+  private final ClassManagementQueryService classManagementQueryService;
   @Value("${app.yedu.url}")
   public String serverUrl;
 
@@ -109,11 +111,10 @@ public class ClassSessionCommandService {
   }
 
   public void payRequest(ClassSessions sessionsToPay, ClassMatching classMatching) {
-    ApplicationForm applicationForm = classMatching.getApplicationForm();
-    Integer maxRound = applicationForm.maxRoundNumber();
+    ClassManagement management = classManagementQueryService.queryWithSchedule(
+        classMatching.getClassMatchingId()).orElseThrow();
+    int monthClassMinute = management.monthClassMinute();
     int realClassMinute = sessionsToPay.sumClassMinutes();
-    Integer payClassMinute = applicationForm.classMinute();
-    int monthClassMinute = maxRound * payClassMinute;
 
     if (realClassMinute < monthClassMinute){
       return;
@@ -151,9 +152,10 @@ public class ClassSessionCommandService {
       message.append("다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂");
     }
 
+    String parentPhoneNumber = classMatching.getApplicationForm().getParents().getPhoneNumber();
     SendBillRequest sendBillRequest = new SendBillRequest(
         "학부모",
-        applicationForm.getParents().getPhoneNumber(),
+        parentPhoneNumber,
         title,
         message.toString(),
         totalFee,
