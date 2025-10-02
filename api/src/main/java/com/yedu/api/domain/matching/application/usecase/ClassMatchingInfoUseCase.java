@@ -7,6 +7,7 @@ import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
@@ -39,6 +40,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -114,12 +116,24 @@ public class ClassMatchingInfoUseCase {
   private ApplicationFormResponse getApplicationFormResponses(ClassMatching matching) {
     ApplicationForm applicationForm = matching.getApplicationForm();
     Teacher teacher = matching.getTeacher();
+    Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(
+        matching.getClassMatchingId());
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
         .matchingId(matching.getClassMatchingId())
         .classCount(applicationForm.getClassCount())
-        .classTime(applicationForm.getClassTime())
+        .classTime(
+            management.map(it -> {
+              List<ClassSchedule> schedules = it.getSchedules();
+              return CollectionUtils.isEmpty(schedules) ? "0분" :
+                  schedules.stream()
+                      .map(ClassSchedule::getClassTime)
+                      .filter(Objects::nonNull)
+                      .mapToInt(ct -> Optional.ofNullable(ct.getClassMinute()).orElse(0))
+                      .sum() + "분";
+            }).orElse(applicationForm.getClassTime())
+        )
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
         .pay(applicationForm.getPay())

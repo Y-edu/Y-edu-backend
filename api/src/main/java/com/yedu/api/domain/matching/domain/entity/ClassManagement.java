@@ -13,10 +13,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -111,38 +112,57 @@ public class ClassManagement extends BaseEntity {
     if (CollectionUtils.isEmpty(schedules)) {
       return 0;
     }
-    int currentMaxRounds = schedules.size() * ROUND_TIMES;
-    if (CollectionUtils.isEmpty(scheduleHistories)) {
-      return currentMaxRounds;
-    }
-    LocalDate now = LocalDate.now();
 
-    LocalDate upcomingAppliedAt = scheduleHistories.stream()
-        .filter(it-> it.getAppliedAt() != null)
-        .filter(it-> it.getAppliedAt().isEqual(now) || it.getAppliedAt().isAfter(now))
-        .min(Comparator.comparing(ClassScheduleHistory::getAppliedAt))
-        .map(ClassScheduleHistory::getAppliedAt)
-        .orElse(null);
-
-    if (upcomingAppliedAt == null) {
-      return currentMaxRounds;
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.size() * ROUND_TIMES;
     }
 
-    long latestScheduleSize = scheduleHistories.stream()
-        .filter(h -> h.getAppliedAt().equals(upcomingAppliedAt))
-        .count();
-
-    return (int) latestScheduleSize * ROUND_TIMES;
+    return latestHistories.size() * ROUND_TIMES;
   }
-
 
   public int totalClassMinute() {
     if (CollectionUtils.isEmpty(schedules)) {
       return 0;
     }
-    return schedules.stream()
-        .mapToInt(schedule -> schedule.getClassTime().getClassMinute())
+
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.stream()
+          .mapToInt(s -> s.getClassTime().getClassMinute())
+          .sum();
+    }
+
+    return latestHistories.stream()
+        .mapToInt(h -> h.getClassTime().getClassMinute())
         .sum();
+  }
+
+    /**
+     * 지나간 가까운 날짜의 스케줄 히스토리 목록을 가져옵니다.
+     */
+  private List<ClassScheduleHistory> getRecentScheduleHistories() {
+    if (CollectionUtils.isEmpty(scheduleHistories)) {
+      return Collections.emptyList();
+    }
+
+    LocalDate now = LocalDate.now();
+
+    Optional<LocalDate> upcomingDateOpt = scheduleHistories.stream()
+        .map(ClassScheduleHistory::getAppliedAt)
+        .filter(Objects::nonNull)
+        .filter(date -> !date.isBefore(now))
+        .min(Comparator.naturalOrder());
+
+    if (upcomingDateOpt.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    LocalDate upcomingDate = upcomingDateOpt.get();
+
+    return scheduleHistories.stream()
+        .filter(h -> upcomingDate.equals(h.getAppliedAt()))
+        .toList();
   }
 
 
