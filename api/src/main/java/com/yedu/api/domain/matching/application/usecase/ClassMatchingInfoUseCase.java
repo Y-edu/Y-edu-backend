@@ -54,6 +54,9 @@ import org.springframework.util.CollectionUtils;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClassMatchingInfoUseCase {
+
+  private static final int PARENT_COMMISSION = 600;
+  private static final int TEACHER_COMMISSION = 500;
   private final ClassMatchingGetService classMatchingGetService;
   private final ApplicationFormAvailableQueryService availableQueryService;
   private final ParentsGetService parentsGetService;
@@ -118,25 +121,20 @@ public class ClassMatchingInfoUseCase {
     Teacher teacher = matching.getTeacher();
     Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(
         matching.getClassMatchingId());
+    Optional<Integer> totalClassMinute = management.map(ClassManagement::totalClassMinute);
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
         .matchingId(matching.getClassMatchingId())
-        .classCount(applicationForm.getClassCount())
+        .classCount(
+            management.map(it-> "주 "+it.maxRoundNumber()/4 +"회").orElse(applicationForm.getClassCount())
+        )
         .classTime(
-            management.map(it -> {
-              List<ClassSchedule> schedules = it.getSchedules();
-              return CollectionUtils.isEmpty(schedules) ? "0분" :
-                  schedules.stream()
-                      .map(ClassSchedule::getClassTime)
-                      .filter(Objects::nonNull)
-                      .mapToInt(ct -> Optional.ofNullable(ct.getClassMinute()).orElse(0))
-                      .sum() + "분";
-            }).orElse(applicationForm.getClassTime())
+            totalClassMinute.map(it -> it + "분").orElse(applicationForm.getClassTime())
         )
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
-        .pay(applicationForm.getPay())
+        .pay(totalClassMinute.map(it-> it* PARENT_COMMISSION).orElse(applicationForm.getPay()))
         .matchingStatus(matching.getMatchStatus().toString())
         .childAge(applicationForm.getAge())
         .wantedTime(applicationForm.getWantTime())
@@ -244,7 +242,7 @@ public class ClassMatchingInfoUseCase {
       return ApplicationFormResponse.ClassManagement.builder().build();
     }
 
-    Integer maxRoundNumber = management.map(it -> it.getSchedules().size())
+    Integer maxRoundNumber = management.map(ClassManagement::maxRoundNumber)
         .orElse(null);
 
     List<ClassSession> sessions = classSessionQueryService.queryAll(management.get());
@@ -287,9 +285,8 @@ public class ClassMatchingInfoUseCase {
 
 
 
-    Long teacherPay = teacherClassMinute * 500L;
-    Long parentPay = parentClassMinute * 600L;
-    Long yEduCommission = parentPay - teacherPay;
+    Long teacherPay = (long) (teacherClassMinute * TEACHER_COMMISSION);
+    Long parentPay = (long) parentClassMinute * PARENT_COMMISSION;
 
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
@@ -336,6 +333,7 @@ public class ClassMatchingInfoUseCase {
             notPaidSessions.size()
         )
         .maxRoundNumber(maxRoundNumber)
+        .maxRoundNumber(maxRoundNumber)
         .parentClassMinute(parentClassMinute)
         .teacherClassMinute(teacherClassMinute)
         .paidAt(
@@ -347,7 +345,6 @@ public class ClassMatchingInfoUseCase {
         )
         .parentPay(parentPay)
         .teacherPay(teacherPay)
-        .yEduCommission(yEduCommission)
         .build()
         ;
   }
