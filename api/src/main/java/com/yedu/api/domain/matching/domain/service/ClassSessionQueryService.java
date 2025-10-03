@@ -85,13 +85,19 @@ public class ClassSessionQueryService {
                   // Page<ClassSession> → Page<Schedule>
                   Page<Schedule> schedulePage =
                       SessionResponse.from(sessions, applicationForm.maxRoundNumber());
-                  boolean isFirst = first.getAndSet(false);
+                  boolean isFirst = matching.getMatchStatus() == (MatchingStatus.최종매칭) && first.getAndSet(false);
                   return Map.entry(
                       applicationForm.getApplicationFormId(),
                       new ScheduleInfo(schedulePage, isFirst)); // send는 항상 첫번째
                 })
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      // 후처리: 하나도 true가 없으면 첫 번째 항목을 true로 수정
+      if (scheduleMap.values().stream().noneMatch(ScheduleInfo::send)) {
+          Map.Entry<String, ScheduleInfo> firstEntry = scheduleMap.entrySet().iterator().next();
+          ScheduleInfo oldInfo = firstEntry.getValue();
+          firstEntry.setValue(new ScheduleInfo(oldInfo.schedules(), true));
+      }
 
       return getSessionResponse(classMatchings, scheduleMap);
   }

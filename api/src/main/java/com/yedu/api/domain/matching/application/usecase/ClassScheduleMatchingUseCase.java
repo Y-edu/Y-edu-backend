@@ -178,7 +178,7 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher).stream()
         .sorted(Comparator.comparing(ClassMatching::getClassMatchingId))
         .toList();
-    ClassMatching firstMatching = matchings.get(0);
+    ClassMatching firstMatching = matchings.isEmpty() ? null : matchings.get(0);
 
     return matchings.stream()
             .map(it -> retrieveSchedule(it, firstMatching))
