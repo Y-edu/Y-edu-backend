@@ -33,6 +33,7 @@ import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
+import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
@@ -57,6 +58,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -99,6 +101,8 @@ public class ClassScheduleMatchingUseCase {
   private final ClassSessionQueryService classSessionQueryService;
 
   private final ClassManagementQueryService classManagementQueryService;
+
+  private final TeacherGetService teacherGetService;
 
   private final SheetApi sheetApi;
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -167,6 +171,18 @@ public class ClassScheduleMatchingUseCase {
     List<ClassMatching> matchings = classManagementCommandService.create(request, matching);
 
     return classSessionQueryService.query(matching, matchings, null, pageable);
+  }
+
+  public List<RetrieveScheduleResponse> retrieveSchedulesByPhoneNumber(String phonNumber) {
+    Teacher teacher = teacherGetService.byPhoneNumber(phonNumber);
+    List<ClassMatching> matchings = classMatchingGetService.getMatched(teacher).stream()
+        .sorted(Comparator.comparing(ClassMatching::getClassMatchingId))
+        .toList();
+    ClassMatching firstMatching = matchings.get(0);
+
+    return matchings.stream()
+            .map(it -> retrieveSchedule(it, firstMatching))
+            .toList();
   }
 
   public List<RetrieveScheduleResponse> retrieveSchedules(String token) {
@@ -255,6 +271,21 @@ public class ClassScheduleMatchingUseCase {
         send,
         schedules,
         filteredDates.stream().toList());
+  }
+
+  public SessionResponse retrieveSessionByPhoneNumber(String phoneNumber, Pageable pageable, Boolean isComplete) {
+    Teacher teacher = teacherGetService.byPhoneNumber(phoneNumber);
+    List<ClassMatching> matchings =
+            classSessionCommandService.createSessionOf(teacher, false, null);
+
+    List<ClassMatching> pausedMatching = classMatchingGetService.getPaused(teacher);
+
+    List<ClassMatching> merged = Stream.of(matchings, pausedMatching)
+            .flatMap(List::stream)
+            .sorted(Comparator.comparing(ClassMatching::getClassMatchingId))
+            .toList();
+
+    return classSessionQueryService.query(merged, isComplete, pageable);
   }
 
   public SessionResponse retrieveSession(String token, Pageable pageable, Boolean isComplete) {
