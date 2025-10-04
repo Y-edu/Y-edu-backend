@@ -24,7 +24,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +44,63 @@ public class ClassSessionQueryService {
 
   private final ClassSessionRepository classSessionRepository;
   private final SessionChangeFormRepository sessionChangeFormRepository;
+
+  /**
+   * 전화번호 기반으로 선생님의 수업 정보 조회
+   */
+  public SessionResponse query(
+      List<ClassMatching> classMatchings,
+      Boolean isComplete,
+      Pageable pageable) {
+    LocalDate now = LocalDate.now();
+    LocalDate startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).minusMonths(1L);
+    LocalDate endOfMonth = now.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
+    AtomicBoolean first = new AtomicBoolean(true);
+      Map<String, ScheduleInfo> scheduleMap =
+              IntStream.range(0, classMatchings.size())
+                .mapToObj(i -> {
+                  ClassMatching matching = classMatchings.get(i);
+                  ApplicationForm applicationForm = matching.getApplicationForm();
+                  Optional<ClassManagement> optionalManagement =
+                      classManagementQueryService.query(matching.getClassMatchingId());
+
+                  if (optionalManagement.isEmpty()) {
+                    return null;
+                  }
+
+                  ClassManagement cm = optionalManagement.get();
+
+                  Page<ClassSession> sessions =
+                      Optional.ofNullable(isComplete)
+                          .map(
+                              complete ->
+                                  classSessionRepository
+                                      .findByClassManagementAndSessionDateBetweenAndCompleted(
+                                          cm, startOfMonth, endOfMonth, isComplete, pageable))
+                          .orElseGet(
+                              () ->
+                                  classSessionRepository.findByClassManagementAndSessionDateBetween(
+                                      cm, startOfMonth, endOfMonth, pageable));
+
+                  // Page<ClassSession> → Page<Schedule>
+                  Page<Schedule> schedulePage =
+                      SessionResponse.from(sessions, applicationForm.maxRoundNumber());
+                  boolean isFirst = matching.getMatchStatus() == (MatchingStatus.최종매칭) && first.getAndSet(false);
+                  return Map.entry(
+                      applicationForm.getApplicationFormId(),
+                      new ScheduleInfo(schedulePage, isFirst)); // send는 항상 첫번째
+                })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      // 후처리: 하나도 true가 없으면 첫 번째 항목을 true로 수정
+      if (scheduleMap.values().stream().noneMatch(ScheduleInfo::send)) {
+          Map.Entry<String, ScheduleInfo> firstEntry = scheduleMap.entrySet().iterator().next();
+          ScheduleInfo oldInfo = firstEntry.getValue();
+          firstEntry.setValue(new ScheduleInfo(oldInfo.schedules(), true));
+      }
+
+      return getSessionResponse(classMatchings, scheduleMap);
+  }
 
   public SessionResponse query(
       ClassMatching tokenClassMatching,
@@ -91,19 +151,23 @@ public class ClassSessionQueryService {
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    Map<String, MatchingStatus> matchingStatusesMap =
-        classMatchings.stream()
-            .map(
-                matching -> {
-                  String applicationFormId = matching.getApplicationForm().getApplicationFormId();
-                  return Map.entry(applicationFormId, matching.getMatchStatus());
-                })
-            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-    return new SessionResponse(scheduleMap, matchingStatusesMap);
+      return getSessionResponse(classMatchings, scheduleMap);
   }
 
-  public RetrieveSessionDateResponse querySessionDate(Long sessionId) {
+    private SessionResponse getSessionResponse(List<ClassMatching> classMatchings, Map<String, ScheduleInfo> scheduleMap) {
+        Map<String, MatchingStatus> matchingStatusesMap =
+            classMatchings.stream()
+                .map(
+                    matching -> {
+                      String applicationFormId = matching.getApplicationForm().getApplicationFormId();
+                      return Map.entry(applicationFormId, matching.getMatchStatus());
+                    })
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+        return new SessionResponse(scheduleMap, matchingStatusesMap);
+    }
+
+    public RetrieveSessionDateResponse querySessionDate(Long sessionId) {
     return classSessionRepository
         .findById(sessionId)
         .map(

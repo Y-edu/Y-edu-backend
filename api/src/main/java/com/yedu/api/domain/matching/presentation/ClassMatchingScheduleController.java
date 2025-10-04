@@ -83,6 +83,18 @@ public class ClassMatchingScheduleController {
     return ResponseEntity.noContent().build();
   }
 
+  @GetMapping("/schedules/{phoneNumber}")
+  @Operation(
+          summary = "과외 정규 일정 조회 API",
+          description = "핸드폰 번호로 과외 일정을 조회합니다. 설정된 과외 시간/날짜가 없는 경우 빈 객체가 응답됩니다",
+          tags = {"완료톡 관련 API"})
+  public ResponseEntity<List<RetrieveScheduleResponse>> retrieveScheduleByPhoneNumber(@PathVariable String phoneNumber) {
+    List<RetrieveScheduleResponse> response = scheduleMatchingUseCase.retrieveSchedulesByPhoneNumber(phoneNumber);
+
+    return ResponseEntity.ok(response);
+  }
+
+
   @GetMapping("/schedules")
   @Operation(
       summary = "과외 정규 일정 조회 API",
@@ -102,6 +114,27 @@ public class ClassMatchingScheduleController {
   public ResponseEntity<SessionResponse> createSchedule(
       @RequestBody CreateScheduleRequest request) {
     SessionResponse response = scheduleMatchingUseCase.create(request);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/sessions/{phoneNumber}")
+  @Operation(
+          summary = "핸드폰 번호 기반 과외 실제 일정 조회 API",
+          description = "설정된 과외 일정이 없다면 생성 후 반환합니다",
+          tags = {"완료톡 관련 API"})
+  public ResponseEntity<SessionResponse> retrieveSessionByPhoneNumber(
+          Boolean isComplete,
+          @PageableDefault(sort = "sessionDate", direction = Direction.DESC) Pageable pageable, @PathVariable String phoneNumber) {
+    if (isComplete != null && !isComplete) {
+      pageable =
+              PageRequest.of(
+                      pageable.getPageNumber(),
+                      pageable.getPageSize(),
+                      Sort.by(Sort.Direction.ASC, "sessionDate"));
+    }
+
+    SessionResponse response = scheduleMatchingUseCase.retrieveSessionByPhoneNumber(phoneNumber, pageable, isComplete);
 
     return ResponseEntity.ok(response);
   }
