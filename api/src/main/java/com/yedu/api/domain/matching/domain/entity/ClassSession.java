@@ -121,7 +121,7 @@ public class ClassSession extends BaseEntity {
     boolean isStoppedBeforeSession =
         (matchStatus == MatchingStatus.중단 || matchStatus == MatchingStatus.일시중단)
             && classMatching.getPausedAt() != null
-            && !classMatching.getPausedAt().toLocalDate().isAfter(sessionDate);
+            && classMatching.getPausedAt().toLocalDate().isBefore(sessionDate);
 
     if (matchStatus != MatchingStatus.최종매칭 && isStoppedBeforeSession) {
       throw new IllegalStateException("최종 매칭된 과외가 아니거나, 중단된 과외입니다");
