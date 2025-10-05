@@ -134,7 +134,7 @@ public class ClassMatchingInfoUseCase {
         )
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
-        .pay(totalClassMinute.map(it-> it* PARENT_COMMISSION).orElse(applicationForm.getPay()))
+        .pay(totalClassMinute.map(it-> it * 4 * PARENT_COMMISSION).orElse(applicationForm.getPay()))
         .matchingStatus(matching.getMatchStatus().toString())
         .childAge(applicationForm.getAge())
         .wantedTime(applicationForm.getWantTime())
