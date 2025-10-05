@@ -127,10 +127,14 @@ public class ClassMatchingInfoUseCase {
         .applicationFormId(applicationForm.getApplicationFormId())
         .matchingId(matching.getClassMatchingId())
         .classCount(
-            management.map(it-> "주 "+it.maxRoundNumber()/4 +"회").orElse(applicationForm.getClassCount())
+            management
+                .filter(it-> !CollectionUtils.isEmpty(it.getSchedules()))
+                .map(it-> "주 "+it.maxRoundNumber()/4 +"회")
+                .orElse(applicationForm.getClassCount())
         )
         .classTime(
-            totalClassMinute.map(it -> it + "분").orElse(applicationForm.getClassTime())
+            // 주 n회 x분 수업인 경우 x분에 노출될 과외 일정 하나 분수 조회
+            management.map(it -> it.getMaxClassMinute()+"분").orElse(applicationForm.getClassTime())
         )
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())

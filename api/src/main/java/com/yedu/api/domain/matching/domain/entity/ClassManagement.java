@@ -138,6 +138,26 @@ public class ClassManagement extends BaseEntity {
         .sum();
   }
 
+
+  public int getMaxClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.stream()
+          .mapToInt(s -> s.getClassTime().getClassMinute())
+          .max()
+          .orElse(0);
+    }
+
+    return latestHistories.stream()
+        .mapToInt(h -> h.getClassTime().getClassMinute())
+        .max()
+        .orElse(0);
+  }
+
     /**
      * 지나간 가까운 날짜의 스케줄 히스토리 목록을 가져옵니다.
      */
