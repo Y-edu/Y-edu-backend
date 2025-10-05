@@ -77,7 +77,7 @@ public class ClassManagementCommandService {
   private ClassManagement findClassManagementWithSchedule(
       ClassScheduleConfirmRequest request, Long id) {
     ClassManagement classManagement = queryById(id);
-    classManagement.resetSchedule();
+    classManagement.resetSchedule(null);
 
     request.schedules().stream()
         .map(
@@ -109,7 +109,7 @@ public class ClassManagementCommandService {
                   return classManagementRepository.save(newClassManagement);
                 });
 
-    classManagement.resetSchedule();
+    classManagement.resetSchedule(request.changeStartDate());
 
     classSessionCommandService.deleteSession(classManagement, request.changeStartDate());
 

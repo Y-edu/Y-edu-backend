@@ -71,14 +71,7 @@ public class ClassSessions {
         )
         .collect(Collectors.joining("\n"));
 
-    return
-          """
-          현재까지의 수업완료 내역입니다.
-          
-          {completeHistories}
-          
-          다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂
-          """.replace("{completeHistories}", histories);
+    return histories;
   }
 
   public Integer sumClassMinutes(){

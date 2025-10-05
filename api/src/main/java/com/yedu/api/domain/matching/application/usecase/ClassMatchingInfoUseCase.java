@@ -7,6 +7,7 @@ import com.yedu.api.domain.matching.application.dto.res.ApplicationFormResponse;
 import com.yedu.api.domain.matching.application.dto.res.ClassMatchingForTeacherResponse;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
+import com.yedu.api.domain.matching.domain.entity.ClassSchedule;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
@@ -40,6 +41,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,6 +55,9 @@ import org.springframework.util.CollectionUtils;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ClassMatchingInfoUseCase {
+
+  private static final int PARENT_COMMISSION = 600;
+  private static final int TEACHER_COMMISSION = 500;
   private final ClassMatchingGetService classMatchingGetService;
   private final ApplicationFormAvailableQueryService availableQueryService;
   private final ParentsGetService parentsGetService;
@@ -115,15 +120,26 @@ public class ClassMatchingInfoUseCase {
   private ApplicationFormResponse getApplicationFormResponses(ClassMatching matching) {
     ApplicationForm applicationForm = matching.getApplicationForm();
     Teacher teacher = matching.getTeacher();
+    Optional<ClassManagement> management = classManagementQueryService.queryWithSchedule(
+        matching.getClassMatchingId());
+    Optional<Integer> totalClassMinute = management.map(ClassManagement::totalClassMinute);
 
     return ApplicationFormResponse.builder()
         .applicationFormId(applicationForm.getApplicationFormId())
         .matchingId(matching.getClassMatchingId())
-        .classCount(applicationForm.getClassCount())
-        .classTime(applicationForm.getClassTime())
+        .classCount(
+            management
+                .filter(it-> !CollectionUtils.isEmpty(it.getSchedules()))
+                .map(it-> "주 "+it.maxRoundNumber()/4 +"회")
+                .orElse(applicationForm.getClassCount())
+        )
+        .classTime(
+            // 주 n회 x분 수업인 경우 x분에 노출될 과외 일정 하나 분수 조회
+            management.map(it -> it.getMaxClassMinute()+"분").orElse(applicationForm.getClassTime())
+        )
         .district(applicationForm.getDistrict().toString())
         .dong(applicationForm.getDong())
-        .pay(applicationForm.getPay())
+        .pay(totalClassMinute.map(it-> it * 4 * PARENT_COMMISSION).orElse(applicationForm.getPay()))
         .matchingStatus(matching.getMatchStatus().toString())
         .childAge(applicationForm.getAge())
         .wantedTime(applicationForm.getWantTime())
@@ -231,7 +247,7 @@ public class ClassMatchingInfoUseCase {
       return ApplicationFormResponse.ClassManagement.builder().build();
     }
 
-    Integer maxRoundNumber = management.map(it -> it.getClassMatching().getApplicationForm().maxRoundNumber())
+    Integer maxRoundNumber = management.map(ClassManagement::maxRoundNumber)
         .orElse(null);
 
     List<ClassSession> sessions = classSessionQueryService.queryAll(management.get());
@@ -243,7 +259,7 @@ public class ClassMatchingInfoUseCase {
 
     List<ClassSession> notPaidSessions = sessions.stream()
         .filter(ClassSession::isCompleted)
-        .filter(it -> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.PENDING))
+        .filter(it -> it.getPayStatus() != null && (it.getPayStatus().equals(PayStatus.PENDING) || it.getPayStatus().equals(PayStatus.WAITING)))
         .toList();
 
     int parentClassMinute = notPaidSessions.stream().mapToInt(ClassSession::getRealClassTime).sum();
@@ -251,20 +267,31 @@ public class ClassMatchingInfoUseCase {
     LocalDate now = LocalDate.now();
     LocalDate firstDayOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
     LocalDate lastDayOfMonth = now.with(TemporalAdjusters.lastDayOfMonth());
-    int teacherClassMinute = notPaidSessions.stream()
-        .filter(session -> {
+    int teacherClassMinute = (
+        notPaidSessions.stream().filter(session -> {
           LocalDate sessionDate = session.getSessionDate();
           return (sessionDate != null &&
               !sessionDate.isBefore(firstDayOfMonth) &&
               !sessionDate.isAfter(lastDayOfMonth));
         })
         .mapToInt(ClassSession::getRealClassTime)
-        .sum();
+        .sum()
+    ) + (
+            paidSessions.stream()
+              .filter(session -> {
+                LocalDate sessionDate = session.getSessionDate();
+                return (sessionDate != null &&
+                    !sessionDate.isBefore(firstDayOfMonth) &&
+                    !sessionDate.isAfter(lastDayOfMonth));
+              })
+          .mapToInt(ClassSession::getRealClassTime)
+          .sum()
+    );
 
 
-    Long teacherPay = parentClassMinute * 500L;
-    Long parentPay = parentClassMinute * 600L;
-    Long yEduCommission = parentPay - teacherPay;
+
+    Long teacherPay = (long) (teacherClassMinute * TEACHER_COMMISSION);
+    Long parentPay = (long) parentClassMinute * PARENT_COMMISSION;
 
     return ApplicationFormResponse.ClassManagement.builder()
         .classManagementId(management.map(ClassManagement::getClassManagementId).orElse(null))
@@ -318,6 +345,7 @@ public class ClassMatchingInfoUseCase {
             notPaidSessions.size()
         )
         .maxRoundNumber(maxRoundNumber)
+        .maxRoundNumber(maxRoundNumber)
         .parentClassMinute(parentClassMinute)
         .teacherClassMinute(teacherClassMinute)
         .paidAt(
@@ -329,7 +357,6 @@ public class ClassMatchingInfoUseCase {
         )
         .parentPay(parentPay)
         .teacherPay(teacherPay)
-        .yEduCommission(yEduCommission)
         .build()
         ;
   }

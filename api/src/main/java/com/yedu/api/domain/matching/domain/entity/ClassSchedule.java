@@ -59,7 +59,7 @@ public class ClassSchedule extends BaseEntity {
                     .map(firstDay -> firstDay.isBefore(today) ? today : firstDay)
             )
             .orElse(today);
-    LocalDate lastDay = today.plusMonths(2).with(TemporalAdjusters.lastDayOfMonth());
+    LocalDate lastDay = today.plusMonths(4).with(TemporalAdjusters.lastDayOfMonth());
 
     return Stream.iterate(classStartDate, date -> !date.isAfter(lastDay), date -> date.plusDays(1))
         .filter(date -> Day.byDate(date).equals(this.day))
@@ -73,6 +73,7 @@ public class ClassSchedule extends BaseEntity {
                     .completed(false)
                     .cancel(false)
                     .remind(false)
+                    .isTodayCancel(false)
                     .payStatus(PayStatus.WAITING)
                     .build())
         .toList();

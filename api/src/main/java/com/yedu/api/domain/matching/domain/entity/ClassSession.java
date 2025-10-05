@@ -1,5 +1,6 @@
 package com.yedu.api.domain.matching.domain.entity;
 
+import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.constant.MatchingStatus;
 import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import com.yedu.api.domain.matching.domain.vo.ClassTime;
@@ -113,7 +114,7 @@ public class ClassSession extends BaseEntity {
     boolean isStoppedBeforeSession =
         (matchStatus == MatchingStatus.중단 || matchStatus == MatchingStatus.일시중단)
             && classMatching.getPausedAt() != null
-            && !classMatching.getPausedAt().toLocalDate().isAfter(sessionDate);
+            && classMatching.getPausedAt().toLocalDate().isBefore(sessionDate);
 
     if (matchStatus != MatchingStatus.최종매칭 && isStoppedBeforeSession) {
       throw new IllegalStateException("최종 매칭된 과외가 아니거나, 중단된 과외입니다");
@@ -148,24 +149,8 @@ public class ClassSession extends BaseEntity {
     this.remind = true;
   }
 
-  public void complete(
-      Integer realClassMinute, String understanding, String homework, Integer round) {
-    if (round != null) {
-      this.round = round;
-    }
-    this.complete(realClassMinute, understanding, homework);
-  }
-
   public void weeklyRemind() {
     this.weeklyRemind = true;
-  }
-
-  public void increaseRound(Integer maxRound) {
-    if (this.round >= maxRound) {
-      this.round = 1;
-      return;
-    }
-    this.round+=1;
   }
 
   public void payPending() {

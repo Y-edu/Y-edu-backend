@@ -32,7 +32,6 @@ import com.yedu.cache.support.storage.ResponseRateStorage;
 import com.yedu.cache.support.storage.TeacherNotifyApplicationFormKeyStorage;
 import com.yedu.common.event.bizppurio.TeacherResumeClassEvent;
 import com.yedu.payment.api.PaymentTemplate;
-import com.yedu.payment.api.dto.SendBillRequest;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -179,28 +179,26 @@ public class ClassMatchingManageUseCase {
   }
 
 
+//  @Scheduled(cron = "0 0 10 * * *") TODO 결제 리마인드 스케쥴링 기획 확인 필요
   public void payRequest(List<Long> matchingIds) {
-    Map<ClassMatching, List<ClassSession>> sessionsByMatching =
-        classSessionRepository.findByClassMatchingAndPayStatus(matchingIds, PayStatus.PENDING)
-            .stream()
-            .collect(Collectors.groupingBy(session -> session.getClassManagement().getClassMatching()));
+    Map<ClassMatching, List<ClassSession>> sessionsByMatching = retrieveSessionByMatching(
+        matchingIds);
 
     sessionsByMatching.forEach((matching, value) -> {
-      ClassSessions sessions = new ClassSessions(value);
-
-      paymentTemplate.sendBill(
-          new SendBillRequest(
-              "학부모",
-              matching.getApplicationForm().getParents().getPhoneNumber(),
-              """
-                  {name} 선생님 수업료
-                  """.replace("{name}", matching.getTeacher().getTeacherInfo().getNickName()),
-              sessions.historyMessage(),
-              sessions.fee(),
-              sessions.paymentCallbackUrl(serverUrl)
-          )
-      );
-
+      ClassSessions sessionsToPay = new ClassSessions(value);
+//      classSessionCommandService.payRequest(sessionsToPay, matching);
     });
+  }
+
+  private Map<ClassMatching, List<ClassSession>> retrieveSessionByMatching(List<Long> matchingIds) {
+    if (CollectionUtils.isEmpty(matchingIds)) {
+      return classSessionRepository.findByPayStatus(PayStatus.PENDING)
+          .stream()
+          .collect(Collectors.groupingBy(session -> session.getClassManagement().getClassMatching()));
+    }
+
+    return classSessionRepository.findByClassMatchingAndPayStatus(matchingIds, PayStatus.PENDING)
+            .stream()
+            .collect(Collectors.groupingBy(session -> session.getClassManagement().getClassMatching()));
   }
 }

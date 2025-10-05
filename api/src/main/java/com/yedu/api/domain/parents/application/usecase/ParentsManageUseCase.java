@@ -6,6 +6,7 @@ import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.mapTo
 import static com.yedu.api.domain.parents.application.mapper.ParentsMapper.mapToParents;
 
 import com.yedu.api.domain.matching.application.usecase.ClassMatchingManageUseCase;
+import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
 import com.yedu.api.domain.matching.domain.entity.ClassSession;
 import com.yedu.api.domain.matching.domain.service.ClassMatchingGetService;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,7 +168,8 @@ public class ParentsManageUseCase {
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학부모 핸드폰번호입니다."));
 
     List<ClassMatching> matchings = classMatchingGetService.getMatched(parent);
-    Map<ClassSession, List<SessionChangeForm>> sessions = classSessionQueryService.query(matchings);
+    Map<ClassSession, Pair<ClassManagement, List<SessionChangeForm>>> sessions = classSessionQueryService.query(
+        matchings);
 
     return ParentSessionResponse.of(sessions);
   }

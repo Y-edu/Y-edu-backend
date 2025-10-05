@@ -14,7 +14,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +31,9 @@ import org.springframework.util.CollectionUtils;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassManagement extends BaseEntity {
+
+  private static final int ROUND_TIMES = 4;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long classManagementId;
@@ -41,6 +48,13 @@ public class ClassManagement extends BaseEntity {
       orphanRemoval = true,
       mappedBy = "classManagement")
   private List<ClassSchedule> schedules = new ArrayList<>();
+
+  @OneToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST},
+      mappedBy = "classManagement")
+  private List<ClassScheduleHistory> scheduleHistories = new ArrayList<>();
+
 
   private String textbook;
 
@@ -72,14 +86,110 @@ public class ClassManagement extends BaseEntity {
     this.remind = true;
   }
 
-  public void resetSchedule() {
+  public void resetSchedule(LocalDate appliedAt) {
     if (CollectionUtils.isEmpty(schedules)) {
       return;
     }
-    this.schedules.clear();
+    for (ClassSchedule schedule : schedules) {
+      ClassScheduleHistory history = ClassScheduleHistory.builder()
+          .classManagement(this)
+          .day(schedule.getDay())
+          .classTime(schedule.getClassTime())
+          .appliedAt(appliedAt)
+          .build();
+      scheduleHistories.add(history);
+    }
+    schedules.clear();
   }
+
 
   public boolean hasSchedule() {
     return !CollectionUtils.isEmpty(schedules);
+  }
+
+
+  public int maxRoundNumber() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.size() * ROUND_TIMES;
+    }
+
+    return latestHistories.size() * ROUND_TIMES;
+  }
+
+  public int totalClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.stream()
+          .mapToInt(s -> s.getClassTime().getClassMinute())
+          .sum();
+    }
+
+    return latestHistories.stream()
+        .mapToInt(h -> h.getClassTime().getClassMinute())
+        .sum();
+  }
+
+
+  public int getMaxClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+
+    List<ClassScheduleHistory> latestHistories = getRecentScheduleHistories();
+    if (latestHistories.isEmpty()) {
+      return schedules.stream()
+          .mapToInt(s -> s.getClassTime().getClassMinute())
+          .max()
+          .orElse(0);
+    }
+
+    return latestHistories.stream()
+        .mapToInt(h -> h.getClassTime().getClassMinute())
+        .max()
+        .orElse(0);
+  }
+
+    /**
+     * 지나간 가까운 날짜의 스케줄 히스토리 목록을 가져옵니다.
+     */
+  private List<ClassScheduleHistory> getRecentScheduleHistories() {
+    if (CollectionUtils.isEmpty(scheduleHistories)) {
+      return Collections.emptyList();
+    }
+
+    LocalDate now = LocalDate.now();
+
+    Optional<LocalDate> upcomingDateOpt = scheduleHistories.stream()
+        .map(ClassScheduleHistory::getAppliedAt)
+        .filter(Objects::nonNull)
+        .filter(date -> !date.isBefore(now))
+        .min(Comparator.naturalOrder());
+
+    if (upcomingDateOpt.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    LocalDate upcomingDate = upcomingDateOpt.get();
+
+    return scheduleHistories.stream()
+        .filter(h -> upcomingDate.equals(h.getAppliedAt()))
+        .toList();
+  }
+
+
+  public int monthClassMinute() {
+    if (CollectionUtils.isEmpty(schedules)) {
+      return 0;
+    }
+    return maxRoundNumber() * totalClassMinute();
   }
 }

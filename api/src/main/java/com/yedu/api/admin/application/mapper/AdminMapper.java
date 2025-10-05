@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.util.CollectionUtils;
 
 public class AdminMapper {
   public static ApplicationResponse mapToApplicationResponse(
@@ -34,7 +35,7 @@ public class AdminMapper {
     return new ApplicationResponse(
         applicationForm.getApplicationFormId(),
         kakaoName,
-        applicationForm.getClassCount(),
+        CollectionUtils.isEmpty(scheduledClasses) ?  applicationForm.getClassCount(): "주 "+ scheduledClasses.size()+"회",
         applicationForm.getClassTime(),
         scheduledClasses,
         applicationForm.getPay(),

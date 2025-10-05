@@ -6,6 +6,7 @@ import com.yedu.api.domain.matching.domain.entity.constant.PayStatus;
 import io.lettuce.core.dynamic.annotation.Param;
 import io.micrometer.common.KeyValues;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,9 +30,6 @@ public interface ClassSessionRepository
 
   boolean existsClassSessionByClassManagement(ClassManagement classManagement);
 
-  Optional<ClassSession> findFirstByClassManagementAndSessionDateBeforeOrderBySessionDateDesc(
-          ClassManagement classManagement, LocalDate sessionDate);
-
   @Query(
       """
     select sum(cs.realClassTime) from ClassSession cs
@@ -44,15 +42,6 @@ public interface ClassSessionRepository
       @Param("matchingId") Long matchingId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
-
-  @Query(
-      """
-    select sum(cs.realClassTime) from ClassSession cs
-    where cs.classManagement.classMatching.classMatchingId = :matchingId
-      and cs.completed = true
-  """)
-  Integer sumTotalClassTime(
-      @Param("cancelReason") String cancelReason, @Param("matchingId") Long matchingId);
 
   @Query(
       """
@@ -71,11 +60,6 @@ public interface ClassSessionRepository
 
   List<ClassSession> findAllByRemindIsTrueAndCompletedIsFalseAndCancelIsFalse();
 
-  List<ClassSession> findAllByClassManagementAndSessionDateGreaterThanAndCompletedIsTrue(
-      ClassManagement classManagement, LocalDate sessionDate);
-
-  List<ClassSession> findAllByClassManagementAndCompletedIsTrueAndPayStatus(ClassManagement classManagement, PayStatus payStatus);
-
   List<ClassSession> findAllByClassManagement(ClassManagement management);
 
   @Query("SELECT c FROM ClassSession c WHERE c.classManagement = :classManagement AND c.completed = true AND (c.payStatus IN :payStatusList OR c.payStatus IS NULL)")
@@ -84,4 +68,5 @@ public interface ClassSessionRepository
       @Param("payStatusList") List<PayStatus> payStatusList
   );
 
+  List<ClassSession> findByPayStatus(PayStatus payStatus);
 }

@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +43,7 @@ public class ClassSessionCommandService {
   private final ClassMatchingGetService classMatchingGetService;
   private final ClassManagementRepository classManagementRepository;
   private final PaymentTemplate paymentTemplate;
+  private final ClassManagementQueryService classManagementQueryService;
   @Value("${app.yedu.url}")
   public String serverUrl;
 
@@ -92,8 +92,9 @@ public class ClassSessionCommandService {
   public ClassSession complete(Long sessionId, CompleteSessionRequest request) {
     ClassSession session = findSessionById(sessionId);
     ClassManagement classManagement = session.getClassManagement();
+    ClassMatching classMatching = classManagement.getClassMatching();
 
-    Integer maxRoundNumber = classManagement.getClassMatching().getApplicationForm().maxRoundNumber();
+    Integer maxRoundNumber = classManagement.maxRoundNumber();
     session.complete(request.classMinute(), request.understanding(), request.homework());
 
     List<ClassSession> sessions = classSessionRepository.findWithPayStatusOrNull(classManagement, List.of(PayStatus.WAITING, PayStatus.PENDING));
@@ -104,10 +105,68 @@ public class ClassSessionCommandService {
     ClassSessions sessionsToPayRequest = new ClassSessions(sessions.stream()
         .filter(it-> it.getPayStatus() != null && it.getPayStatus().equals(PayStatus.WAITING)).toList());
 
-
     Hibernate.initialize(
         session.getClassManagement().getClassMatching().getTeacher().getTeacherInfo());
     return session;
+  }
+  public void payRequest(ClassSessions sessionsToPay, ClassMatching classMatching) {
+    ClassManagement management = classManagementQueryService.queryWithSchedule(
+        classMatching.getClassMatchingId()).orElseThrow();
+    int monthClassMinute = management.monthClassMinute();
+    int realClassMinute = sessionsToPay.sumClassMinutes();
+
+    if (realClassMinute < monthClassMinute){
+      return;
+    }
+    int overClassMinute = realClassMinute - monthClassMinute;
+    boolean hasOverTime = overClassMinute > 0;
+
+    BigDecimal originFee = BigDecimal.valueOf(monthClassMinute).multiply(BigDecimal.valueOf(600));
+    BigDecimal additionalFee = hasOverTime
+        ? BigDecimal.valueOf(overClassMinute).multiply(BigDecimal.valueOf(600))
+        : BigDecimal.ZERO;
+    BigDecimal totalFee = sessionsToPay.fee();
+
+    String title = String.format("%s 선생님 수업료",
+        classMatching.getTeacher().getTeacherInfo().getNickName());
+
+    StringBuilder message = new StringBuilder()
+        .append("현재까지의 수업완료 내역입니다.\n\n")
+        .append(sessionsToPay.historyMessage())
+        .append("\n\n");
+
+    if (hasOverTime) {
+      message.append(String.format(
+          "기존 %d분에서 %d분 추가 진행되어 총 %d분 진행되었습니다!\n" +
+              "다음 4주를 위한 수업금액 %s + %s(%d분 추가 시간) 하여 총 %s 결제 부탁드립니다 🙂",
+          monthClassMinute,
+          overClassMinute,
+          realClassMinute,
+          formatFee(originFee),
+          formatFee(additionalFee),
+          overClassMinute,
+          formatFee(totalFee)
+      ));
+    } else {
+      message.append("다음 4주 수업을 위해 수업료 입금 부탁드립니다 🙂");
+    }
+
+    String parentPhoneNumber = classMatching.getApplicationForm().getParents().getPhoneNumber();
+    SendBillRequest sendBillRequest = new SendBillRequest(
+        "학부모",
+        parentPhoneNumber,
+        title,
+        message.toString(),
+        totalFee,
+        sessionsToPay.paymentCallbackUrl(serverUrl)
+    );
+
+    paymentTemplate.sendBill(sendBillRequest);
+    sessionsToPay.payPending();
+  }
+
+  private String formatFee(BigDecimal amountInWon) {
+    return amountInWon.divide(BigDecimal.valueOf(10000)).stripTrailingZeros().toPlainString() + "만원";
   }
 
   public Pair<ClassSession,LocalDate> change(Long sessionId, LocalDate sessionDate, LocalTime start) {
@@ -160,7 +219,9 @@ public class ClassSessionCommandService {
           Set.of(
               YearMonth.from(today),
               YearMonth.from(today.plusMonths(1)),
-              YearMonth.from(today.plusMonths(2)));
+              YearMonth.from(today.plusMonths(2)),
+              YearMonth.from(today.plusMonths(3))
+              );
 
       Set<YearMonth> monthsWithExistingSessions =
           existingSessions.stream()
