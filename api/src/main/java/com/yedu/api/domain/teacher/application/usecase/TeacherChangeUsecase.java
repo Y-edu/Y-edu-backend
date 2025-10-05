@@ -34,10 +34,15 @@ public class TeacherChangeUsecase {
   private final ParentsGetService parentsGetService;
 
   public void change(ApplicationFormChangeRequest request) {
-    log.info(">>> 선생님 교체 신청 :{}", request);
+    String phoneNumber = request.phoneNumber();
+    if (!phoneNumber.startsWith("0")) {
+      phoneNumber = "0" + phoneNumber;
+    }
+
+    log.info(">>> 선생님 교체 신청 : {}", request);
     SessionChangeForm changeForm = sessionChangeFormRepository
         .findFirstByParents_PhoneNumberAndChangeTypeOrderByCreatedAtDesc(
-            request.phoneNumber(),
+            phoneNumber,
             SessionChangeType.CHANGE_TEACHER
         )
         .orElseThrow(() -> new IllegalArgumentException("제출된 선생님 교체 신청건이 존재하지 않습니다"));
@@ -70,7 +75,7 @@ public class TeacherChangeUsecase {
 
     parentsManageUseCase.saveParentsAndApplication(
         ApplicationFormRequest.builder()
-            .phoneNumber(request.phoneNumber())
+            .phoneNumber(phoneNumber)
             .age(previousApplicationForm.getAge())
             .wantedSubject(previousApplicationForm.getWantedSubject())
             .wantedTime(request.wantedTime())
