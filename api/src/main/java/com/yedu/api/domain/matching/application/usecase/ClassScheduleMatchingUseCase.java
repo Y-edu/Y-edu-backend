@@ -451,10 +451,13 @@ public class ClassScheduleMatchingUseCase {
 
   public SessionTokenResponse retrieveToken(String phoneNumber, String name) {
     Teacher teacher = teacherGetService.byNameAndPhoneNumber(name, phoneNumber);
-    ClassManagement classManagement = classManagementCommandService.findClassManageMent(teacher);
-    if (classManagement == null)
+    Optional<ClassManagement> classManagement =
+            classManagementCommandService.findClassManageMent(teacher);
+    if (classManagement.isEmpty()) {
       return new SessionTokenResponse(null);
-    String token = classManagementKeyStorage.storeAndGet(classManagement.getClassManagementId());
+    }
+    String token = classManagementKeyStorage
+            .storeAndGet(classManagement.get().getClassManagementId());
     return new SessionTokenResponse(token);
   }
 }
