@@ -33,6 +33,21 @@ public class ClassManagementCommandService {
   private final ClassSessionCommandService classSessionCommandService;
 
 
+  public ClassManagement findClassManageMent(Teacher teacher) {
+    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher, false, null);
+
+    if (matchings.isEmpty()) {
+      matchings = classMatchingGetService.getPaused(teacher);
+    }
+    if (matchings.isEmpty()) {
+      return null;
+    }
+    ClassMatching classMatching = matchings.get(0);
+
+    return classManagementRepository.findByClassMatching_ClassMatchingId(
+            classMatching.getClassMatchingId()).orElseThrow(IllegalArgumentException::new);
+  }
+
 
   public ClassManagement schedule(ClassScheduleMatchingRequest request) {
     ClassMatching classMatching = classMatchingGetService.getById(request.classMatchingId());
