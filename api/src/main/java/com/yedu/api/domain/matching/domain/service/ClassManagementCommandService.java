@@ -16,6 +16,9 @@ import com.yedu.payment.api.PaymentTemplate;
 import com.yedu.payment.api.dto.SendBillRequest;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,27 @@ public class ClassManagementCommandService {
 
   private final ClassSessionCommandService classSessionCommandService;
 
+
+  public Optional<ClassManagement> findClassManageMent(Teacher teacher) {
+    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher, false, null);
+
+    if (matchings.isEmpty()) {
+      matchings = classMatchingGetService.getPaused(teacher);
+    }
+    if (matchings.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return matchings.stream()
+            .map(matching ->
+                    classManagementRepository.findByClassMatching_ClassMatchingId(
+                            matching.getClassMatchingId()
+                    )
+            )
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElse(Optional.empty());
+  }
 
 
   public ClassManagement schedule(ClassScheduleMatchingRequest request) {

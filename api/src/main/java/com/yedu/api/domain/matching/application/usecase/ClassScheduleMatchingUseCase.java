@@ -12,11 +12,7 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveReq
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
-import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveMonthlyClassTimeResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
-import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.application.dto.res.*;
 import com.yedu.api.domain.matching.domain.entity.constant.CancelReason;
 import com.yedu.api.domain.matching.domain.entity.ClassManagement;
 import com.yedu.api.domain.matching.domain.entity.ClassMatching;
@@ -33,6 +29,7 @@ import com.yedu.api.domain.matching.domain.vo.ClassTime;
 import com.yedu.api.domain.teacher.domain.entity.Teacher;
 import com.yedu.api.domain.teacher.domain.entity.TeacherInfo;
 import com.yedu.api.domain.teacher.domain.entity.constant.Day;
+import com.yedu.api.domain.teacher.domain.service.TeacherGetService;
 import com.yedu.cache.support.storage.ClassManagementTokenStorage;
 import com.yedu.cache.support.storage.KeyStorage;
 import com.yedu.cache.support.storage.TokenStorage;
@@ -44,15 +41,8 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,6 +62,7 @@ import org.springframework.util.StringUtils;
 @Component
 @Slf4j
 public class ClassScheduleMatchingUseCase {
+  private final TeacherGetService teacherGetService;
 
   private final ClassManagementCommandService managementCommandService;
 
@@ -458,5 +449,28 @@ public class ClassScheduleMatchingUseCase {
     return new RetrieveMonthlyClassTimeResponse(result);
   }
 
+  public SessionTokenResponse retrieveToken(String phoneNumber, String name) {
+    Teacher teacher = teacherGetService.byNameAndPhoneNumber(name, phoneNumber);
 
+    List<ClassMatching> matchings = classSessionCommandService.createSessionOf(teacher, false, null);
+    if (matchings.isEmpty()) {
+      matchings = classMatchingGetService.getPaused(teacher);
+    }
+
+    for (ClassMatching matching : matchings) {
+      Optional<ClassManagement> classManagement =
+              classManagementQueryService.query(matching.getClassMatchingId());
+
+      if (classManagement.isPresent()) {
+        List<ClassSession> classSessions = classSessionQueryService.queryAll(classManagement.get());
+        if (!classSessions.isEmpty()) {
+          String token = classSessionKeyStorage
+                  .storeAndGet(classSessions.get(0).getClassSessionId());
+          return new SessionTokenResponse(token);
+        }
+      }
+    }
+
+    return new SessionTokenResponse(null);
+  }
 }
