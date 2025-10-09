@@ -43,7 +43,7 @@ public class ClassManagementCommandService {
       matchings = classMatchingGetService.getPaused(teacher);
     }
     if (matchings.isEmpty()) {
-      return null;
+      return Optional.empty();
     }
 
     return matchings.stream()
@@ -54,7 +54,7 @@ public class ClassManagementCommandService {
             )
             .filter(Objects::nonNull)
             .findFirst()
-            .orElse(null);
+            .orElse(Optional.empty());
   }
 
 
