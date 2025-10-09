@@ -86,7 +86,7 @@ public class ClassSessionQueryService {
                   // Page<ClassSession> → Page<Schedule>
                   Page<Schedule> schedulePage =
                       SessionResponse.from(sessions, applicationForm.maxRoundNumber());
-                  boolean isFirst = first.getAndSet(false);
+                  boolean isFirst = matching.getMatchStatus().equals(MatchingStatus.최종매칭) && first.getAndSet(false);
                   return Map.entry(
                       applicationForm.getApplicationFormId(),
                       new ScheduleInfo(schedulePage, isFirst)); // send는 항상 첫번째
