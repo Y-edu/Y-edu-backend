@@ -9,12 +9,7 @@ import com.yedu.api.domain.matching.application.dto.req.ClassScheduleRetrieveReq
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionRequest;
 import com.yedu.api.domain.matching.application.dto.req.CompleteSessionTokenRequest;
 import com.yedu.api.domain.matching.application.dto.req.CreateScheduleRequest;
-import com.yedu.api.domain.matching.application.dto.res.ClassScheduleMatchingResponse;
-import com.yedu.api.domain.matching.application.dto.res.ClassScheduleRetrieveResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveMonthlyClassTimeResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveScheduleResponse;
-import com.yedu.api.domain.matching.application.dto.res.RetrieveSessionDateResponse;
-import com.yedu.api.domain.matching.application.dto.res.SessionResponse;
+import com.yedu.api.domain.matching.application.dto.res.*;
 import com.yedu.api.domain.matching.application.usecase.ClassScheduleMatchingUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -219,6 +214,12 @@ public class ClassMatchingScheduleController {
     RetrieveSessionDateResponse response =
         scheduleMatchingUseCase.retrieveSessionDateByToken(token);
 
+    return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/token/sessions")
+  public ResponseEntity<SessionTokenResponse> retrieveTokenByPhoneNumberAndName(String phoneNumber, String name) {
+    SessionTokenResponse response = scheduleMatchingUseCase.retrieveToken(phoneNumber, name);
     return ResponseEntity.ok(response);
   }
 
